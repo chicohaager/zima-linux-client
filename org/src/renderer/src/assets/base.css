@@ -1,0 +1,30 @@
+/* Global base styles and utility classes should be defined here. */
+
+:root {
+  /* Global variables */
+}
+
+@font-face {
+  font-family: 'Britti Sans';
+  src: url('/fonts/BrittiSans/britti-sans-variable.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Chivo Mono';
+  src: url('/fonts/ChivoMono/ChivoMono-VariableFont_wght.ttf') format('truetype');
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Chivo Mono';
+  src: url('/fonts/ChivoMono/ChivoMono-Italic-VariableFont_wght.ttf') format('truetype');
+  font-style: italic;
+}
+
+body {
+  --at-apply: 'h-vh w-vw';
+  --at-apply: 'text-surface-900 dark:text-surface-50 font-sans';
+  --at-apply: 'bg-surface-0 dark:bg-surface-950';
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

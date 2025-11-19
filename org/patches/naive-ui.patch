@@ -1,0 +1,22 @@
+diff --git a/es/button/src/styles/index.cssr.mjs b/es/button/src/styles/index.cssr.mjs
+index a03bff68d09e45c68a8d0529733166703ee91346..6d4b742586bc23667f8ed4c17ee0ad46d6927e4f 100644
+--- a/es/button/src/styles/index.cssr.mjs
++++ b/es/button/src/styles/index.cssr.mjs
+@@ -71,7 +71,7 @@ export default c([cB('button', `
+   borderColor: 'var(--n-border-color)'
+ }), cM('disabled', [cE('border', {
+   borderColor: 'var(--n-border-color-disabled)'
+-})]), cNotM('disabled', [c('&:focus', [cE('state-border', {
++})]), cNotM('disabled', [c('&:focus-visible', [cE('state-border', {
+   borderColor: 'var(--n-border-color-focus)'
+ })]), c('&:hover', [cE('state-border', {
+   borderColor: 'var(--n-border-color-hover)'
+@@ -84,7 +84,7 @@ export default c([cB('button', `
+   color: 'var(--n-text-color-disabled)'
+ }, [cE('border', {
+   border: 'var(--n-border-disabled)'
+-})]), cNotM('disabled', [c('&:focus', {
++})]), cNotM('disabled', [c('&:focus-visible', {
+   backgroundColor: 'var(--n-color-focus)',
+   color: 'var(--n-text-color-focus)'
+ }, [cE('state-border', {

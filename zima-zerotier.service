@@ -1,0 +1,13 @@
+[Unit]
+Description=ZeroTier for Zima Remote Client (user)
+After=network-online.target
+
+[Service]
+Type=forking
+ExecStart=%h/.local/lib/zima-remote/zerotier/zerotier-one -d -U %h/.zima-zerotier
+ExecStop=%h/.local/lib/zima-remote/zerotier/zerotier-cli -D %h/.zima-zerotier shutdown
+Restart=always
+NoNewPrivileges=false
+
+[Install]
+WantedBy=default.target
