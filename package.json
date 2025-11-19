@@ -1,0 +1,98 @@
+{
+  "name": "zima-linux-client",
+  "version": "0.9.0",
+  "description": "Modern Desktop Client for ZimaOS with integrated ZeroTier and SMB management",
+  "main": "dist/main/index.js",
+  "author": {
+    "name": "Holger Kühn"
+  },
+  "homepage": "https://www.zimaspace.com",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:electron\"",
+    "dev:main": "webpack --config webpack.main.config.js --mode development --watch",
+    "dev:preload": "webpack --config webpack.preload.config.js --mode development --watch",
+    "dev:renderer": "webpack --config webpack.renderer.config.js --mode development --watch",
+    "dev:electron": "sleep 5 && NODE_ENV=production electron .",
+    "build": "npm run build:main && npm run build:preload && npm run build:renderer",
+    "build:main": "webpack --config webpack.main.config.js --mode production",
+    "build:preload": "webpack --config webpack.preload.config.js --mode production",
+    "build:renderer": "webpack --config webpack.renderer.config.js --mode production",
+    "start": "electron .",
+    "package": "npm run build && electron-builder",
+    "package:linux": "npm run build && electron-builder --linux",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "shell-quote": "^1.8.3",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "autoprefixer": "^10.4.17",
+    "concurrently": "^8.2.2",
+    "css-loader": "^6.9.1",
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "events": "^3.3.0",
+    "html-webpack-plugin": "^5.6.0",
+    "path-browserify": "^1.0.1",
+    "postcss": "^8.4.33",
+    "postcss-loader": "^8.1.0",
+    "process": "^0.11.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "style-loader": "^3.3.4",
+    "tailwindcss": "^3.4.1",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "build": {
+    "productName": "ZimaOS Client",
+    "appId": "com.zimaos.linux.client",
+    "files": [
+      "dist/main/**/*",
+      "dist/renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "bin/zerotier",
+        "to": "bin/zerotier",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "resources",
+        "to": "resources",
+        "filter": ["*.service", "*.sh"]
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Network",
+      "icon": "logo.png"
+    },
+    "deb": {
+      "depends": [
+        "libfuse2",
+        "smbclient"
+      ],
+      "maintainer": "Holger Kühn",
+      "afterInstall": "resources/postinst.sh"
+    }
+  }
+}

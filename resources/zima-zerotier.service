@@ -1,0 +1,25 @@
+[Unit]
+Description=ZeroTier One Network Service for Zima Client
+After=network.target
+Documentation=https://www.zerotier.com/
+
+[Service]
+Type=simple
+ExecStart=/opt/zima-client/bin/zerotier-one -p9994 /var/lib/zima-zerotier
+Restart=always
+RestartSec=5
+KillMode=process
+TimeoutStopSec=5
+
+# Security
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/zima-zerotier
+StateDirectory=zima-zerotier
+
+# Capabilities needed for network operations
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_ADMIN
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_ADMIN
+
+[Install]
+WantedBy=multi-user.target
