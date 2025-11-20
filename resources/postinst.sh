@@ -6,6 +6,21 @@ set -e
 
 echo "Setting up Zima Client ZeroTier service..."
 
+# Create zima-zerotier group if it doesn't exist
+if ! getent group zima-zerotier >/dev/null 2>&1; then
+    groupadd --system zima-zerotier
+    echo "✓ Created zima-zerotier group"
+fi
+
+# Add all users to the group (so anyone can use the app)
+# Get all regular users (UID >= 1000)
+for user in $(getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 { print $1 }'); do
+    if ! groups "$user" | grep -q zima-zerotier; then
+        usermod -a -G zima-zerotier "$user" 2>/dev/null || true
+        echo "✓ Added $user to zima-zerotier group"
+    fi
+done
+
 # Stop existing service if running (to avoid "busy" error when overwriting binaries)
 if systemctl is-active --quiet zima-zerotier.service 2>/dev/null; then
     echo "Stopping existing ZeroTier service..."
@@ -53,6 +68,20 @@ if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
     sleep 2
     if systemctl is-active --quiet zima-zerotier.service; then
         echo "✓ ZeroTier service started successfully"
+
+        # Fix permissions on ZeroTier files
+        sleep 1
+        if [ -d "/var/lib/zima-zerotier" ]; then
+            chown -R root:zima-zerotier /var/lib/zima-zerotier
+            chmod -R 750 /var/lib/zima-zerotier
+            if [ -f "/var/lib/zima-zerotier/authtoken.secret" ]; then
+                chmod 640 /var/lib/zima-zerotier/authtoken.secret
+            fi
+            if [ -f "/var/lib/zima-zerotier/zerotier-one.port" ]; then
+                chmod 640 /var/lib/zima-zerotier/zerotier-one.port
+            fi
+            echo "✓ Fixed permissions on ZeroTier files"
+        fi
     else
         echo "⚠ ZeroTier service installation complete, but service failed to start"
         echo "  Check: systemctl status zima-zerotier.service"
