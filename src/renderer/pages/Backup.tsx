@@ -240,6 +240,40 @@ export const BackupPage: React.FC = () => {
     return new Date(timestamp).toLocaleString();
   };
 
+  // Calculate next run time based on schedule
+  const getNextRunTime = (schedule: BackupJob['schedule']): string | null => {
+    if (!schedule || schedule.frequency === 'manual' || !schedule.time) return null;
+
+    const now = new Date();
+    const [hours, minutes] = schedule.time.split(':').map(Number);
+    let nextRun = new Date();
+    nextRun.setHours(hours, minutes, 0, 0);
+
+    if (schedule.frequency === 'daily') {
+      // If time has passed today, schedule for tomorrow
+      if (nextRun <= now) {
+        nextRun.setDate(nextRun.getDate() + 1);
+      }
+    } else if (schedule.frequency === 'weekly' && schedule.dayOfWeek !== undefined) {
+      const targetDay = schedule.dayOfWeek;
+      const currentDay = now.getDay();
+      let daysUntilTarget = targetDay - currentDay;
+      if (daysUntilTarget < 0 || (daysUntilTarget === 0 && nextRun <= now)) {
+        daysUntilTarget += 7;
+      }
+      nextRun.setDate(nextRun.getDate() + daysUntilTarget);
+    } else if (schedule.frequency === 'monthly' && schedule.dayOfMonth !== undefined) {
+      nextRun.setDate(schedule.dayOfMonth);
+      // If that day has passed this month or is today but time passed, go to next month
+      if (nextRun <= now) {
+        nextRun.setMonth(nextRun.getMonth() + 1);
+        nextRun.setDate(schedule.dayOfMonth);
+      }
+    }
+
+    return nextRun.toLocaleString();
+  };
+
   const availableShares: SMBShare[] = [];
   devices.forEach(device => {
     if (device.shares) {
@@ -297,10 +331,26 @@ export const BackupPage: React.FC = () => {
                   <div key={job.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">{job.name}</h3>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-sm font-medium text-gray-900 dark:text-white">{job.name}</h3>
+                          {/* Schedule Badge */}
+                          {job.schedule && job.schedule.frequency !== 'manual' && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                              ⏰ {job.schedule.frequency}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                           {job.sourcePath} → {job.targetShare.displayName}
                         </p>
+                        {/* Schedule Details */}
+                        {job.schedule && job.schedule.frequency !== 'manual' && (
+                          <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded inline-block">
+                            📅 {job.schedule.frequency === 'daily' && `Every day at ${job.schedule.time}`}
+                            {job.schedule.frequency === 'weekly' && `Every ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][job.schedule.dayOfWeek || 0]} at ${job.schedule.time}`}
+                            {job.schedule.frequency === 'monthly' && `Every month on day ${job.schedule.dayOfMonth} at ${job.schedule.time}`}
+                          </div>
+                        )}
                       </div>
                       <div className="flex gap-2 ml-4">
                         <button
@@ -366,21 +416,31 @@ export const BackupPage: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Last run info */}
-                    {!progress && job.lastRun && (
-                      <div>
-                        <p className="text-xs text-zima-text-secondary">
-                          Last run: {formatDate(job.lastRun)}
-                          {job.lastStatus === 'success' && ' ✓'}
-                          {job.lastStatus === 'failed' && ' ✗'}
-                        </p>
-                        {job.stats && (
-                          <p className="text-xs text-zima-text-secondary">
-                            {job.stats.filesTransferred} files, {formatBytes(job.stats.bytesTransferred)}
+                    {/* Last run and Next run info */}
+                    {!progress && (
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-4 flex-wrap">
+                          {job.lastRun && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              Last run: {formatDate(job.lastRun)}
+                              {job.lastStatus === 'success' && ' ✓'}
+                              {job.lastStatus === 'failed' && ' ✗'}
+                            </p>
+                          )}
+                          {job.stats && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {job.stats.filesTransferred} files, {formatBytes(job.stats.bytesTransferred)}
+                            </p>
+                          )}
+                        </div>
+                        {/* Next Run Info */}
+                        {job.schedule && job.schedule.frequency !== 'manual' && (
+                          <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                            ⏰ Next run: {getNextRunTime(job.schedule)}
                           </p>
                         )}
                         {job.lastError && (
-                          <p className="text-xs text-red-500 mt-1">Error: {job.lastError}</p>
+                          <p className="text-xs text-red-500">Error: {job.lastError}</p>
                         )}
                       </div>
                     )}
