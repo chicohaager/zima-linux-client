@@ -6,6 +6,7 @@ Documentation=https://www.zerotier.com/
 [Service]
 Type=simple
 ExecStart=/opt/zima-client/bin/zerotier-one -p9994 /var/lib/zima-zerotier
+ExecStartPost=/bin/bash -c 'sleep 2 && chmod 640 /var/lib/zima-zerotier/authtoken.secret /var/lib/zima-zerotier/zerotier-one.port 2>/dev/null || true'
 Restart=always
 RestartSec=5
 KillMode=process
