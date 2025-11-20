@@ -553,6 +553,6 @@ WantedBy=default.target
   private async buildCliArgs(command: string[]): Promise<string[]> {
     const port = await this.getPort();
     const token = await this.getToken();
-    return [`-p${port}`, `-T${token}`, ...command];
+    return [`-D${this.ztHomeDir}`, `-p${port}`, `-T${token}`, ...command];
   }
 }
