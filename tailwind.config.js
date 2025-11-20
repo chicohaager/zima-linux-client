@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./src/renderer/**/*.{ts,tsx}",
   ],
+  darkMode: 'class', // Enable dark mode via class strategy
   theme: {
     extend: {
       colors: {

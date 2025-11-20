@@ -658,6 +658,10 @@ export class IPCHandlers {
   }
 
   async cleanup(): Promise<void> {
+    // Stop all scheduled backup tasks
+    this.backupManager.stopAllSchedules();
+
+    // Stop ZeroTier daemon
     await this.zerotierManager.stop();
   }
 }
