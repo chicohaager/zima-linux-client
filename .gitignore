@@ -42,3 +42,7 @@ tmp/
 
 # TypeScript
 *.tsbuildinfo
+
+# Backup files
+*.backup
+backup-jobs.json
