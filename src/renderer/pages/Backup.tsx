@@ -7,6 +7,8 @@ export const BackupPage: React.FC = () => {
   const [jobs, setJobs] = useState<BackupJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingJob, setEditingJob] = useState<BackupJob | null>(null);
   const [progressMap, setProgressMap] = useState<Map<string, BackupProgress>>(new Map());
 
   // Add backup dialog state
@@ -38,6 +40,14 @@ export const BackupPage: React.FC = () => {
 
         if (progress.status === 'completed' || progress.status === 'failed') {
           setTimeout(() => loadJobs(), 500);
+          // Clear progress from map after 3 seconds
+          setTimeout(() => {
+            setProgressMap(prev => {
+              const newMap = new Map(prev);
+              newMap.delete(progress.jobId);
+              return newMap;
+            });
+          }, 3000);
         }
       });
 
@@ -210,6 +220,76 @@ export const BackupPage: React.FC = () => {
     }
   };
 
+  const handleToggleSchedule = async (job: BackupJob) => {
+    const newEnabled = !job.enabled;
+    try {
+      // Delete and recreate job with updated enabled flag
+      await window.electron.backup.deleteJob(job.id);
+      const result = await window.electron.backup.createJob({
+        ...job,
+        enabled: newEnabled,
+      });
+
+      if (result.success) {
+        await loadJobs();
+      } else {
+        alert(`Failed to toggle schedule: ${result.error}`);
+      }
+    } catch (error: any) {
+      alert(`Error toggling schedule: ${error.message}`);
+    }
+  };
+
+  const handleEditJob = (job: BackupJob) => {
+    setEditingJob(job);
+    // Pre-fill form with job data
+    setSelectedFolder(job.sourcePath);
+    setSelectedShare(job.targetShare);
+    setTargetPath(job.targetPath);
+    setScheduleFrequency(job.schedule?.frequency || 'manual');
+    setScheduleTime(job.schedule?.time || '14:00');
+    setScheduleDayOfWeek(job.schedule?.dayOfWeek || 1);
+    setScheduleDayOfMonth(job.schedule?.dayOfMonth || 1);
+    setShowEditDialog(true);
+  };
+
+  const handleUpdateJob = async () => {
+    if (!editingJob || !selectedFolder || !selectedShare) return;
+
+    try {
+      const updates: Partial<Omit<BackupJob, 'id'>> = {
+        name: selectedFolder.split('/').pop() || 'Backup',
+        sourcePath: selectedFolder,
+        targetShare: selectedShare,
+        targetPath,
+        schedule: scheduleFrequency === 'manual'
+          ? { frequency: 'manual' }
+          : {
+              frequency: scheduleFrequency,
+              time: scheduleTime,
+              ...(scheduleFrequency === 'weekly' && { dayOfWeek: scheduleDayOfWeek }),
+              ...(scheduleFrequency === 'monthly' && { dayOfMonth: scheduleDayOfMonth }),
+            },
+        enabled: editingJob.enabled,
+      };
+
+      const result = await window.electron.backup.updateJob(editingJob.id, updates);
+      if (result.success) {
+        setShowEditDialog(false);
+        setEditingJob(null);
+        setSelectedFolder(null);
+        setSelectedShare(null);
+        setTargetPath('/Backup');
+        setScheduleFrequency('manual');
+        await loadJobs();
+      } else {
+        alert(`Failed to update job: ${result.error}`);
+      }
+    } catch (error: any) {
+      alert(`Failed to update job: ${error.message}`);
+    }
+  };
+
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -325,7 +405,7 @@ export const BackupPage: React.FC = () => {
             <div className="space-y-4">
               {jobs.map((job) => {
                 const progress = progressMap.get(job.id);
-                const isRunning = progress?.status === 'running' || job.lastStatus === 'running';
+                const isRunning = progress?.status === 'running';
 
                 return (
                   <div key={job.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
@@ -335,8 +415,8 @@ export const BackupPage: React.FC = () => {
                           <h3 className="text-sm font-medium text-gray-900 dark:text-white">{job.name}</h3>
                           {/* Schedule Badge */}
                           {job.schedule && job.schedule.frequency !== 'manual' && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                              ⏰ {job.schedule.frequency}
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${job.enabled ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'}`}>
+                              {job.enabled ? '⏰' : '⏸'} {job.schedule.frequency} {!job.enabled && '(paused)'}
                             </span>
                           )}
                         </div>
@@ -352,13 +432,32 @@ export const BackupPage: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      <div className="flex gap-2 ml-4">
+                      <div className="flex gap-2 ml-4 flex-wrap">
                         <button
                           onClick={() => handleRunJob(job.id)}
                           disabled={isRunning}
-                          className="bg-zima-blue hover:bg-blue-600 text-white rounded-full px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className={`bg-zima-blue hover:bg-blue-600 text-white rounded-full px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isRunning ? 'animate-pulse' : ''}`}
                         >
                           {isRunning ? 'Running...' : 'Run'}
+                        </button>
+                        {/* Pause/Resume Schedule Button */}
+                        {job.schedule && job.schedule.frequency !== 'manual' && (
+                          <button
+                            onClick={() => handleToggleSchedule(job)}
+                            disabled={isRunning}
+                            className={`${job.enabled ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-full px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                            title={job.enabled ? 'Pause automatic backups' : 'Resume automatic backups'}
+                          >
+                            {job.enabled ? '⏸ Pause' : '▶ Resume'}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleEditJob(job)}
+                          disabled={isRunning}
+                          className="bg-purple-500 hover:bg-purple-600 text-white rounded-full px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Edit backup job"
+                        >
+                          ✏️ Edit
                         </button>
                         <button
                           onClick={() => handleDeleteJob(job.id)}
@@ -673,6 +772,169 @@ export const BackupPage: React.FC = () => {
                 className="w-full bg-zima-blue hover:bg-blue-600 text-white rounded-full py-3 px-6 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {scheduleFrequency === 'manual' ? 'Start Now' : 'Create & Start First Run'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Job Dialog */}
+        {showEditDialog && editingJob && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Backup Job</h2>
+                <button
+                  onClick={() => {
+                    setShowEditDialog(false);
+                    setEditingJob(null);
+                    setSelectedFolder(null);
+                    setSelectedShare(null);
+                    setTargetPath('/Backup');
+                    setScheduleFrequency('manual');
+                  }}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Folder Selection */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                    <span className="text-xs text-white">1</span>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Select folder to backup</p>
+                </div>
+                <button
+                  onClick={handleSelectFolder}
+                  className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-xl py-3 px-4 text-left transition-colors"
+                >
+                  {selectedFolder || 'Click to choose folder...'}
+                </button>
+              </div>
+
+              {/* Share Selection */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                    <span className="text-xs text-white">2</span>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Backup destination</p>
+                </div>
+                {pinnedShareUrls.length > 0 ? (
+                  <select
+                    value={selectedShare?.name || ''}
+                    onChange={(e) => {
+                      const share = availableShares.find(s => s.name === e.target.value);
+                      if (share) setSelectedShare(share);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                  >
+                    <option value="">Select a share...</option>
+                    {availableShares.map((share, idx) => (
+                      <option key={idx} value={share.name}>
+                        {share.pinned ? '📌 ' : ''}{share.displayName}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                    No pinned shares available. Please pin a share first.
+                  </p>
+                )}
+              </div>
+
+              {/* Schedule Section */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                    <span className="text-xs text-white">⏰</span>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Schedule (optional)</p>
+                </div>
+
+                <div className="space-y-3">
+                  {/* Frequency Selector */}
+                  <div>
+                    <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Frequency</label>
+                    <select
+                      value={scheduleFrequency}
+                      onChange={(e) => setScheduleFrequency(e.target.value as any)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                    >
+                      <option value="manual">Manual (no schedule)</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+
+                  {/* Time Picker - show if not manual */}
+                  {scheduleFrequency !== 'manual' && (
+                    <div>
+                      <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Time</label>
+                      <input
+                        type="time"
+                        value={scheduleTime}
+                        onChange={(e) => setScheduleTime(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                      />
+                    </div>
+                  )}
+
+                  {/* Day of Week - show if weekly */}
+                  {scheduleFrequency === 'weekly' && (
+                    <div>
+                      <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Day of Week</label>
+                      <select
+                        value={scheduleDayOfWeek}
+                        onChange={(e) => setScheduleDayOfWeek(parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                      >
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Day of Month - show if monthly */}
+                  {scheduleFrequency === 'monthly' && (
+                    <div>
+                      <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Day of Month</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={scheduleDayOfMonth}
+                        onChange={(e) => setScheduleDayOfMonth(parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                      />
+                    </div>
+                  )}
+
+                  {/* Schedule Preview */}
+                  {scheduleFrequency !== 'manual' && (
+                    <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                      📅 Will run: {scheduleFrequency === 'daily' && `Every day at ${scheduleTime}`}
+                      {scheduleFrequency === 'weekly' && `Every ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][scheduleDayOfWeek]} at ${scheduleTime}`}
+                      {scheduleFrequency === 'monthly' && `Every month on day ${scheduleDayOfMonth} at ${scheduleTime}`}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <button
+                onClick={handleUpdateJob}
+                disabled={!selectedFolder || !selectedShare}
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white rounded-full py-3 px-6 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Update Job
               </button>
             </div>
           </div>

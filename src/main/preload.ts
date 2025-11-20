@@ -67,6 +67,8 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.invoke('backup:listJobs'),
     deleteJob: (jobId: string): Promise<{ success: boolean; error?: string }> =>
       ipcRenderer.invoke('backup:deleteJob', jobId),
+    updateJob: (jobId: string, updates: Partial<Omit<BackupJob, 'id'>>): Promise<{ success: boolean; data?: BackupJob; error?: string }> =>
+      ipcRenderer.invoke('backup:updateJob', jobId, updates),
     runJob: (jobId: string, credentials?: { username: string; password: string }): Promise<{ success: boolean; error?: string }> =>
       ipcRenderer.invoke('backup:runJob', jobId, credentials),
     stopJob: (jobId: string): Promise<{ success: boolean; error?: string }> =>
@@ -120,6 +122,7 @@ declare global {
         createJob: (job: Omit<BackupJob, 'id'>) => Promise<{ success: boolean; data?: BackupJob; error?: string }>;
         listJobs: () => Promise<{ success: boolean; data?: BackupJob[]; error?: string }>;
         deleteJob: (jobId: string) => Promise<{ success: boolean; error?: string }>;
+        updateJob: (jobId: string, updates: Partial<Omit<BackupJob, 'id'>>) => Promise<{ success: boolean; data?: BackupJob; error?: string }>;
         runJob: (jobId: string, credentials?: { username: string; password: string }) => Promise<{ success: boolean; error?: string }>;
         stopJob: (jobId: string) => Promise<{ success: boolean; error?: string }>;
         onProgress: (callback: (progress: BackupProgress) => void) => () => void;
