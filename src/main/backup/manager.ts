@@ -455,6 +455,38 @@ export class BackupManager extends EventEmitter {
     this.saveJobs();
   }
 
+  updateJob(jobId: string, updates: Partial<Omit<BackupJob, 'id'>>): BackupJob {
+    const job = this.jobs.get(jobId);
+    if (!job) {
+      throw new Error(`Backup job not found: ${jobId}`);
+    }
+
+    // Stop the job if it's running (can't update running jobs)
+    if (this.runningJobs.has(jobId)) {
+      throw new Error('Cannot update a running job. Please stop it first.');
+    }
+
+    // Remove old schedule
+    this.unscheduleJob(jobId);
+
+    // Merge updates with existing job
+    const updatedJob: BackupJob = {
+      ...job,
+      ...updates,
+      id: jobId, // Ensure ID doesn't change
+    };
+
+    this.jobs.set(jobId, updatedJob);
+    this.saveJobs();
+
+    // Re-schedule if enabled and has schedule
+    if (updatedJob.enabled && updatedJob.schedule && updatedJob.schedule.frequency !== 'manual') {
+      this.scheduleJob(jobId, updatedJob);
+    }
+
+    return updatedJob;
+  }
+
   async runJob(jobId: string, credentials?: { username: string; password: string }): Promise<void> {
     const job = this.jobs.get(jobId);
     if (!job) {

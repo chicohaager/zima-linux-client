@@ -638,6 +638,15 @@ export class IPCHandlers {
       }
     });
 
+    ipcMain.handle('backup:updateJob', async (_event, jobId: string, updates: Partial<Omit<BackupJob, 'id'>>) => {
+      try {
+        const updatedJob = this.backupManager.updateJob(jobId, updates);
+        return { success: true, data: updatedJob };
+      } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    });
+
     ipcMain.handle('backup:runJob', async (_event, jobId: string, credentials?: { username: string; password: string }) => {
       try {
         await this.backupManager.runJob(jobId, credentials);
