@@ -17,6 +17,12 @@ export const BackupPage: React.FC = () => {
   const [loadingSpace, setLoadingSpace] = useState(false);
   const [pinnedShareUrls, setPinnedShareUrls] = useState<string[]>([]);
 
+  // Schedule state
+  const [scheduleFrequency, setScheduleFrequency] = useState<'manual' | 'daily' | 'weekly' | 'monthly'>('manual');
+  const [scheduleTime, setScheduleTime] = useState('14:00');
+  const [scheduleDayOfWeek, setScheduleDayOfWeek] = useState(1); // Monday
+  const [scheduleDayOfMonth, setScheduleDayOfMonth] = useState(1);
+
   useEffect(() => {
     loadJobs();
     loadPinnedShares();
@@ -100,6 +106,14 @@ export const BackupPage: React.FC = () => {
     try {
       const jobName = selectedFolder.split('/').pop() || 'Backup';
 
+      // Build schedule object
+      const schedule = scheduleFrequency !== 'manual' ? {
+        frequency: scheduleFrequency,
+        time: scheduleTime,
+        ...(scheduleFrequency === 'weekly' && { dayOfWeek: scheduleDayOfWeek }),
+        ...(scheduleFrequency === 'monthly' && { dayOfMonth: scheduleDayOfMonth })
+      } : undefined;
+
       const result = await window.electron.backup.createJob({
         name: jobName,
         sourcePath: selectedFolder,
@@ -107,6 +121,7 @@ export const BackupPage: React.FC = () => {
         targetPath,
         enabled: true,
         credentials: sessionCredentials || undefined,
+        schedule,
       });
 
       if (result.success && result.data) {
@@ -119,6 +134,10 @@ export const BackupPage: React.FC = () => {
         setSelectedShare(null);
         setTargetPath('/Backup');
         setSpace(null);
+        setScheduleFrequency('manual');
+        setScheduleTime('14:00');
+        setScheduleDayOfWeek(1);
+        setScheduleDayOfMonth(1);
 
         // Start backup immediately
         const credentials = newJob.credentials || sessionCredentials || undefined;
@@ -247,9 +266,9 @@ export const BackupPage: React.FC = () => {
           <p className="text-3xl font-bold text-zima-blue">to ZimaOS.</p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-zima-text-primary">Backup Jobs</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Backup Jobs</h2>
             <button
               onClick={() => setShowAddDialog(true)}
               className="bg-zima-blue hover:bg-blue-600 text-white rounded-full px-4 py-2 text-sm font-medium transition-colors"
@@ -265,8 +284,8 @@ export const BackupPage: React.FC = () => {
             </div>
           ) : jobs.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-sm text-zima-text-secondary">No backup jobs configured</p>
-              <p className="text-xs text-zima-text-secondary mt-2">Click "Add Backup" to create your first backup</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">No backup jobs configured</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">Click "Add Backup" to create your first backup</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -275,11 +294,11 @@ export const BackupPage: React.FC = () => {
                 const isRunning = progress?.status === 'running' || job.lastStatus === 'running';
 
                 return (
-                  <div key={job.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <div key={job.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-zima-text-primary mb-1">{job.name}</h3>
-                        <p className="text-xs text-zima-text-secondary mb-2">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">{job.name}</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                           {job.sourcePath} → {job.targetShare.displayName}
                         </p>
                       </div>
@@ -392,9 +411,9 @@ export const BackupPage: React.FC = () => {
 
         {showAddDialog && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-zima-text-primary">Add backup folder</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add backup folder</h2>
                 <button
                   onClick={() => {
                     setShowAddDialog(false);
@@ -402,7 +421,7 @@ export const BackupPage: React.FC = () => {
                     setSelectedShare(null);
                     setSpace(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   ✕
                 </button>
@@ -504,12 +523,96 @@ export const BackupPage: React.FC = () => {
                 )}
               </div>
 
+              {/* Schedule Section */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                    <span className="text-xs text-white">⏰</span>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Schedule (optional)</p>
+                </div>
+
+                <div className="space-y-3">
+                  {/* Frequency Selector */}
+                  <div>
+                    <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Frequency</label>
+                    <select
+                      value={scheduleFrequency}
+                      onChange={(e) => setScheduleFrequency(e.target.value as any)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                    >
+                      <option value="manual">Manual (no schedule)</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+
+                  {/* Time Picker - show if not manual */}
+                  {scheduleFrequency !== 'manual' && (
+                    <div>
+                      <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Time</label>
+                      <input
+                        type="time"
+                        value={scheduleTime}
+                        onChange={(e) => setScheduleTime(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                      />
+                    </div>
+                  )}
+
+                  {/* Day of Week - show if weekly */}
+                  {scheduleFrequency === 'weekly' && (
+                    <div>
+                      <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Day of Week</label>
+                      <select
+                        value={scheduleDayOfWeek}
+                        onChange={(e) => setScheduleDayOfWeek(parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                      >
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Day of Month - show if monthly */}
+                  {scheduleFrequency === 'monthly' && (
+                    <div>
+                      <label className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Day of Month</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={scheduleDayOfMonth}
+                        onChange={(e) => setScheduleDayOfMonth(parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-zima-blue focus:border-transparent"
+                      />
+                    </div>
+                  )}
+
+                  {/* Schedule Preview */}
+                  {scheduleFrequency !== 'manual' && (
+                    <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                      📅 Will run: {scheduleFrequency === 'daily' && `Every day at ${scheduleTime}`}
+                      {scheduleFrequency === 'weekly' && `Every ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][scheduleDayOfWeek]} at ${scheduleTime}`}
+                      {scheduleFrequency === 'monthly' && `Every month on day ${scheduleDayOfMonth} at ${scheduleTime}`}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <button
                 onClick={handleCreateJob}
                 disabled={!selectedFolder || !selectedShare}
                 className="w-full bg-zima-blue hover:bg-blue-600 text-white rounded-full py-3 px-6 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Start
+                {scheduleFrequency === 'manual' ? 'Start Now' : 'Create & Start First Run'}
               </button>
             </div>
           </div>
