@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import { ZimaDevice, ConnectionStatus, SMBShare } from '@shared/types';
 
+export interface ToastMessage {
+  id: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  message: string;
+  duration?: number;
+}
+
 interface AppState {
   // Connection
   connectionStatus: ConnectionStatus;
@@ -31,6 +38,11 @@ interface AppState {
   // Current view
   currentView: 'connect' | 'devices' | 'apps' | 'backup';
   setCurrentView: (view: 'connect' | 'devices' | 'apps' | 'backup') => void;
+
+  // Toast notifications
+  toasts: ToastMessage[];
+  addToast: (toast: Omit<ToastMessage, 'id'>) => void;
+  removeToast: (id: string) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -66,4 +78,19 @@ export const useAppStore = create<AppState>((set) => ({
   // Current view
   currentView: 'connect',
   setCurrentView: (view) => set({ currentView: view }),
+
+  // Toast notifications
+  toasts: [],
+  addToast: (toast) => set((state) => ({
+    toasts: [
+      ...state.toasts,
+      {
+        ...toast,
+        id: Math.random().toString(36).substring(7) + Date.now(),
+      },
+    ],
+  })),
+  removeToast: (id) => set((state) => ({
+    toasts: state.toasts.filter((toast) => toast.id !== id),
+  })),
 }));

@@ -11,10 +11,10 @@ let ipcHandlers: IPCHandlers | null = null;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    minWidth: 800,
-    minHeight: 600,
+    width: 1800,
+    height: 1000,
+    minWidth: 1200,
+    minHeight: 700,
     title: 'ZimaOS Client',
     icon: path.join(__dirname, '../../logo.png'),
     webPreferences: {

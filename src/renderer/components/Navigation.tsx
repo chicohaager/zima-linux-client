@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { useAppStore } from '../store';
+import { AppsIcon, BackupIcon, DisconnectIcon, HomeIcon } from './Icons';
 
-export const Navigation: React.FC = () => {
-  const { currentView, setCurrentView, selectedDevice, setSelectedDevice, setDevices } = useAppStore();
+export const Navigation: React.FC = memo(() => {
+  const currentView = useAppStore((state) => state.currentView);
+  const setCurrentView = useAppStore((state) => state.setCurrentView);
+  const selectedDevice = useAppStore((state) => state.selectedDevice);
+  const setSelectedDevice = useAppStore((state) => state.setSelectedDevice);
+  const setDevices = useAppStore((state) => state.setDevices);
 
-  const handleDisconnect = () => {
+  const handleDisconnect = useCallback(() => {
     setSelectedDevice(null);
     setDevices([]);
     setCurrentView('connect');
-  };
+  }, [setSelectedDevice, setDevices, setCurrentView]);
 
   // Only show navigation when device is selected
   if (!selectedDevice) {
@@ -17,59 +22,85 @@ export const Navigation: React.FC = () => {
 
   const navItems = [
     {
+      id: 'connect' as const,
+      label: 'Home',
+      icon: (active: boolean) => (
+        <HomeIcon className={`${active ? 'text-white' : 'text-gray-200'} w-7 h-7`} />
+      )
+    },
+    {
       id: 'apps' as const,
       label: 'Apps',
       icon: (active: boolean) => (
-        <svg className={`w-6 h-6 ${active ? 'text-white' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-        </svg>
+        <AppsIcon className={`${active ? 'text-white' : 'text-gray-200'} w-7 h-7`} />
       )
     },
     {
       id: 'backup' as const,
       label: 'Backup',
       icon: (active: boolean) => (
-        <svg className={`w-6 h-6 ${active ? 'text-white' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-        </svg>
+        <BackupIcon className={`${active ? 'text-white' : 'text-gray-200'} w-7 h-7`} />
       )
     }
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 flex justify-center pb-6 px-4 pointer-events-none">
-      <div className="bg-zima-nav-bg rounded-full shadow-2xl flex items-center gap-1 px-3 py-2 pointer-events-auto">
+    <nav className="fixed bottom-0 left-0 right-0 flex justify-center pb-8 px-4 pointer-events-none">
+      <div className="bg-gray-900 rounded-2xl shadow-2xl flex items-center gap-3 px-6 py-4 pointer-events-auto border-2 border-gray-700">
         {/* Disconnect Button */}
         <button
           onClick={handleDisconnect}
-          className="p-3 rounded-full hover:bg-gray-700 transition-colors"
+          className="p-4 rounded-xl hover:bg-gray-700 transition-colors group relative"
           title="Disconnect"
         >
-          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+          <DisconnectIcon className="text-gray-200 w-7 h-7" />
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            Disconnect
+          </span>
+        </button>
+
+        {/* Divider */}
+        <div className="h-8 w-px bg-gray-700"></div>
+
+        {/* Home */}
+        <button
+          onClick={() => setCurrentView('connect')}
+          className={`p-4 rounded-xl transition-colors group relative ${
+            currentView === 'connect' ? 'bg-zima-blue text-white' : 'hover:bg-gray-700'
+          }`}
+        >
+          {navItems[0].icon(currentView === 'connect')}
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            {navItems[0].label}
+          </span>
         </button>
 
         {/* Apps */}
         <button
           onClick={() => setCurrentView('apps')}
-          className={`p-3 rounded-full transition-colors ${
-            currentView === 'apps' ? 'bg-white' : 'hover:bg-gray-700'
+          className={`p-4 rounded-xl transition-colors group relative ${
+            currentView === 'apps' ? 'bg-zima-blue text-white' : 'hover:bg-gray-700'
           }`}
         >
-          {navItems[0].icon(currentView === 'apps')}
+          {navItems[1].icon(currentView === 'apps')}
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            {navItems[1].label}
+          </span>
         </button>
 
         {/* Backup */}
         <button
           onClick={() => setCurrentView('backup')}
-          className={`p-3 rounded-full transition-colors ${
-            currentView === 'backup' ? 'bg-white' : 'hover:bg-gray-700'
+          className={`p-4 rounded-xl transition-colors group relative ${
+            currentView === 'backup' ? 'bg-zima-blue text-white' : 'hover:bg-gray-700'
           }`}
         >
-          {navItems[1].icon(currentView === 'backup')}
+          {navItems[2].icon(currentView === 'backup')}
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            {navItems[2].label}
+          </span>
         </button>
       </div>
     </nav>
   );
-};
+});

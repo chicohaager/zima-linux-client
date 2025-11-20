@@ -21,6 +21,8 @@
     "start": "electron .",
     "package": "npm run build && electron-builder",
     "package:linux": "npm run build && electron-builder --linux",
+    "package:mac": "npm run build && electron-builder --mac",
+    "package:all": "npm run build && electron-builder --linux --mac",
     "lint": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit"
   },
@@ -60,7 +62,7 @@
   },
   "build": {
     "productName": "ZimaOS Client",
-    "appId": "com.zimaos.linux.client",
+    "appId": "com.zimaos.client",
     "files": [
       "dist/main/**/*",
       "dist/renderer/**/*",
@@ -76,8 +78,22 @@
         "from": "resources",
         "to": "resources",
         "filter": ["*.service", "*.sh"]
+      },
+      {
+        "from": "org/resources/installer/zerotier/ZeroTierOne.pkg",
+        "to": "zerotier-installer/ZeroTierOne.pkg"
       }
     ],
+    "mac": {
+      "target": [
+        "zip"
+      ],
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "entitlements": null,
+      "entitlementsInherit": null
+    },
     "linux": {
       "target": [
         "AppImage",

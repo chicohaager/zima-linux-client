@@ -57,9 +57,7 @@ export class PlacesManager {
     password: string
   ): Promise<void> {
     try {
-      const { exec } = require('child_process');
-      const { promisify } = require('util');
-      const execAsync = promisify(exec);
+      const { spawn } = require('child_process');
 
       // Build gio mount command with credentials
       // Format: smb://user:password@host/share
@@ -67,9 +65,70 @@ export class PlacesManager {
 
       console.log(`Mounting share with gio: smb://${username}@${host}/${shareName}`);
 
-      // Use gio to mount (will store credentials in keyring)
-      await execAsync(`gio mount '${url}'`, {
-        timeout: 10000,
+      // Use spawn to avoid shell interpretation of special chars like !
+      await new Promise<void>((resolve, reject) => {
+        const proc = spawn('gio', ['mount', url], {
+          shell: false, // No shell = no special char interpretation
+        });
+
+        let stdout = '';
+        let stderr = '';
+        let completed = false;
+
+        // Send credentials via stdin when prompted
+        setTimeout(() => {
+          if (!completed && proc.stdin) {
+            try {
+              // Send username
+              proc.stdin.write(`${username}\n`);
+              // Send password
+              proc.stdin.write(`${password}\n`);
+              // Send domain (default)
+              proc.stdin.write(`\n`);
+              proc.stdin.end();
+            } catch (e) {
+              // Ignore write errors if process already closed
+            }
+          }
+        }, 100);
+
+        proc.stdout.on('data', (data: Buffer) => {
+          stdout += data.toString();
+        });
+
+        proc.stderr.on('data', (data: Buffer) => {
+          stderr += data.toString();
+        });
+
+        proc.on('close', (code: number | null) => {
+          completed = true;
+          if (code === 0) {
+            resolve();
+          } else {
+            const error: any = new Error(`gio mount failed with exit code ${code}`);
+            error.code = code;
+            error.stdout = stdout;
+            error.stderr = stderr;
+            reject(error);
+          }
+        });
+
+        proc.on('error', (err: Error) => {
+          completed = true;
+          reject(err);
+        });
+
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          if (!completed) {
+            completed = true;
+            proc.kill();
+            const error: any = new Error('Mount timeout');
+            error.stdout = stdout;
+            error.stderr = stderr;
+            reject(error);
+          }
+        }, 10000);
       });
 
       console.log('✓ Share mounted and credentials cached in keyring');
@@ -77,6 +136,8 @@ export class PlacesManager {
       // Mounting might fail if already mounted or other issues
       // This is not critical as the bookmark is still created
       console.warn('gio mount failed (share may already be mounted):', error.message);
+      if (error.stdout) console.warn('Mount stdout:', error.stdout);
+      if (error.stderr) console.warn('Mount stderr:', error.stderr);
     }
   }
 
