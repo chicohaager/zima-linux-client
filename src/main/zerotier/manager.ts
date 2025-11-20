@@ -54,9 +54,10 @@ export class ZeroTierManager {
     }
 
     // Try system paths in order of preference
+    // For DEB packages, prefer system service over bundled binaries
     const possibleCliPaths = [
-      bundledCliPath,                       // Bundled binaries (preferred)
-      '/opt/zima-client/bin/zerotier-cli',  // Installed via .deb
+      '/opt/zima-client/bin/zerotier-cli',  // Installed via .deb (preferred for packages)
+      bundledCliPath,                       // Bundled binaries (for AppImage)
       '/usr/sbin/zerotier-cli',             // System ZeroTier
       'zerotier-cli',                       // PATH
     ];
