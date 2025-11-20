@@ -1,5 +1,5 @@
 import { app, dialog } from 'electron';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -7,6 +7,134 @@ import { BackupJob, BackupProgress, ShareSpace, SMBShare } from '@shared/types';
 import { EventEmitter } from 'events';
 
 const execAsync = promisify(exec);
+
+// Helper to find existing mount point by checking file manager bookmarks
+async function findMountPointFromBookmarks(host: string, shareName: string): Promise<string | null> {
+  try {
+    const bookmarkFile = path.join(require('os').homedir(), '.config/gtk-3.0/bookmarks');
+    if (!fs.existsSync(bookmarkFile)) {
+      console.log('[Mount] No GTK bookmarks file found');
+      return null;
+    }
+
+    const bookmarks = fs.readFileSync(bookmarkFile, 'utf-8');
+    const lines = bookmarks.split('\n');
+
+    for (const line of lines) {
+      if (line.startsWith('smb://') && line.includes(host) && line.toLowerCase().includes(shareName.toLowerCase())) {
+        // Extract the URI
+        const uri = line.split(' ')[0];
+        console.log('[Mount] Found bookmark:', uri);
+
+        // Try to resolve it with gio info
+        try {
+          const { stdout } = await execAsync(`gio info "${uri}" 2>/dev/null | grep "standard::target-uri" || echo ""`);
+          if (stdout.trim()) {
+            const match = stdout.match(/file:\/\/([^\s]+)/);
+            if (match) {
+              const mountPoint = decodeURIComponent(match[1]);
+              console.log('[Mount] Resolved mount point from bookmark:', mountPoint);
+              if (fs.existsSync(mountPoint)) {
+                return mountPoint;
+              }
+            }
+          }
+        } catch (error) {
+          console.log('[Mount] gio info failed for bookmark');
+        }
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.log('[Mount] Error reading bookmarks:', error);
+    return null;
+  }
+}
+
+// Helper to spawn gio mount without shell interpretation
+// Optionally provides credentials via stdin for interactive prompts
+function spawnGioMount(url: string, credentials?: { username: string; password: string }, timeoutMs: number = 10000): Promise<{stdout: string, stderr: string}> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('gio', ['mount', url], {
+      shell: false, // Critical: no shell means no special char interpretation
+    });
+
+    let stdout = '';
+    let stderr = '';
+    let completed = false;
+
+    // Set timeout to kill process if it hangs
+    const timer = setTimeout(() => {
+      if (!completed) {
+        completed = true;
+        proc.kill('SIGTERM');
+        const error: any = new Error(`gio mount timed out after ${timeoutMs}ms`);
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      }
+    }, timeoutMs);
+
+    // If credentials provided, send them to stdin when prompted
+    if (credentials && proc.stdin) {
+      // Wait a bit for prompt, then send username and password
+      setTimeout(() => {
+        if (!completed && proc.stdin) {
+          try {
+            // Send username (gio will prompt for it)
+            proc.stdin.write(`${credentials.username}\n`);
+            // Send password
+            proc.stdin.write(`${credentials.password}\n`);
+            // Send domain (just press enter to use default)
+            proc.stdin.write(`\n`);
+            proc.stdin.end();
+          } catch (e) {
+            // Ignore write errors if process already closed
+          }
+        }
+      }, 100);
+    }
+
+    proc.stdout?.on('data', (data: Buffer) => {
+      stdout += data.toString();
+    });
+
+    proc.stderr?.on('data', (data: Buffer) => {
+      stderr += data.toString();
+    });
+
+    proc.on('close', (code: number | null) => {
+      if (!completed) {
+        completed = true;
+        clearTimeout(timer);
+        if (code === 0) {
+          resolve({ stdout, stderr });
+        } else {
+          const error: any = new Error(`gio mount failed with exit code ${code}`);
+          error.code = code;
+          error.stdout = stdout;
+          error.stderr = stderr;
+          reject(error);
+        }
+      }
+    });
+
+    proc.on('error', (err: Error) => {
+      if (!completed) {
+        completed = true;
+        clearTimeout(timer);
+        reject(err);
+      }
+    });
+  });
+}
+
+// Helper function to safely quote strings for shell commands
+// Uses single quotes to avoid shell interpretation of special chars like !
+function shellQuote(str: string): string {
+  return `'${str.replace(/'/g, "'\\''")}'`;
+}
 
 export class BackupManager extends EventEmitter {
   private configDir: string;
@@ -69,65 +197,123 @@ export class BackupManager extends EventEmitter {
 
   async getShareSpace(share: SMBShare, credentials?: { username: string; password: string }): Promise<ShareSpace> {
     try {
-      const url = credentials
-        ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${share.host}/${share.name}`
-        : `smb://${share.host}/${share.name}`;
-
-      try {
-        await execAsync(`gio mount "${url}"`, { timeout: 10000 });
-        await new Promise(resolve => setTimeout(resolve, 500));
-      } catch (error) {
-        // May already be mounted
-      }
-
       let mountPoint: string | null = null;
 
-      try {
-        const { stdout: mountStdout } = await execAsync(`gio info "${url}" | grep "standard::target-uri" || echo ""`, { timeout: 5000 });
-        if (mountStdout.trim()) {
-          const match = mountStdout.match(/file:\/\/([^\s]+)/);
-          if (match) {
-            mountPoint = decodeURIComponent(match[1]);
-          }
+      // First try to find mount point from bookmarks (for pinned shares)
+      console.log('[ShareSpace] Checking for existing mount in bookmarks...');
+      mountPoint = await findMountPointFromBookmarks(share.host, share.name);
+
+      if (mountPoint) {
+        console.log('[ShareSpace] Found existing mount point from bookmarks:', mountPoint);
+      } else {
+        // If not found in bookmarks, try to mount
+        const url = credentials
+          ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${share.host}/${share.name}`
+          : `smb://${share.host}/${share.name}`;
+
+        console.log('[ShareSpace] Attempting to mount:', url.replace(/:[^:@]+@/, ':***@'));
+
+        try {
+          // Use spawn to avoid shell interpretation of special chars like !
+          console.log('[ShareSpace] Mounting with spawn (no shell), timeout 5s, providing credentials via stdin');
+          const { stdout, stderr } = await spawnGioMount(url, credentials, 5000);
+          console.log('[ShareSpace] Mount succeeded!');
+          if (stdout) console.log('[ShareSpace] Mount stdout:', stdout);
+          if (stderr) console.log('[ShareSpace] Mount stderr:', stderr);
+          // Wait for gvfs to register the mount
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (error: any) {
+          console.log('[ShareSpace] Mount command failed (may already be mounted)');
+          console.log('[ShareSpace] Error message:', error.message);
+          console.log('[ShareSpace] Error code:', error.code);
+          console.log('[ShareSpace] Error stdout:', error.stdout || '(empty)');
+          console.log('[ShareSpace] Error stderr:', error.stderr || '(empty)');
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
-      } catch (error) {
-        // gio info failed
+      }
+
+      // If we still don't have a mount point, try other methods
+      if (!mountPoint) {
+        const url = credentials
+          ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${share.host}/${share.name}`
+          : `smb://${share.host}/${share.name}`;
+
+        try {
+          const infoCmd = `gio info ${shellQuote(url)} | grep "standard::target-uri" || echo ""`;
+          const { stdout: mountStdout } = await execAsync(infoCmd, { timeout: 5000 });
+          console.log('[ShareSpace] gio info output:', mountStdout);
+          if (mountStdout.trim()) {
+            const match = mountStdout.match(/file:\/\/([^\s]+)/);
+            if (match) {
+              mountPoint = decodeURIComponent(match[1]);
+              console.log('[ShareSpace] Found mount point from gio info:', mountPoint);
+            }
+          }
+        } catch (error: any) {
+          console.log('[ShareSpace] gio info failed:', error.message);
+        }
       }
 
       if (!mountPoint) {
         const userId = (process.getuid as () => number)();
         const gvfsPath = `/run/user/${userId}/gvfs`;
+        console.log('[ShareSpace] Checking gvfs path:', gvfsPath);
+
         if (fs.existsSync(gvfsPath)) {
           const gvfsMounts = fs.readdirSync(gvfsPath);
-          const matchingMount = gvfsMounts.find(m => {
+          console.log('[ShareSpace] Found gvfs mounts:', gvfsMounts);
+
+          // Try multiple matching strategies
+          let matchingMount = gvfsMounts.find(m => {
             const lowerMount = m.toLowerCase();
-            const lowerHost = share.host.toLowerCase();
-            const lowerShare = share.name.toLowerCase();
-            return lowerMount.includes(lowerHost) && lowerMount.includes(lowerShare);
+            const lowerHost = share.host.toLowerCase().replace(/\./g, '');
+            const lowerShare = share.name.toLowerCase().replace(/[-_]/g, '');
+            const normalizedMount = lowerMount.replace(/[-_.]/g, '');
+            return normalizedMount.includes(lowerHost) && normalizedMount.includes(lowerShare);
           });
+
+          // If still not found, try simple host matching
+          if (!matchingMount) {
+            matchingMount = gvfsMounts.find(m => {
+              return m.toLowerCase().includes(share.host.toLowerCase());
+            });
+          }
+
           if (matchingMount) {
             mountPoint = path.join(gvfsPath, matchingMount);
+            console.log('[ShareSpace] Found mount point from gvfs:', mountPoint);
+          } else {
+            console.log('[ShareSpace] No matching mount found for host:', share.host, 'share:', share.name);
           }
+        } else {
+          console.log('[ShareSpace] gvfs path does not exist');
         }
       }
 
       if (!mountPoint) {
+        console.log('[ShareSpace] Could not find mount point, returning 0 space');
         return { total: 0, used: 0, available: 0 };
       }
 
+      console.log('[ShareSpace] Getting disk space for:', mountPoint);
       const { stdout } = await execAsync(`df -B1 "${mountPoint}" | tail -n 1`, { timeout: 5000 });
       const parts = stdout.trim().split(/\s+/);
+      console.log('[ShareSpace] df output parts:', parts);
 
       if (parts.length < 4) {
+        console.log('[ShareSpace] Invalid df output, returning 0 space');
         return { total: 0, used: 0, available: 0 };
       }
 
-      return {
+      const space = {
         total: parseInt(parts[1]),
         used: parseInt(parts[2]),
         available: parseInt(parts[3]),
       };
+      console.log('[ShareSpace] Space info:', space);
+      return space;
     } catch (error: any) {
+      console.error('[ShareSpace] Error getting space:', error);
       return { total: 0, used: 0, available: 0 };
     }
   }
@@ -175,36 +361,64 @@ export class BackupManager extends EventEmitter {
     const startTime = Date.now();
 
     try {
-      const url = credentials
-        ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${job.targetShare.host}/${job.targetShare.name}`
-        : `smb://${job.targetShare.host}/${job.targetShare.name}`;
-
-      console.log(`[Backup] Attempting to mount: ${url}`);
-
-      try {
-        const { stdout: mountOut, stderr: mountErr } = await execAsync(`gio mount "${url}"`, { timeout: 10000 });
-        console.log('[Backup] Mount stdout:', mountOut);
-        if (mountErr) console.log('[Backup] Mount stderr:', mountErr);
-      } catch (error: any) {
-        console.log('[Backup] Mount command failed (may already be mounted):', error.message);
-      }
-
       let mountPoint: string | null = null;
 
-      // Try to get mount point from gio info first
-      try {
-        console.log('[Backup] Trying gio info to get mount point...');
-        const { stdout: mountStdout } = await execAsync(`gio info "${url}" | grep "standard::target-uri" || echo ""`, { timeout: 5000 });
-        console.log('[Backup] gio info output:', mountStdout);
-        if (mountStdout.trim()) {
-          const match = mountStdout.match(/file:\/\/([^\s]+)/);
-          if (match) {
-            mountPoint = decodeURIComponent(match[1]);
-            console.log('[Backup] Found mount point from gio info:', mountPoint);
-          }
+      // First try to find mount point from bookmarks (for pinned shares)
+      console.log('[Backup] Checking for existing mount in bookmarks...');
+      mountPoint = await findMountPointFromBookmarks(job.targetShare.host, job.targetShare.name);
+
+      if (mountPoint) {
+        console.log('[Backup] Found existing mount point from bookmarks:', mountPoint);
+      } else {
+        // If not found in bookmarks, try to mount
+        const url = credentials
+          ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${job.targetShare.host}/${job.targetShare.name}`
+          : `smb://${job.targetShare.host}/${job.targetShare.name}`;
+
+        console.log(`[Backup] Attempting to mount: ${url.replace(/:[^:@]+@/, ':***@')}`);
+
+        // Try to mount the share - use spawn to avoid shell interpretation
+        try {
+          console.log('[Backup] Mounting with spawn (no shell), timeout 5s, providing credentials via stdin');
+          const { stdout, stderr } = await spawnGioMount(url, credentials, 5000);
+          console.log('[Backup] Mount succeeded!');
+          if (stdout) console.log('[Backup] Mount stdout:', stdout);
+          if (stderr) console.log('[Backup] Mount stderr:', stderr);
+          // Wait for gvfs to register the mount
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (error: any) {
+          console.log('[Backup] Mount command failed (may already be mounted)');
+          console.log('[Backup] Error message:', error.message);
+          console.log('[Backup] Error code:', error.code);
+          console.log('[Backup] Error stdout:', error.stdout || '(empty)');
+          console.log('[Backup] Error stderr:', error.stderr || '(empty)');
+          // Wait a bit anyway
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
-      } catch (error: any) {
-        console.log('[Backup] gio info failed:', error.message);
+      }
+
+      // If we still don't have a mount point, try other methods
+      if (!mountPoint) {
+        const url = credentials
+          ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${job.targetShare.host}/${job.targetShare.name}`
+          : `smb://${job.targetShare.host}/${job.targetShare.name}`;
+
+        // Try to get mount point from gio info
+        try {
+          console.log('[Backup] Trying gio info to get mount point...');
+          const infoCmd = `gio info ${shellQuote(url)} | grep "standard::target-uri" || echo ""`;
+          const { stdout: mountStdout } = await execAsync(infoCmd, { timeout: 5000 });
+          console.log('[Backup] gio info output:', mountStdout);
+          if (mountStdout.trim()) {
+            const match = mountStdout.match(/file:\/\/([^\s]+)/);
+            if (match) {
+              mountPoint = decodeURIComponent(match[1]);
+              console.log('[Backup] Found mount point from gio info:', mountPoint);
+            }
+          }
+        } catch (error: any) {
+          console.log('[Backup] gio info failed:', error.message);
+        }
       }
 
       // Fallback: check gvfs directory
@@ -217,17 +431,30 @@ export class BackupManager extends EventEmitter {
         if (fs.existsSync(gvfsPath)) {
           const gvfsMounts = fs.readdirSync(gvfsPath);
           console.log('[Backup] Found gvfs mounts:', gvfsMounts);
-          const matchingMount = gvfsMounts.find(m => {
+
+          // Try multiple matching strategies
+          let matchingMount = gvfsMounts.find(m => {
             const lowerMount = m.toLowerCase();
-            const lowerHost = job.targetShare.host.toLowerCase();
-            const lowerShare = job.targetShare.name.toLowerCase();
-            return lowerMount.includes(lowerHost) && lowerMount.includes(lowerShare);
+            const lowerHost = job.targetShare.host.toLowerCase().replace(/\./g, '');
+            const lowerShare = job.targetShare.name.toLowerCase().replace(/[-_]/g, '');
+            const normalizedMount = lowerMount.replace(/[-_.]/g, '');
+            return normalizedMount.includes(lowerHost) && normalizedMount.includes(lowerShare);
           });
+
+          // If still not found, try simple host matching
+          if (!matchingMount) {
+            matchingMount = gvfsMounts.find(m => {
+              return m.toLowerCase().includes(job.targetShare.host.toLowerCase());
+            });
+          }
+
           if (matchingMount) {
             mountPoint = path.join(gvfsPath, matchingMount);
             console.log('[Backup] Found mount point from gvfs:', mountPoint);
           } else {
-            console.log('[Backup] No matching mount found. Looking for host:', job.targetShare.host, 'share:', job.targetShare.name);
+            console.log('[Backup] No matching mount found.');
+            console.log('[Backup] Looking for host:', job.targetShare.host, 'share:', job.targetShare.name);
+            console.log('[Backup] Available mounts:', gvfsMounts.join(', '));
           }
         } else {
           console.log('[Backup] gvfs path does not exist');
@@ -237,7 +464,7 @@ export class BackupManager extends EventEmitter {
       if (!mountPoint) {
         console.error('[Backup] Could not find mount point for target share');
         console.error('[Backup] Target share details:', JSON.stringify(job.targetShare));
-        throw new Error('Could not find mount point for target share');
+        throw new Error(`Could not find mount point for share ${job.targetShare.displayName}. Make sure the share is accessible and try pinning it first from the Apps page.`);
       }
 
       console.log('[Backup] Using mount point:', mountPoint);

@@ -41,7 +41,7 @@ smb://172.30.0.1/Home-Storage
 
 **Mit Username (empfohlen):**
 ```
-smb://Maintainer@172.30.0.1/Home-Storage
+smb://admin@172.30.0.1/Home-Storage
 ```
 
 **Wichtig:**
@@ -52,7 +52,7 @@ smb://Maintainer@172.30.0.1/Home-Storage
 
 **Bookmark (in GTK/KDE gespeichert):**
 ```
-smb://Maintainer@172.30.0.1/Home-Storage Home-Storage
+smb://admin@172.30.0.1/Home-Storage Home-Storage
 ```
 
 **Passwort:**
@@ -62,15 +62,15 @@ smb://Maintainer@172.30.0.1/Home-Storage Home-Storage
 **Beim Pinnen:**
 ```typescript
 // User gibt Credentials im Login-Dialog ein
-username = "Maintainer"
+username = "admin"
 password = "geheim"
 
 // Beim Klick auf "Pin":
 await window.electron.smb.pinShare(share, { username, password })
 
 // Backend macht:
-1. Bookmark erstellen: smb://Maintainer@172.30.0.1/Home-Storage
-2. gio mount 'smb://Maintainer:geheim@172.30.0.1/Home-Storage'
+1. Bookmark erstellen: smb://admin@172.30.0.1/Home-Storage
+2. gio mount 'smb://admin:geheim@172.30.0.1/Home-Storage'
    → Passwort wird im Keyring gespeichert
 ```
 
@@ -209,7 +209,7 @@ ipcMain.handle('device:discoverSMB', async (_, subnet, credentials?) => {
      - Datenaustausch
 
 5. User: Login Dialog
-   Username: Maintainer
+   Username: admin
    Password: ••••••••
 
 6. App: Shows discovered devices
@@ -222,7 +222,7 @@ ipcMain.handle('device:discoverSMB', async (_, subnet, credentials?) => {
 7. User: Klickt "Pin" bei Home-Storage
 
 8. App: Pinning
-   ✓ Bookmark created: smb://Maintainer@172.30.0.1/Home-Storage
+   ✓ Bookmark created: smb://admin@172.30.0.1/Home-Storage
    ✓ Mounted with gio
    ✓ Credentials cached in keyring
 
@@ -239,14 +239,14 @@ ipcMain.handle('device:discoverSMB', async (_, subnet, credentials?) => {
 ```bash
 cat ~/.config/gtk-3.0/bookmarks
 # Should show:
-# smb://Maintainer@172.30.0.1/Home-Storage Home-Storage
+# smb://admin@172.30.0.1/Home-Storage Home-Storage
 ```
 
 **Check KDE Places:**
 ```bash
 cat ~/.local/share/user-places.xbel
 # Should contain:
-# <bookmark href="smb://Maintainer@172.30.0.1/Home-Storage">
+# <bookmark href="smb://admin@172.30.0.1/Home-Storage">
 ```
 
 ### Mount fragt nach Passwort
@@ -254,7 +254,7 @@ cat ~/.local/share/user-places.xbel
 **Credentials nicht im Keyring:**
 ```bash
 # Manually mount to cache credentials
-gio mount 'smb://Maintainer:password@172.30.0.1/Home-Storage'
+gio mount 'smb://admin:password@172.30.0.1/Home-Storage'
 ```
 
 **Keyring-Status prüfen:**
@@ -277,7 +277,7 @@ nc -zv 172.30.0.1 445
 **2. Authentication:**
 ```bash
 # Test manually
-smbclient -L 172.30.0.1 -U Maintainer%password -g
+smbclient -L 172.30.0.1 -U admin%password -g
 ```
 
 **3. Share Config (auf ZimaOS):**
@@ -287,7 +287,7 @@ smbclient -L 172.30.0.1 -U Maintainer%password -g
     path = /DATA/Home-Storage
     browseable = yes
     guest ok = no
-    valid users = Maintainer
+    valid users = admin
 ```
 
 ## Sicherheit
@@ -318,7 +318,7 @@ smbclient -L 172.30.0.1 -U Maintainer%password -g
 
 1. **Nie Passwort im Code hardcoden**
    ```typescript
-   ❌ pinShare(share, { username: "Maintainer", password: "geheim" })
+   ❌ pinShare(share, { username: "admin", password: "geheim" })
    ✅ pinShare(share, credentials) // from user input
    ```
 
@@ -350,7 +350,7 @@ await places.pinShare(
     displayName: 'My Storage',
     type: 'disk'
   },
-  'Maintainer',     // username
+  'admin',     // username
   'password'   // password - will be cached in keyring
 );
 ```
@@ -363,7 +363,7 @@ await places.pinShare(
 
 HOST="172.30.0.1"
 SHARE="Home-Storage"
-USER="Maintainer"
+USER="admin"
 PASS="password"
 
 # 1. Add bookmark

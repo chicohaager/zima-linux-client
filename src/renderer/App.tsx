@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useAppStore } from './store';
 import { Navigation } from './components/Navigation';
 import { StatusBar } from './components/StatusBar';
+import { Toast } from './components/Toast';
 import { ConnectPage } from './pages/Connect';
 import { DevicesPage } from './pages/Devices';
 import { AppsPage } from './pages/Apps';
@@ -35,7 +36,8 @@ export const App: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100">
       <StatusBar />
       <Navigation />
-      <main>{renderPage()}</main>
+      <main className="page-transition">{renderPage()}</main>
+      <Toast />
     </div>
   );
 };

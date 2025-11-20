@@ -15,9 +15,11 @@ export const BackupPage: React.FC = () => {
   const [targetPath, setTargetPath] = useState('/Backup');
   const [space, setSpace] = useState<ShareSpace | null>(null);
   const [loadingSpace, setLoadingSpace] = useState(false);
+  const [pinnedShareUrls, setPinnedShareUrls] = useState<string[]>([]);
 
   useEffect(() => {
     loadJobs();
+    loadPinnedShares();
 
     const onProgress = (window.electron.backup as any).onProgress;
     if (onProgress) {
@@ -38,6 +40,17 @@ export const BackupPage: React.FC = () => {
       };
     }
   }, []);
+
+  const loadPinnedShares = async () => {
+    try {
+      const result = await window.electron.smb.listPinned();
+      if (result.success && result.data) {
+        setPinnedShareUrls(result.data);
+      }
+    } catch (error) {
+      console.error('Failed to load pinned shares:', error);
+    }
+  };
 
   const loadJobs = async () => {
     setLoading(true);
@@ -97,13 +110,25 @@ export const BackupPage: React.FC = () => {
       });
 
       if (result.success && result.data) {
-        setJobs([...jobs, result.data]);
+        const newJob = result.data;
+        setJobs([...jobs, newJob]);
+
+        // Close dialog and reset state
         setShowAddDialog(false);
         setSelectedFolder(null);
         setSelectedShare(null);
         setTargetPath('/Backup');
         setSpace(null);
-        alert('Backup job created successfully');
+
+        // Start backup immediately
+        const credentials = newJob.credentials || sessionCredentials || undefined;
+        const runResult = await window.electron.backup.runJob(newJob.id, credentials);
+
+        if (!runResult.success) {
+          alert(`Backup job created but failed to start: ${runResult.error}`);
+        }
+        // No success alert - user will see progress indicator
+        await loadJobs();
       } else {
         alert(`Failed to create backup job: ${result.error}`);
       }
@@ -115,11 +140,25 @@ export const BackupPage: React.FC = () => {
   const handleRunJob = async (jobId: string) => {
     try {
       const job = jobs.find(j => j.id === jobId);
-      const credentials = job?.credentials || sessionCredentials || undefined;
+      if (!job) {
+        alert('Backup job not found');
+        return;
+      }
+
+      // Use job credentials first, then session credentials
+      const credentials = job.credentials || sessionCredentials || undefined;
+
+      // Check if we have credentials
+      if (!credentials) {
+        const proceed = confirm(
+          'No credentials available for this backup. This may fail if the share requires authentication. Continue anyway?'
+        );
+        if (!proceed) return;
+      }
 
       const result = await window.electron.backup.runJob(jobId, credentials);
       if (result.success) {
-        alert('Backup started successfully');
+        // No alert - user will see progress indicator
         await loadJobs();
       } else {
         alert(`Failed to start backup: ${result.error}`);
@@ -187,6 +226,16 @@ export const BackupPage: React.FC = () => {
     if (device.shares) {
       availableShares.push(...device.shares);
     }
+  });
+
+  // Mark shares as pinned based on pinnedShareUrls list
+  availableShares.forEach(share => {
+    // Check if any pinned URL contains this host and share name
+    share.pinned = pinnedShareUrls.some(url => {
+      const urlLower = url.toLowerCase();
+      return urlLower.includes(share.host.toLowerCase()) &&
+             urlLower.includes(share.name.toLowerCase());
+    });
   });
 
   return (
@@ -416,6 +465,13 @@ export const BackupPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="border border-gray-300 rounded-xl p-3">
+                    {pinnedShareUrls.length === 0 && availableShares.length > 0 && (
+                      <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-xs text-yellow-800">
+                          ⚠️ No shares are pinned/mounted. Pin a share first for reliable backups.
+                        </p>
+                      </div>
+                    )}
                     <select
                       onChange={(e) => {
                         const share = availableShares.find(s => s.name === e.target.value);
@@ -430,7 +486,7 @@ export const BackupPage: React.FC = () => {
                       </option>
                       {availableShares.map((share, idx) => (
                         <option key={idx} value={share.name}>
-                          {share.displayName}
+                          {share.pinned ? '📌 ' : ''}{share.displayName}
                         </option>
                       ))}
                     </select>

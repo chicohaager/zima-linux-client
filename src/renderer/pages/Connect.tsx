@@ -4,7 +4,7 @@ import { useZeroTier } from '../hooks/useZeroTier';
 import { RecentConnection } from '@shared/types';
 
 export const ConnectPage: React.FC = () => {
-  const { setCurrentView, setSelectedDevice, setDevices, sessionCredentials, setSessionCredentials } = useAppStore();
+  const { setCurrentView, setSelectedDevice, setDevices, sessionCredentials, setSessionCredentials, addToast } = useAppStore();
   const { loading: ztLoading } = useZeroTier();
 
   const [remoteId, setRemoteId] = useState('');
@@ -20,11 +20,25 @@ export const ConnectPage: React.FC = () => {
   const [discoveredDevices, setDiscoveredDevices] = useState<any[]>([]);
   const [discovering, setDiscovering] = useState(false);
   const [discoveryProgress, setDiscoveryProgress] = useState(0);
+  const [pinnedShareUrls, setPinnedShareUrls] = useState<string[]>([]);
 
-  // Load recent connections on mount
+  // Load recent connections and pinned shares on mount
   useEffect(() => {
     loadRecentConnections();
+    loadPinnedShares();
   }, []);
+
+  const loadPinnedShares = async () => {
+    try {
+      const result = await window.electron.smb.listPinned();
+      if (result.success && result.data) {
+        console.log('[Connect] Loaded pinned share URLs:', result.data);
+        setPinnedShareUrls(result.data);
+      }
+    } catch (error) {
+      console.error('Failed to load pinned shares:', error);
+    }
+  };
 
   // Debug: Log when discovery state changes
   // useEffect(() => {
@@ -50,7 +64,7 @@ export const ConnectPage: React.FC = () => {
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      alert('Please enter username and password');
+      addToast({ type: 'warning', message: 'Please enter username and password' });
       return;
     }
 
@@ -156,11 +170,11 @@ export const ConnectPage: React.FC = () => {
         // Stay on Connect page to show discovered devices
         // User can manually navigate to Apps page to see apps
       } else {
-        alert('Login failed: ' + (loginData.message || 'Invalid credentials'));
+        addToast({ type: 'error', message: 'Login failed: ' + (loginData.message || 'Invalid credentials') });
       }
     } catch (error) {
       console.error('Login failed:', error);
-      alert('Failed to login to ZimaOS');
+      addToast({ type: 'error', message: 'Failed to login to ZimaOS' });
     }
   };
 
@@ -210,7 +224,7 @@ export const ConnectPage: React.FC = () => {
 
   const handleConnectRemote = async () => {
     if (!remoteId.trim()) {
-      alert('Please enter a Remote ID');
+      addToast({ type: 'warning', message: 'Please enter a Remote ID' });
       return;
     }
 
@@ -233,11 +247,11 @@ export const ConnectPage: React.FC = () => {
         // Discovery will start AFTER login with credentials
         setShowLoginDialog(true);
       } else {
-        alert('Failed to connect to remote network');
+        addToast({ type: 'error', message: 'Failed to connect to remote network' });
       }
     } catch (error) {
       console.error('Remote connect failed:', error);
-      alert('Failed to connect remotely');
+      addToast({ type: 'error', message: 'Failed to connect remotely' });
     }
   };
 
@@ -258,11 +272,11 @@ export const ConnectPage: React.FC = () => {
         // Discovery will start AFTER login with credentials
         setShowLoginDialog(true);
       } else {
-        alert('Failed to reconnect to network');
+        addToast({ type: 'error', message: 'Failed to reconnect to network' });
       }
     } catch (error) {
       console.error('Quick reconnect failed:', error);
-      alert('Failed to reconnect');
+      addToast({ type: 'error', message: 'Failed to reconnect' });
     }
   };
 
@@ -324,11 +338,11 @@ export const ConnectPage: React.FC = () => {
         console.log('Updated global devices store with local network scan results');
       } else {
         console.error('Local network scan failed:', result.error);
-        alert('Failed to scan local network: ' + (result.error || 'Unknown error'));
+        addToast({ type: 'error', message: 'Failed to scan local network: ' + (result.error || 'Unknown error') });
       }
     } catch (error) {
       console.error('Local network scan failed:', error);
-      alert('Failed to scan local network');
+      addToast({ type: 'error', message: 'Failed to scan local network' });
     } finally {
       setDiscovering(false);
       setDiscoveryProgress(100);
@@ -336,8 +350,8 @@ export const ConnectPage: React.FC = () => {
   };
 
   return (
-    <div className="px-4 py-8">
-      <div className="max-w-md mx-auto">
+    <div className="px-4 py-8 pb-32">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <p className="text-xs font-semibold text-zima-text-secondary tracking-wider mb-2">CONNECTOR</p>
@@ -396,11 +410,11 @@ export const ConnectPage: React.FC = () => {
                   </div>
                   <button
                     onClick={(e) => handleRemoveRecent(connection.networkId, e)}
-                    className="p-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Remove"
+                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                    title="Remove connection"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
                 </div>
@@ -464,27 +478,47 @@ export const ConnectPage: React.FC = () => {
                   {/* Show shares if available */}
                   {device.shares && device.shares.length > 0 && (
                     <div className="mt-3 pl-12 space-y-2">
-                      {device.shares.map((share: any, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between">
-                          <span className="text-xs text-zima-text-primary">📁 {share.name}</span>
-                          <button
-                            onClick={async () => {
-                              try {
-                                // Use the saved session credentials
-                                await window.electron.smb.pinShare(share, sessionCredentials || undefined);
+                      {device.shares.map((share: any, idx: number) => {
+                        // Build URL without password to match the pinned format
+                        const shareUrl = sessionCredentials
+                          ? `smb://${encodeURIComponent(sessionCredentials.username)}@${share.host}/${share.name}`
+                          : `smb://${share.host}/${share.name}`;
 
-                                alert(`✓ Pinned: ${share.name}\n${sessionCredentials ? 'Credentials saved to keyring' : 'Guest access'}`);
-                              } catch (error) {
-                                console.error('Failed to pin share:', error);
-                                alert(`Failed to pin share: ${error}`);
-                              }
-                            }}
-                            className="text-xs text-zima-blue hover:underline"
-                          >
-                            Pin
-                          </button>
-                        </div>
-                      ))}
+                        // Normalize URLs for comparison (remove trailing slashes, lowercase)
+                        const normalizeUrl = (url: string) => url.toLowerCase().replace(/\/$/, '');
+                        const isPinned = pinnedShareUrls.some(pinnedUrl =>
+                          normalizeUrl(pinnedUrl) === normalizeUrl(shareUrl)
+                        );
+
+                        return (
+                          <div key={idx} className="flex items-center justify-between">
+                            <span className="text-xs text-zima-text-primary">📁 {share.name}</span>
+                            <button
+                              onClick={async () => {
+                                try {
+                                  // Use the saved session credentials
+                                  await window.electron.smb.pinShare(share, sessionCredentials || undefined);
+
+                                  addToast({
+                                    type: 'success',
+                                    message: `Pinned: ${share.name}${sessionCredentials ? ' (Credentials saved to keyring)' : ' (Guest access)'}`
+                                  });
+
+                                  // Reload pinned shares to update UI
+                                  await loadPinnedShares();
+                                } catch (error) {
+                                  console.error('Failed to pin share:', error);
+                                  addToast({ type: 'error', message: `Failed to pin share: ${error}` });
+                                }
+                              }}
+                              className={`text-xs ${isPinned ? 'text-red-600' : 'text-zima-blue'} hover:underline`}
+                              title={isPinned ? 'Already pinned' : 'Pin this share'}
+                            >
+                              {isPinned ? '📌 Pinned' : 'Pin'}
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
@@ -496,7 +530,7 @@ export const ConnectPage: React.FC = () => {
                         setSelectedDevice(device);
                         setCurrentView('apps');
                       }}
-                      className="w-full bg-zima-blue hover:bg-blue-600 text-white rounded-full py-2 px-4 text-sm font-medium transition-colors"
+                      className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-full py-2 px-4 text-sm font-medium transition-colors shadow-sm"
                     >
                       View Apps
                     </button>
@@ -544,8 +578,8 @@ export const ConnectPage: React.FC = () => {
 
         {/* Remote ID Dialog */}
         {showRemoteDialog && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-xl">
+          <div className="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="modal-content bg-white rounded-3xl p-6 max-w-md w-full shadow-xl">
               <h2 className="text-2xl font-bold mb-2 text-zima-text-primary">Connect Remotely</h2>
 
               <p className="text-sm text-zima-text-secondary mb-6">
@@ -584,8 +618,8 @@ export const ConnectPage: React.FC = () => {
 
         {/* Login Dialog */}
         {showLoginDialog && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-xl">
+          <div className="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="modal-content bg-white rounded-3xl p-6 max-w-md w-full shadow-xl">
               <h2 className="text-2xl font-bold mb-2 text-zima-text-primary">Login to ZimaOS</h2>
 
               <p className="text-sm text-zima-text-secondary mb-6">
