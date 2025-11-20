@@ -11,11 +11,17 @@ RestartSec=5
 KillMode=process
 TimeoutStopSec=5
 
+# Run as root but with group access for users
+User=root
+Group=zima-zerotier
+UMask=0027
+
 # Security
 PrivateTmp=yes
 ProtectSystem=strict
 ReadWritePaths=/var/lib/zima-zerotier
 StateDirectory=zima-zerotier
+StateDirectoryMode=0750
 
 # Capabilities needed for network operations
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_ADMIN
