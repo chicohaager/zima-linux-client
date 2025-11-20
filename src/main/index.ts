@@ -8,6 +8,31 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 let mainWindow: BrowserWindow | null = null;
 let ipcHandlers: IPCHandlers | null = null;
+let isCleaningUp = false;
+
+/**
+ * Perform cleanup with timeout protection
+ * Ensures app doesn't hang if cleanup takes too long
+ */
+async function performCleanup(): Promise<void> {
+  if (isCleaningUp || !ipcHandlers) return;
+  isCleaningUp = true;
+
+  const cleanupPromise = ipcHandlers.cleanup();
+  const timeoutPromise = new Promise<void>((resolve) => {
+    setTimeout(() => {
+      console.warn('⚠️  Cleanup timeout after 5s, forcing quit');
+      resolve();
+    }, 5000);
+  });
+
+  try {
+    await Promise.race([cleanupPromise, timeoutPromise]);
+    console.log('✓ Cleanup completed');
+  } catch (error) {
+    console.error('❌ Cleanup error:', error);
+  }
+}
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -63,18 +88,21 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('before-quit', async () => {
-  // Cleanup
-  if (ipcHandlers) {
-    await ipcHandlers.cleanup();
-  }
+app.on('before-quit', async (event) => {
+  event.preventDefault();
+  await performCleanup();
+  app.exit(0);
 });
 
-// Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+// Handle uncaught exceptions - perform cleanup before exiting
+process.on('uncaughtException', async (error) => {
+  console.error('❌ Uncaught exception:', error);
+  await performCleanup();
+  process.exit(1);
 });
 
-process.on('unhandledRejection', (error) => {
-  console.error('Unhandled rejection:', error);
+process.on('unhandledRejection', async (error) => {
+  console.error('❌ Unhandled rejection:', error);
+  await performCleanup();
+  process.exit(1);
 });

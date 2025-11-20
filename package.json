@@ -27,6 +27,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@types/node-cron": "^3.0.11",
+    "node-cron": "^4.2.1",
     "shell-quote": "^1.8.3",
     "zustand": "^4.5.0"
   },
@@ -72,12 +74,17 @@
       {
         "from": "bin/zerotier",
         "to": "bin/zerotier",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "resources",
         "to": "resources",
-        "filter": ["*.service", "*.sh"]
+        "filter": [
+          "*.service",
+          "*.sh"
+        ]
       },
       {
         "from": "org/resources/installer/zerotier/ZeroTierOne.pkg",

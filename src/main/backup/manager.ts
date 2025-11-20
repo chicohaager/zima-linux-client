@@ -3,8 +3,9 @@ import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
-import { BackupJob, BackupProgress, ShareSpace, SMBShare } from '@shared/types';
+import { BackupJob, BackupProgress, ShareSpace, SMBShare, BackupSchedule } from '@shared/types';
 import { EventEmitter } from 'events';
+import * as cron from 'node-cron';
 
 const execAsync = promisify(exec);
 
@@ -141,6 +142,7 @@ export class BackupManager extends EventEmitter {
   private configFile: string;
   private jobs: Map<string, BackupJob>;
   private runningJobs: Map<string, any>; // jobId -> process
+  private scheduledTasks: Map<string, cron.ScheduledTask>; // jobId -> cron task
 
   constructor() {
     super();
@@ -148,8 +150,107 @@ export class BackupManager extends EventEmitter {
     this.configFile = path.join(this.configDir, 'backup-jobs.json');
     this.jobs = new Map();
     this.runningJobs = new Map();
+    this.scheduledTasks = new Map();
     this.ensureConfigExists();
     this.loadJobs();
+    this.initializeSchedules();
+  }
+
+  /**
+   * Convert BackupSchedule to cron expression
+   */
+  private scheduleToCron(schedule: BackupSchedule): string | null {
+    const { frequency, time, dayOfWeek, dayOfMonth } = schedule;
+
+    if (frequency === 'manual' || !time) return null;
+
+    const [hour, minute] = time.split(':').map(Number);
+
+    switch (frequency) {
+      case 'daily':
+        // Run every day at specified time
+        return `${minute} ${hour} * * *`;
+
+      case 'weekly':
+        // Run on specified day of week at specified time
+        const day = dayOfWeek ?? 0;
+        return `${minute} ${hour} * * ${day}`;
+
+      case 'monthly':
+        // Run on specified day of month at specified time
+        const dayNum = dayOfMonth ?? 1;
+        return `${minute} ${hour} ${dayNum} * *`;
+
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Initialize all scheduled backup jobs
+   */
+  private initializeSchedules(): void {
+    this.jobs.forEach((job, jobId) => {
+      if (job.enabled && job.schedule && job.schedule.frequency !== 'manual') {
+        this.scheduleJob(jobId, job);
+      }
+    });
+    console.log(`✓ Initialized ${this.scheduledTasks.size} scheduled backup jobs`);
+  }
+
+  /**
+   * Schedule a backup job using cron
+   */
+  private scheduleJob(jobId: string, job: BackupJob): void {
+    // Remove existing schedule if any
+    this.unscheduleJob(jobId);
+
+    if (!job.schedule || job.schedule.frequency === 'manual') {
+      return;
+    }
+
+    const cronExpression = this.scheduleToCron(job.schedule);
+    if (!cronExpression) {
+      console.warn(`⚠️  Invalid schedule for job ${job.name}`);
+      return;
+    }
+
+    try {
+      const task = cron.schedule(cronExpression, async () => {
+        console.log(`🕐 Running scheduled backup: ${job.name}`);
+        try {
+          await this.runJob(jobId, job.credentials);
+        } catch (error: any) {
+          console.error(`❌ Scheduled backup failed for ${job.name}:`, error.message);
+        }
+      });
+
+      this.scheduledTasks.set(jobId, task);
+      console.log(`✓ Scheduled backup "${job.name}" with cron: ${cronExpression}`);
+    } catch (error: any) {
+      console.error(`❌ Failed to schedule job ${job.name}:`, error.message);
+    }
+  }
+
+  /**
+   * Remove scheduled task for a job
+   */
+  private unscheduleJob(jobId: string): void {
+    const task = this.scheduledTasks.get(jobId);
+    if (task) {
+      task.stop();
+      this.scheduledTasks.delete(jobId);
+      console.log(`✓ Unscheduled backup job ${jobId}`);
+    }
+  }
+
+  /**
+   * Stop all scheduled tasks (cleanup)
+   */
+  public stopAllSchedules(): void {
+    this.scheduledTasks.forEach(task => task.stop());
+    this.scheduledTasks.clear();
+    console.log('✓ Stopped all scheduled backup jobs');
   }
 
   private ensureConfigExists(): void {
@@ -323,6 +424,12 @@ export class BackupManager extends EventEmitter {
     const newJob: BackupJob = { id, ...job };
     this.jobs.set(id, newJob);
     this.saveJobs();
+
+    // Schedule the job if it has a schedule and is enabled
+    if (newJob.enabled && newJob.schedule && newJob.schedule.frequency !== 'manual') {
+      this.scheduleJob(id, newJob);
+    }
+
     return newJob;
   }
 
@@ -340,6 +447,10 @@ export class BackupManager extends EventEmitter {
         console.error('[Backup] Error stopping job:', error);
       }
     }
+
+    // Remove scheduled task if exists
+    this.unscheduleJob(jobId);
+
     this.jobs.delete(jobId);
     this.saveJobs();
   }
