@@ -79,6 +79,43 @@ contextBridge.exposeInMainWorld('electron', {
       return () => ipcRenderer.removeListener('backup:progress', listener);
     },
   },
+
+  // Update
+  update: {
+    check: (): Promise<{ success: boolean; error?: string }> =>
+      ipcRenderer.invoke('update:check'),
+    download: (): Promise<{ success: boolean; error?: string }> =>
+      ipcRenderer.invoke('update:download'),
+    install: (): Promise<{ success: boolean; error?: string }> =>
+      ipcRenderer.invoke('update:install'),
+    getVersion: (): Promise<{ success: boolean; data?: string; error?: string }> =>
+      ipcRenderer.invoke('update:getVersion'),
+    onUpdateAvailable: (callback: (info: any) => void) => {
+      const listener = (_event: any, info: any) => callback(info);
+      ipcRenderer.on('update-available', listener);
+      return () => ipcRenderer.removeListener('update-available', listener);
+    },
+    onUpdateNotAvailable: (callback: (info: any) => void) => {
+      const listener = (_event: any, info: any) => callback(info);
+      ipcRenderer.on('update-not-available', listener);
+      return () => ipcRenderer.removeListener('update-not-available', listener);
+    },
+    onDownloadProgress: (callback: (progress: any) => void) => {
+      const listener = (_event: any, progress: any) => callback(progress);
+      ipcRenderer.on('update-download-progress', listener);
+      return () => ipcRenderer.removeListener('update-download-progress', listener);
+    },
+    onUpdateDownloaded: (callback: (info: any) => void) => {
+      const listener = (_event: any, info: any) => callback(info);
+      ipcRenderer.on('update-downloaded', listener);
+      return () => ipcRenderer.removeListener('update-downloaded', listener);
+    },
+    onUpdateError: (callback: (error: string) => void) => {
+      const listener = (_event: any, error: string) => callback(error);
+      ipcRenderer.on('update-error', listener);
+      return () => ipcRenderer.removeListener('update-error', listener);
+    },
+  },
 });
 
 // Type definitions for window.electron
@@ -126,6 +163,17 @@ declare global {
         runJob: (jobId: string, credentials?: { username: string; password: string }) => Promise<{ success: boolean; error?: string }>;
         stopJob: (jobId: string) => Promise<{ success: boolean; error?: string }>;
         onProgress: (callback: (progress: BackupProgress) => void) => () => void;
+      };
+      update: {
+        check: () => Promise<{ success: boolean; error?: string }>;
+        download: () => Promise<{ success: boolean; error?: string }>;
+        install: () => Promise<{ success: boolean; error?: string }>;
+        getVersion: () => Promise<{ success: boolean; data?: string; error?: string }>;
+        onUpdateAvailable: (callback: (info: any) => void) => () => void;
+        onUpdateNotAvailable: (callback: (info: any) => void) => () => void;
+        onDownloadProgress: (callback: (progress: any) => void) => () => void;
+        onUpdateDownloaded: (callback: (info: any) => void) => () => void;
+        onUpdateError: (callback: (error: string) => void) => () => void;
       };
     };
   }

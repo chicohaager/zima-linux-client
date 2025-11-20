@@ -8,6 +8,7 @@ import { SMBManager } from '../smb/manager';
 import { PlacesManager } from '../smb/places';
 import { RecentConnectionsStorage } from '../storage/recentConnections';
 import { BackupManager } from '../backup/manager';
+import { updateManager } from '../updater';
 import { ZimaDevice, SMBShare, BackupJob } from '@shared/types';
 
 const execAsync = promisify(exec);
@@ -660,6 +661,43 @@ export class IPCHandlers {
       try {
         this.backupManager.stopJob(jobId);
         return { success: true };
+      } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    // Update handlers
+    ipcMain.handle('update:check', async () => {
+      try {
+        updateManager.checkForUpdates();
+        return { success: true };
+      } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle('update:download', async () => {
+      try {
+        updateManager.downloadUpdate();
+        return { success: true };
+      } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle('update:install', async () => {
+      try {
+        updateManager.quitAndInstall();
+        return { success: true };
+      } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle('update:getVersion', async () => {
+      try {
+        const version = updateManager.getCurrentVersion();
+        return { success: true, data: version };
       } catch (error: any) {
         return { success: false, error: error.message };
       }

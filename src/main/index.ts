@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import { IPCHandlers } from './ipc/handlers';
+import { updateManager } from './updater';
 
 // Suppress Electron security warnings for local HTTP connections
 // ZimaOS typically runs on local network via HTTP which is acceptable
@@ -62,6 +63,11 @@ function createWindow(): void {
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
+
+    // Set the main window for update manager
+    if (mainWindow) {
+      updateManager.setMainWindow(mainWindow);
+    }
   });
 
   mainWindow.on('closed', () => {
@@ -74,6 +80,11 @@ app.whenReady().then(() => {
   ipcHandlers = new IPCHandlers();
 
   createWindow();
+
+  // Start periodic update checks (every 24 hours) in production
+  if (process.env.NODE_ENV === 'production') {
+    updateManager.startPeriodicCheck(24);
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
