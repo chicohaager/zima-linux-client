@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { logger } from '../utils/logger';
 import * as fs from 'fs';
 import { app } from 'electron';
 
@@ -27,9 +28,9 @@ export class ZeroTierBundler {
       resourcePath = path.join(process.resourcesPath, 'bin/zerotier', arch);
     }
 
-    console.log('isDev:', isDev);
-    console.log('__dirname:', __dirname);
-    console.log('Looking for ZeroTier binaries at:', resourcePath);
+    logger.info('isDev:', isDev);
+    logger.info('__dirname:', __dirname);
+    logger.info('Looking for ZeroTier binaries at:', resourcePath);
 
     // Temporary path for execution
     const tempDir = path.join(app.getPath('temp'), 'zerotier');
@@ -47,25 +48,25 @@ export class ZeroTierBundler {
       const sourceBin = path.join(resourcePath, 'zerotier-one');
       const sourceCli = path.join(resourcePath, 'zerotier-cli');
 
-      console.log('Checking for binaries:', { sourceBin, sourceCli });
+      logger.info('Checking for binaries:', { sourceBin, sourceCli });
 
       if (fs.existsSync(sourceBin)) {
         fs.copyFileSync(sourceBin, binPath);
         fs.chmodSync(binPath, 0o755);
-        console.log('Copied zerotier-one to', binPath);
+        logger.info('Copied zerotier-one to', binPath);
       } else {
-        console.error('zerotier-one binary not found at', sourceBin);
+        logger.error('zerotier-one binary not found at', sourceBin);
       }
 
       if (fs.existsSync(sourceCli)) {
         fs.copyFileSync(sourceCli, cliPath);
         fs.chmodSync(cliPath, 0o755);
-        console.log('Copied zerotier-cli to', cliPath);
+        logger.info('Copied zerotier-cli to', cliPath);
       } else {
-        console.error('zerotier-cli binary not found at', sourceCli);
+        logger.error('zerotier-cli binary not found at', sourceCli);
       }
     } else {
-      console.error('ZeroTier resource path does not exist:', resourcePath);
+      logger.error('ZeroTier resource path does not exist:', resourcePath);
     }
 
     this.binaryPath = binPath;
@@ -90,7 +91,7 @@ export class ZeroTierBundler {
         fs.unlinkSync(this.cliPath);
       }
     } catch (error) {
-      console.error('Failed to cleanup ZeroTier binaries:', error);
+      logger.error('Failed to cleanup ZeroTier binaries:', error);
     }
   }
 }

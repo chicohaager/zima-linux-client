@@ -88,6 +88,23 @@ if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
     fi
 fi
 
+# Install icon to proper location
+ICON_SOURCE="/opt/ZimaOS Client/resources/app.asar.unpacked/icon.png"
+if [ -f "$ICON_SOURCE" ]; then
+    mkdir -p /usr/share/icons/hicolor/256x256/apps
+    cp "$ICON_SOURCE" /usr/share/icons/hicolor/256x256/apps/zima-linux-client.png
+    echo "✓ Icon installed"
+elif [ -f "/opt/ZimaOS Client/icon.png" ]; then
+    mkdir -p /usr/share/icons/hicolor/256x256/apps
+    cp "/opt/ZimaOS Client/icon.png" /usr/share/icons/hicolor/256x256/apps/zima-linux-client.png
+    echo "✓ Icon installed"
+fi
+
+# Remove incorrectly placed icon if exists
+if [ -f "/usr/share/icons/hicolor/0x0/apps/zima-linux-client.png" ]; then
+    rm -f /usr/share/icons/hicolor/0x0/apps/zima-linux-client.png
+fi
+
 # Update desktop database
 if command -v update-desktop-database >/dev/null 2>&1; then
     update-desktop-database /usr/share/applications || true

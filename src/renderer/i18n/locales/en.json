@@ -1,0 +1,155 @@
+{
+  "app": {
+    "title": "ZimaOS Client",
+    "version": "Version {{version}}"
+  },
+  "navigation": {
+    "connect": "Connect",
+    "devices": "Devices",
+    "backup": "Backup",
+    "apps": "Apps",
+    "settings": "Settings"
+  },
+  "connect": {
+    "title": "Connect to ZimaOS",
+    "subtitle": "Enter your ZimaOS device address",
+    "address": "Device Address",
+    "addressPlaceholder": "http://192.168.1.100 or http://zimaos.local",
+    "connect": "Connect",
+    "connecting": "Connecting...",
+    "success": "Connected successfully",
+    "error": "Connection failed",
+    "zerotier": {
+      "title": "ZeroTier Network",
+      "status": "Status",
+      "running": "Running",
+      "stopped": "Stopped",
+      "start": "Start ZeroTier",
+      "stop": "Stop ZeroTier",
+      "networkId": "Network ID",
+      "join": "Join Network",
+      "leave": "Leave Network",
+      "connected": "Connected",
+      "disconnected": "Disconnected"
+    }
+  },
+  "devices": {
+    "title": "Available Devices",
+    "scanning": "Scanning network...",
+    "noDevices": "No devices found",
+    "refresh": "Refresh",
+    "local": "Local",
+    "remote": "Remote via ZeroTier",
+    "shares": "{{count}} share",
+    "shares_plural": "{{count}} shares",
+    "apps": "{{count}} app",
+    "apps_plural": "{{count}} apps"
+  },
+  "backup": {
+    "title": "Backup Jobs",
+    "noJobs": "No backup jobs configured",
+    "create": "Create Backup Job",
+    "edit": "Edit Job",
+    "delete": "Delete Job",
+    "run": "Run Now",
+    "running": "Running...",
+    "lastRun": "Last run: {{time}}",
+    "neverRun": "Never run",
+    "schedule": "Schedule",
+    "source": "Source",
+    "destination": "Destination",
+    "status": {
+      "idle": "Idle",
+      "running": "Running",
+      "success": "Success",
+      "failed": "Failed"
+    },
+    "form": {
+      "name": "Job Name",
+      "sourcePath": "Source Path",
+      "targetShare": "Target Share",
+      "targetPath": "Target Path",
+      "schedule": "Schedule (cron)",
+      "username": "Username",
+      "password": "Password",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "apps": {
+    "title": "ZimaOS Apps",
+    "noApps": "No apps available",
+    "open": "Open",
+    "install": "Install",
+    "uninstall": "Uninstall",
+    "update": "Update",
+    "running": "Running",
+    "stopped": "Stopped"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": {
+      "title": "General",
+      "language": "Language",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "zerotier": {
+      "title": "ZeroTier",
+      "autoStart": "Auto-start on app launch",
+      "networkId": "Default Network ID"
+    },
+    "backup": {
+      "title": "Backup",
+      "notifications": "Enable backup notifications",
+      "logLevel": "Log Level"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "license": "License",
+      "repository": "Repository",
+      "reportIssue": "Report Issue"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "network": "Network error",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "serverError": "Server error",
+    "timeout": "Request timeout",
+    "offline": "You are offline"
+  },
+  "notifications": {
+    "backupStarted": "Backup started",
+    "backupCompleted": "Backup completed successfully",
+    "backupFailed": "Backup failed: {{error}}",
+    "deviceConnected": "Device connected: {{device}}",
+    "deviceDisconnected": "Device disconnected: {{device}}",
+    "zerotierStarted": "ZeroTier started",
+    "zerotierStopped": "ZeroTier stopped",
+    "updateAvailable": "Update available: {{version}}"
+  }
+}

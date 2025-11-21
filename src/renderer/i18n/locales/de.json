@@ -1,0 +1,155 @@
+{
+  "app": {
+    "title": "ZimaOS Client",
+    "version": "Version {{version}}"
+  },
+  "navigation": {
+    "connect": "Verbinden",
+    "devices": "Geräte",
+    "backup": "Sicherung",
+    "apps": "Apps",
+    "settings": "Einstellungen"
+  },
+  "connect": {
+    "title": "Mit ZimaOS verbinden",
+    "subtitle": "Geben Sie Ihre ZimaOS-Geräteadresse ein",
+    "address": "Geräteadresse",
+    "addressPlaceholder": "http://192.168.1.100 oder http://zimaos.local",
+    "connect": "Verbinden",
+    "connecting": "Verbinde...",
+    "success": "Erfolgreich verbunden",
+    "error": "Verbindung fehlgeschlagen",
+    "zerotier": {
+      "title": "ZeroTier Netzwerk",
+      "status": "Status",
+      "running": "Läuft",
+      "stopped": "Gestoppt",
+      "start": "ZeroTier starten",
+      "stop": "ZeroTier stoppen",
+      "networkId": "Netzwerk-ID",
+      "join": "Netzwerk beitreten",
+      "leave": "Netzwerk verlassen",
+      "connected": "Verbunden",
+      "disconnected": "Getrennt"
+    }
+  },
+  "devices": {
+    "title": "Verfügbare Geräte",
+    "scanning": "Scanne Netzwerk...",
+    "noDevices": "Keine Geräte gefunden",
+    "refresh": "Aktualisieren",
+    "local": "Lokal",
+    "remote": "Remote über ZeroTier",
+    "shares": "{{count}} Freigabe",
+    "shares_plural": "{{count}} Freigaben",
+    "apps": "{{count}} App",
+    "apps_plural": "{{count}} Apps"
+  },
+  "backup": {
+    "title": "Sicherungsaufträge",
+    "noJobs": "Keine Sicherungsaufträge konfiguriert",
+    "create": "Sicherungsauftrag erstellen",
+    "edit": "Auftrag bearbeiten",
+    "delete": "Auftrag löschen",
+    "run": "Jetzt ausführen",
+    "running": "Läuft...",
+    "lastRun": "Letzte Ausführung: {{time}}",
+    "neverRun": "Noch nie ausgeführt",
+    "schedule": "Zeitplan",
+    "source": "Quelle",
+    "destination": "Ziel",
+    "status": {
+      "idle": "Bereit",
+      "running": "Läuft",
+      "success": "Erfolgreich",
+      "failed": "Fehlgeschlagen"
+    },
+    "form": {
+      "name": "Auftragsname",
+      "sourcePath": "Quellpfad",
+      "targetShare": "Zielfreigabe",
+      "targetPath": "Zielpfad",
+      "schedule": "Zeitplan (cron)",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    }
+  },
+  "apps": {
+    "title": "ZimaOS Apps",
+    "noApps": "Keine Apps verfügbar",
+    "open": "Öffnen",
+    "install": "Installieren",
+    "uninstall": "Deinstallieren",
+    "update": "Aktualisieren",
+    "running": "Läuft",
+    "stopped": "Gestoppt"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "general": {
+      "title": "Allgemein",
+      "language": "Sprache",
+      "theme": "Theme",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    },
+    "zerotier": {
+      "title": "ZeroTier",
+      "autoStart": "Automatisch beim App-Start starten",
+      "networkId": "Standard-Netzwerk-ID"
+    },
+    "backup": {
+      "title": "Sicherung",
+      "notifications": "Sicherungsbenachrichtigungen aktivieren",
+      "logLevel": "Log-Level"
+    },
+    "about": {
+      "title": "Über",
+      "version": "Version",
+      "license": "Lizenz",
+      "repository": "Repository",
+      "reportIssue": "Problem melden"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolgreich",
+    "warning": "Warnung",
+    "info": "Information",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "errors": {
+    "generic": "Ein Fehler ist aufgetreten",
+    "network": "Netzwerkfehler",
+    "notFound": "Nicht gefunden",
+    "unauthorized": "Nicht autorisiert",
+    "forbidden": "Verboten",
+    "serverError": "Serverfehler",
+    "timeout": "Zeitüberschreitung der Anfrage",
+    "offline": "Sie sind offline"
+  },
+  "notifications": {
+    "backupStarted": "Sicherung gestartet",
+    "backupCompleted": "Sicherung erfolgreich abgeschlossen",
+    "backupFailed": "Sicherung fehlgeschlagen: {{error}}",
+    "deviceConnected": "Gerät verbunden: {{device}}",
+    "deviceDisconnected": "Gerät getrennt: {{device}}",
+    "zerotierStarted": "ZeroTier gestartet",
+    "zerotierStopped": "ZeroTier gestoppt",
+    "updateAvailable": "Update verfügbar: {{version}}"
+  }
+}

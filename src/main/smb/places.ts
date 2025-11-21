@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { logger } from '../utils/logger';
 import * as path from 'path';
 import * as os from 'os';
 import { SMBShare } from '@shared/types';
@@ -37,7 +38,7 @@ export class PlacesManager {
     // Add to KDE places if it exists
     await this.addToKDEPlaces(url, label);
 
-    console.log('Share pinned:', share.displayName, username ? `(as ${username})` : '(guest)');
+    logger.info('Share pinned:', { share: share.displayName, user: username ? `(as ${username})` : '(guest)' });
 
     // If password is provided, try to mount it now with gio
     // This caches credentials in the keyring
@@ -63,7 +64,7 @@ export class PlacesManager {
       // Format: smb://user:password@host/share
       const url = `smb://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${host}/${shareName}`;
 
-      console.log(`Mounting share with gio: smb://${username}@${host}/${shareName}`);
+      logger.info(`Mounting share with gio: smb://${username}@${host}/${shareName}`);
 
       // Use spawn to avoid shell interpretation of special chars like !
       await new Promise<void>((resolve, reject) => {
@@ -131,13 +132,13 @@ export class PlacesManager {
         }, 10000);
       });
 
-      console.log('✓ Share mounted and credentials cached in keyring');
+      logger.info('✓ Share mounted and credentials cached in keyring');
     } catch (error: any) {
       // Mounting might fail if already mounted or other issues
       // This is not critical as the bookmark is still created
-      console.warn('gio mount failed (share may already be mounted):', error.message);
-      if (error.stdout) console.warn('Mount stdout:', error.stdout);
-      if (error.stderr) console.warn('Mount stderr:', error.stderr);
+      logger.warn('gio mount failed (share may already be mounted):', error.message);
+      if (error.stdout) logger.warn('Mount stdout:', error.stdout);
+      if (error.stderr) logger.warn('Mount stderr:', error.stderr);
     }
   }
 
@@ -148,7 +149,7 @@ export class PlacesManager {
     // Remove from KDE places
     await this.removeFromKDEPlaces(shareUrl);
 
-    console.log('Share unpinned:', shareUrl);
+    logger.info('Share unpinned:', shareUrl);
   }
 
   private async addToGTKBookmarks(url: string, label: string): Promise<void> {
@@ -170,10 +171,10 @@ export class PlacesManager {
       if (!bookmarks.includes(url)) {
         bookmarks += line;
         fs.writeFileSync(this.gtkBookmarksFile, bookmarks);
-        console.log('Added to GTK bookmarks');
+        logger.info('Added to GTK bookmarks');
       }
     } catch (error) {
-      console.error('Failed to add GTK bookmark:', error);
+      logger.error('Failed to add GTK bookmark:', error);
     }
   }
 
@@ -189,9 +190,9 @@ export class PlacesManager {
         .join('\n');
 
       fs.writeFileSync(this.gtkBookmarksFile, bookmarks);
-      console.log('Removed from GTK bookmarks');
+      logger.info('Removed from GTK bookmarks');
     } catch (error) {
-      console.error('Failed to remove GTK bookmark:', error);
+      logger.error('Failed to remove GTK bookmark:', error);
     }
   }
 
@@ -232,9 +233,9 @@ export class PlacesManager {
       xml = xml.replace('</xbel>', `${bookmark}</xbel>`);
       fs.writeFileSync(this.kdePlacesFile, xml);
 
-      console.log('Added to KDE places');
+      logger.info('Added to KDE places');
     } catch (error) {
-      console.error('Failed to add KDE place:', error);
+      logger.error('Failed to add KDE place:', error);
     }
   }
 
@@ -253,9 +254,9 @@ export class PlacesManager {
       xml = xml.replace(bookmarkRegex, '');
       fs.writeFileSync(this.kdePlacesFile, xml);
 
-      console.log('Removed from KDE places');
+      logger.info('Removed from KDE places');
     } catch (error) {
-      console.error('Failed to remove KDE place:', error);
+      logger.error('Failed to remove KDE place:', error);
     }
   }
 

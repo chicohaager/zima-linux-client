@@ -4,17 +4,33 @@
 
 /**
  * Determine if an IP address is from a ZeroTier network (remote)
- * ZeroTier typically uses specific private IP ranges
+ * Note: This is a simple heuristic for the renderer process.
+ * The main process uses dynamic detection via ZeroTier interfaces.
+ *
+ * Common ZeroTier ranges, but not exhaustive:
+ * - 10.x.x.x (can be ZeroTier managed)
+ * - 172.16-31.x.x (RFC1918 private range often used by ZeroTier)
  */
 function isZeroTierIP(ip: string): boolean {
-  return (
-    ip.startsWith('10.147.') ||
-    ip.startsWith('172.21.') ||
-    ip.startsWith('172.22.') ||
-    ip.startsWith('172.23.') ||
-    ip.startsWith('172.24.') ||
-    ip.startsWith('172.25.')
-  );
+  // Since renderer can't query system interfaces, we use a conservative approach:
+  // Treat all RFC1918 private IPs that are NOT typical local network ranges as potential ZeroTier
+  const parts = ip.split('.');
+  if (parts.length !== 4) return false;
+
+  const first = parseInt(parts[0]);
+  const second = parseInt(parts[1]);
+
+  // 10.0-255.x.x range (but exclude common local 10.0.x.x)
+  if (first === 10 && second > 0) {
+    return true; // Likely ZeroTier
+  }
+
+  // 172.16-31.x.x range (RFC1918 Class B, commonly used by ZeroTier)
+  if (first === 172 && second >= 16 && second <= 31) {
+    return true;
+  }
+
+  return false;
 }
 
 /**

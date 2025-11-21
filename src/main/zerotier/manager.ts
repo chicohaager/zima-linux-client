@@ -1,4 +1,5 @@
 import { execFile, exec, spawn, ChildProcess } from 'child_process';
+import { logger } from '../utils/logger';
 import { promisify } from 'util';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -23,6 +24,7 @@ export class ZeroTierManager {
   private daemonProcess?: ChildProcess;
   private serviceName: string = 'zima-zerotier';
   private customPort: string = '9995'; // Use custom port to avoid conflict with system ZeroTier (9993) and system service (9994)
+  private startLock: Promise<void> | null = null; // Prevent concurrent start operations
 
   constructor() {
     // Determine architecture
@@ -40,7 +42,7 @@ export class ZeroTierManager {
       if (fs.existsSync(devCliPath) && fs.existsSync(devBinaryPath)) {
         bundledCliPath = devCliPath;
         bundledBinaryPath = devBinaryPath;
-        console.log('Found development bundled binaries:', devCliPath, devBinaryPath);
+        logger.info('Found development bundled binaries:', { devCliPath, devBinaryPath });
       }
     } else {
       // Production: check bundled resources
@@ -49,15 +51,20 @@ export class ZeroTierManager {
       if (fs.existsSync(prodCliPath) && fs.existsSync(prodBinaryPath)) {
         bundledCliPath = prodCliPath;
         bundledBinaryPath = prodBinaryPath;
-        console.log('Found production bundled binaries:', prodCliPath, prodBinaryPath);
+        logger.info('Found production bundled binaries:', { prodCliPath, prodBinaryPath });
       }
     }
 
-    // Try system paths in order of preference
-    // For DEB packages, prefer system service over bundled binaries
+    // User service paths (installed by setupBundledDaemon)
+    const userServiceCliPath = path.join(app.getPath('home'), '.local/lib/zima-remote/zerotier/zerotier-cli');
+    const userServiceBinaryPath = path.join(app.getPath('home'), '.local/lib/zima-remote/zerotier/zerotier-one');
+
+    // Try paths in order of preference
+    // Prioritize user service over system service for more control
     const possibleCliPaths = [
-      '/opt/zima-client/bin/zerotier-cli',  // Installed via .deb (preferred for packages)
-      bundledCliPath,                       // Bundled binaries (for AppImage)
+      bundledCliPath,                       // Bundled binaries (for dev/AppImage)
+      userServiceCliPath,                   // User service (installed by this app)
+      '/opt/zima-client/bin/zerotier-cli',  // Installed via .deb
       '/usr/sbin/zerotier-cli',             // System ZeroTier
       'zerotier-cli',                       // PATH
     ];
@@ -68,9 +75,12 @@ export class ZeroTierManager {
     for (const cliPath of possibleCliPaths) {
       if (cliPath && (fs.existsSync(cliPath) || cliPath === 'zerotier-cli')) {
         this.ztCli = cliPath;
-        this.useBundled = (cliPath === bundledCliPath);
-        if (this.useBundled) {
+        // Mark as bundled if using our bundled binaries or user service
+        this.useBundled = (cliPath === bundledCliPath || cliPath === userServiceCliPath);
+        if (cliPath === bundledCliPath) {
           this.ztBinary = bundledBinaryPath;
+        } else if (cliPath === userServiceCliPath) {
+          this.ztBinary = userServiceBinaryPath;
         }
         break;
       }
@@ -87,15 +97,15 @@ export class ZeroTierManager {
       this.ztHomeDir = '/var/lib/zima-zerotier';
     }
 
-    console.log('ZeroTier Manager initialized');
-    console.log('CLI path:', this.ztCli);
-    console.log('Home directory:', this.ztHomeDir);
-    console.log('Using bundled binaries:', this.useBundled);
+    logger.info('ZeroTier Manager initialized');
+    logger.info('CLI path:', this.ztCli);
+    logger.info('Home directory:', this.ztHomeDir);
+    logger.info('Using bundled binaries:', this.useBundled);
 
     // Install systemd user service if using bundled binaries
     if (this.useBundled) {
       this.setupBundledDaemon().catch(err => {
-        console.warn('Failed to setup bundled daemon:', err.message);
+        logger.warn('Failed to setup bundled daemon:', err.message);
       });
     }
   }
@@ -113,19 +123,19 @@ export class ZeroTierManager {
       // Ensure directory exists
       if (!fs.existsSync(localBinaryDir)) {
         fs.mkdirSync(localBinaryDir, { recursive: true });
-        console.log('Created local binary directory:', localBinaryDir);
+        logger.info('Created local binary directory:', localBinaryDir);
       }
 
       // Copy binaries if they don't exist or are outdated
       let binaryUpdated = false;
       if (!fs.existsSync(localBinaryPath) || !fs.existsSync(localCliPath)) {
-        console.log('Copying ZeroTier binaries to local lib directory...');
+        logger.info('Copying ZeroTier binaries to local lib directory...');
         fs.copyFileSync(this.ztBinary, localBinaryPath);
         fs.copyFileSync(this.ztCli, localCliPath);
         fs.chmodSync(localBinaryPath, 0o755);
         fs.chmodSync(localCliPath, 0o755);
         binaryUpdated = true;
-        console.log('✓ Binaries copied to:', localBinaryDir);
+        logger.info('✓ Binaries copied to:', localBinaryDir);
       }
 
       // Update paths to use local copies
@@ -139,18 +149,18 @@ export class ZeroTierManager {
       const needsSetup = await this.needsCapabilitySetup();
 
       if (needsSetup || binaryUpdated) {
-        console.log('\n=== ZeroTier Setup Required ===');
-        console.log('ZeroTier needs network capabilities for creating virtual interfaces.');
-        console.log('This is a ONE-TIME setup.\n');
-        console.log('Please run this command in a terminal:\n');
-        console.log(`sudo setcap cap_net_admin,cap_net_raw=eip ${this.ztBinary}\n`);
-        console.log('Then restart the application.');
-        console.log('===============================\n');
+        logger.info('\n=== ZeroTier Setup Required ===');
+        logger.info('ZeroTier needs network capabilities for creating virtual interfaces.');
+        logger.info('This is a ONE-TIME setup.\n');
+        logger.info('Please run this command in a terminal:\n');
+        logger.info(`sudo setcap cap_net_admin,cap_net_raw=eip ${this.ztBinary}\n`);
+        logger.info('Then restart the application.');
+        logger.info('===============================\n');
       }
 
       await this.installUserService();
     } catch (error: any) {
-      console.error('Failed to setup bundled daemon:', error.message);
+      logger.error('Failed to setup bundled daemon:', error.message);
     }
   }
 
@@ -161,13 +171,13 @@ export class ZeroTierManager {
     try {
       const tunDeviceExists = fs.existsSync('/dev/net/tun');
       if (!tunDeviceExists) {
-        console.log('TUN device not found. Loading tun kernel module...');
+        logger.info('TUN device not found. Loading tun kernel module...');
         await execAsync('sudo modprobe tun').catch(() => {
-          console.warn('Could not load tun module. You may need to run: sudo modprobe tun');
+          logger.warn('Could not load tun module. You may need to run: sudo modprobe tun');
         });
       }
     } catch (error) {
-      console.warn('Could not check TUN device:', error);
+      logger.warn('Could not check TUN device:', error);
     }
   }
 
@@ -202,8 +212,9 @@ After=network-online.target
 [Service]
 Type=forking
 ExecStart=${this.ztBinary} -p${this.customPort} -d -U ${this.ztHomeDir}
-ExecStop=${this.ztCli} -D ${this.ztHomeDir} shutdown
-Restart=always
+ExecStop=/bin/sh -c '${this.ztCli} -D${this.ztHomeDir} -p\$(cat ${this.ztHomeDir}/zerotier-one.port) -T\$(cat ${this.ztHomeDir}/authtoken.secret) shutdown || true'
+Restart=on-failure
+RestartSec=5
 NoNewPrivileges=false
 
 [Install]
@@ -214,10 +225,10 @@ WantedBy=default.target
       if (fs.existsSync(serviceFilePath)) {
         const existingContent = fs.readFileSync(serviceFilePath, 'utf-8');
         if (existingContent === expectedServiceContent) {
-          console.log('Systemd user service already installed and up to date');
+          logger.info('Systemd user service already installed and up to date');
           return;
         }
-        console.log('Systemd user service needs update, reinstalling...');
+        logger.info('Systemd user service needs update, reinstalling...');
       }
 
       // Ensure directory exists
@@ -227,20 +238,20 @@ WantedBy=default.target
 
       // Write service file
       fs.writeFileSync(serviceFilePath, expectedServiceContent, 'utf-8');
-      console.log('Installed systemd user service:', serviceFilePath);
+      logger.info('Installed systemd user service:', serviceFilePath);
 
       // Clean up old port file to ensure fresh start with custom port
       const portFile = path.join(this.ztHomeDir, 'zerotier-one.port');
       if (fs.existsSync(portFile)) {
         fs.unlinkSync(portFile);
-        console.log('Removed old port file');
+        logger.info('Removed old port file');
       }
 
-      // Reload systemd --user daemon
+      // Reload systemd --user daemon to pick up changes
       await execAsync('systemctl --user daemon-reload');
-      console.log('Reloaded systemd user daemon');
+      logger.info('Reloaded systemd user daemon');
     } catch (error: any) {
-      console.error('Failed to install user service:', error.message);
+      logger.error('Failed to install user service:', error.message);
       throw error;
     }
   }
@@ -261,71 +272,123 @@ WantedBy=default.target
    * Start ZeroTier (bundled daemon via systemd --user or system service)
    */
   async start(): Promise<void> {
+    // If a start operation is already in progress, wait for it to complete
+    if (this.startLock) {
+      logger.info('Start operation already in progress, waiting...');
+      await this.startLock;
+      return;
+    }
+
+    // Create a new lock for this start operation
+    this.startLock = this.performStart();
+
+    try {
+      await this.startLock;
+    } finally {
+      this.startLock = null;
+    }
+  }
+
+  /**
+   * Internal method to perform the actual start operation
+   */
+  private async performStart(): Promise<void> {
     try {
       // First check if daemon is already ready (regardless of how it was started)
       if (await this.isReady()) {
-        console.log('✓ ZeroTier daemon already running and ready');
+        logger.info('✓ ZeroTier daemon already running and ready');
         return;
       }
 
       if (this.useBundled) {
         // Check if service is running but daemon not ready yet
-        if (await this.isUserServiceRunning()) {
-          console.log('Service running, waiting for daemon to be ready...');
-          // Wait a bit for daemon to initialize
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+        const serviceRunning = await this.isUserServiceRunning();
 
-          if (await this.isReady()) {
-            console.log('✓ ZeroTier daemon is now ready');
-            return;
+        if (serviceRunning) {
+          logger.info('Service already running, waiting for daemon to initialize...');
+
+          // Wait up to 10 seconds for daemon to become ready
+          const maxWaitTime = 10000; // 10 seconds
+          const checkInterval = 500; // check every 500ms
+          let waited = 0;
+
+          while (waited < maxWaitTime) {
+            if (await this.isReady()) {
+              logger.info('✓ ZeroTier daemon is now ready');
+              return;
+            }
+            await new Promise((resolve) => setTimeout(resolve, checkInterval));
+            waited += checkInterval;
           }
 
-          // Service running but daemon not responding, restart
-          console.log('Service running but daemon not responding, restarting...');
+          // Service running but daemon still not responding after 10s, try restart
+          logger.info('Daemon not responding after 10s, restarting service...');
           await execAsync(`systemctl --user restart ${this.serviceName}.service`);
         } else {
           // Service not running, start it
-          console.log('Starting ZeroTier via systemd --user...');
+          logger.info('Starting ZeroTier via systemd --user...');
           await execAsync(`systemctl --user start ${this.serviceName}.service`);
         }
 
-        // Wait for service to start
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Wait for daemon to become ready (up to 10 seconds)
+        const maxWaitTime = 10000;
+        const checkInterval = 500;
+        let waited = 0;
 
-        // Verify daemon is ready
-        if (await this.isReady()) {
-          console.log('✓ ZeroTier daemon started and ready');
-        } else {
-          throw new Error('Daemon failed to become ready after service start');
+        while (waited < maxWaitTime) {
+          if (await this.isReady()) {
+            logger.info('✓ ZeroTier daemon started and ready');
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, checkInterval));
+          waited += checkInterval;
         }
+
+        throw new Error('Daemon failed to become ready within 10 seconds. Check logs with: journalctl --user -u zima-zerotier.service');
       } else {
         // System service
         const isRunning = await this.isServiceRunning();
-        if (isRunning) {
-          console.log('Service running, waiting for daemon to be ready...');
-          await new Promise((resolve) => setTimeout(resolve, 2000));
 
-          if (await this.isReady()) {
-            console.log('✓ ZeroTier daemon is now ready');
-            return;
+        if (isRunning) {
+          logger.info('System service already running, waiting for daemon to initialize...');
+
+          // Wait up to 10 seconds for daemon to become ready
+          const maxWaitTime = 10000;
+          const checkInterval = 500;
+          let waited = 0;
+
+          while (waited < maxWaitTime) {
+            if (await this.isReady()) {
+              logger.info('✓ ZeroTier daemon is now ready');
+              return;
+            }
+            await new Promise((resolve) => setTimeout(resolve, checkInterval));
+            waited += checkInterval;
           }
 
-          console.log('Service running but daemon not responding, restarting...');
+          // Service running but daemon still not responding, try restart
+          logger.info('Daemon not responding after 10s, restarting service...');
           await execAsync('systemctl restart zima-zerotier.service');
         } else {
-          console.log('Starting zima-zerotier service...');
+          logger.info('Starting zima-zerotier system service...');
           await execAsync('systemctl start zima-zerotier.service');
         }
 
-        // Wait for service to start
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Wait for daemon to become ready (up to 10 seconds)
+        const maxWaitTime = 10000;
+        const checkInterval = 500;
+        let waited = 0;
 
-        // Verify
-        if (await this.isReady()) {
-          console.log('✓ ZeroTier daemon started and ready');
-        } else {
-          throw new Error('Daemon failed to become ready after service start');
+        while (waited < maxWaitTime) {
+          if (await this.isReady()) {
+            logger.info('✓ ZeroTier daemon started and ready');
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, checkInterval));
+          waited += checkInterval;
         }
+
+        throw new Error('Daemon failed to become ready within 10 seconds. Check logs with: journalctl -u zima-zerotier.service');
       }
     } catch (error: any) {
       throw new Error(`Failed to start ZeroTier: ${error.message}`);
@@ -339,16 +402,16 @@ WantedBy=default.target
     try {
       if (this.useBundled) {
         // Stop bundled daemon via systemd --user service
-        console.log('Stopping ZeroTier via systemd --user...');
+        logger.info('Stopping ZeroTier via systemd --user...');
         await execAsync(`systemctl --user stop ${this.serviceName}.service`);
-        console.log('✓ ZeroTier service stopped');
+        logger.info('✓ ZeroTier service stopped');
       } else {
         // Stop system service
         await execAsync('systemctl stop zima-zerotier.service');
-        console.log('✓ ZeroTier service stopped');
+        logger.info('✓ ZeroTier service stopped');
       }
     } catch (error: any) {
-      console.warn('Failed to stop ZeroTier:', error.message);
+      logger.warn('Failed to stop ZeroTier:', error.message);
     }
   }
 
@@ -360,12 +423,12 @@ WantedBy=default.target
       if (this.useBundled) {
         await execAsync(`systemctl --user restart ${this.serviceName}.service`);
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        console.log('✓ ZeroTier restarted');
+        logger.info('✓ ZeroTier restarted');
       } else {
         await this.stop();
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await this.start();
-        console.log('✓ ZeroTier restarted');
+        logger.info('✓ ZeroTier restarted');
       }
     } catch (error: any) {
       throw new Error(`Failed to restart ZeroTier: ${error.message}`);
@@ -374,11 +437,27 @@ WantedBy=default.target
 
   /**
    * Cleanup on app exit
+   * Optionally stop the ZeroTier service based on user preference
    */
-  async cleanup(): Promise<void> {
-    // Systemd --user service will continue running after app exit
-    // This is intentional for background connectivity
-    console.log('ZeroTier service will continue running in background');
+  async cleanup(stopService: boolean = false): Promise<void> {
+    if (stopService) {
+      logger.info('Stopping ZeroTier service as requested...');
+      try {
+        await this.stop();
+        logger.info('✓ ZeroTier service stopped');
+      } catch (error) {
+        logger.error('Failed to stop ZeroTier service:', error);
+      }
+    } else {
+      // Default behavior: service continues running for background connectivity
+      logger.info('ZeroTier service will continue running in background');
+      logger.info('To stop the service on exit, configure the app settings or run:');
+      if (this.useBundled) {
+        logger.info(`  systemctl --user stop ${this.serviceName}.service`);
+      } else {
+        logger.info('  systemctl stop zima-zerotier.service');
+      }
+    }
   }
 
   /**
@@ -398,13 +477,13 @@ WantedBy=default.target
    */
   async joinNetwork(networkId: string): Promise<{ gatewayIP: string | null }> {
     const sanitizedNetworkId = sanitizeNetworkId(networkId);
-    console.log('Joining network:', sanitizedNetworkId);
+    logger.info('Joining network:', sanitizedNetworkId);
 
     try {
       // Join using CLI (communicates with daemon via port and token)
       const args = await this.buildCliArgs(['join', sanitizedNetworkId]);
       await execFileAsync(this.ztCli, args);
-      console.log('Join command sent');
+      logger.info('Join command sent');
 
       // Wait for connection
       await this.waitForConnection(sanitizedNetworkId);
@@ -420,7 +499,7 @@ WantedBy=default.target
           const match = route.target.match(/^(\d+\.\d+\.\d+)\.\d+\/\d+$/);
           if (match) {
             const gatewayIP = `${match[1]}.1`;
-            console.log('Gateway IP:', gatewayIP);
+            logger.info('Gateway IP:', gatewayIP);
             return { gatewayIP };
           }
         }
@@ -428,7 +507,7 @@ WantedBy=default.target
 
       return { gatewayIP: null };
     } catch (error: any) {
-      console.error('Failed to join network:', error.message);
+      logger.error('Failed to join network:', error.message);
       throw error;
     }
   }
@@ -438,14 +517,14 @@ WantedBy=default.target
    */
   async leaveNetwork(networkId: string): Promise<void> {
     const sanitizedNetworkId = sanitizeNetworkId(networkId);
-    console.log('Leaving network:', sanitizedNetworkId);
+    logger.info('Leaving network:', sanitizedNetworkId);
 
     try {
       const args = await this.buildCliArgs(['leave', sanitizedNetworkId]);
       await execFileAsync(this.ztCli, args);
-      console.log('Leave command sent');
+      logger.info('Leave command sent');
     } catch (error: any) {
-      console.error('Failed to leave network:', error.message);
+      logger.error('Failed to leave network:', error.message);
       throw error;
     }
   }
@@ -475,7 +554,7 @@ WantedBy=default.target
         routes: net.routes || [],
       }));
     } catch (error: any) {
-      console.error('Failed to get networks:', error.message);
+      logger.error('Failed to get networks:', error.message);
       return [];
     }
   }
@@ -504,7 +583,7 @@ WantedBy=default.target
       const network = networks.find((n) => n.id === networkId);
 
       if (network && network.status === 'OK') {
-        console.log('Successfully connected to network:', networkId);
+        logger.info('Successfully connected to network:', networkId);
         return;
       }
 
@@ -516,12 +595,23 @@ WantedBy=default.target
 
   /**
    * Check if daemon is ready
+   * Returns true if daemon is running and responding to API calls
    */
   async isReady(): Promise<boolean> {
     try {
+      // First check if port and token files exist
+      const portFile = path.join(this.ztHomeDir, 'zerotier-one.port');
+      const tokenFile = path.join(this.ztHomeDir, 'authtoken.secret');
+
+      if (!fs.existsSync(portFile) || !fs.existsSync(tokenFile)) {
+        logger.info('[isReady] Port or token file missing, daemon not ready');
+        return false;
+      }
+
       await this.getStatus();
       return true;
-    } catch {
+    } catch (error) {
+      // Silently fail - this is just a status check
       return false;
     }
   }
