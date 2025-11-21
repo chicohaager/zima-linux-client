@@ -1,9 +1,11 @@
-import { exec } from 'child_process';
+import { exec, execFile } from 'child_process';
+import { logger } from '../utils/logger';
 import { promisify } from 'util';
 import { SMBShare } from '@shared/types';
 import { sanitizeIPAddress, sanitizeHostname, sanitizeSMBShareName, escapeShellArg } from '../utils/sanitize';
 
 const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export class SMBManager {
   /**
@@ -22,7 +24,7 @@ export class SMBManager {
     const shares: SMBShare[] = [];
 
     try {
-      console.log('Discovering shares on:', host, username ? `(as ${username})` : '(guest)');
+      logger.info('Discovering shares on:', { host, user: username ? `(as ${username})` : '(guest)' });
 
       // Sanitize host to prevent command injection
       let sanitizedHost: string;
@@ -33,21 +35,21 @@ export class SMBManager {
         sanitizedHost = sanitizeHostname(host);
       }
 
-      // Build command with optional authentication
-      let cmd = `smbclient -L ${sanitizedHost}`;
+      // Build command arguments array (safer than shell string)
+      const args: string[] = ['-L', sanitizedHost];
 
       if (username && password) {
-        const escapedUser = escapeShellArg(username);
-        const escapedPass = escapeShellArg(password);
-        cmd += ` -U ${escapedUser}%${escapedPass}`;
+        // Pass credentials via -U flag
+        args.push('-U', `${username}%${password}`);
       } else {
-        cmd += ' -N'; // No password (guest)
+        args.push('-N'); // No password (guest)
       }
 
       // Use -g for grepable output (easier parsing)
-      cmd += ' -g';
+      args.push('-g');
 
-      const { stdout } = await execAsync(cmd, {
+      // Use execFile instead of exec for better security
+      const { stdout } = await execFileAsync('smbclient', args, {
         timeout: 10000,
       });
 
@@ -69,7 +71,7 @@ export class SMBManager {
         if (type === 'disk' && name) {
           // Skip administrative/hidden shares unless explicitly requested
           if (!includeAdminShares && name.endsWith('$')) {
-            console.log(`Skipping admin share: ${name}`);
+            logger.info(`Skipping admin share: ${name}`);
             continue;
           }
 
@@ -82,13 +84,13 @@ export class SMBManager {
             pinned: false,
           });
 
-          console.log(`Found share: ${name} (${comment || 'no description'})`);
+          logger.info(`Found share: ${name} (${comment || 'no description'})`);
         }
       }
 
-      console.log(`Discovery complete: ${shares.length} shares found on ${host}`);
+      logger.info(`Discovery complete: ${shares.length} shares found on ${host}`);
     } catch (error: any) {
-      console.error(`Failed to discover shares on ${host}:`, error.message);
+      logger.error(`Failed to discover shares on ${host}:`, error.message);
       // Don't throw - return empty array so other hosts can still be processed
     }
 
@@ -106,23 +108,21 @@ export class SMBManager {
       }
       const sanitizedShare = sanitizeSMBShareName(share);
 
-      let cmd = `smbclient //${sanitizedHost}/${sanitizedShare}`;
+      // Build arguments array for safer execution
+      const args: string[] = [`//${sanitizedHost}/${sanitizedShare}`];
 
       if (username && password) {
-        // Escape username and password to prevent injection
-        const escapedUser = escapeShellArg(username);
-        const escapedPass = escapeShellArg(password);
-        cmd += ` -U ${escapedUser}%${escapedPass}`;
+        args.push('-U', `${username}%${password}`);
       } else {
-        cmd += ' -N';
+        args.push('-N');
       }
 
-      cmd += ' -c "ls"';
+      args.push('-c', 'ls');
 
-      await execAsync(cmd, { timeout: 5000 });
+      await execFileAsync('smbclient', args, { timeout: 5000 });
       return true;
     } catch (error) {
-      console.error('Failed to connect to share:', error);
+      logger.error('Failed to connect to share:', error);
       return false;
     }
   }
@@ -155,9 +155,9 @@ export class SMBManager {
       }
 
       await execAsync(cmd);
-      console.log('Share mounted successfully');
+      logger.info('Share mounted successfully');
     } catch (error) {
-      console.error('Failed to mount share:', error);
+      logger.error('Failed to mount share:', error);
       throw error;
     }
   }
@@ -167,9 +167,9 @@ export class SMBManager {
       // Sanitize mount point to prevent injection
       const sanitizedMountPoint = escapeShellArg(mountPoint);
       await execAsync(`umount ${sanitizedMountPoint}`);
-      console.log('Share unmounted successfully');
+      logger.info('Share unmounted successfully');
     } catch (error) {
-      console.error('Failed to unmount share:', error);
+      logger.error('Failed to unmount share:', error);
       throw error;
     }
   }

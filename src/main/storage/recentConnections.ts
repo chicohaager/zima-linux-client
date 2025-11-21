@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { logger } from '../utils/logger';
 import * as fs from 'fs';
 import { app } from 'electron';
 
@@ -45,7 +46,7 @@ export class RecentConnectionsStorage {
       // Sort by timestamp descending (most recent first)
       return connections.sort((a, b) => b.timestamp - a.timestamp);
     } catch (error) {
-      console.error('Failed to read recent connections:', error);
+      logger.error('Failed to read recent connections:', error);
       return [];
     }
   }
@@ -72,9 +73,9 @@ export class RecentConnectionsStorage {
       const trimmed = filtered.slice(0, this.maxConnections);
 
       fs.writeFileSync(this.storageFile, JSON.stringify(trimmed, null, 2), 'utf-8');
-      console.log('Saved recent connection:', connection.networkId);
+      logger.info('Saved recent connection:', connection.networkId);
     } catch (error) {
-      console.error('Failed to save recent connection:', error);
+      logger.error('Failed to save recent connection:', error);
     }
   }
 
@@ -84,9 +85,9 @@ export class RecentConnectionsStorage {
   clearAll(): void {
     try {
       fs.writeFileSync(this.storageFile, JSON.stringify([]), 'utf-8');
-      console.log('Cleared all recent connections');
+      logger.info('Cleared all recent connections');
     } catch (error) {
-      console.error('Failed to clear recent connections:', error);
+      logger.error('Failed to clear recent connections:', error);
     }
   }
 
@@ -98,9 +99,9 @@ export class RecentConnectionsStorage {
       const connections = this.getRecent();
       const filtered = connections.filter(c => c.networkId !== networkId);
       fs.writeFileSync(this.storageFile, JSON.stringify(filtered, null, 2), 'utf-8');
-      console.log('Removed recent connection:', networkId);
+      logger.info('Removed recent connection:', networkId);
     } catch (error) {
-      console.error('Failed to remove recent connection:', error);
+      logger.error('Failed to remove recent connection:', error);
     }
   }
 }

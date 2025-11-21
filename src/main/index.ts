@@ -1,7 +1,12 @@
 import { app, BrowserWindow } from 'electron';
+import { logger } from './utils/logger';
 import * as path from 'path';
 import { IPCHandlers } from './ipc/handlers';
 import { updateManager } from './updater';
+import { initSentry, captureException, flushSentry } from './utils/sentry';
+
+// Initialize Sentry for error monitoring
+initSentry();
 
 // Suppress Electron security warnings for local HTTP connections
 // ZimaOS typically runs on local network via HTTP which is acceptable
@@ -22,16 +27,16 @@ async function performCleanup(): Promise<void> {
   const cleanupPromise = ipcHandlers.cleanup();
   const timeoutPromise = new Promise<void>((resolve) => {
     setTimeout(() => {
-      console.warn('⚠️  Cleanup timeout after 5s, forcing quit');
+      logger.warn('⚠️  Cleanup timeout after 5s, forcing quit');
       resolve();
     }, 5000);
   });
 
   try {
     await Promise.race([cleanupPromise, timeoutPromise]);
-    console.log('✓ Cleanup completed');
+    logger.info('✓ Cleanup completed');
   } catch (error) {
-    console.error('❌ Cleanup error:', error);
+    logger.error('❌ Cleanup error:', error);
   }
 }
 
@@ -102,18 +107,26 @@ app.on('window-all-closed', () => {
 app.on('before-quit', async (event) => {
   event.preventDefault();
   await performCleanup();
+  await flushSentry(); // Ensure all error reports are sent
   app.exit(0);
 });
 
 // Handle uncaught exceptions - perform cleanup before exiting
 process.on('uncaughtException', async (error) => {
-  console.error('❌ Uncaught exception:', error);
+  logger.error('❌ Uncaught exception:', error);
+  captureException(error, { context: 'uncaughtException' });
+  await flushSentry(); // Ensure error is sent before exit
   await performCleanup();
   process.exit(1);
 });
 
 process.on('unhandledRejection', async (error) => {
-  console.error('❌ Unhandled rejection:', error);
+  logger.error('❌ Unhandled rejection:', error);
+  captureException(
+    error instanceof Error ? error : new Error(String(error)),
+    { context: 'unhandledRejection' }
+  );
+  await flushSentry(); // Ensure error is sent before exit
   await performCleanup();
   process.exit(1);
 });

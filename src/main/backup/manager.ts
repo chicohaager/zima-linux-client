@@ -6,6 +6,8 @@ import * as path from 'path';
 import { BackupJob, BackupProgress, ShareSpace, SMBShare, BackupSchedule } from '@shared/types';
 import { EventEmitter } from 'events';
 import * as cron from 'node-cron';
+import { credentialsManager } from '../security/credentials';
+import { logger } from '../utils/logger';
 
 const execAsync = promisify(exec);
 
@@ -14,7 +16,7 @@ async function findMountPointFromBookmarks(host: string, shareName: string): Pro
   try {
     const bookmarkFile = path.join(require('os').homedir(), '.config/gtk-3.0/bookmarks');
     if (!fs.existsSync(bookmarkFile)) {
-      console.log('[Mount] No GTK bookmarks file found');
+      logger.info('[Mount] No GTK bookmarks file found');
       return null;
     }
 
@@ -25,7 +27,7 @@ async function findMountPointFromBookmarks(host: string, shareName: string): Pro
       if (line.startsWith('smb://') && line.includes(host) && line.toLowerCase().includes(shareName.toLowerCase())) {
         // Extract the URI
         const uri = line.split(' ')[0];
-        console.log('[Mount] Found bookmark:', uri);
+        logger.info('[Mount] Found bookmark:', uri);
 
         // Try to resolve it with gio info
         try {
@@ -34,21 +36,21 @@ async function findMountPointFromBookmarks(host: string, shareName: string): Pro
             const match = stdout.match(/file:\/\/([^\s]+)/);
             if (match) {
               const mountPoint = decodeURIComponent(match[1]);
-              console.log('[Mount] Resolved mount point from bookmark:', mountPoint);
+              logger.info('[Mount] Resolved mount point from bookmark:', mountPoint);
               if (fs.existsSync(mountPoint)) {
                 return mountPoint;
               }
             }
           }
         } catch (error) {
-          console.log('[Mount] gio info failed for bookmark');
+          logger.info('[Mount] gio info failed for bookmark');
         }
       }
     }
 
     return null;
   } catch (error) {
-    console.log('[Mount] Error reading bookmarks:', error);
+    logger.info('[Mount] Error reading bookmarks:', error);
     return null;
   }
 }
@@ -152,8 +154,14 @@ export class BackupManager extends EventEmitter {
     this.runningJobs = new Map();
     this.scheduledTasks = new Map();
     this.ensureConfigExists();
-    this.loadJobs();
-    this.initializeSchedules();
+
+    // Load jobs asynchronously (with migration)
+    this.loadJobs().then(() => {
+      this.initializeSchedules();
+      logger.info('[BackupManager] Initialized with secure credentials');
+    }).catch(err => {
+      logger.error('[BackupManager] Failed to load jobs:', err);
+    });
   }
 
   /**
@@ -195,7 +203,7 @@ export class BackupManager extends EventEmitter {
         this.scheduleJob(jobId, job);
       }
     });
-    console.log(`✓ Initialized ${this.scheduledTasks.size} scheduled backup jobs`);
+    logger.info(`✓ Initialized ${this.scheduledTasks.size} scheduled backup jobs`);
   }
 
   /**
@@ -211,24 +219,24 @@ export class BackupManager extends EventEmitter {
 
     const cronExpression = this.scheduleToCron(job.schedule);
     if (!cronExpression) {
-      console.warn(`⚠️  Invalid schedule for job ${job.name}`);
+      logger.warn(`⚠️  Invalid schedule for job ${job.name}`);
       return;
     }
 
     try {
       const task = cron.schedule(cronExpression, async () => {
-        console.log(`🕐 Running scheduled backup: ${job.name}`);
+        logger.info(`🕐 Running scheduled backup: ${job.name}`);
         try {
           await this.runJob(jobId, job.credentials);
         } catch (error: any) {
-          console.error(`❌ Scheduled backup failed for ${job.name}:`, error.message);
+          logger.error(`❌ Scheduled backup failed for ${job.name}:`, error.message);
         }
       });
 
       this.scheduledTasks.set(jobId, task);
-      console.log(`✓ Scheduled backup "${job.name}" with cron: ${cronExpression}`);
+      logger.info(`✓ Scheduled backup "${job.name}" with cron: ${cronExpression}`);
     } catch (error: any) {
-      console.error(`❌ Failed to schedule job ${job.name}:`, error.message);
+      logger.error(`❌ Failed to schedule job ${job.name}:`, error.message);
     }
   }
 
@@ -240,7 +248,7 @@ export class BackupManager extends EventEmitter {
     if (task) {
       task.stop();
       this.scheduledTasks.delete(jobId);
-      console.log(`✓ Unscheduled backup job ${jobId}`);
+      logger.info(`✓ Unscheduled backup job ${jobId}`);
     }
   }
 
@@ -250,7 +258,7 @@ export class BackupManager extends EventEmitter {
   public stopAllSchedules(): void {
     this.scheduledTasks.forEach(task => task.stop());
     this.scheduledTasks.clear();
-    console.log('✓ Stopped all scheduled backup jobs');
+    logger.info('✓ Stopped all scheduled backup jobs');
   }
 
   private ensureConfigExists(): void {
@@ -262,23 +270,53 @@ export class BackupManager extends EventEmitter {
     }
   }
 
-  private loadJobs(): void {
+  private async loadJobs(): Promise<void> {
     try {
       const data = fs.readFileSync(this.configFile, 'utf-8');
       const jobs: BackupJob[] = JSON.parse(data);
       this.jobs.clear();
-      jobs.forEach(job => this.jobs.set(job.id, job));
+
+      // Load and migrate jobs
+      for (const job of jobs) {
+        // Check if job has plaintext credentials (old format)
+        if (job.credentials && job.credentials.password) {
+          logger.info(`[BackupManager] Migrating plaintext credentials for job: ${job.name}`);
+
+          // Migrate to keytar
+          await credentialsManager.migrateFromPlaintext(
+            `backup-job-${job.id}`,
+            job.credentials
+          );
+
+          // Remove plaintext credentials from memory
+          delete job.credentials;
+        }
+
+        this.jobs.set(job.id, job);
+      }
+
+      // Save jobs without plaintext credentials
+      if (jobs.some(j => j.credentials)) {
+        this.saveJobs();
+      }
     } catch (error) {
-      console.error('Failed to load backup jobs:', error);
+      logger.error('Failed to load backup jobs:', error);
     }
   }
 
   private saveJobs(): void {
     try {
       const jobs = Array.from(this.jobs.values());
-      fs.writeFileSync(this.configFile, JSON.stringify(jobs, null, 2), 'utf-8');
+
+      // Remove credentials before saving (they're stored in keytar)
+      const jobsToSave = jobs.map(job => {
+        const { credentials, ...jobWithoutCredentials } = job;
+        return jobWithoutCredentials;
+      });
+
+      fs.writeFileSync(this.configFile, JSON.stringify(jobsToSave, null, 2), 'utf-8');
     } catch (error) {
-      console.error('Failed to save backup jobs:', error);
+      logger.error('Failed to save backup jobs:', error);
       throw error;
     }
   }
@@ -301,34 +339,34 @@ export class BackupManager extends EventEmitter {
       let mountPoint: string | null = null;
 
       // First try to find mount point from bookmarks (for pinned shares)
-      console.log('[ShareSpace] Checking for existing mount in bookmarks...');
+      logger.info('[ShareSpace] Checking for existing mount in bookmarks...');
       mountPoint = await findMountPointFromBookmarks(share.host, share.name);
 
       if (mountPoint) {
-        console.log('[ShareSpace] Found existing mount point from bookmarks:', mountPoint);
+        logger.info('[ShareSpace] Found existing mount point from bookmarks:', mountPoint);
       } else {
         // If not found in bookmarks, try to mount
         const url = credentials
           ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${share.host}/${share.name}`
           : `smb://${share.host}/${share.name}`;
 
-        console.log('[ShareSpace] Attempting to mount:', url.replace(/:[^:@]+@/, ':***@'));
+        logger.info('[ShareSpace] Attempting to mount:', url.replace(/:[^:@]+@/, ':***@'));
 
         try {
           // Use spawn to avoid shell interpretation of special chars like !
-          console.log('[ShareSpace] Mounting with spawn (no shell), timeout 5s, providing credentials via stdin');
+          logger.info('[ShareSpace] Mounting with spawn (no shell), timeout 5s, providing credentials via stdin');
           const { stdout, stderr } = await spawnGioMount(url, credentials, 5000);
-          console.log('[ShareSpace] Mount succeeded!');
-          if (stdout) console.log('[ShareSpace] Mount stdout:', stdout);
-          if (stderr) console.log('[ShareSpace] Mount stderr:', stderr);
+          logger.info('[ShareSpace] Mount succeeded!');
+          if (stdout) logger.info('[ShareSpace] Mount stdout:', stdout);
+          if (stderr) logger.info('[ShareSpace] Mount stderr:', stderr);
           // Wait for gvfs to register the mount
           await new Promise(resolve => setTimeout(resolve, 1000));
         } catch (error: any) {
-          console.log('[ShareSpace] Mount command failed (may already be mounted)');
-          console.log('[ShareSpace] Error message:', error.message);
-          console.log('[ShareSpace] Error code:', error.code);
-          console.log('[ShareSpace] Error stdout:', error.stdout || '(empty)');
-          console.log('[ShareSpace] Error stderr:', error.stderr || '(empty)');
+          logger.info('[ShareSpace] Mount command failed (may already be mounted)');
+          logger.info('[ShareSpace] Error message:', error.message);
+          logger.info('[ShareSpace] Error code:', error.code);
+          logger.info('[ShareSpace] Error stdout:', error.stdout || '(empty)');
+          logger.info('[ShareSpace] Error stderr:', error.stderr || '(empty)');
           await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
@@ -342,27 +380,27 @@ export class BackupManager extends EventEmitter {
         try {
           const infoCmd = `gio info ${shellQuote(url)} | grep "standard::target-uri" || echo ""`;
           const { stdout: mountStdout } = await execAsync(infoCmd, { timeout: 5000 });
-          console.log('[ShareSpace] gio info output:', mountStdout);
+          logger.info('[ShareSpace] gio info output:', mountStdout);
           if (mountStdout.trim()) {
             const match = mountStdout.match(/file:\/\/([^\s]+)/);
             if (match) {
               mountPoint = decodeURIComponent(match[1]);
-              console.log('[ShareSpace] Found mount point from gio info:', mountPoint);
+              logger.info('[ShareSpace] Found mount point from gio info:', mountPoint);
             }
           }
         } catch (error: any) {
-          console.log('[ShareSpace] gio info failed:', error.message);
+          logger.info('[ShareSpace] gio info failed:', error.message);
         }
       }
 
       if (!mountPoint) {
         const userId = (process.getuid as () => number)();
         const gvfsPath = `/run/user/${userId}/gvfs`;
-        console.log('[ShareSpace] Checking gvfs path:', gvfsPath);
+        logger.info('[ShareSpace] Checking gvfs path:', gvfsPath);
 
         if (fs.existsSync(gvfsPath)) {
           const gvfsMounts = fs.readdirSync(gvfsPath);
-          console.log('[ShareSpace] Found gvfs mounts:', gvfsMounts);
+          logger.info('[ShareSpace] Found gvfs mounts:', gvfsMounts);
 
           // Try multiple matching strategies
           let matchingMount = gvfsMounts.find(m => {
@@ -382,27 +420,27 @@ export class BackupManager extends EventEmitter {
 
           if (matchingMount) {
             mountPoint = path.join(gvfsPath, matchingMount);
-            console.log('[ShareSpace] Found mount point from gvfs:', mountPoint);
+            logger.info('[ShareSpace] Found mount point from gvfs:', mountPoint);
           } else {
-            console.log('[ShareSpace] No matching mount found for host:', share.host, 'share:', share.name);
+            logger.info('[ShareSpace] No matching mount found', { host: share.host, share: share.name });
           }
         } else {
-          console.log('[ShareSpace] gvfs path does not exist');
+          logger.info('[ShareSpace] gvfs path does not exist');
         }
       }
 
       if (!mountPoint) {
-        console.log('[ShareSpace] Could not find mount point, returning 0 space');
+        logger.info('[ShareSpace] Could not find mount point, returning 0 space');
         return { total: 0, used: 0, available: 0 };
       }
 
-      console.log('[ShareSpace] Getting disk space for:', mountPoint);
+      logger.info('[ShareSpace] Getting disk space for:', mountPoint);
       const { stdout } = await execAsync(`df -B1 "${mountPoint}" | tail -n 1`, { timeout: 5000 });
       const parts = stdout.trim().split(/\s+/);
-      console.log('[ShareSpace] df output parts:', parts);
+      logger.info('[ShareSpace] df output parts:', parts);
 
       if (parts.length < 4) {
-        console.log('[ShareSpace] Invalid df output, returning 0 space');
+        logger.info('[ShareSpace] Invalid df output, returning 0 space');
         return { total: 0, used: 0, available: 0 };
       }
 
@@ -411,17 +449,30 @@ export class BackupManager extends EventEmitter {
         used: parseInt(parts[2]),
         available: parseInt(parts[3]),
       };
-      console.log('[ShareSpace] Space info:', space);
+      logger.info('[ShareSpace] Space info:', space);
       return space;
     } catch (error: any) {
-      console.error('[ShareSpace] Error getting space:', error);
+      logger.error('[ShareSpace] Error getting space:', error);
       return { total: 0, used: 0, available: 0 };
     }
   }
 
-  createJob(job: Omit<BackupJob, 'id'>): BackupJob {
+  async createJob(job: Omit<BackupJob, 'id'>): Promise<BackupJob> {
     const id = `backup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const newJob: BackupJob = { id, ...job };
+
+    // Store credentials securely if provided
+    if (job.credentials) {
+      await credentialsManager.setCredentials(
+        `backup-job-${id}`,
+        job.credentials.username,
+        job.credentials.password
+      );
+    }
+
+    // Create job without credentials in memory
+    const { credentials, ...jobWithoutCredentials } = job;
+    const newJob: BackupJob = { id, ...jobWithoutCredentials };
+
     this.jobs.set(id, newJob);
     this.saveJobs();
 
@@ -437,25 +488,28 @@ export class BackupManager extends EventEmitter {
     return Array.from(this.jobs.values());
   }
 
-  deleteJob(jobId: string): void {
+  async deleteJob(jobId: string): Promise<void> {
     // Stop the job if it's running
     if (this.runningJobs.has(jobId)) {
-      console.log(`[Backup] Stopping running job before deletion: ${jobId}`);
+      logger.info(`[Backup] Stopping running job before deletion: ${jobId}`);
       try {
         this.stopJob(jobId);
       } catch (error) {
-        console.error('[Backup] Error stopping job:', error);
+        logger.error('[Backup] Error stopping job:', error);
       }
     }
 
     // Remove scheduled task if exists
     this.unscheduleJob(jobId);
 
+    // Delete credentials from keytar
+    await credentialsManager.deleteCredentials(`backup-job-${jobId}`);
+
     this.jobs.delete(jobId);
     this.saveJobs();
   }
 
-  updateJob(jobId: string, updates: Partial<Omit<BackupJob, 'id'>>): BackupJob {
+  async updateJob(jobId: string, updates: Partial<Omit<BackupJob, 'id'>>): Promise<BackupJob> {
     const job = this.jobs.get(jobId);
     if (!job) {
       throw new Error(`Backup job not found: ${jobId}`);
@@ -468,6 +522,18 @@ export class BackupManager extends EventEmitter {
 
     // Remove old schedule
     this.unscheduleJob(jobId);
+
+    // Update credentials in keytar if provided
+    if (updates.credentials) {
+      await credentialsManager.setCredentials(
+        `backup-job-${jobId}`,
+        updates.credentials.username,
+        updates.credentials.password
+      );
+
+      // Remove credentials from updates (don't store in memory)
+      delete updates.credentials;
+    }
 
     // Merge updates with existing job
     const updatedJob: BackupJob = {
@@ -497,6 +563,16 @@ export class BackupManager extends EventEmitter {
       throw new Error('Backup job is already running');
     }
 
+    // Load credentials from keytar if not provided
+    let jobCredentials = credentials;
+    if (!jobCredentials) {
+      const storedCredentials = await credentialsManager.getCredentials(`backup-job-${jobId}`);
+      if (storedCredentials) {
+        jobCredentials = storedCredentials;
+        logger.info(`[Backup] Loaded credentials from keytar for job: ${job.name}`);
+      }
+    }
+
     job.lastStatus = 'running';
     job.lastRun = Date.now();
     this.saveJobs();
@@ -507,34 +583,34 @@ export class BackupManager extends EventEmitter {
       let mountPoint: string | null = null;
 
       // First try to find mount point from bookmarks (for pinned shares)
-      console.log('[Backup] Checking for existing mount in bookmarks...');
+      logger.info('[Backup] Checking for existing mount in bookmarks...');
       mountPoint = await findMountPointFromBookmarks(job.targetShare.host, job.targetShare.name);
 
       if (mountPoint) {
-        console.log('[Backup] Found existing mount point from bookmarks:', mountPoint);
+        logger.info('[Backup] Found existing mount point from bookmarks:', mountPoint);
       } else {
         // If not found in bookmarks, try to mount
-        const url = credentials
-          ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${job.targetShare.host}/${job.targetShare.name}`
+        const url = jobCredentials
+          ? `smb://${encodeURIComponent(jobCredentials.username)}:${encodeURIComponent(jobCredentials.password)}@${job.targetShare.host}/${job.targetShare.name}`
           : `smb://${job.targetShare.host}/${job.targetShare.name}`;
 
-        console.log(`[Backup] Attempting to mount: ${url.replace(/:[^:@]+@/, ':***@')}`);
+        logger.info(`[Backup] Attempting to mount: ${url.replace(/:[^:@]+@/, ':***@')}`);
 
         // Try to mount the share - use spawn to avoid shell interpretation
         try {
-          console.log('[Backup] Mounting with spawn (no shell), timeout 5s, providing credentials via stdin');
-          const { stdout, stderr } = await spawnGioMount(url, credentials, 5000);
-          console.log('[Backup] Mount succeeded!');
-          if (stdout) console.log('[Backup] Mount stdout:', stdout);
-          if (stderr) console.log('[Backup] Mount stderr:', stderr);
+          logger.info('[Backup] Mounting with spawn (no shell), timeout 5s, providing credentials via stdin');
+          const { stdout, stderr } = await spawnGioMount(url, jobCredentials, 5000);
+          logger.info('[Backup] Mount succeeded!');
+          if (stdout) logger.info('[Backup] Mount stdout:', stdout);
+          if (stderr) logger.info('[Backup] Mount stderr:', stderr);
           // Wait for gvfs to register the mount
           await new Promise(resolve => setTimeout(resolve, 1000));
         } catch (error: any) {
-          console.log('[Backup] Mount command failed (may already be mounted)');
-          console.log('[Backup] Error message:', error.message);
-          console.log('[Backup] Error code:', error.code);
-          console.log('[Backup] Error stdout:', error.stdout || '(empty)');
-          console.log('[Backup] Error stderr:', error.stderr || '(empty)');
+          logger.info('[Backup] Mount command failed (may already be mounted)');
+          logger.info('[Backup] Error message:', error.message);
+          logger.info('[Backup] Error code:', error.code);
+          logger.info('[Backup] Error stdout:', error.stdout || '(empty)');
+          logger.info('[Backup] Error stderr:', error.stderr || '(empty)');
           // Wait a bit anyway
           await new Promise(resolve => setTimeout(resolve, 500));
         }
@@ -542,38 +618,38 @@ export class BackupManager extends EventEmitter {
 
       // If we still don't have a mount point, try other methods
       if (!mountPoint) {
-        const url = credentials
-          ? `smb://${encodeURIComponent(credentials.username)}:${encodeURIComponent(credentials.password)}@${job.targetShare.host}/${job.targetShare.name}`
+        const url = jobCredentials
+          ? `smb://${encodeURIComponent(jobCredentials.username)}:${encodeURIComponent(jobCredentials.password)}@${job.targetShare.host}/${job.targetShare.name}`
           : `smb://${job.targetShare.host}/${job.targetShare.name}`;
 
         // Try to get mount point from gio info
         try {
-          console.log('[Backup] Trying gio info to get mount point...');
+          logger.info('[Backup] Trying gio info to get mount point...');
           const infoCmd = `gio info ${shellQuote(url)} | grep "standard::target-uri" || echo ""`;
           const { stdout: mountStdout } = await execAsync(infoCmd, { timeout: 5000 });
-          console.log('[Backup] gio info output:', mountStdout);
+          logger.info('[Backup] gio info output:', mountStdout);
           if (mountStdout.trim()) {
             const match = mountStdout.match(/file:\/\/([^\s]+)/);
             if (match) {
               mountPoint = decodeURIComponent(match[1]);
-              console.log('[Backup] Found mount point from gio info:', mountPoint);
+              logger.info('[Backup] Found mount point from gio info:', mountPoint);
             }
           }
         } catch (error: any) {
-          console.log('[Backup] gio info failed:', error.message);
+          logger.info('[Backup] gio info failed:', error.message);
         }
       }
 
       // Fallback: check gvfs directory
       if (!mountPoint) {
-        console.log('[Backup] Falling back to gvfs directory check...');
+        logger.info('[Backup] Falling back to gvfs directory check...');
         const userId = (process.getuid as () => number)();
         const gvfsPath = `/run/user/${userId}/gvfs`;
-        console.log('[Backup] Checking gvfs path:', gvfsPath);
+        logger.info('[Backup] Checking gvfs path:', gvfsPath);
 
         if (fs.existsSync(gvfsPath)) {
           const gvfsMounts = fs.readdirSync(gvfsPath);
-          console.log('[Backup] Found gvfs mounts:', gvfsMounts);
+          logger.info('[Backup] Found gvfs mounts:', gvfsMounts);
 
           // Try multiple matching strategies
           let matchingMount = gvfsMounts.find(m => {
@@ -593,24 +669,24 @@ export class BackupManager extends EventEmitter {
 
           if (matchingMount) {
             mountPoint = path.join(gvfsPath, matchingMount);
-            console.log('[Backup] Found mount point from gvfs:', mountPoint);
+            logger.info('[Backup] Found mount point from gvfs:', mountPoint);
           } else {
-            console.log('[Backup] No matching mount found.');
-            console.log('[Backup] Looking for host:', job.targetShare.host, 'share:', job.targetShare.name);
-            console.log('[Backup] Available mounts:', gvfsMounts.join(', '));
+            logger.info('[Backup] No matching mount found.');
+            logger.info('[Backup] Looking for mount', { host: job.targetShare.host, share: job.targetShare.name });
+            logger.info('[Backup] Available mounts:', gvfsMounts.join(', '));
           }
         } else {
-          console.log('[Backup] gvfs path does not exist');
+          logger.info('[Backup] gvfs path does not exist');
         }
       }
 
       if (!mountPoint) {
-        console.error('[Backup] Could not find mount point for target share');
-        console.error('[Backup] Target share details:', JSON.stringify(job.targetShare));
+        logger.error('[Backup] Could not find mount point for target share');
+        logger.error('[Backup] Target share details:', JSON.stringify(job.targetShare));
         throw new Error(`Could not find mount point for share ${job.targetShare.displayName}. Make sure the share is accessible and try pinning it first from the Apps page.`);
       }
 
-      console.log('[Backup] Using mount point:', mountPoint);
+      logger.info('[Backup] Using mount point:', mountPoint);
 
       const targetPath = path.join(mountPoint, job.targetPath.replace(/^\//, ''));
 
@@ -647,8 +723,8 @@ export class BackupManager extends EventEmitter {
         }
       };
 
-      // Parse rsync output for progress
-      rsyncProcess.stdout?.on('data', (data: string) => {
+      // Parse rsync output for progress - use named function for proper cleanup
+      const handleStdoutData = (data: string) => {
         const output = data.toString();
         const lines = output.split('\n');
 
@@ -682,7 +758,7 @@ export class BackupManager extends EventEmitter {
             const match = line.match(/:\s*([\d,]+)/);
             if (match) {
               filesTransferred = parseInt(match[1].replace(/,/g, ''));
-              console.log(`[Backup] Final files transferred: ${filesTransferred}`);
+              logger.info(`[Backup] Final files transferred: ${filesTransferred}`);
             }
             continue;
           }
@@ -690,7 +766,7 @@ export class BackupManager extends EventEmitter {
             const match = line.match(/:\s*([\d,]+)/);
             if (match) {
               bytesTransferred = parseInt(match[1].replace(/,/g, ''));
-              console.log(`[Backup] Final bytes transferred: ${bytesTransferred}`);
+              logger.info(`[Backup] Final bytes transferred: ${bytesTransferred}`);
             }
             continue;
           }
@@ -698,7 +774,7 @@ export class BackupManager extends EventEmitter {
             const match = line.match(/:\s*([\d,]+)/);
             if (match) {
               totalFiles = parseInt(match[1].replace(/,/g, ''));
-              console.log(`[Backup] Total files: ${totalFiles}`);
+              logger.info(`[Backup] Total files: ${totalFiles}`);
             }
             continue;
           }
@@ -706,7 +782,7 @@ export class BackupManager extends EventEmitter {
             const match = line.match(/:\s*([\d,]+)/);
             if (match) {
               totalBytes = parseInt(match[1].replace(/,/g, ''));
-              console.log(`[Backup] Total bytes: ${totalBytes}`);
+              logger.info(`[Backup] Total bytes: ${totalBytes}`);
             }
             continue;
           }
@@ -757,7 +833,7 @@ export class BackupManager extends EventEmitter {
                 estimatedTimeRemaining = Math.floor(remainingBytes / currentSpeed);
               }
 
-              console.log(`[Backup] Progress: ${filesTransferred}/${totalFiles} files, ${bytesTransferred} bytes, ${percentComplete}%, ${Math.round(currentSpeed / 1024)}KB/s`);
+              logger.info(`[Backup] Progress: ${filesTransferred}/${totalFiles} files, ${bytesTransferred} bytes, ${percentComplete}%, ${Math.round(currentSpeed / 1024)}KB/s`);
 
               const progress: BackupProgress = {
                 jobId,
@@ -774,11 +850,21 @@ export class BackupManager extends EventEmitter {
             }
           }
         }
-      });
+      };
+
+      rsyncProcess.stdout?.on('data', handleStdoutData);
+
+      // Cleanup function to remove all event listeners
+      const cleanup = () => {
+        if (rsyncProcess.stdout) {
+          rsyncProcess.stdout.removeListener('data', handleStdoutData);
+        }
+        this.runningJobs.delete(jobId);
+      };
 
       await new Promise<void>((resolve, reject) => {
-        rsyncProcess.on('exit', (code) => {
-          this.runningJobs.delete(jobId);
+        const handleExit = (code: number | null) => {
+          cleanup();
 
           if (code === 0) {
             resolve();
@@ -791,12 +877,15 @@ export class BackupManager extends EventEmitter {
           } else {
             reject(new Error(`rsync failed with exit code ${code}`));
           }
-        });
+        };
 
-        rsyncProcess.on('error', (error) => {
-          this.runningJobs.delete(jobId);
+        const handleError = (error: Error) => {
+          cleanup();
           reject(error);
-        });
+        };
+
+        rsyncProcess.on('exit', handleExit);
+        rsyncProcess.on('error', handleError);
       });
 
       const duration = Math.floor((Date.now() - startTime) / 1000);

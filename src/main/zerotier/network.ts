@@ -1,25 +1,40 @@
 import { exec } from 'child_process';
+import { logger } from '../utils/logger';
 import { promisify } from 'util';
 import * as net from 'net';
 import * as http from 'http';
 import { sanitizeIPAddress } from '../utils/sanitize';
+import { ZeroTierNetwork } from '@shared/types';
 
 const execAsync = promisify(exec);
 
 export class NetworkManager {
+  private zerotierNetworkRanges: Set<string> = new Set(); // Cache for ZeroTier network ranges
+  private lastZeroTierUpdate: number = 0;
+  private readonly CACHE_DURATION = 30000; // 30 seconds cache
   async getLocalIPAddresses(): Promise<string[]> {
     try {
       const { stdout } = await execAsync('hostname -I');
       // Filter out IPv6 and Docker networks, keep only real IPv4
-      return stdout.trim().split(/\s+/).filter(ip =>
-        ip.includes('.') &&
-        !ip.startsWith('172.17.') && // Docker
-        !ip.startsWith('172.18.') &&
-        !ip.startsWith('172.19.') &&
-        !ip.startsWith('172.20.')
-      );
+      return stdout.trim().split(/\s+/).filter(ip => {
+        if (!ip.includes('.')) return false; // Not IPv4
+
+        const parts = ip.split('.');
+        if (parts.length !== 4) return false;
+
+        const first = parseInt(parts[0]);
+        const second = parseInt(parts[1]);
+
+        // Filter out Docker default bridge networks (172.17-31.x.x)
+        // Docker uses 172.17.0.0/16 by default, but can use up to 172.31.0.0/16
+        if (first === 172 && second >= 17 && second <= 31) {
+          return false; // Likely Docker
+        }
+
+        return true;
+      });
     } catch (error) {
-      console.error('Failed to get IP addresses:', error);
+      logger.error('Failed to get IP addresses:', error);
       return [];
     }
   }
@@ -39,9 +54,56 @@ export class NetworkManager {
 
       return ztIPs;
     } catch (error) {
-      console.error('Failed to get ZeroTier IPs:', error);
+      logger.error('Failed to get ZeroTier IPs:', error);
       return [];
     }
+  }
+
+  /**
+   * Update ZeroTier network ranges from active interfaces
+   */
+  private async updateZeroTierRanges(): Promise<void> {
+    const now = Date.now();
+    if (now - this.lastZeroTierUpdate < this.CACHE_DURATION) {
+      return; // Use cached data
+    }
+
+    this.zerotierNetworkRanges.clear();
+
+    try {
+      // Get all ZeroTier interfaces and their subnets
+      const { stdout } = await execAsync('ip addr show | grep "inet.*zt"');
+      const matches = stdout.matchAll(/inet\s+([\d.]+)\/(\d+)/g);
+
+      for (const match of matches) {
+        if (match[1]) {
+          const ip = match[1];
+          const subnet = this.extractSubnet(ip + '/24'); // Use /24 as common subnet
+          if (subnet) {
+            this.zerotierNetworkRanges.add(subnet);
+            logger.info(`[ZeroTier] Detected network range: ${subnet}.0/24`);
+          }
+        }
+      }
+
+      this.lastZeroTierUpdate = now;
+    } catch (error) {
+      logger.error('Failed to update ZeroTier ranges:', error);
+    }
+  }
+
+  /**
+   * Check if an IP address belongs to a ZeroTier network
+   * This replaces hard-coded IP range checks with dynamic detection
+   */
+  async isZeroTierIP(ip: string): Promise<boolean> {
+    await this.updateZeroTierRanges();
+
+    // Extract subnet from IP (e.g., "10.147.14.5" -> "10.147.14")
+    const subnet = this.extractSubnet(ip);
+    if (!subnet) return false;
+
+    return this.zerotierNetworkRanges.has(subnet);
   }
 
   async getZeroTierIPAddress(_networkId: string): Promise<string | null> {
@@ -57,7 +119,7 @@ export class NetworkManager {
 
       return null;
     } catch (error) {
-      console.error('Failed to get ZeroTier IP:', error);
+      logger.error('Failed to get ZeroTier IP:', error);
       return null;
     }
   }
@@ -74,31 +136,40 @@ export class NetworkManager {
   }
 
   async scanLocalNetwork(subnet: string = '192.168.1'): Promise<string[]> {
-    console.log(`Scanning subnet: ${subnet}.0/24`);
+    logger.info(`Scanning subnet: ${subnet}.0/24`);
     const activeHosts: string[] = [];
 
-    // Parallel ping sweep with very fast timeout (100ms is enough for local network)
-    const pingPromises: Promise<string | null>[] = [];
+    // Use batching to avoid overwhelming the network
+    // Local networks can handle more parallelism, but still good to batch
+    const batchSize = 50;
+    const timeout = 200; // ms - increased from 100ms for more reliability
 
-    for (let i = 1; i < 255; i++) {
-      const host = `${subnet}.${i}`;
-      pingPromises.push(
-        this.pingHost(host, 100).then(isActive => isActive ? host : null)
-      );
-    }
+    for (let batchStart = 1; batchStart < 255; batchStart += batchSize) {
+      const batchEnd = Math.min(batchStart + batchSize, 255);
+      const batchPromises: Promise<string | null>[] = [];
 
-    // Wait for all pings to complete
-    const results = await Promise.all(pingPromises);
-
-    // Filter out nulls
-    for (const host of results) {
-      if (host) {
-        console.log(`Found active host: ${host}`);
-        activeHosts.push(host);
+      for (let i = batchStart; i < batchEnd; i++) {
+        const host = `${subnet}.${i}`;
+        batchPromises.push(
+          this.pingHost(host, timeout).then(isActive => isActive ? host : null)
+        );
       }
+
+      // Wait for this batch to complete
+      const batchResults = await Promise.all(batchPromises);
+
+      // Add active hosts from this batch
+      for (const host of batchResults) {
+        if (host) {
+          logger.info(`Found active host: ${host}`);
+          activeHosts.push(host);
+        }
+      }
+
+      logger.info(`Batch ${batchStart}-${batchEnd-1} complete: ${batchResults.filter(h => h).length} hosts found`);
     }
 
-    console.log(`Scan complete for ${subnet}.0/24: ${activeHosts.length} hosts found`);
+    logger.info(`Scan complete for ${subnet}.0/24: ${activeHosts.length} hosts found`);
     return activeHosts;
   }
 
@@ -156,7 +227,7 @@ export class NetworkManager {
    * This is more reliable than ping for finding SMB shares
    */
   async scanSubnetForSMB(subnet: string, progressCallback?: (progress: number) => void): Promise<string[]> {
-    console.log(`Scanning subnet ${subnet}.0/24 for SMB servers (TCP 445)...`);
+    logger.info(`Scanning subnet ${subnet}.0/24 for SMB servers (TCP 445)...`);
     const smbHosts: string[] = [];
     const scanPromises: Promise<{ host: string; hasSmb: boolean }>[] = [];
 
@@ -184,14 +255,14 @@ export class NetworkManager {
 
         for (const result of batchResults) {
           if (result.hasSmb) {
-            console.log(`Found SMB server: ${result.host}`);
+            logger.info(`Found SMB server: ${result.host}`);
             smbHosts.push(result.host);
           }
         }
       }
     }
 
-    console.log(`SMB scan complete: ${smbHosts.length} servers found`);
+    logger.info(`SMB scan complete: ${smbHosts.length} servers found`);
     return smbHosts;
   }
 
@@ -232,14 +303,14 @@ export class NetworkManager {
       const validResult = results.find(r => r.isValid);
 
       if (validResult) {
-        console.log(`✓ ${host} is ZimaOS (validated ${validResult.path}, server: ${validResult.server || 'unknown'})`);
+        logger.info(`✓ ${host} is ZimaOS (validated ${validResult.path}, server: ${validResult.server || 'unknown'})`);
         return true;
       }
     } catch (error) {
       // All probes failed
     }
 
-    console.log(`✗ ${host} is not ZimaOS`);
+    logger.info(`✗ ${host} is not ZimaOS`);
     return false;
   }
 

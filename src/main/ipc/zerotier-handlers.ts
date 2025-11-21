@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+import { logger } from '../utils/logger';
 import { ZeroTierManager } from '../zerotier/manager';
 
 export function registerZeroTierHandlers(zerotierManager: ZeroTierManager): void {
@@ -25,7 +26,7 @@ export function registerZeroTierHandlers(zerotierManager: ZeroTierManager): void
       // Ensure ZeroTier daemon is running before attempting to join
       const ready = await zerotierManager.isReady();
       if (!ready) {
-        console.log('ZeroTier daemon not running, starting it first...');
+        logger.info('ZeroTier daemon not running, starting it first...');
         await zerotierManager.start();
       }
 

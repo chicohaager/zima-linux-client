@@ -7,6 +7,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist/main'),
     filename: 'index.js',
   },
+  externals: {
+    // Don't bundle native modules
+    'keytar': 'commonjs keytar',
+    'winston-daily-rotate-file': 'commonjs winston-daily-rotate-file',
+  },
   resolve: {
     extensions: ['.ts', '.js'],
     alias: {
