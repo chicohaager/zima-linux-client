@@ -1,34 +1,14 @@
 [Unit]
-Description=ZeroTier One Network Service for Zima Client
-After=network.target
-Documentation=https://www.zerotier.com/
-Wants=network-online.target
+Description=ZeroTier for Zima Remote Client (user)
+After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/zerotier-one -p9994 /var/lib/zima-zerotier
-ExecStartPost=/bin/bash -c 'sleep 2 && chmod 644 /var/lib/zima-zerotier/authtoken.secret /var/lib/zima-zerotier/zerotier-one.port 2>/dev/null || true'
+ExecStart=%h/.local/lib/zima-remote/zerotier/zerotier-one %h/.zima-zerotier
+ExecStop=%h/.local/lib/zima-remote/zerotier/zerotier-cli -D %h/.zima-zerotier shutdown
 Restart=always
 RestartSec=5
-KillMode=process
-TimeoutStopSec=5
-
-# Run as root but with group access for users
-User=root
-Group=zima-zerotier
-UMask=0027
-
-# Security
-PrivateTmp=yes
-ProtectSystem=strict
-ReadWritePaths=/var/lib/zima-zerotier
-StateDirectory=zima-zerotier
-StateDirectoryMode=0750
-
-# Capabilities needed for network operations
-# ZeroTier needs these to create virtual network interfaces
-AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_ADMIN
-CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_ADMIN
+NoNewPrivileges=yes
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
