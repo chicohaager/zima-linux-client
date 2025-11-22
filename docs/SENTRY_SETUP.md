@@ -125,7 +125,7 @@ To reduce costs, adjust these rates in:
 
 Errors are tagged with the app version from `package.json`:
 ```
-release: zima-client@0.9.6
+release: zima-client@0.9.7
 ```
 
 This allows filtering errors by version in the Sentry dashboard.

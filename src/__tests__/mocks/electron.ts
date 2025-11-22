@@ -18,7 +18,7 @@ export const app = {
     return paths[name] || path.join(tmpDir, 'mock-path');
   }),
   isPackaged: false,
-  getVersion: jest.fn(() => '0.9.6'),
+  getVersion: jest.fn(() => '0.9.7'),
 };
 
 export const dialog = {
