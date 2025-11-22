@@ -83,7 +83,11 @@ npm run package:mac    # macOS
 3. **Greifen Sie auf Ihre Freigaben zu**: Durchsuchen und mounten Sie SMB-Freigaben von entdeckten Geräten
 4. **Verwalten Sie Apps**: Anzeigen und Zugriff auf Ihre Docker-Anwendungen
 5. **Richten Sie Backups ein**: Erstellen Sie geplante Backup-Jobs zum Schutz Ihrer Daten
-6. **Öffnen Sie Einstellungen**: Klicken Sie auf das Zahnrad-Symbol oben rechts, um Sprache, Theme, ZeroTier und Backup-Optionen zu konfigurieren
+6. **Einstellungen konfigurieren**: Klicken Sie auf das Zahnrad-Symbol oben rechts für:
+   - **Allgemein**: Sprachauswahl und Theme (Hell/Dunkel/System)
+   - **ZeroTier**: Auto-Start-Optionen, Standard-Netzwerk und Diagnose
+   - **Backup**: Benachrichtigungseinstellungen und Log-Level
+   - **Über**: Versionsinformationen, Lizenz und Links zum Melden von Problemen
 
 ## Fehlerbehebung
 
