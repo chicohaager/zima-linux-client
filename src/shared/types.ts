@@ -158,3 +158,19 @@ export interface ShareSpace {
   used: number; // bytes
   available: number; // bytes
 }
+
+// ZeroTier Diagnostics Types
+export type StatusLevel = 'ok' | 'warn' | 'error';
+
+export interface CheckResult {
+  id: string;
+  label: string;
+  status: StatusLevel;
+  message: string;
+  details?: string;
+}
+
+export interface ZeroTierDiagnostics {
+  timestamp: string;
+  checks: CheckResult[];
+}

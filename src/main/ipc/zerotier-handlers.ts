@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import { logger } from '../utils/logger';
 import { ZeroTierManager } from '../zerotier/manager';
+import { runZeroTierDiagnostics } from '../zerotierDiagnostics';
 
 export function registerZeroTierHandlers(zerotierManager: ZeroTierManager): void {
   ipcMain.handle('zerotier:start', async () => {
@@ -74,6 +75,16 @@ export function registerZeroTierHandlers(zerotierManager: ZeroTierManager): void
         data: { running: true, networks }
       };
     } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle('zerotier:diagnostics', async () => {
+    try {
+      const diagnostics = await runZeroTierDiagnostics();
+      return { success: true, data: diagnostics };
+    } catch (error: any) {
+      logger.error('Failed to run ZeroTier diagnostics:', error);
       return { success: false, error: error.message };
     }
   });
