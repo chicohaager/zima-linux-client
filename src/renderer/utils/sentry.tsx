@@ -14,7 +14,8 @@ export function initRendererSentry(): void {
 
   const dsn = process.env.SENTRY_DSN;
   if (!dsn) {
-    console.warn('[Sentry] No DSN configured for renderer');
+    // No DSN configured - Sentry is optional, so this is not an error
+    console.log('[Sentry] No DSN configured, error tracking disabled');
     return;
   }
 

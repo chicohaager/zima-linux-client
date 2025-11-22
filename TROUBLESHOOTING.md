@@ -2,31 +2,60 @@
 
 ## "Failed to connect to network" Error
 
-If you're experiencing connection failures after installing the ZimaOS Client on a Linux system, this is likely due to permission issues accessing ZeroTier configuration files.
+If you're experiencing connection failures after installing the ZimaOS Client on a Linux system, this could be due to several issues:
 
-### Root Cause
+### Possible Causes
 
-When the application is installed via `.deb` package, it creates a system service that runs ZeroTier as root. The configuration files (`authtoken.secret` and `zerotier-one.port`) are created with restricted permissions that may prevent the application from reading them.
+1. **ZeroTier service failed to start** - The systemd service couldn't start during installation
+2. **Permission issues** - The application cannot read ZeroTier configuration files
+3. **Missing TUN device** - The `/dev/net/tun` device doesn't exist
+4. **Missing capabilities** - The binary lacks required network capabilities
 
-### Quick Fix
+### Quick Diagnostic
 
-**Option 1: Log out and back in (Recommended)**
+**First, run the diagnostic tool:**
 
-The installer adds your user to the `zima-zerotier` group, but this doesn't take effect until you log out and back in.
+```bash
+bash /opt/ZimaOS\ Client/resources/diagnose-zerotier.sh
+```
 
-1. Save your work
-2. Log out of your session
-3. Log back in
-4. Launch the application again
+This will check all common issues and provide specific fixes.
 
-**Option 2: Fix permissions manually**
+### Quick Fixes
 
-If logging out is not convenient, run these commands:
+**If the service isn't running:**
+
+```bash
+# Check service status
+sudo systemctl status zima-zerotier.service
+
+# Check recent logs
+sudo journalctl -u zima-zerotier.service -n 50
+
+# Try to start it
+sudo systemctl start zima-zerotier.service
+```
+
+**If TUN device is missing:**
+
+```bash
+# Load the TUN kernel module
+sudo modprobe tun
+
+# Make it permanent (add to /etc/modules)
+echo "tun" | sudo tee -a /etc/modules
+```
+
+**If permission denied errors:**
 
 ```bash
 sudo chmod 644 /var/lib/zima-zerotier/authtoken.secret
 sudo chmod 644 /var/lib/zima-zerotier/zerotier-one.port
 ```
+
+**Or: Log out and back in**
+
+The installer adds your user to the `zima-zerotier` group, but this doesn't take effect until you log out and back in.
 
 ### Diagnostic Tool
 
