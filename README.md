@@ -85,7 +85,7 @@ npm run package:mac    # macOS
 ### Requirements
 
 - **Linux**: libfuse2, smbclient
-- **ZeroTier**: Bundled with the application
+- **ZeroTier**: Automatically installed during package installation
 
 ### Usage
 
@@ -99,19 +99,16 @@ npm run package:mac    # macOS
 
 ### Troubleshooting
 
-**"Failed to connect to network" error after installation?**
+**Connection issues after installation?**
 
-This is usually a permission issue. Quick fixes:
+Quick fixes:
 
-1. **Log out and back in** (recommended) - The installer adds you to a group that requires a fresh login
-2. Run the diagnostic tool: `bash diagnose-zerotier.sh`
-3. Or fix permissions manually:
-   ```bash
-   sudo chmod 644 /var/lib/zima-zerotier/authtoken.secret
-   sudo chmod 644 /var/lib/zima-zerotier/zerotier-one.port
-   ```
+1. **Log out and back in** (recommended) - Group permissions need a fresh login
+2. Run the diagnostic tool: `bash /opt/ZimaOS\ Client/resources/diagnose-zerotier.sh`
+3. Check ZeroTier service: `sudo systemctl status zima-zerotier.service`
 
-For detailed troubleshooting steps, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+The installer automatically installs ZeroTier if not already present.
+For detailed troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ### Development
 
@@ -225,7 +222,7 @@ npm run package:mac    # macOS
 ### Anforderungen
 
 - **Linux**: libfuse2, smbclient
-- **ZeroTier**: Mit der Anwendung gebündelt
+- **ZeroTier**: Wird automatisch bei der Paketinstallation installiert
 
 ### Verwendung
 
@@ -239,19 +236,16 @@ npm run package:mac    # macOS
 
 ### Fehlerbehebung
 
-**Fehler "Failed to connect to network" nach der Installation?**
+**Verbindungsprobleme nach der Installation?**
 
-Dies ist normalerweise ein Berechtigungsproblem. Schnelle Lösungen:
+Schnelle Lösungen:
 
-1. **Abmelden und wieder anmelden** (empfohlen) - Der Installer fügt Sie zu einer Gruppe hinzu, die einen neuen Login erfordert
-2. Führen Sie das Diagnosetool aus: `bash diagnose-zerotier.sh`
-3. Oder beheben Sie die Berechtigungen manuell:
-   ```bash
-   sudo chmod 644 /var/lib/zima-zerotier/authtoken.secret
-   sudo chmod 644 /var/lib/zima-zerotier/zerotier-one.port
-   ```
+1. **Abmelden und wieder anmelden** (empfohlen) - Gruppenberechtigungen erfordern einen neuen Login
+2. Führen Sie das Diagnosetool aus: `bash /opt/ZimaOS\ Client/resources/diagnose-zerotier.sh`
+3. Prüfen Sie den ZeroTier-Service: `sudo systemctl status zima-zerotier.service`
 
-Für detaillierte Schritte zur Fehlerbehebung siehe [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+Der Installer installiert ZeroTier automatisch, falls noch nicht vorhanden.
+Für detaillierte Fehlerbehebung siehe [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ### Entwicklung
 
