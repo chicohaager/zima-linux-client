@@ -114,9 +114,7 @@
           "*.sh"
         ]
       },
-      "icon.png",
-      "diagnose-zerotier.sh",
-      "TROUBLESHOOTING.md"
+      "icon.png"
     ],
     "mac": {
       "target": [

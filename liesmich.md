@@ -1,283 +1,177 @@
-# 🛰️ Zima Remote Client for Linux
+# ZimaOS Client
 
-Ein moderner Linux-Client zur direkten Verbindung mit ZimaOS über eine **Remote-ID**,  
-inklusive vollständiger ZeroTier-Integration und SMB-„Places“-Pinning im Dateimanager.
+Moderner Desktop-Client für ZimaOS mit integrierter ZeroTier- und SMB-Verwaltung.
 
----
+## Übersicht
 
-## 📋 Übersicht
+ZimaOS Client ist eine leistungsstarke Desktop-Anwendung für Linux und macOS, die nahtlose Konnektivität zu Ihren ZimaOS-Geräten bietet. Verbinden Sie sich mit Ihrem persönlichen Cloud-Speicher, greifen Sie auf Docker-Anwendungen zu und verwalten Sie automatisierte Backups - alles von einem nativen Desktop-Client aus.
 
-| Komponente | Beschreibung |
-|-------------|---------------|
-| 🧠 **Core** | Electron + TypeScript App |
-| 🔗 **ZeroTier** | vollständig gebündelt & steuerbar (start / stop / join / leave / update) |
-| 🗂️ **SMB-Integration** | Mount & Pin von SMB-Shares in Dateimanager-„Places“ |
-| 🧩 **Remote-ID** | Authentifizierung und Netz-Provisionierung über ZimaOS-API |
-| 🧑‍💻 **Platform** | Linux (x64, ARM64 getestet) |
-| 💡 **Lizenz** | MIT (open source friendly) |
+## Funktionen
 
----
+- **Remote-Konnektivität**: Verbindung zu ZimaOS-Geräten über lokales Netzwerk oder Remote-ID mit ZeroTier
+- **SMB/CIFS-Integration**: Durchsuchen und Zugriff auf freigegebene Ordner mit automatischem Mounten
+- **Docker-App-Verwaltung**: Anzeigen und Zugriff auf Ihre ZimaOS Docker-Anwendungen direkt vom Client aus
+- **Automatisierte Backups**: Planen und Verwalten von automatisierten Backup-Jobs von lokalen Ordnern zu ZimaOS-Freigaben
+- **Letzte Verbindungen**: Schnellzugriff auf zuvor verbundene Geräte
+- **Netzwerk-Erkennung**: Automatische Erkennung von ZimaOS-Geräten in Ihrem lokalen Netzwerk
+- **ZeroTier-Diagnose**: Integrierte Diagnosetools zur Fehlerbehebung bei Verbindungsproblemen
+- **Einstellungsverwaltung**: Konfiguration von Sprache, Theme, ZeroTier-Optionen und Backup-Einstellungen
+- **Dark Mode**: Vollständige Dark-Mode-Unterstützung mit System-Theme-Erkennung
 
-## 🚀 Funktionen
+## Installation
 
-### 1. ZimaOS Remote-ID-Verbindung
-- Benutzer gibt eine **Remote-ID** ein, die vom ZimaOS Dashboard generiert wird.  
-- Der Client löst diese ID über die ZimaOS API ein:
-  - erhält ZeroTier-Network-ID und Access-Token  
-  - optional SMB-Freigaben und Standort-Infos  
-- Der Client startet ZeroTier im User-Space und tritt automatisch dem Netz bei.
+### Linux
 
-### 2. ZeroTier Lifecycle Control
-- ZeroTier läuft im eigenen App-Verzeichnis (`~/.zima-zerotier`)
-- GUI und IPC-Befehle:
-  - Start / Stop  
-  - Join / Leave Network  
-  - Upgrade ZeroTier-Binärdateien  
-  - Statusanzeige (`listnetworks`)
+Laden Sie die neueste Version von der [Releases-Seite](https://github.com/chicohaager/zima-linux-client/releases) herunter.
 
-### 3. SMB-Integration & Places-Pinning
-- SMB-Freigaben werden per `gio mount smb://…` eingehängt (ohne root).  
-- Optional kann über Polkit/Helper ein systemweiter CIFS-Mount erfolgen.  
-- Die App pinnt SMB-Shares in die „Places“ des Dateimanagers:
-  - **GNOME/Xfce:** `~/.config/gtk-3.0/bookmarks` & `gtk-4.0/bookmarks`
-  - **KDE/Dolphin:** `~/.local/share/user-places.xbel`
-
-### 4. System-Integration
-- optionaler Helper-Dienst (`zima-remote-helper.service`) für root-Aktionen  
-- PolicyKit-Regeln (`com.zima.remote.policy`) für autorisierte Operationen  
-- App-Autostart möglich (z. B. per .desktop-Datei)
-
----
-
-## 🧱 Projektstruktur
-
-```text
-zima-remote-client/
-├── app/
-│   ├── main/          # Electron Main Process
-│   ├── preload/       # IPC Bridge
-│   ├── renderer/      # UI (React, optional)
-│   └── common/        # Shared Modules
-│       ├── zerotier.ts      # Lifecycle & CLI control
-│       ├── remote.ts        # Remote-ID Claim
-│       ├── smb.ts           # GIO Mount
-│       ├── places-gtk.ts    # GNOME/Xfce bookmarks
-│       └── places-kde.ts    # KDE user-places.xbel patcher
-├── resources/
-│   ├── zerotier/            # zerotier-one & zerotier-cli binaries
-│   ├── polkit/
-│   ├── systemd/
-│   └── icons/
-├── scripts/
-│   └── helper_stub.sh
-├── package.json
-├── tsconfig.json
-└── README.md
+**AppImage:**
+```bash
+chmod +x ZimaOS\ Client-*.AppImage
+./ZimaOS\ Client-*.AppImage
 ```
 
----
+**Debian/Ubuntu (.deb):**
+```bash
+sudo dpkg -i zima-linux-client_*_amd64.deb
+sudo apt-get install -f  # Abhängigkeiten installieren falls nötig
+```
 
-## 🧩 Installation & Build
+### macOS
+
+Laden Sie die neueste macOS-Version von der [Releases-Seite](https://github.com/chicohaager/zima-linux-client/releases) herunter.
+
+## Aus Quellcode erstellen
 
 ### Voraussetzungen
-- Node.js ≥ 20  
-- npm oder pnpm  
-- Linux Desktop (GNOME, KDE, Xfce getestet)
 
-### Setup
+- Node.js 18 oder höher
+- npm oder yarn
+- Git
+
+### Build-Schritte
 
 ```bash
-git clone https://github.com/youruser/zima-remote-client.git
-cd zima-remote-client
+# Repository klonen
+git clone https://github.com/chicohaager/zima-linux-client.git
+cd zima-linux-client
+
+# Abhängigkeiten installieren
 npm install
-```
 
-### Entwicklungs-Start
-
-```bash
-npm run dev
-```
-
-### Build
-
-```bash
-npm run build
-npm start
-```
-
-*(Für AppImage/deb/rpm später electron-builder hinzufügen.)*
-
----
-
-## ⚙️ Konfiguration
-
-### ZimaOS-API
-Definiere die Umgebungsvariable `ZIMA_BASE_URL` oder bearbeite `app/common/remote.ts`:
-
-```typescript
-const BASE = process.env.ZIMA_BASE_URL || "https://zimaos.local";
-```
-
-Der ZimaOS-Endpoint muss folgende Antwort liefern:
-
-```json
-{
-  "ztNetworkId": "8056c2e21c000001",
-  "smbShares": [
-    { "url": "smb://zimaos.local/share1", "name": "Home Share" }
-  ],
-  "siteName": "My ZimaOS",
-  "token": "optional-short-lived"
-}
-```
-
----
-
-## 🔐 Sicherheit
-
-| Bereich | Umsetzung |
-|----------|------------|
-| ZeroTier | im User-Space, getrennt von Systeminstanz |
-| SMB-Mount | über GIO (`gio mount`) ohne root |
-| Credentials | via libsecret / KWallet (geplant) |
-| Root-Helper | optional, via PolicyKit autorisierbar |
-| Netzwerke | kurzlebige JWTs oder mTLS für Remote-Claim-API |
-
----
-
-## 🧠 Beispiel-Ablauf (Remote-Connect)
-
-```typescript
-async function connectWithRemoteId(remoteId: string) {
-  await startZeroTier();
-  const claim = await claimRemoteId(remoteId);
-  await joinNetwork(claim.ztNetworkId);
-  // warten bis IP zugewiesen ist …
-  for (const s of claim.smbShares) {
-    await mountSmb(s.url);
-    await pinGnome(s.url, s.name);
-    await pinKde(s.url, s.name);
-  }
-}
-```
-
----
-
-## 🧩 Places-Management
-
-### GNOME/Xfce
-- Datei: `~/.config/gtk-3.0/bookmarks`  
-- Format: `smb://host/share  Name`
-
-### KDE
-- Datei: `~/.local/share/user-places.xbel`  
-- XML-Patch über `fast-xml-parser`
-
----
-
-## ⚡ ZeroTier Kommandos (intern)
-
-| Aktion | CLI-Befehl |
-|---------|-------------|
-| Start | `zerotier-one -d -p9993 -H ~/.zima-zerotier` |
-| Stop | `zerotier-cli -D ~/.zima-zerotier shutdown` |
-| Join | `zerotier-cli -D ~/.zima-zerotier join <network>` |
-| Leave | `zerotier-cli -D ~/.zima-zerotier leave <network>` |
-| Status | `zerotier-cli -D ~/.zima-zerotier listnetworks` |
-
----
-
-## 🧰 Helper & PolicyKit (Option A)
-
-**Service** `/etc/systemd/system/zima-remote-helper.service`  
-```ini
-[Unit]
-Description=Zima Remote Helper
-After=network-online.target
-
-[Service]
-ExecStart=/opt/zima-remote/helper --socket /run/zima-remote.sock
-Restart=on-failure
-```
-
-**Policy** `/usr/share/polkit-1/actions/com.zima.remote.policy`  
-```xml
-<action id="com.zima.remote.mgmt">
-  <description>Zima Remote privileged ops</description>
-  <defaults>
-    <allow_active>auth_admin_keep</allow_active>
-  </defaults>
-</action>
-```
-
----
-
-## 💻 Systemd-freie Variante (Option B)
-- ZeroTier nur im User-Space  
-- SMB Mounts über GIO  
-- Keine Root-Aktionen → keine PolicyKit-Dateien notwendig  
-- App kann autonom laufen und nach dem Beenden Netzwerk verlassen  
-
----
-
-## 🧪 Smoke-Tests
-
-1️⃣ App starten → ZeroTier startet  
-2️⃣ Remote-ID eingeben → Claim OK  
-3️⃣ ZT join → Ping zu ZimaOS  
-4️⃣ SMB Mount + Pin → Dateimanager-„Places“ prüfen  
-5️⃣ Unpin → Eintrag verschwindet  
-6️⃣ ZT stop → Daemon beendet  
-
----
-
-## 🛠️ Nächste Ausbaustufen
-- React-GUI (Onboarding, Netzwerkstatus, Shares)  
-- ZT-Status-Polling & Visualisierung  
-- Keyring-Integration für SMB-Creds  
-- Updater für ZT-Binaries & App-Version  
-- In-App Diagnose (Log-Viewer, Ping-Test)  
-
----
-
-## 🧑‍💻 Entwickler-Setup (Schnellstart)
-
-```bash
-# im Projektverzeichnis
-npm install
+# Entwicklungsmodus
 npm run dev
 
-# für Production
+# Für Produktion erstellen
 npm run build
-npm start
+
+# Für Ihre Plattform paketieren
+npm run package:linux  # Linux (AppImage + DEB)
+npm run package:mac    # macOS
 ```
 
----
+## Anforderungen
 
-## 📦 Distribution (Zukunft)
-- electron-builder für AppImage, .deb und .rpm  
-- Signierte ZT-Binaries (`resources/zerotier/`)  
-- SHA256-Validierung vor Upgrade  
+- **Linux**: libfuse2, smbclient
+- **ZeroTier**: Wird automatisch bei der Paketinstallation installiert
 
----
+## Verwendung
 
-## 🧾 Lizenz
-MIT License © 2025 Holger Kuehn / ZimaOS Community
+1. **Starten Sie die Anwendung**
+2. **Verbinden Sie sich mit Ihrem ZimaOS**:
+   - Verwenden Sie "Scan Local Network", um Geräte in Ihrem lokalen Netzwerk zu finden
+   - Verwenden Sie "Connect via Remote ID", um sich remote über ZeroTier zu verbinden
+3. **Greifen Sie auf Ihre Freigaben zu**: Durchsuchen und mounten Sie SMB-Freigaben von entdeckten Geräten
+4. **Verwalten Sie Apps**: Anzeigen und Zugriff auf Ihre Docker-Anwendungen
+5. **Richten Sie Backups ein**: Erstellen Sie geplante Backup-Jobs zum Schutz Ihrer Daten
+6. **Öffnen Sie Einstellungen**: Klicken Sie auf das Zahnrad-Symbol oben rechts, um Sprache, Theme, ZeroTier und Backup-Optionen zu konfigurieren
 
----
+## Fehlerbehebung
 
-## 📚 Referenzen
-- 📄 **Linux Zima Client – Two Technical Points** (Projektanforderungen)  
-  - ZeroTier Integration & Control  
-  - Places Area Pinning in File Manager  
-- ZeroTier SDK: <https://www.zerotier.com/download/>  
-- Electron: <https://www.electronjs.org/>  
-- GNOME GIO: <https://developer.gnome.org/gio/>  
-- KDE Places Specification: <https://specifications.freedesktop.org/>  
+**Verbindungsprobleme?**
 
----
+Die App enthält integrierte Diagnosetools zur Fehlerbehebung bei ZeroTier-Verbindungen:
 
-**🟢 Ergebnis:**  
-Dieses Projekt erfüllt beide technischen Punkte aus dem ZimaOS-Pflichtenheft:  
-1️⃣ ZeroTier Integration & Control (bündelbar & steuerbar)  
-2️⃣ „Places“-Pinning von SMB-Freigaben über eine grafische Schnittstelle.
+1. **Einstellungen öffnen** (Zahnrad-Symbol oben rechts)
+2. Zum Tab **ZeroTier** navigieren
+3. **Diagnose ausführen** klicken, um zu prüfen:
+   - ZeroTier-Binary-Existenz und -Berechtigungen
+   - Service-Status
+   - Netzwerkkonnektivität
+   - Port-Verfügbarkeit
+   - Systemkonfiguration
+
+**Häufige Lösungen:**
+- **Abmelden und wieder anmelden** nach der Installation (Gruppenberechtigungen erfordern einen neuen Login)
+- ZeroTier-Service prüfen: `sudo systemctl status zima-zerotier.service`
+- Diagnoseergebnisse in Einstellungen > ZeroTier > Diagnostics überprüfen
+
+## Projektstruktur
+
+```
+zima-linux-client/
+├── src/
+│   ├── main/              # Electron Main Process
+│   │   ├── index.ts       # App-Einstiegspunkt
+│   │   ├── ipc/           # IPC-Handler
+│   │   ├── zerotier/      # ZeroTier-Verwaltung
+│   │   ├── smb/           # SMB-Integration
+│   │   ├── backup/        # Backup-System
+│   │   └── utils/         # Hilfsfunktionen
+│   ├── renderer/          # React UI
+│   │   ├── App.tsx        # Hauptkomponente
+│   │   ├── pages/         # Seiten (Connect, Apps, Backup, Settings)
+│   │   ├── components/    # UI-Komponenten
+│   │   └── store/         # Zustand-Management
+│   ├── shared/            # Gemeinsame Typen
+│   └── main/
+│       └── preload.ts     # IPC-Bridge
+├── bin/zerotier/          # ZeroTier-Binaries
+├── resources/             # App-Ressourcen
+└── package.json
+```
+
+## Technologie-Stack
+
+- **Electron**: Desktop-App-Framework
+- **React**: UI-Framework
+- **TypeScript**: Typsicherheit
+- **Tailwind CSS**: Styling
+- **Zustand**: State-Management
+- **Winston**: Logging
+- **i18next**: Internationalisierung
+- **Sentry**: Fehler-Tracking
+- **Jest**: Testing
+
+## Entwicklung
+
+```bash
+# Tests ausführen
+npm test
+
+# Tests im Watch-Modus ausführen
+npm run test:watch
+
+# Test-Abdeckung prüfen
+npm run test:coverage
+
+# Code-Linting
+npm run lint
+
+# Typ-Prüfung
+npm run type-check
+```
+
+## Lizenz
+
+MIT-Lizenz - siehe LICENSE-Datei für Details
+
+## Autor
+
+Holger Kühn
+
+## Links
+
+- **Homepage**: https://www.zimaspace.com
+- **Repository**: https://github.com/chicohaager/zima-linux-client
+- **Issues**: https://github.com/chicohaager/zima-linux-client/issues
+- **Releases**: https://github.com/chicohaager/zima-linux-client/releases
