@@ -46,31 +46,60 @@ else
 fi
 
 # Copy ZeroTier binaries
+BUNDLED_BINARIES_OK=false
+
 if [ -d "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}" ]; then
     echo "Copying ZeroTier binaries for ${ZT_ARCH}..."
     cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-one" /opt/zima-client/bin/
     cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-cli" /opt/zima-client/bin/
     chmod +x /opt/zima-client/bin/zerotier-*
 
-    # Verify binaries were copied
-    if [ ! -f "/opt/zima-client/bin/zerotier-one" ]; then
-        echo "✗ Error: Failed to copy zerotier-one binary"
-        exit 1
-    fi
+    # Test if the bundled binary works on this system
+    if /opt/zima-client/bin/zerotier-one -v >/dev/null 2>&1; then
+        BUNDLED_BINARIES_OK=true
+        echo "✓ Bundled ZeroTier binaries are compatible"
 
-    # Set Linux capabilities for network operations (belt-and-suspenders with systemd)
-    if command -v setcap >/dev/null 2>&1; then
-        setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one 2>/dev/null || {
-            echo "⚠ Warning: Could not set capabilities on zerotier-one"
-            echo "  This is usually OK - systemd will provide capabilities via AmbientCapabilities"
-        }
-        # Verify capabilities were set
-        if getcap /opt/zima-client/bin/zerotier-one 2>/dev/null | grep -q cap_net_admin; then
-            echo "✓ Set network capabilities on zerotier-one"
+        # Set Linux capabilities
+        if command -v setcap >/dev/null 2>&1; then
+            setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one 2>/dev/null || {
+                echo "⚠ Warning: Could not set capabilities - systemd will provide them"
+            }
+            if getcap /opt/zima-client/bin/zerotier-one 2>/dev/null | grep -q cap_net_admin; then
+                echo "✓ Set network capabilities on zerotier-one"
+            fi
+        fi
+    else
+        echo "⚠ Bundled ZeroTier binaries incompatible (likely glibc version mismatch)"
+        echo "  Attempting to use system ZeroTier as fallback..."
+
+        # Try to use system ZeroTier binaries
+        if [ -f "/usr/sbin/zerotier-one" ] && [ -f "/usr/sbin/zerotier-cli" ]; then
+            echo "  Found system ZeroTier, using it instead"
+            cp /usr/sbin/zerotier-one /opt/zima-client/bin/
+            cp /usr/sbin/zerotier-cli /opt/zima-client/bin/
+            chmod +x /opt/zima-client/bin/zerotier-*
+
+            if command -v setcap >/dev/null 2>&1; then
+                setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one 2>/dev/null || true
+            fi
+
+            BUNDLED_BINARIES_OK=true
+            echo "✓ Using system ZeroTier binaries"
+        else
+            echo "✗ System ZeroTier not found"
+            echo ""
+            echo "  Please install ZeroTier manually:"
+            echo "    curl -s https://install.zerotier.com | sudo bash"
+            echo ""
+            echo "  Then copy the binaries:"
+            echo "    sudo cp /usr/sbin/zerotier-* /opt/zima-client/bin/"
+            echo "    sudo chmod +x /opt/zima-client/bin/zerotier-*"
+            echo "    sudo setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one"
+            echo ""
+            echo "  Or reinstall this package after installing ZeroTier"
+            # Don't exit - continue installation, user can fix later
         fi
     fi
-
-    echo "✓ Copied ZeroTier binaries"
 else
     echo "✗ Error: ZeroTier binaries not found at ${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}"
     exit 1
