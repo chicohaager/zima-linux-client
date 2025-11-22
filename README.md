@@ -99,6 +99,11 @@ npm run package:mac    # macOS
 3. **Access your shares**: Browse and mount SMB shares from discovered devices
 4. **Manage apps**: View and access your Docker applications
 5. **Setup backups**: Create scheduled backup jobs to protect your data
+6. **Configure settings**: Click the gear icon in the top-right corner to access:
+   - **General**: Language selection and theme (Light/Dark/System)
+   - **ZeroTier**: Auto-start options, default network, and diagnostics
+   - **Backup**: Notification preferences and log levels
+   - **About**: Version info, license, and links to report issues
 
 ### Troubleshooting
 
@@ -246,6 +251,11 @@ npm run package:mac    # macOS
 3. **Greifen Sie auf Ihre Freigaben zu**: Durchsuchen und mounten Sie SMB-Freigaben von entdeckten Geräten
 4. **Verwalten Sie Apps**: Anzeigen und Zugriff auf Ihre Docker-Anwendungen
 5. **Richten Sie Backups ein**: Erstellen Sie geplante Backup-Jobs zum Schutz Ihrer Daten
+6. **Einstellungen konfigurieren**: Klicken Sie auf das Zahnrad-Symbol oben rechts für:
+   - **Allgemein**: Sprachauswahl und Theme (Hell/Dunkel/System)
+   - **ZeroTier**: Auto-Start-Optionen, Standard-Netzwerk und Diagnose
+   - **Backup**: Benachrichtigungseinstellungen und Log-Level
+   - **Über**: Versionsinformationen, Lizenz und Links zum Melden von Problemen
 
 ### Fehlerbehebung
 
