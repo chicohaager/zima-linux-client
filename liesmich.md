@@ -18,6 +18,23 @@ ZimaOS Client ist eine leistungsstarke Desktop-Anwendung für Linux und macOS, d
 - **Einstellungsverwaltung**: Konfiguration von Sprache, Theme, ZeroTier-Optionen und Backup-Einstellungen
 - **Dark Mode**: Vollständige Dark-Mode-Unterstützung mit System-Theme-Erkennung
 
+## Screenshots
+
+### Verbindungsbildschirm
+![Remote Connect](resources/1.png)
+
+### Geräteerkennung & Freigaben
+![Entdeckte Geräte](resources/2.png)
+
+### Docker Apps
+![Apps-Ansicht](resources/3.png)
+
+### Backup-Verwaltung
+![Backup-Jobs](resources/4.png)
+
+### Einstellungen & ZeroTier-Diagnose
+![Einstellungsseite](resources/5.png)
+
 ## Installation
 
 ### Linux
