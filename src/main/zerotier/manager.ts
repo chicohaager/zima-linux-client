@@ -624,7 +624,14 @@ WantedBy=default.target
     if (!fs.existsSync(portFile)) {
       throw new Error('ZeroTier port file not found. Daemon may not be running.');
     }
-    return fs.readFileSync(portFile, 'utf-8').trim();
+    try {
+      return fs.readFileSync(portFile, 'utf-8').trim();
+    } catch (error: any) {
+      if (error.code === 'EACCES') {
+        throw new Error(`Permission denied reading ${portFile}. If you just installed, try logging out and back in, or run: sudo chmod 644 ${portFile}`);
+      }
+      throw error;
+    }
   }
 
   /**
@@ -635,7 +642,14 @@ WantedBy=default.target
     if (!fs.existsSync(tokenFile)) {
       throw new Error('ZeroTier auth token not found. Daemon may not be running.');
     }
-    return fs.readFileSync(tokenFile, 'utf-8').trim();
+    try {
+      return fs.readFileSync(tokenFile, 'utf-8').trim();
+    } catch (error: any) {
+      if (error.code === 'EACCES') {
+        throw new Error(`Permission denied reading ${tokenFile}. If you just installed, try logging out and back in, or run: sudo chmod 644 ${tokenFile}`);
+      }
+      throw error;
+    }
   }
 
   /**

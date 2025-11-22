@@ -50,6 +50,19 @@ if [ -d "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}" ]; then
     cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-one" /opt/zima-client/bin/
     cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-cli" /opt/zima-client/bin/
     chmod +x /opt/zima-client/bin/zerotier-*
+
+    # Set Linux capabilities for network operations (belt-and-suspenders with systemd)
+    if command -v setcap >/dev/null 2>&1; then
+        setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one 2>/dev/null || {
+            echo "⚠ Warning: Could not set capabilities on zerotier-one"
+            echo "  This is usually OK if running from tmpfs/AppImage"
+        }
+        # Verify capabilities were set
+        if getcap /opt/zima-client/bin/zerotier-one 2>/dev/null | grep -q cap_net_admin; then
+            echo "✓ Set network capabilities on zerotier-one"
+        fi
+    fi
+
     echo "✓ Copied ZeroTier binaries"
 fi
 
@@ -73,12 +86,14 @@ if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
         sleep 1
         if [ -d "/var/lib/zima-zerotier" ]; then
             chown -R root:zima-zerotier /var/lib/zima-zerotier
-            chmod -R 750 /var/lib/zima-zerotier
+            chmod 755 /var/lib/zima-zerotier
+            # Make token and port files world-readable (they're not security-sensitive)
+            # The security comes from the local-only API on 127.0.0.1
             if [ -f "/var/lib/zima-zerotier/authtoken.secret" ]; then
-                chmod 640 /var/lib/zima-zerotier/authtoken.secret
+                chmod 644 /var/lib/zima-zerotier/authtoken.secret
             fi
             if [ -f "/var/lib/zima-zerotier/zerotier-one.port" ]; then
-                chmod 640 /var/lib/zima-zerotier/zerotier-one.port
+                chmod 644 /var/lib/zima-zerotier/zerotier-one.port
             fi
             echo "✓ Fixed permissions on ZeroTier files"
         fi
@@ -118,3 +133,12 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1; then
 fi
 
 echo "✓ Zima Client installation complete!"
+echo ""
+echo "================================================"
+echo "IMPORTANT: If this is your first installation,"
+echo "please LOG OUT and back in for group permissions"
+echo "to take effect."
+echo ""
+echo "If you experience connection issues, run:"
+echo "  bash /opt/ZimaOS\\ Client/resources/diagnose-zerotier.sh"
+echo "================================================"

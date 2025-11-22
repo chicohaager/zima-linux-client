@@ -97,6 +97,22 @@ npm run package:mac    # macOS
 4. **Manage apps**: View and access your Docker applications
 5. **Setup backups**: Create scheduled backup jobs to protect your data
 
+### Troubleshooting
+
+**"Failed to connect to network" error after installation?**
+
+This is usually a permission issue. Quick fixes:
+
+1. **Log out and back in** (recommended) - The installer adds you to a group that requires a fresh login
+2. Run the diagnostic tool: `bash diagnose-zerotier.sh`
+3. Or fix permissions manually:
+   ```bash
+   sudo chmod 644 /var/lib/zima-zerotier/authtoken.secret
+   sudo chmod 644 /var/lib/zima-zerotier/zerotier-one.port
+   ```
+
+For detailed troubleshooting steps, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
 ### Development
 
 ```bash
@@ -220,6 +236,22 @@ npm run package:mac    # macOS
 3. **Greifen Sie auf Ihre Freigaben zu**: Durchsuchen und mounten Sie SMB-Freigaben von entdeckten Geräten
 4. **Verwalten Sie Apps**: Anzeigen und Zugriff auf Ihre Docker-Anwendungen
 5. **Richten Sie Backups ein**: Erstellen Sie geplante Backup-Jobs zum Schutz Ihrer Daten
+
+### Fehlerbehebung
+
+**Fehler "Failed to connect to network" nach der Installation?**
+
+Dies ist normalerweise ein Berechtigungsproblem. Schnelle Lösungen:
+
+1. **Abmelden und wieder anmelden** (empfohlen) - Der Installer fügt Sie zu einer Gruppe hinzu, die einen neuen Login erfordert
+2. Führen Sie das Diagnosetool aus: `bash diagnose-zerotier.sh`
+3. Oder beheben Sie die Berechtigungen manuell:
+   ```bash
+   sudo chmod 644 /var/lib/zima-zerotier/authtoken.secret
+   sudo chmod 644 /var/lib/zima-zerotier/zerotier-one.port
+   ```
+
+Für detaillierte Schritte zur Fehlerbehebung siehe [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ### Entwicklung
 
