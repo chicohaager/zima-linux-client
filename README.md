@@ -16,6 +16,9 @@ ZimaOS Client is a powerful desktop application for Linux and macOS that provide
 - **Automated Backups**: Schedule and manage automated backup jobs from local folders to ZimaOS shares
 - **Recent Connections**: Quick access to previously connected devices
 - **Network Discovery**: Automatic discovery of ZimaOS devices on your local network
+- **ZeroTier Diagnostics**: Built-in diagnostic tools to troubleshoot connectivity issues
+- **Settings Management**: Configure language, theme, ZeroTier options, and backup preferences
+- **Dark Mode**: Full dark mode support with system theme detection
 
 ### Screenshots
 
@@ -99,16 +102,23 @@ npm run package:mac    # macOS
 
 ### Troubleshooting
 
-**Connection issues after installation?**
+**Connection issues?**
 
-Quick fixes:
+The app includes built-in diagnostics to help troubleshoot ZeroTier connectivity:
 
-1. **Log out and back in** (recommended) - Group permissions need a fresh login
-2. Run the diagnostic tool: `bash /opt/ZimaOS\ Client/resources/diagnose-zerotier.sh`
-3. Check ZeroTier service: `sudo systemctl status zima-zerotier.service`
+1. **Open Settings** (gear icon in top-right corner)
+2. Navigate to the **ZeroTier** tab
+3. Click **Run Diagnostics** to check:
+   - ZeroTier binary existence and permissions
+   - Service status
+   - Network connectivity
+   - Port availability
+   - System configuration
 
-The installer automatically installs ZeroTier if not already present.
-For detailed troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+**Common solutions:**
+- **Log out and back in** after installation (group permissions need a fresh login)
+- Check ZeroTier service: `sudo systemctl status zima-zerotier.service`
+- Review diagnostic results in Settings > ZeroTier > Diagnostics
 
 ### Development
 
@@ -153,6 +163,9 @@ ZimaOS Client ist eine leistungsstarke Desktop-Anwendung für Linux und macOS, d
 - **Automatisierte Backups**: Planen und Verwalten von automatisierten Backup-Jobs von lokalen Ordnern zu ZimaOS-Freigaben
 - **Letzte Verbindungen**: Schnellzugriff auf zuvor verbundene Geräte
 - **Netzwerk-Erkennung**: Automatische Erkennung von ZimaOS-Geräten in Ihrem lokalen Netzwerk
+- **ZeroTier-Diagnose**: Integrierte Diagnosetools zur Fehlerbehebung bei Verbindungsproblemen
+- **Einstellungsverwaltung**: Konfiguration von Sprache, Theme, ZeroTier-Optionen und Backup-Einstellungen
+- **Dark Mode**: Vollständige Dark-Mode-Unterstützung mit System-Theme-Erkennung
 
 ### Screenshots
 
@@ -236,16 +249,23 @@ npm run package:mac    # macOS
 
 ### Fehlerbehebung
 
-**Verbindungsprobleme nach der Installation?**
+**Verbindungsprobleme?**
 
-Schnelle Lösungen:
+Die App enthält integrierte Diagnosetools zur Fehlerbehebung bei ZeroTier-Verbindungen:
 
-1. **Abmelden und wieder anmelden** (empfohlen) - Gruppenberechtigungen erfordern einen neuen Login
-2. Führen Sie das Diagnosetool aus: `bash /opt/ZimaOS\ Client/resources/diagnose-zerotier.sh`
-3. Prüfen Sie den ZeroTier-Service: `sudo systemctl status zima-zerotier.service`
+1. **Einstellungen öffnen** (Zahnrad-Symbol oben rechts)
+2. Zum Tab **ZeroTier** navigieren
+3. **Diagnose ausführen** klicken, um zu prüfen:
+   - ZeroTier-Binary-Existenz und -Berechtigungen
+   - Service-Status
+   - Netzwerkkonnektivität
+   - Port-Verfügbarkeit
+   - Systemkonfiguration
 
-Der Installer installiert ZeroTier automatisch, falls noch nicht vorhanden.
-Für detaillierte Fehlerbehebung siehe [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+**Häufige Lösungen:**
+- **Abmelden und wieder anmelden** nach der Installation (Gruppenberechtigungen erfordern einen neuen Login)
+- ZeroTier-Service prüfen: `sudo systemctl status zima-zerotier.service`
+- Diagnoseergebnisse in Einstellungen > ZeroTier > Diagnostics überprüfen
 
 ### Entwicklung
 
