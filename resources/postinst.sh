@@ -118,6 +118,12 @@ if [ -n "$TARGET_USER" ]; then
     ZT_SOURCE_DIR="${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}"
 
     if [ -d "$ZT_SOURCE_DIR" ] && [ -f "$ZT_SOURCE_DIR/zerotier-one" ]; then
+        # Stop user service if running (to avoid "busy" errors during upgrade)
+        if runuser -l "$TARGET_USER" -c 'systemctl --user is-active --quiet zima-zerotier.service 2>/dev/null'; then
+            echo "Stopping existing ZeroTier service..."
+            runuser -l "$TARGET_USER" -c 'systemctl --user stop zima-zerotier.service' || true
+        fi
+
         # Create target directory
         runuser -l "$TARGET_USER" -c "mkdir -p '$ZT_TARGET_DIR'"
 

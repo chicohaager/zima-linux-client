@@ -1,6 +1,6 @@
 {
   "name": "zima-linux-client",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Modern Desktop Client for ZimaOS with integrated ZeroTier and SMB management",
   "main": "dist/main/index.js",
   "author": {
