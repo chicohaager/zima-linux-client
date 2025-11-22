@@ -34,6 +34,9 @@ ZimaOS Client is a powerful desktop application for Linux and macOS that provide
 #### Backup Management
 ![Backup Jobs](resources/4.png)
 
+#### Settings & ZeroTier Diagnostics
+![Settings Page](resources/5.png)
+
 ### Installation
 
 #### Linux
@@ -185,6 +188,9 @@ ZimaOS Client ist eine leistungsstarke Desktop-Anwendung für Linux und macOS, d
 
 #### Backup-Verwaltung
 ![Backup-Jobs](resources/4.png)
+
+#### Einstellungen & ZeroTier-Diagnose
+![Einstellungsseite](resources/5.png)
 
 ### Installation
 
