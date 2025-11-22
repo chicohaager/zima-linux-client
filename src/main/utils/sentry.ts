@@ -15,7 +15,8 @@ export function initSentry(): void {
   // Check if DSN is configured via environment variable
   const dsn = process.env.SENTRY_DSN;
   if (!dsn) {
-    console.warn('[Sentry] No DSN configured, error monitoring disabled');
+    // No DSN configured - Sentry is optional, so this is not an error
+    console.log('[Sentry] No DSN configured, error monitoring disabled');
     return;
   }
 

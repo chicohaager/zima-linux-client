@@ -47,15 +47,22 @@ fi
 
 # Copy ZeroTier binaries
 if [ -d "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}" ]; then
+    echo "Copying ZeroTier binaries for ${ZT_ARCH}..."
     cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-one" /opt/zima-client/bin/
     cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-cli" /opt/zima-client/bin/
     chmod +x /opt/zima-client/bin/zerotier-*
+
+    # Verify binaries were copied
+    if [ ! -f "/opt/zima-client/bin/zerotier-one" ]; then
+        echo "✗ Error: Failed to copy zerotier-one binary"
+        exit 1
+    fi
 
     # Set Linux capabilities for network operations (belt-and-suspenders with systemd)
     if command -v setcap >/dev/null 2>&1; then
         setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one 2>/dev/null || {
             echo "⚠ Warning: Could not set capabilities on zerotier-one"
-            echo "  This is usually OK if running from tmpfs/AppImage"
+            echo "  This is usually OK - systemd will provide capabilities via AmbientCapabilities"
         }
         # Verify capabilities were set
         if getcap /opt/zima-client/bin/zerotier-one 2>/dev/null | grep -q cap_net_admin; then
@@ -64,42 +71,78 @@ if [ -d "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}" ]; then
     fi
 
     echo "✓ Copied ZeroTier binaries"
+else
+    echo "✗ Error: ZeroTier binaries not found at ${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}"
+    exit 1
+fi
+
+# Ensure TUN device exists
+if [ ! -e /dev/net/tun ]; then
+    echo "TUN device not found, loading kernel module..."
+    modprobe tun 2>/dev/null || {
+        echo "⚠ Warning: Could not load TUN module"
+        echo "  ZeroTier requires /dev/net/tun to create virtual network interfaces"
+        echo "  You may need to run: sudo modprobe tun"
+    }
 fi
 
 # Copy and install systemd service
 if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
+    echo "Installing systemd service..."
     cp "${RESOURCE_DIR}/resources/zima-zerotier.service" /etc/systemd/system/
-    
+
     # Reload systemd
     systemctl daemon-reload
-    
-    # Enable and start service
-    systemctl enable zima-zerotier.service
-    systemctl start zima-zerotier.service || true
-    
-    # Check if service started
-    sleep 2
-    if systemctl is-active --quiet zima-zerotier.service; then
-        echo "✓ ZeroTier service started successfully"
 
-        # Fix permissions on ZeroTier files
-        sleep 1
-        if [ -d "/var/lib/zima-zerotier" ]; then
-            chown -R root:zima-zerotier /var/lib/zima-zerotier
-            chmod 755 /var/lib/zima-zerotier
-            # Make token and port files world-readable (they're not security-sensitive)
-            # The security comes from the local-only API on 127.0.0.1
-            if [ -f "/var/lib/zima-zerotier/authtoken.secret" ]; then
-                chmod 644 /var/lib/zima-zerotier/authtoken.secret
+    # Enable service
+    systemctl enable zima-zerotier.service
+
+    # Try to start service
+    echo "Starting ZeroTier service..."
+    if systemctl start zima-zerotier.service; then
+        # Wait for service to fully initialize
+        sleep 3
+
+        if systemctl is-active --quiet zima-zerotier.service; then
+            echo "✓ ZeroTier service started successfully"
+
+            # Fix permissions on ZeroTier files
+            if [ -d "/var/lib/zima-zerotier" ]; then
+                chown -R root:zima-zerotier /var/lib/zima-zerotier
+                chmod 755 /var/lib/zima-zerotier
+                # Make token and port files world-readable (they're not security-sensitive)
+                # The security comes from the local-only API on 127.0.0.1
+                if [ -f "/var/lib/zima-zerotier/authtoken.secret" ]; then
+                    chmod 644 /var/lib/zima-zerotier/authtoken.secret
+                fi
+                if [ -f "/var/lib/zima-zerotier/zerotier-one.port" ]; then
+                    chmod 644 /var/lib/zima-zerotier/zerotier-one.port
+                fi
+                echo "✓ Fixed permissions on ZeroTier files"
             fi
-            if [ -f "/var/lib/zima-zerotier/zerotier-one.port" ]; then
-                chmod 644 /var/lib/zima-zerotier/zerotier-one.port
-            fi
-            echo "✓ Fixed permissions on ZeroTier files"
+        else
+            echo "⚠ ZeroTier service failed to stay running"
+            echo "  Run this to see the error:"
+            echo "    sudo journalctl -u zima-zerotier.service -n 50 --no-pager"
+            echo "    sudo systemctl status zima-zerotier.service"
         fi
     else
-        echo "⚠ ZeroTier service installation complete, but service failed to start"
-        echo "  Check: systemctl status zima-zerotier.service"
+        echo "✗ Failed to start ZeroTier service"
+        echo ""
+        echo "=== Service Status ==="
+        systemctl status zima-zerotier.service --no-pager || true
+        echo ""
+        echo "=== Last 20 Log Lines ==="
+        journalctl -u zima-zerotier.service -n 20 --no-pager || true
+        echo ""
+        echo "Common issues:"
+        echo "  1. Missing /dev/net/tun: Run 'sudo modprobe tun'"
+        echo "  2. Binary not found: Check /opt/zima-client/bin/zerotier-one exists"
+        echo "  3. Missing capabilities: This should be OK, systemd provides them"
+        echo ""
+        echo "You can try to start it manually later:"
+        echo "  sudo systemctl start zima-zerotier.service"
+        echo "  sudo journalctl -u zima-zerotier.service -f"
     fi
 fi
 

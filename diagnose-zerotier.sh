@@ -42,18 +42,39 @@ echo "2. Checking ZeroTier binary..."
 if [ -f "/opt/zima-client/bin/zerotier-one" ]; then
     success "Binary found at /opt/zima-client/bin/zerotier-one"
 
+    # Check if binary is executable
+    if [ -x "/opt/zima-client/bin/zerotier-one" ]; then
+        success "Binary is executable"
+    else
+        error "Binary is not executable"
+        echo "   Fix: sudo chmod +x /opt/zima-client/bin/zerotier-one"
+    fi
+
     # Check capabilities
     if command -v getcap >/dev/null 2>&1; then
         CAPS=$(getcap /opt/zima-client/bin/zerotier-one 2>/dev/null)
         if echo "$CAPS" | grep -q "cap_net_admin"; then
-            success "Binary has required capabilities: $CAPS"
+            success "Binary has file capabilities: $CAPS"
         else
-            warning "Binary missing network capabilities"
-            echo "   Fix: sudo setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one"
+            warning "Binary has no file capabilities (systemd provides them via AmbientCapabilities)"
+            echo "   This is usually OK - the systemd service provides capabilities"
+            echo "   Optional fix: sudo setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one"
         fi
     fi
 else
     error "Binary not found"
+fi
+echo ""
+
+# Check 2b: TUN device
+echo "2b. Checking TUN device..."
+if [ -e /dev/net/tun ]; then
+    success "TUN device exists at /dev/net/tun"
+else
+    error "TUN device not found"
+    echo "   ZeroTier requires /dev/net/tun to create virtual network interfaces"
+    echo "   Fix: sudo modprobe tun"
+    echo "   To make it permanent, add 'tun' to /etc/modules"
 fi
 echo ""
 
