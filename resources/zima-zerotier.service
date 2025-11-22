@@ -2,10 +2,11 @@
 Description=ZeroTier One Network Service for Zima Client
 After=network.target
 Documentation=https://www.zerotier.com/
+Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/opt/zima-client/bin/zerotier-one -p9994 /var/lib/zima-zerotier
+ExecStart=/usr/sbin/zerotier-one -p9994 /var/lib/zima-zerotier
 ExecStartPost=/bin/bash -c 'sleep 2 && chmod 644 /var/lib/zima-zerotier/authtoken.secret /var/lib/zima-zerotier/zerotier-one.port 2>/dev/null || true'
 Restart=always
 RestartSec=5
@@ -25,6 +26,7 @@ StateDirectory=zima-zerotier
 StateDirectoryMode=0750
 
 # Capabilities needed for network operations
+# ZeroTier needs these to create virtual network interfaces
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_ADMIN
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE CAP_SYS_ADMIN
 

@@ -100,13 +100,6 @@
     ],
     "extraResources": [
       {
-        "from": "bin/zerotier",
-        "to": "bin/zerotier",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
         "from": "resources",
         "to": "resources",
         "filter": [
@@ -119,7 +112,8 @@
         "to": "zerotier-installer/ZeroTierOne.pkg"
       },
       "diagnose-zerotier.sh",
-      "TROUBLESHOOTING.md"
+      "TROUBLESHOOTING.md",
+      "GLIBC_COMPATIBILITY.md"
     ],
     "mac": {
       "target": [

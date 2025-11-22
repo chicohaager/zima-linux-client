@@ -4,7 +4,10 @@ set -e
 # Post-installation script for Zima Linux Client .deb package
 # This script runs as root during package installation
 
-echo "Setting up Zima Client ZeroTier service..."
+echo "================================================"
+echo "ZimaOS Client - Post-Installation Setup"
+echo "================================================"
+echo ""
 
 # Create zima-zerotier group if it doesn't exist
 if ! getent group zima-zerotier >/dev/null 2>&1; then
@@ -20,102 +23,84 @@ for user in $(getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 { print $1 }'); 
         echo "✓ Added $user to zima-zerotier group"
     fi
 done
+echo ""
 
-# Stop existing service if running (to avoid "busy" error when overwriting binaries)
+# Stop existing service if running
 if systemctl is-active --quiet zima-zerotier.service 2>/dev/null; then
     echo "Stopping existing ZeroTier service..."
     systemctl stop zima-zerotier.service || true
 fi
 
-# Create directory for binaries
-mkdir -p /opt/zima-client/bin
+# =============================================================================
+# ZeroTier Installation - Always use system ZeroTier for maximum compatibility
+# =============================================================================
 
-# Copy binaries from AppImage resources to system location
-# electron-builder extraResources are at /opt/ZimaOS Client/resources/
-RESOURCE_DIR="/opt/ZimaOS Client/resources"
+echo "Setting up ZeroTier..."
 
-# Detect architecture
-ARCH=$(uname -m)
-if [ "$ARCH" = "x86_64" ]; then
-    ZT_ARCH="x64"
-elif [ "$ARCH" = "aarch64" ]; then
-    ZT_ARCH="arm64"
+# Check if ZeroTier is already installed
+if command -v zerotier-one >/dev/null 2>&1; then
+    ZT_VERSION=$(zerotier-one -v 2>/dev/null || echo "unknown")
+    echo "✓ ZeroTier already installed (version: $ZT_VERSION)"
 else
-    echo "Unsupported architecture: $ARCH"
-    exit 1
-fi
+    echo "ZeroTier not found. Installing from official repository..."
+    echo ""
 
-# Copy ZeroTier binaries
-BUNDLED_BINARIES_OK=false
-
-if [ -d "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}" ]; then
-    echo "Copying ZeroTier binaries for ${ZT_ARCH}..."
-    cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-one" /opt/zima-client/bin/
-    cp "${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}/zerotier-cli" /opt/zima-client/bin/
-    chmod +x /opt/zima-client/bin/zerotier-*
-
-    # Test if the bundled binary works on this system
-    if /opt/zima-client/bin/zerotier-one -v >/dev/null 2>&1; then
-        BUNDLED_BINARIES_OK=true
-        echo "✓ Bundled ZeroTier binaries are compatible"
-
-        # Set Linux capabilities
-        if command -v setcap >/dev/null 2>&1; then
-            setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one 2>/dev/null || {
-                echo "⚠ Warning: Could not set capabilities - systemd will provide them"
-            }
-            if getcap /opt/zima-client/bin/zerotier-one 2>/dev/null | grep -q cap_net_admin; then
-                echo "✓ Set network capabilities on zerotier-one"
-            fi
-        fi
+    # Detect if we have internet connectivity
+    if ! ping -c 1 -W 2 google.com >/dev/null 2>&1 && ! ping -c 1 -W 2 8.8.8.8 >/dev/null 2>&1; then
+        echo "⚠ No internet connection detected"
+        echo ""
+        echo "ZeroTier installation requires internet access."
+        echo "Please connect to the internet and run:"
+        echo "  sudo apt-get update && sudo apt-get install zerotier-one"
+        echo ""
+        echo "Or use the official install script:"
+        echo "  curl -s https://install.zerotier.com | sudo bash"
+        echo ""
+        echo "Then restart the ZeroTier service:"
+        echo "  sudo systemctl restart zima-zerotier.service"
+        echo ""
+        # Don't fail installation - user can install ZeroTier later
     else
-        echo "⚠ Bundled ZeroTier binaries incompatible (likely glibc version mismatch)"
-        echo "  Attempting to use system ZeroTier as fallback..."
+        # Install ZeroTier using official script
+        if curl -s https://install.zerotier.com | bash; then
+            echo "✓ ZeroTier installed successfully"
 
-        # Try to use system ZeroTier binaries
-        if [ -f "/usr/sbin/zerotier-one" ] && [ -f "/usr/sbin/zerotier-cli" ]; then
-            echo "  Found system ZeroTier, using it instead"
-            cp /usr/sbin/zerotier-one /opt/zima-client/bin/
-            cp /usr/sbin/zerotier-cli /opt/zima-client/bin/
-            chmod +x /opt/zima-client/bin/zerotier-*
-
-            if command -v setcap >/dev/null 2>&1; then
-                setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one 2>/dev/null || true
-            fi
-
-            BUNDLED_BINARIES_OK=true
-            echo "✓ Using system ZeroTier binaries"
+            # Stop and disable the default system service (we use our own)
+            systemctl stop zerotier-one 2>/dev/null || true
+            systemctl disable zerotier-one 2>/dev/null || true
+            echo "✓ Disabled default ZeroTier service (using custom zima-zerotier service)"
         else
-            echo "✗ System ZeroTier not found"
+            echo "✗ ZeroTier installation failed"
             echo ""
-            echo "  Please install ZeroTier manually:"
-            echo "    curl -s https://install.zerotier.com | sudo bash"
+            echo "Please install manually:"
+            echo "  curl -s https://install.zerotier.com | sudo bash"
             echo ""
-            echo "  Then copy the binaries:"
-            echo "    sudo cp /usr/sbin/zerotier-* /opt/zima-client/bin/"
-            echo "    sudo chmod +x /opt/zima-client/bin/zerotier-*"
-            echo "    sudo setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one"
+            echo "Then restart the service:"
+            echo "  sudo systemctl restart zima-zerotier.service"
             echo ""
-            echo "  Or reinstall this package after installing ZeroTier"
-            # Don't exit - continue installation, user can fix later
         fi
     fi
-else
-    echo "✗ Error: ZeroTier binaries not found at ${RESOURCE_DIR}/bin/zerotier/${ZT_ARCH}"
-    exit 1
 fi
+echo ""
+
+# =============================================================================
+# System Service Configuration
+# =============================================================================
+
+RESOURCE_DIR="/opt/ZimaOS Client/resources"
 
 # Ensure TUN device exists
 if [ ! -e /dev/net/tun ]; then
-    echo "TUN device not found, loading kernel module..."
+    echo "Loading TUN kernel module..."
     modprobe tun 2>/dev/null || {
         echo "⚠ Warning: Could not load TUN module"
-        echo "  ZeroTier requires /dev/net/tun to create virtual network interfaces"
-        echo "  You may need to run: sudo modprobe tun"
+        echo "  ZeroTier requires /dev/net/tun"
+        echo "  Run: sudo modprobe tun"
+        echo ""
     }
 fi
 
-# Copy and install systemd service
+# Install systemd service
 if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
     echo "Installing systemd service..."
     cp "${RESOURCE_DIR}/resources/zima-zerotier.service" /etc/systemd/system/
@@ -125,6 +110,8 @@ if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
 
     # Enable service
     systemctl enable zima-zerotier.service
+    echo "✓ Service enabled"
+    echo ""
 
     # Try to start service
     echo "Starting ZeroTier service..."
@@ -134,48 +121,53 @@ if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
 
         if systemctl is-active --quiet zima-zerotier.service; then
             echo "✓ ZeroTier service started successfully"
+            echo ""
 
             # Fix permissions on ZeroTier files
             if [ -d "/var/lib/zima-zerotier" ]; then
                 chown -R root:zima-zerotier /var/lib/zima-zerotier
                 chmod 755 /var/lib/zima-zerotier
-                # Make token and port files world-readable (they're not security-sensitive)
-                # The security comes from the local-only API on 127.0.0.1
+
+                # Make token and port files world-readable
+                # Security: ZeroTier API only listens on 127.0.0.1
                 if [ -f "/var/lib/zima-zerotier/authtoken.secret" ]; then
                     chmod 644 /var/lib/zima-zerotier/authtoken.secret
                 fi
                 if [ -f "/var/lib/zima-zerotier/zerotier-one.port" ]; then
                     chmod 644 /var/lib/zima-zerotier/zerotier-one.port
                 fi
-                echo "✓ Fixed permissions on ZeroTier files"
+                echo "✓ Configured permissions"
             fi
         else
-            echo "⚠ ZeroTier service failed to stay running"
-            echo "  Run this to see the error:"
-            echo "    sudo journalctl -u zima-zerotier.service -n 50 --no-pager"
-            echo "    sudo systemctl status zima-zerotier.service"
+            echo "⚠ Service failed to stay running"
+            echo ""
+            echo "Check status with:"
+            echo "  sudo systemctl status zima-zerotier.service"
+            echo "  sudo journalctl -u zima-zerotier.service -n 50"
+            echo ""
         fi
     else
-        echo "✗ Failed to start ZeroTier service"
+        echo "✗ Failed to start service"
         echo ""
-        echo "=== Service Status ==="
         systemctl status zima-zerotier.service --no-pager || true
         echo ""
-        echo "=== Last 20 Log Lines ==="
         journalctl -u zima-zerotier.service -n 20 --no-pager || true
         echo ""
-        echo "Common issues:"
-        echo "  1. Missing /dev/net/tun: Run 'sudo modprobe tun'"
-        echo "  2. Binary not found: Check /opt/zima-client/bin/zerotier-one exists"
-        echo "  3. Missing capabilities: This should be OK, systemd provides them"
+        echo "Troubleshooting:"
+        echo "  1. Check if ZeroTier is installed: which zerotier-one"
+        echo "  2. Check TUN device: ls -l /dev/net/tun"
+        echo "  3. Try manual start: sudo systemctl start zima-zerotier.service"
         echo ""
-        echo "You can try to start it manually later:"
-        echo "  sudo systemctl start zima-zerotier.service"
-        echo "  sudo journalctl -u zima-zerotier.service -f"
     fi
 fi
 
-# Install icon to proper location
+# =============================================================================
+# Desktop Integration
+# =============================================================================
+
+echo "Setting up desktop integration..."
+
+# Install icon
 ICON_SOURCE="/opt/ZimaOS Client/resources/app.asar.unpacked/icon.png"
 if [ -f "$ICON_SOURCE" ]; then
     mkdir -p /usr/share/icons/hicolor/256x256/apps
@@ -204,13 +196,22 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1; then
     echo "✓ Icon cache updated"
 fi
 
-echo "✓ Zima Client installation complete!"
 echo ""
 echo "================================================"
-echo "IMPORTANT: If this is your first installation,"
-echo "please LOG OUT and back in for group permissions"
-echo "to take effect."
+echo "✓ Installation Complete!"
+echo "================================================"
 echo ""
-echo "If you experience connection issues, run:"
-echo "  bash /opt/ZimaOS\\ Client/resources/diagnose-zerotier.sh"
+echo "IMPORTANT:"
+echo "  • Log out and back in for group permissions to take effect"
+echo "  • First-time setup may take a moment while ZeroTier initializes"
+echo ""
+echo "Troubleshooting:"
+echo "  • Run diagnostic: bash /opt/ZimaOS\\ Client/resources/diagnose-zerotier.sh"
+echo "  • View logs: sudo journalctl -u zima-zerotier.service -f"
+echo "  • Check service: sudo systemctl status zima-zerotier.service"
+echo ""
+echo "Documentation:"
+echo "  • /opt/ZimaOS\\ Client/resources/TROUBLESHOOTING.md"
+echo "  • /opt/ZimaOS\\ Client/resources/GLIBC_COMPATIBILITY.md"
+echo ""
 echo "================================================"
