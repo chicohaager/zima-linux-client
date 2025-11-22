@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { ZimaDevice, SMBShare, ZeroTierNetwork, RecentConnection, BackupJob, ShareSpace, BackupProgress } from '@shared/types';
+import { ZimaDevice, SMBShare, ZeroTierNetwork, RecentConnection, BackupJob, ShareSpace, BackupProgress, ZeroTierDiagnostics } from '@shared/types';
 
 // Expose protected methods to renderer process
 contextBridge.exposeInMainWorld('electron', {
@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('electron', {
     leave: (networkId: string) => ipcRenderer.invoke('zerotier:leave', networkId),
     listNetworks: () => ipcRenderer.invoke('zerotier:listNetworks'),
     getStatus: () => ipcRenderer.invoke('zerotier:getStatus'),
+    diagnostics: (): Promise<{ success: boolean; data?: ZeroTierDiagnostics; error?: string }> =>
+      ipcRenderer.invoke('zerotier:diagnostics'),
   },
 
   // Device discovery
@@ -116,6 +118,10 @@ contextBridge.exposeInMainWorld('electron', {
       return () => ipcRenderer.removeListener('update-error', listener);
     },
   },
+
+  // Shell
+  openExternal: (url: string): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke('shell:openExternal', url),
 });
 
 // Type definitions for window.electron
@@ -129,6 +135,7 @@ declare global {
         leave: (networkId: string) => Promise<{ success: boolean; error?: string }>;
         listNetworks: () => Promise<{ success: boolean; data?: ZeroTierNetwork[]; error?: string }>;
         getStatus: () => Promise<{ success: boolean; data?: any; error?: string }>;
+        diagnostics: () => Promise<{ success: boolean; data?: ZeroTierDiagnostics; error?: string }>;
       };
       device: {
         scan: () => Promise<{ success: boolean; data?: ZimaDevice[]; error?: string }>;
@@ -175,6 +182,7 @@ declare global {
         onUpdateDownloaded: (callback: (info: any) => void) => () => void;
         onUpdateError: (callback: (error: string) => void) => () => void;
       };
+      openExternal: (url: string) => Promise<{ success: boolean; error?: string }>;
     };
   }
 }

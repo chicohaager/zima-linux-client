@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { useAppStore } from '../store';
-import { AppsIcon, BackupIcon, DisconnectIcon, HomeIcon } from './Icons';
+import { AppsIcon, BackupIcon, DisconnectIcon, HomeIcon, SettingsIcon } from './Icons';
 
 export const Navigation: React.FC = memo(() => {
   const currentView = useAppStore((state) => state.currentView);
@@ -40,6 +40,13 @@ export const Navigation: React.FC = memo(() => {
       label: 'Backup',
       icon: (active: boolean) => (
         <BackupIcon className={`${active ? 'text-white' : 'text-gray-200'} w-7 h-7`} />
+      )
+    },
+    {
+      id: 'settings' as const,
+      label: 'Settings',
+      icon: (active: boolean) => (
+        <SettingsIcon className={`${active ? 'text-white' : 'text-gray-200'} w-7 h-7`} />
       )
     }
   ];
@@ -98,6 +105,19 @@ export const Navigation: React.FC = memo(() => {
           {navItems[2].icon(currentView === 'backup')}
           <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
             {navItems[2].label}
+          </span>
+        </button>
+
+        {/* Settings */}
+        <button
+          onClick={() => setCurrentView('settings')}
+          className={`p-4 rounded-xl transition-colors group relative ${
+            currentView === 'settings' ? 'bg-zima-blue text-white' : 'hover:bg-gray-700'
+          }`}
+        >
+          {navItems[3].icon(currentView === 'settings')}
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            {navItems[3].label}
           </span>
         </button>
       </div>

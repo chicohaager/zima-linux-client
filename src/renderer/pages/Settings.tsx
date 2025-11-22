@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { ZeroTierDiagnosticsView } from '../components/ZeroTierDiagnosticsView';
 
 /**
  * Settings page component
@@ -127,6 +128,16 @@ export const Settings: React.FC = () => {
               Default network to join on startup
             </p>
           </section>
+
+          <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              {t('settings.zerotier.diagnostics') || 'Diagnostics'}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Run system checks to troubleshoot ZeroTier connectivity issues
+            </p>
+            <ZeroTierDiagnosticsView />
+          </section>
         </div>
       )}
 
@@ -188,7 +199,7 @@ export const Settings: React.FC = () => {
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {t('settings.about.version')}
                 </span>
-                <span className="text-gray-900 dark:text-white">0.9.6</span>
+                <span className="text-gray-900 dark:text-white">0.9.8</span>
               </div>
 
               <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
@@ -213,7 +224,10 @@ export const Settings: React.FC = () => {
               </div>
             </div>
 
-            <button className="mt-6 w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors">
+            <button
+              onClick={() => window.electron.openExternal('https://github.com/chicohaager/zima-linux-client/issues/new')}
+              className="mt-6 w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+            >
               {t('settings.about.reportIssue')}
             </button>
           </section>

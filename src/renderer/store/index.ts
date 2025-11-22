@@ -36,8 +36,8 @@ interface AppState {
   setError: (error: string | null) => void;
 
   // Current view
-  currentView: 'connect' | 'devices' | 'apps' | 'backup';
-  setCurrentView: (view: 'connect' | 'devices' | 'apps' | 'backup') => void;
+  currentView: 'connect' | 'devices' | 'apps' | 'backup' | 'settings';
+  setCurrentView: (view: 'connect' | 'devices' | 'apps' | 'backup' | 'settings') => void;
 
   // Toast notifications
   toasts: ToastMessage[];

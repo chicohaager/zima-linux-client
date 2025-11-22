@@ -11,6 +11,7 @@ import { RecentConnectionsStorage } from '../storage/recentConnections';
 import { BackupManager } from '../backup/manager';
 import { updateManager } from '../updater';
 import { ZimaDevice, SMBShare, BackupJob, ZimaApp } from '@shared/types';
+import { runZeroTierDiagnostics } from '../zerotierDiagnostics';
 
 const execAsync = promisify(exec);
 
@@ -190,6 +191,16 @@ export class IPCHandlers {
         const status = await this.zerotierManager.getStatus();
         return { success: true, data: status };
       } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle('zerotier:diagnostics', async () => {
+      try {
+        const diagnostics = await runZeroTierDiagnostics();
+        return { success: true, data: diagnostics };
+      } catch (error: any) {
+        logger.error('Failed to run ZeroTier diagnostics:', error);
         return { success: false, error: error.message };
       }
     });
@@ -796,6 +807,17 @@ export class IPCHandlers {
         const version = updateManager.getCurrentVersion();
         return { success: true, data: version };
       } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    // Shell handlers
+    ipcMain.handle('shell:openExternal', async (_event, url: string) => {
+      try {
+        await shell.openExternal(url);
+        return { success: true };
+      } catch (error: any) {
+        logger.error('Failed to open external URL:', error);
         return { success: false, error: error.message };
       }
     });
