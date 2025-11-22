@@ -113,9 +113,36 @@ if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
     echo "✓ Service enabled"
     echo ""
 
-    # Try to start service
-    echo "Starting ZeroTier service..."
-    if systemctl start zima-zerotier.service; then
+    # CRITICAL: Check if ZeroTier is actually installed before starting service
+    if ! command -v zerotier-one >/dev/null 2>&1; then
+        echo "⚠ WARNING: ZeroTier is not installed!"
+        echo ""
+        echo "The service will not start until ZeroTier is installed."
+        echo "To install ZeroTier and start the service:"
+        echo ""
+        echo "  curl -s https://install.zerotier.com | sudo bash"
+        echo "  sudo systemctl restart zima-zerotier.service"
+        echo ""
+        # Create a warning file
+        mkdir -p /var/lib/zima-zerotier
+        cat > /var/lib/zima-zerotier/INSTALL_ZEROTIER.txt <<'EOFWARNING'
+ZeroTier is not installed on this system.
+
+The ZimaOS Client requires ZeroTier to connect to remote devices.
+
+To install ZeroTier, run:
+  curl -s https://install.zerotier.com | sudo bash
+
+Then restart the service:
+  sudo systemctl restart zima-zerotier.service
+
+Or install via package manager:
+  sudo apt-get update && sudo apt-get install zerotier-one
+EOFWARNING
+    else
+        # Try to start service
+        echo "Starting ZeroTier service..."
+        if systemctl start zima-zerotier.service; then
         # Wait for service to fully initialize
         sleep 3
 
@@ -159,7 +186,8 @@ if [ -f "${RESOURCE_DIR}/resources/zima-zerotier.service" ]; then
         echo "  3. Try manual start: sudo systemctl start zima-zerotier.service"
         echo ""
     fi
-fi
+    fi  # End of zerotier-one check
+fi  # End of service file check
 
 # =============================================================================
 # Desktop Integration

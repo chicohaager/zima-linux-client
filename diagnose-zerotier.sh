@@ -37,37 +37,54 @@ else
 fi
 echo ""
 
-# Check 2: Binary exists and has capabilities
-echo "2. Checking ZeroTier binary..."
-if [ -f "/opt/zima-client/bin/zerotier-one" ]; then
-    success "Binary found at /opt/zima-client/bin/zerotier-one"
+# Check 2: ZeroTier installation
+echo "2. Checking ZeroTier installation..."
 
-    # Check if binary is executable
-    if [ -x "/opt/zima-client/bin/zerotier-one" ]; then
-        success "Binary is executable"
-    else
-        error "Binary is not executable"
-        echo "   Fix: sudo chmod +x /opt/zima-client/bin/zerotier-one"
-    fi
-
-    # Check capabilities
-    if command -v getcap >/dev/null 2>&1; then
-        CAPS=$(getcap /opt/zima-client/bin/zerotier-one 2>/dev/null)
-        if echo "$CAPS" | grep -q "cap_net_admin"; then
-            success "Binary has file capabilities: $CAPS"
-        else
-            warning "Binary has no file capabilities (systemd provides them via AmbientCapabilities)"
-            echo "   This is usually OK - the systemd service provides capabilities"
-            echo "   Optional fix: sudo setcap cap_net_admin,cap_net_raw,cap_net_bind_service=+eip /opt/zima-client/bin/zerotier-one"
-        fi
-    fi
+# Check if ZeroTier is installed system-wide
+if command -v zerotier-one >/dev/null 2>&1; then
+    ZT_PATH=$(which zerotier-one)
+    ZT_VERSION=$(zerotier-one -v 2>/dev/null || echo "unknown")
+    success "ZeroTier installed at: $ZT_PATH (version: $ZT_VERSION)"
 else
-    error "Binary not found"
+    error "ZeroTier is NOT installed on this system"
+    echo ""
+    echo "   This is why the service fails with '/usr/sbin/zerotier-one: No such file'"
+    echo ""
+    echo "   FIX: Install ZeroTier with one of these methods:"
+    echo ""
+    echo "   Method 1 (Recommended):"
+    echo "     curl -s https://install.zerotier.com | sudo bash"
+    echo ""
+    echo "   Method 2 (Package manager):"
+    echo "     sudo apt-get update && sudo apt-get install zerotier-one"
+    echo ""
+    echo "   Then restart the service:"
+    echo "     sudo systemctl restart zima-zerotier.service"
+    echo ""
 fi
 echo ""
 
-# Check 2b: TUN device
-echo "2b. Checking TUN device..."
+# Check 2b: Binary at expected location
+echo "2b. Checking ZeroTier binary at expected location..."
+if [ -f "/usr/sbin/zerotier-one" ]; then
+    success "Binary found at /usr/sbin/zerotier-one"
+
+    # Check if binary is executable
+    if [ -x "/usr/sbin/zerotier-one" ]; then
+        success "Binary is executable"
+    else
+        error "Binary is not executable"
+        echo "   Fix: sudo chmod +x /usr/sbin/zerotier-one"
+    fi
+else
+    error "Binary not found at /usr/sbin/zerotier-one"
+    echo "   The systemd service expects the binary at this location"
+    echo "   Install ZeroTier (see check 2 above)"
+fi
+echo ""
+
+# Check 2c: TUN device
+echo "2c. Checking TUN device..."
 if [ -e /dev/net/tun ]; then
     success "TUN device exists at /dev/net/tun"
 else
