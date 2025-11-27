@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { ZeroTierDiagnosticsView } from '../components/ZeroTierDiagnosticsView';
@@ -13,6 +13,62 @@ export const Settings: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [zerotierAutoStart, setZerotierAutoStart] = useState(false);
   const [backupNotifications, setBackupNotifications] = useState(true);
+
+  // Update state
+  const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'>('idle');
+  const [updateInfo, setUpdateInfo] = useState<{ version?: string; error?: string } | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+
+  // Listen for update events
+  useEffect(() => {
+    const unsubAvailable = window.electron.update.onUpdateAvailable((info) => {
+      setUpdateStatus('available');
+      setUpdateInfo({ version: info.version });
+    });
+
+    const unsubNotAvailable = window.electron.update.onUpdateNotAvailable(() => {
+      setUpdateStatus('idle');
+      setUpdateInfo(null);
+    });
+
+    const unsubProgress = window.electron.update.onDownloadProgress((progress) => {
+      setUpdateStatus('downloading');
+      setDownloadProgress(progress.percent || 0);
+    });
+
+    const unsubDownloaded = window.electron.update.onUpdateDownloaded((info) => {
+      setUpdateStatus('ready');
+      setUpdateInfo({ version: info.version });
+    });
+
+    const unsubError = window.electron.update.onUpdateError((error) => {
+      setUpdateStatus('error');
+      setUpdateInfo({ error });
+    });
+
+    return () => {
+      unsubAvailable();
+      unsubNotAvailable();
+      unsubProgress();
+      unsubDownloaded();
+      unsubError();
+    };
+  }, []);
+
+  const handleCheckForUpdates = async () => {
+    setUpdateStatus('checking');
+    await window.electron.update.check();
+  };
+
+  const handleDownloadUpdate = async () => {
+    setUpdateStatus('downloading');
+    setDownloadProgress(0);
+    await window.electron.update.download();
+  };
+
+  const handleInstallUpdate = async () => {
+    await window.electron.update.install();
+  };
 
   const tabs = [
     { id: 'general' as const, label: t('settings.general.title'), icon: '⚙️' },
@@ -199,7 +255,7 @@ export const Settings: React.FC = () => {
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {t('settings.about.version')}
                 </span>
-                <span className="text-gray-900 dark:text-white">0.9.14</span>
+                <span className="text-gray-900 dark:text-white">0.9.15</span>
               </div>
 
               <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
@@ -230,6 +286,106 @@ export const Settings: React.FC = () => {
             >
               {t('settings.about.reportIssue')}
             </button>
+          </section>
+
+          <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              {t('settings.about.updates') || 'Updates'}
+            </h2>
+
+            {/* Idle state - show check button */}
+            {updateStatus === 'idle' && (
+              <button
+                onClick={handleCheckForUpdates}
+                className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+              >
+                {t('settings.about.checkForUpdates') || 'Check for Updates'}
+              </button>
+            )}
+
+            {/* Checking state */}
+            {updateStatus === 'checking' && (
+              <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span>{t('settings.about.checkingForUpdates') || 'Checking for updates...'}</span>
+              </div>
+            )}
+
+            {/* Update available */}
+            {updateStatus === 'available' && updateInfo?.version && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{t('settings.about.updateAvailable') || 'Update available'}: v{updateInfo.version}</span>
+                </div>
+                <button
+                  onClick={handleDownloadUpdate}
+                  className="w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  {t('settings.about.downloadUpdate') || 'Download Update'}
+                </button>
+              </div>
+            )}
+
+            {/* Downloading */}
+            {updateStatus === 'downloading' && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
+                  <span>{t('settings.about.downloading') || 'Downloading update...'}</span>
+                  <span>{Math.round(downloadProgress)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                  <div
+                    className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
+                    style={{ width: `${downloadProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Ready to install */}
+            {updateStatus === 'ready' && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{t('settings.about.updateReady') || 'Update ready to install'}{updateInfo?.version ? ` (v${updateInfo.version})` : ''}</span>
+                </div>
+                <button
+                  onClick={handleInstallUpdate}
+                  className="w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  {t('settings.about.installAndRestart') || 'Install and Restart'}
+                </button>
+              </div>
+            )}
+
+            {/* Error state */}
+            {updateStatus === 'error' && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{t('settings.about.updateError') || 'Update check failed'}</span>
+                </div>
+                {updateInfo?.error && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{updateInfo.error}</p>
+                )}
+                <button
+                  onClick={handleCheckForUpdates}
+                  className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  {t('settings.about.tryAgain') || 'Try Again'}
+                </button>
+              </div>
+            )}
           </section>
 
           <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
