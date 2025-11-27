@@ -105,11 +105,18 @@ export class UpdateManager {
     });
   }
 
-  public checkForUpdates(): void {
+  public async checkForUpdates(): Promise<void> {
     log.info('Checking for updates...');
-    autoUpdater.checkForUpdates().catch((error) => {
+    try {
+      await autoUpdater.checkForUpdates();
+    } catch (error) {
       log.error('Error checking for updates:', error);
-    });
+      // Send error to renderer so UI can update
+      if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.mainWindow.webContents.send('update-error', errorMessage);
+      }
+    }
   }
 
   public downloadUpdate(): void {
