@@ -57,7 +57,27 @@ export const Settings: React.FC = () => {
 
   const handleCheckForUpdates = async () => {
     setUpdateStatus('checking');
-    await window.electron.update.check();
+    setUpdateInfo(null);
+
+    // Set a timeout - if no response in 15 seconds, show error
+    const timeoutId = setTimeout(() => {
+      setUpdateStatus((current) => {
+        if (current === 'checking') {
+          setUpdateInfo({ error: 'Update-Server nicht erreichbar (Timeout)' });
+          return 'error';
+        }
+        return current;
+      });
+    }, 15000);
+
+    try {
+      await window.electron.update.check();
+      // Note: The actual status update comes from the event listeners
+    } catch (error) {
+      clearTimeout(timeoutId);
+      setUpdateStatus('error');
+      setUpdateInfo({ error: error instanceof Error ? error.message : String(error) });
+    }
   };
 
   const handleDownloadUpdate = async () => {
@@ -255,7 +275,7 @@ export const Settings: React.FC = () => {
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {t('settings.about.version')}
                 </span>
-                <span className="text-gray-900 dark:text-white">0.9.18</span>
+                <span className="text-gray-900 dark:text-white">0.9.19</span>
               </div>
 
               <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">

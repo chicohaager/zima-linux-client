@@ -350,19 +350,8 @@ export const ConnectPage: React.FC = () => {
   };
 
   return (
-    <div className="px-4 py-8 pb-32">
+    <div className="px-4 py-4">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <p className="text-xs font-semibold text-zima-text-secondary tracking-wider mb-2">CONNECTOR</p>
-          <h1 className="text-3xl font-bold text-zima-blue mb-1">
-            Remote access
-          </h1>
-          <p className="text-3xl font-bold text-zima-blue">
-            anytime, anywhere.
-          </p>
-        </div>
-
         {/* Main Card */}
         <div className="bg-white rounded-3xl shadow-lg p-6 mb-6">
           {/* Scanning Status */}
