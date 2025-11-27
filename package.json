@@ -1,6 +1,6 @@
 {
   "name": "zima-linux-client",
-  "version": "0.9.20",
+  "version": "0.9.21",
   "description": "Modern Desktop Client for ZimaOS with integrated ZeroTier and SMB management",
   "main": "dist/main/index.js",
   "author": {
@@ -111,7 +111,8 @@
         "to": "resources",
         "filter": [
           "*.service",
-          "*.sh"
+          "*.sh",
+          "copyright"
         ]
       },
       "icon.png"
@@ -139,8 +140,17 @@
         "libfuse2",
         "smbclient"
       ],
-      "maintainer": "Holger Kühn",
-      "afterInstall": "resources/postinst.sh"
+      "maintainer": "Holger Kühn <zima-client@virtual-services.info>",
+      "afterInstall": "resources/postinst.sh",
+      "synopsis": "Desktop Client for ZimaOS",
+      "description": "Modern desktop client for ZimaOS with integrated ZeroTier VPN and SMB file sharing. Connect to your ZimaOS server locally or remotely.",
+      "priority": "optional",
+      "vendor": "Holger Kühn",
+      "fpm": [
+        "--license=MIT",
+        "--url=https://github.com/chicohaager/zima-linux-client",
+        "--deb-field=Section: net"
+      ]
     }
   }
 }
