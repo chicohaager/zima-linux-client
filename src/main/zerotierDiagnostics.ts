@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { access, stat, constants } from 'fs/promises';
+import { access, stat, constants, readFile } from 'fs/promises';
 import { homedir } from 'os';
 import { join } from 'path';
 import { ZeroTierDiagnostics, CheckResult, StatusLevel } from '@shared/types';
@@ -17,6 +17,20 @@ function getZeroTierPaths() {
     zerotierCli: join(home, '.local/lib/zima-remote/zerotier/zerotier-cli'),
     dataDir: join(home, '.zima-zerotier'),
   };
+}
+
+/**
+ * Get port and token for CLI authentication
+ */
+async function getCliAuth(): Promise<{ port: string; token: string } | null> {
+  const { dataDir } = getZeroTierPaths();
+  try {
+    const port = (await readFile(join(dataDir, 'zerotier-one.port'), 'utf-8')).trim();
+    const token = (await readFile(join(dataDir, 'authtoken.secret'), 'utf-8')).trim();
+    return { port, token };
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -201,10 +215,13 @@ async function checkTunDevice(): Promise<CheckResult> {
  */
 async function checkNodeInfo(): Promise<CheckResult> {
   const { zerotierCli, dataDir } = getZeroTierPaths();
+  const auth = await getCliAuth();
 
   try {
+    // Build command with port and token if available
+    const authArgs = auth ? `-p${auth.port} -T${auth.token}` : '';
     const { stdout, stderr } = await execAsync(
-      `"${zerotierCli}" -D "${dataDir}" info`,
+      `"${zerotierCli}" -D"${dataDir}" ${authArgs} info`,
       { timeout: 10000 }
     );
 
@@ -244,10 +261,13 @@ async function checkNodeInfo(): Promise<CheckResult> {
  */
 async function checkJoinedNetworks(): Promise<CheckResult> {
   const { zerotierCli, dataDir } = getZeroTierPaths();
+  const auth = await getCliAuth();
 
   try {
+    // Build command with port and token if available
+    const authArgs = auth ? `-p${auth.port} -T${auth.token}` : '';
     const { stdout, stderr } = await execAsync(
-      `"${zerotierCli}" -D "${dataDir}" listnetworks`,
+      `"${zerotierCli}" -D"${dataDir}" ${authArgs} listnetworks`,
       { timeout: 10000 }
     );
 
