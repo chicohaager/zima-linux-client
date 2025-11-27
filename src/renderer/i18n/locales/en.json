@@ -111,7 +111,18 @@
       "version": "Version",
       "license": "License",
       "repository": "Repository",
-      "reportIssue": "Report Issue"
+      "reportIssue": "Report Issue",
+      "updates": "Updates",
+      "checkForUpdates": "Check for Updates",
+      "checkingForUpdates": "Checking for updates...",
+      "updateAvailable": "Update available",
+      "downloadUpdate": "Download Update",
+      "downloading": "Downloading update...",
+      "updateReady": "Update ready to install",
+      "installAndRestart": "Install and Restart",
+      "updateError": "Update check failed",
+      "tryAgain": "Try Again",
+      "upToDate": "You are up to date"
     }
   },
   "common": {

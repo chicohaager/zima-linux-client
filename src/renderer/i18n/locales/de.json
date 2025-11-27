@@ -111,7 +111,18 @@
       "version": "Version",
       "license": "Lizenz",
       "repository": "Repository",
-      "reportIssue": "Problem melden"
+      "reportIssue": "Problem melden",
+      "updates": "Updates",
+      "checkForUpdates": "Nach Updates suchen",
+      "checkingForUpdates": "Suche nach Updates...",
+      "updateAvailable": "Update verfügbar",
+      "downloadUpdate": "Update herunterladen",
+      "downloading": "Update wird heruntergeladen...",
+      "updateReady": "Update bereit zur Installation",
+      "installAndRestart": "Installieren und neu starten",
+      "updateError": "Update-Prüfung fehlgeschlagen",
+      "tryAgain": "Erneut versuchen",
+      "upToDate": "Sie sind auf dem neuesten Stand"
     }
   },
   "common": {

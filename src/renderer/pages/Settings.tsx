@@ -15,7 +15,7 @@ export const Settings: React.FC = () => {
   const [backupNotifications, setBackupNotifications] = useState(true);
 
   // Update state
-  const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'>('idle');
+  const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error' | 'uptodate'>('idle');
   const [updateInfo, setUpdateInfo] = useState<{ version?: string; error?: string } | null>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
 
@@ -27,7 +27,7 @@ export const Settings: React.FC = () => {
     });
 
     const unsubNotAvailable = window.electron.update.onUpdateNotAvailable(() => {
-      setUpdateStatus('idle');
+      setUpdateStatus('uptodate');
       setUpdateInfo(null);
     });
 
@@ -255,7 +255,7 @@ export const Settings: React.FC = () => {
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {t('settings.about.version')}
                 </span>
-                <span className="text-gray-900 dark:text-white">0.9.15</span>
+                <span className="text-gray-900 dark:text-white">0.9.16</span>
               </div>
 
               <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
@@ -290,17 +290,27 @@ export const Settings: React.FC = () => {
 
           <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              {t('settings.about.updates') || 'Updates'}
+              {t('settings.about.updates')}
             </h2>
 
             {/* Idle state - show check button */}
-            {updateStatus === 'idle' && (
-              <button
-                onClick={handleCheckForUpdates}
-                className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-              >
-                {t('settings.about.checkForUpdates') || 'Check for Updates'}
-              </button>
+            {(updateStatus === 'idle' || updateStatus === 'uptodate') && (
+              <div className="space-y-3">
+                {updateStatus === 'uptodate' && (
+                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400 mb-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{t('settings.about.upToDate')}</span>
+                  </div>
+                )}
+                <button
+                  onClick={handleCheckForUpdates}
+                  className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  {t('settings.about.checkForUpdates')}
+                </button>
+              </div>
             )}
 
             {/* Checking state */}
@@ -310,7 +320,7 @@ export const Settings: React.FC = () => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                <span>{t('settings.about.checkingForUpdates') || 'Checking for updates...'}</span>
+                <span>{t('settings.about.checkingForUpdates')}</span>
               </div>
             )}
 
@@ -321,13 +331,13 @@ export const Settings: React.FC = () => {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>{t('settings.about.updateAvailable') || 'Update available'}: v{updateInfo.version}</span>
+                  <span>{t('settings.about.updateAvailable')}: v{updateInfo.version}</span>
                 </div>
                 <button
                   onClick={handleDownloadUpdate}
                   className="w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
                 >
-                  {t('settings.about.downloadUpdate') || 'Download Update'}
+                  {t('settings.about.downloadUpdate')}
                 </button>
               </div>
             )}
@@ -336,7 +346,7 @@ export const Settings: React.FC = () => {
             {updateStatus === 'downloading' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
-                  <span>{t('settings.about.downloading') || 'Downloading update...'}</span>
+                  <span>{t('settings.about.downloading')}</span>
                   <span>{Math.round(downloadProgress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
@@ -355,13 +365,13 @@ export const Settings: React.FC = () => {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>{t('settings.about.updateReady') || 'Update ready to install'}{updateInfo?.version ? ` (v${updateInfo.version})` : ''}</span>
+                  <span>{t('settings.about.updateReady')}{updateInfo?.version ? ` (v${updateInfo.version})` : ''}</span>
                 </div>
                 <button
                   onClick={handleInstallUpdate}
                   className="w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
                 >
-                  {t('settings.about.installAndRestart') || 'Install and Restart'}
+                  {t('settings.about.installAndRestart')}
                 </button>
               </div>
             )}
@@ -373,7 +383,7 @@ export const Settings: React.FC = () => {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>{t('settings.about.updateError') || 'Update check failed'}</span>
+                  <span>{t('settings.about.updateError')}</span>
                 </div>
                 {updateInfo?.error && (
                   <p className="text-sm text-gray-600 dark:text-gray-400">{updateInfo.error}</p>
@@ -382,7 +392,7 @@ export const Settings: React.FC = () => {
                   onClick={handleCheckForUpdates}
                   className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
                 >
-                  {t('settings.about.tryAgain') || 'Try Again'}
+                  {t('settings.about.tryAgain')}
                 </button>
               </div>
             )}
