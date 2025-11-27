@@ -148,8 +148,7 @@
       "vendor": "Holger Kühn",
       "fpm": [
         "--license=MIT",
-        "--url=https://github.com/chicohaager/zima-linux-client",
-        "--deb-field=Section: net"
+        "--url=https://github.com/chicohaager/zima-linux-client"
       ]
     }
   }
