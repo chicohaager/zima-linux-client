@@ -1,10 +1,17 @@
 import { autoUpdater, UpdateInfo } from 'electron-updater';
-import { dialog, BrowserWindow } from 'electron';
+import { dialog, BrowserWindow, app } from 'electron';
 import log from 'electron-log';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import * as path from 'path';
+import * as fs from 'fs';
+
+const execAsync = promisify(exec);
 
 export class UpdateManager {
   private mainWindow: BrowserWindow | null = null;
   private updateCheckInterval: NodeJS.Timeout | null = null;
+  private downloadedFilePath: string | null = null;
 
   constructor() {
     this.setupAutoUpdater();
@@ -54,8 +61,24 @@ export class UpdateManager {
     });
 
     // Update downloaded
-    autoUpdater.on('update-downloaded', (info: UpdateInfo) => {
+    autoUpdater.on('update-downloaded', (info: UpdateInfo, downloadedFile?: string) => {
       log.info('Update downloaded:', info.version);
+
+      // Store the downloaded file path for manual installation
+      // electron-updater downloads to app.getPath('userData')/pending
+      const cacheDir = path.join(app.getPath('userData'), 'pending');
+      try {
+        if (fs.existsSync(cacheDir)) {
+          const files = fs.readdirSync(cacheDir);
+          const debFile = files.find(f => f.endsWith('.deb'));
+          if (debFile) {
+            this.downloadedFilePath = path.join(cacheDir, debFile);
+            log.info('Downloaded .deb file:', this.downloadedFilePath);
+          }
+        }
+      } catch (err) {
+        log.warn('Could not find downloaded file:', err);
+      }
 
       if (this.mainWindow && !this.mainWindow.isDestroyed()) {
         this.mainWindow.webContents.send('update-downloaded', info);
@@ -126,8 +149,41 @@ export class UpdateManager {
     });
   }
 
-  public quitAndInstall(): void {
-    autoUpdater.quitAndInstall();
+  public async quitAndInstall(): Promise<void> {
+    // On Linux with .deb, use pkexec dpkg -i directly
+    if (process.platform === 'linux' && this.downloadedFilePath && this.downloadedFilePath.endsWith('.deb')) {
+      log.info('Installing .deb update via pkexec dpkg -i:', this.downloadedFilePath);
+
+      try {
+        // Use pkexec to run dpkg -i with elevated privileges
+        await execAsync(`pkexec dpkg -i "${this.downloadedFilePath}"`);
+        log.info('Update installed successfully, restarting...');
+
+        // Restart the app
+        app.relaunch();
+        app.exit(0);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Failed to install update via dpkg:', errorMessage);
+
+        // Send error to renderer
+        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+          this.mainWindow.webContents.send('update-error', `Installation fehlgeschlagen: ${errorMessage}`);
+        }
+
+        // Show dialog with manual instructions
+        dialog.showMessageBox({
+          type: 'error',
+          title: 'Update Installation fehlgeschlagen',
+          message: 'Das Update konnte nicht automatisch installiert werden.',
+          detail: `Bitte installieren Sie manuell:\n\nsudo dpkg -i "${this.downloadedFilePath}"`,
+          buttons: ['OK']
+        });
+      }
+    } else {
+      // Fallback to default electron-updater behavior (AppImage, etc.)
+      autoUpdater.quitAndInstall();
+    }
   }
 
   public startPeriodicCheck(intervalHours: number = 24): void {
