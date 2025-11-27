@@ -52,8 +52,8 @@ export const Navigation: React.FC = memo(() => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 flex justify-center pb-8 px-4 pointer-events-none">
-      <div className="bg-gray-900 rounded-2xl shadow-2xl flex items-center gap-3 px-6 py-4 pointer-events-auto border-2 border-gray-700">
+    <nav className="flex justify-center py-4 px-4">
+      <div className="bg-gray-900 rounded-2xl shadow-2xl flex items-center gap-3 px-6 py-3 border-2 border-gray-700">
         {/* Disconnect Button */}
         <button
           onClick={handleDisconnect}
