@@ -325,9 +325,12 @@ WantedBy=default.target
           logger.info('Daemon not responding after 10s, restarting service...');
           await execAsync(`systemctl --user restart ${this.serviceName}.service`);
         } else {
-          // Service not running, start it
+          // Service not running, reload daemon config and enable+start it
+          logger.info('ZeroTier daemon not running, starting it first...');
           logger.info('Starting ZeroTier via systemd --user...');
-          await execAsync(`systemctl --user start ${this.serviceName}.service`);
+          // Reload to pick up any new service file, then enable and start
+          await execAsync('systemctl --user daemon-reload');
+          await execAsync(`systemctl --user enable --now ${this.serviceName}.service`);
         }
 
         // Wait for daemon to become ready (up to 10 seconds)
