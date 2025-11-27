@@ -217,11 +217,20 @@ async function checkNodeInfo(): Promise<CheckResult> {
   const { zerotierCli, dataDir } = getZeroTierPaths();
   const auth = await getCliAuth();
 
+  // If no auth info available, daemon is not running
+  if (!auth) {
+    return {
+      id: 'node-info',
+      label: 'ZeroTier Node Info',
+      status: 'warn',
+      message: 'Daemon not running (no port/token file)',
+      details: `The ZeroTier daemon has not been started yet.\n\nStart the service:\n  systemctl --user daemon-reload\n  systemctl --user enable --now zima-zerotier.service`,
+    };
+  }
+
   try {
-    // Build command with port and token if available
-    const authArgs = auth ? `-p${auth.port} -T${auth.token}` : '';
     const { stdout, stderr } = await execAsync(
-      `"${zerotierCli}" -D"${dataDir}" ${authArgs} info`,
+      `"${zerotierCli}" -D"${dataDir}" -p${auth.port} -T${auth.token} info`,
       { timeout: 10000 }
     );
 
@@ -263,11 +272,20 @@ async function checkJoinedNetworks(): Promise<CheckResult> {
   const { zerotierCli, dataDir } = getZeroTierPaths();
   const auth = await getCliAuth();
 
+  // If no auth info available, daemon is not running
+  if (!auth) {
+    return {
+      id: 'joined-networks',
+      label: 'Joined Networks',
+      status: 'warn',
+      message: 'Cannot check (daemon not running)',
+      details: `The ZeroTier daemon must be running to list networks.\n\nStart the service first.`,
+    };
+  }
+
   try {
-    // Build command with port and token if available
-    const authArgs = auth ? `-p${auth.port} -T${auth.token}` : '';
     const { stdout, stderr } = await execAsync(
-      `"${zerotierCli}" -D"${dataDir}" ${authArgs} listnetworks`,
+      `"${zerotierCli}" -D"${dataDir}" -p${auth.port} -T${auth.token} listnetworks`,
       { timeout: 10000 }
     );
 
