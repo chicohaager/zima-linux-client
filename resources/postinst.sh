@@ -190,35 +190,21 @@ else
 
         USER_HOME=$(eval echo "~$TARGET_USER")
 
-        # Create systemd user dir
-        runuser -l "$TARGET_USER" -c '
-            mkdir -p ~/.config/systemd/user
-        '
+        # Create systemd user dir (using mkdir directly, not runuser)
+        mkdir -p "$USER_HOME/.config/systemd/user"
+        chown "$TARGET_USER:$TARGET_USER" "$USER_HOME/.config/systemd/user"
 
         # Copy service file
         cp "$SERVICE_SOURCE" "$USER_HOME/.config/systemd/user/zima-zerotier.service"
         chown "$TARGET_USER:$TARGET_USER" "$USER_HOME/.config/systemd/user/zima-zerotier.service"
 
-        # Reload and enable the user service
-        runuser -l "$TARGET_USER" -c '
-            systemctl --user daemon-reload
-            systemctl --user enable --now zima-zerotier.service || true
-        '
-
-        # Ensure user services run after reboot
+        # Ensure user services run after reboot (linger allows services without login)
         loginctl enable-linger "$TARGET_USER" 2>/dev/null || true
 
         echo "✓ User service zima-zerotier.service installed for $TARGET_USER"
         echo ""
-
-        # Check if service is running
-        if runuser -l "$TARGET_USER" -c 'systemctl --user is-active --quiet zima-zerotier.service'; then
-            echo "✓ ZeroTier service is running"
-        else
-            echo "⚠ ZeroTier service failed to start"
-            echo "  Check status: systemctl --user status zima-zerotier.service"
-            echo "  View logs: journalctl --user -u zima-zerotier.service -n 50"
-        fi
+        echo "NOTE: The ZeroTier service will start automatically when you open the app."
+        echo "      Or start it manually with: systemctl --user enable --now zima-zerotier.service"
     fi
 fi
 
