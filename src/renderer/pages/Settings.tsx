@@ -199,7 +199,7 @@ export const Settings: React.FC = () => {
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {t('settings.about.version')}
                 </span>
-                <span className="text-gray-900 dark:text-white">0.9.8</span>
+                <span className="text-gray-900 dark:text-white">0.9.9</span>
               </div>
 
               <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
