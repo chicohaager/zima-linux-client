@@ -166,19 +166,35 @@ export class UpdateManager {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Failed to install update via dpkg:', errorMessage);
 
+        // Check if it's a polkit/authorization error
+        const isAuthError = errorMessage.includes('code 100') || errorMessage.includes('126') || errorMessage.includes('Not authorized');
+
         // Send error to renderer
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-          this.mainWindow.webContents.send('update-error', `Installation fehlgeschlagen: ${errorMessage}`);
+          const userMessage = isAuthError
+            ? 'Autorisierung abgebrochen. Bitte manuell installieren.'
+            : `Installation fehlgeschlagen: ${errorMessage}`;
+          this.mainWindow.webContents.send('update-error', userMessage);
         }
 
         // Show dialog with manual instructions
-        dialog.showMessageBox({
-          type: 'error',
-          title: 'Update Installation fehlgeschlagen',
-          message: 'Das Update konnte nicht automatisch installiert werden.',
-          detail: `Bitte installieren Sie manuell:\n\nsudo dpkg -i "${this.downloadedFilePath}"`,
-          buttons: ['OK']
+        const result = await dialog.showMessageBox({
+          type: isAuthError ? 'info' : 'error',
+          title: isAuthError ? 'Manuelle Installation erforderlich' : 'Update Installation fehlgeschlagen',
+          message: isAuthError
+            ? 'Die Autorisierung wurde abgebrochen oder ist nicht verfügbar.'
+            : 'Das Update konnte nicht automatisch installiert werden.',
+          detail: `Bitte öffnen Sie ein Terminal und führen Sie aus:\n\nsudo dpkg -i "${this.downloadedFilePath}"\n\nDanach starten Sie die App neu.`,
+          buttons: ['Befehl kopieren', 'Schließen'],
+          defaultId: 0,
+          cancelId: 1
         });
+
+        // Copy command to clipboard if user clicked "Befehl kopieren"
+        if (result.response === 0) {
+          const { clipboard } = require('electron');
+          clipboard.writeText(`sudo dpkg -i "${this.downloadedFilePath}"`);
+        }
       }
     } else {
       // Fallback to default electron-updater behavior (AppImage, etc.)
