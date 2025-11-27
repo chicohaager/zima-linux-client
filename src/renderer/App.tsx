@@ -11,7 +11,7 @@ import { BackupPage } from './pages/Backup';
 import { Settings } from './pages/Settings';
 
 export const App: React.FC = () => {
-  const { currentView } = useAppStore();
+  const { currentView, selectedDevice } = useAppStore();
 
   useEffect(() => {
     // ZeroTier will be started on-demand when user performs actions
@@ -66,7 +66,7 @@ export const App: React.FC = () => {
       </div>
       <StatusBar />
       <Navigation />
-      <main className="page-transition">{renderPage()}</main>
+      <main className={`page-transition ${selectedDevice ? 'pb-32' : ''}`}>{renderPage()}</main>
       <Toast />
     </div>
   );
