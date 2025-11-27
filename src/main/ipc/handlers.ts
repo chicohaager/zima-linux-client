@@ -800,7 +800,7 @@ export class IPCHandlers {
 
     ipcMain.handle('update:install', async () => {
       try {
-        updateManager.quitAndInstall();
+        await updateManager.quitAndInstall();
         return { success: true };
       } catch (error: any) {
         return { success: false, error: error.message };
