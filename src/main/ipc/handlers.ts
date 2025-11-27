@@ -89,6 +89,11 @@ export class IPCHandlers {
     });
 
     this.registerHandlers();
+
+    // Auto-start ZeroTier service on app startup (fire and forget)
+    this.zerotierManager.start().catch((error) => {
+      logger.warn('ZeroTier service auto-start failed (will retry on connect):', error.message);
+    });
   }
 
   /**
