@@ -14,7 +14,16 @@ export class NetworkManager {
   private readonly CACHE_DURATION = 30000; // 30 seconds cache
   async getLocalIPAddresses(): Promise<string[]> {
     try {
-      const { stdout } = await execAsync('hostname -I');
+      // Try 'hostname -I' first (works on most distros), fall back to 'ip' command for Arch Linux
+      let stdout: string;
+      try {
+        const result = await execAsync('hostname -I');
+        stdout = result.stdout;
+      } catch {
+        // Fallback for Arch Linux and others where 'hostname -I' may not work
+        const result = await execAsync("ip -4 addr show | grep -oP '(?<=inet\\s)\\d+(\\.\\d+){3}'");
+        stdout = result.stdout;
+      }
       // Filter out IPv6 and Docker networks, keep only real IPv4
       return stdout.trim().split(/\s+/).filter(ip => {
         if (!ip.includes('.')) return false; // Not IPv4

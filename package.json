@@ -31,8 +31,6 @@
     "analyze": "ANALYZE=true npm run build:renderer"
   },
   "dependencies": {
-    "@sentry/electron": "^7.3.0",
-    "@sentry/react": "^10.26.0",
     "@types/node-cron": "^3.0.11",
     "electron-log": "^5.4.3",
     "electron-updater": "^6.6.2",
@@ -93,6 +91,7 @@
         "releaseType": "release"
       }
     ],
+    "electronLanguages": ["en", "de"],
     "files": [
       "dist/main/**/*",
       "dist/renderer/**/*",
@@ -100,8 +99,8 @@
     ],
     "extraResources": [
       {
-        "from": "bin/zerotier",
-        "to": "bin/zerotier",
+        "from": "bin/zerotier/x64",
+        "to": "bin/zerotier/x64",
         "filter": [
           "**/*"
         ]
@@ -138,7 +137,23 @@
     "deb": {
       "depends": [
         "libfuse2",
-        "smbclient"
+        "smbclient",
+        "libnss3",
+        "libgtk-3-0",
+        "libgbm1",
+        "libasound2 | libasound2t64",
+        "libatk1.0-0 | libatk1.0-0t64",
+        "libatk-bridge2.0-0 | libatk-bridge2.0-0t64",
+        "libcups2 | libcups2t64",
+        "libdrm2",
+        "libxkbcommon0",
+        "libxcb1",
+        "libx11-6",
+        "libxcomposite1",
+        "libxdamage1",
+        "libxext6",
+        "libxfixes3",
+        "libxrandr2"
       ],
       "maintainer": "Holger Kühn <zima-client@virtual-services.info>",
       "afterInstall": "resources/postinst.sh",
