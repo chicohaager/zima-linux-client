@@ -215,6 +215,15 @@ fi
 echo ""
 echo "Setting up desktop integration..."
 
+# Patch .desktop file to add --no-sandbox --disable-gpu flags
+# Required for Ubuntu 24.04+ and Arch Linux compatibility
+DESKTOP_FILE="/usr/share/applications/zima-linux-client.desktop"
+if [ -f "$DESKTOP_FILE" ]; then
+    # Add --no-sandbox and --disable-gpu flags to Exec line
+    sed -i 's|Exec=/opt/ZimaOS Client/zima-linux-client|Exec=/opt/ZimaOS Client/zima-linux-client --no-sandbox --disable-gpu|g' "$DESKTOP_FILE"
+    echo "✓ Desktop file patched with Linux compatibility flags"
+fi
+
 # Install icon
 ICON_SOURCE="${RESOURCE_DIR}/icon.png"
 if [ -f "$ICON_SOURCE" ]; then
