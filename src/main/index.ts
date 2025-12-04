@@ -3,14 +3,21 @@ import { logger } from './utils/logger';
 import * as path from 'path';
 import { IPCHandlers } from './ipc/handlers';
 import { updateManager } from './updater';
-import { initSentry, captureException, flushSentry } from './utils/sentry';
-
-// Initialize Sentry for error monitoring
-initSentry();
 
 // Suppress Electron security warnings for local HTTP connections
 // ZimaOS typically runs on local network via HTTP which is acceptable
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+
+// Linux-specific fixes for various distributions
+if (process.platform === 'linux') {
+  // Disable sandbox - Ubuntu 24.04+ disables unprivileged user namespaces by default
+  app.commandLine.appendSwitch('no-sandbox');
+
+  // Disable GPU hardware acceleration to fix Vulkan driver issues on Arch Linux and others
+  // This prevents "vkCreateInstance failed with VK_ERROR_INCOMPATIBLE_DRIVER" errors
+  app.commandLine.appendSwitch('disable-gpu');
+  app.commandLine.appendSwitch('disable-software-rasterizer');
+}
 
 let mainWindow: BrowserWindow | null = null;
 let ipcHandlers: IPCHandlers | null = null;
@@ -107,26 +114,18 @@ app.on('window-all-closed', () => {
 app.on('before-quit', async (event) => {
   event.preventDefault();
   await performCleanup();
-  await flushSentry(); // Ensure all error reports are sent
   app.exit(0);
 });
 
 // Handle uncaught exceptions - perform cleanup before exiting
 process.on('uncaughtException', async (error) => {
   logger.error('❌ Uncaught exception:', error);
-  captureException(error, { context: 'uncaughtException' });
-  await flushSentry(); // Ensure error is sent before exit
   await performCleanup();
   process.exit(1);
 });
 
 process.on('unhandledRejection', async (error) => {
   logger.error('❌ Unhandled rejection:', error);
-  captureException(
-    error instanceof Error ? error : new Error(String(error)),
-    { context: 'unhandledRejection' }
-  );
-  await flushSentry(); // Ensure error is sent before exit
   await performCleanup();
   process.exit(1);
 });

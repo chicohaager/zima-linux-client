@@ -421,7 +421,7 @@ export const Settings: React.FC = () => {
           <section className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
             <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Technologies</h3>
             <div className="flex flex-wrap gap-2">
-              {['Electron', 'React', 'TypeScript', 'Tailwind CSS', 'ZeroTier', 'Winston', 'Jest', 'Sentry'].map((tech) => (
+              {['Electron', 'React', 'TypeScript', 'Tailwind CSS', 'ZeroTier', 'Winston', 'Jest'].map((tech) => (
                 <span
                   key={tech}
                   className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm"
