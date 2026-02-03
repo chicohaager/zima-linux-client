@@ -6,12 +6,12 @@
   "navigation": {
     "connect": "Bağlan",
     "devices": "Cihazlar",
-    "backup": "Yedek",
+    "backup": "Yedekleme",
     "apps": "Uygulamalar",
     "settings": "Ayarlar"
   },
   "connect": {
-    "title": "ZimaOS' bağlan",
+    "title": "ZimaOS'a bağlan",
     "subtitle": "ZimaOS cihaz adresinizi girin",
     "address": "Cihaz Adresi",
     "addressPlaceholder": "http://192.168.1.100 veya http://zimaos.local",
