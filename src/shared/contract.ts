@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import { CHANNELS, type ChannelName } from './channels'
+
+export { CHANNELS }
+export type { ChannelName }
 
 /**
  * The IPC contract — one schema per channel, the single source of truth for what
@@ -58,6 +62,9 @@ export const appErrorSchema = z.object({
     'unexpected-status',
     'malformed-response',
     'unauthorized',
+    'invalid-credentials',
+    'parameters',
+    'plaintext-risk',
     'forbidden-path',
     'capability-missing',
     'cancelled',
@@ -80,15 +87,33 @@ const hostPort = z.object({
   port: z.number().int().min(1).max(65535).default(80),
 })
 
-export const CHANNELS = {
-  discoveryScan: 'discovery:scan',
-  transportProbe: 'transport:probe',
-  deviceCapabilities: 'device:capabilities',
-  secretsStatus: 'secrets:status',
-  appInfo: 'app:info',
-} as const
+export const sessionSummarySchema = z.object({
+  deviceId: z.string(),
+  displayName: z.string(),
+  host: z.string(),
+  port: z.number(),
+  kind: z.enum(['lan', 'direct', 'remote-id']),
+  username: z.string(),
+  role: z.string(),
+  accessExpiresAtMs: z.number(),
+  capabilities: capabilitiesSchema.nullable(),
+})
 
-export type ChannelName = (typeof CHANNELS)[keyof typeof CHANNELS]
+export const deviceAddressSchema = z.object({
+  kind: z.enum(['lan', 'direct', 'remote-id']),
+  host: z.string(),
+  port: z.number(),
+  priority: z.number(),
+})
+
+export const deviceSchema = z.object({
+  id: z.string(),
+  displayName: z.string(),
+  addresses: z.array(deviceAddressSchema).readonly(),
+  lastSeenIso: z.string().nullable(),
+  capabilities: capabilitiesSchema.nullable(),
+})
+
 
 /** request/response schema per channel. Keep both sides here, never inline. */
 export const channelSchemas = {
@@ -107,6 +132,57 @@ export const channelSchemas = {
   [CHANNELS.secretsStatus]: {
     request: z.object({}),
     response: envelope(secretStoreStatusSchema),
+  },
+  [CHANNELS.secretsConsent]: {
+    request: z.object({ granted: z.boolean() }),
+    response: envelope(secretStoreStatusSchema),
+  },
+  [CHANNELS.sessionSignIn]: {
+    request: z.object({
+      host: z.string().min(1),
+      port: z.number().int().min(1).max(65535).default(80),
+      kind: z.enum(['lan', 'direct', 'remote-id']).default('direct'),
+      username: z.string().min(1),
+      password: z.string().min(1),
+      displayName: z.string().optional(),
+    }),
+    response: envelope(sessionSummarySchema),
+  },
+  [CHANNELS.sessionResume]: {
+    request: z.object({ deviceId: z.string().min(1) }),
+    response: envelope(sessionSummarySchema),
+  },
+  [CHANNELS.sessionCurrent]: {
+    request: z.object({}),
+    response: envelope(sessionSummarySchema),
+  },
+  [CHANNELS.sessionSignOut]: {
+    request: z.object({}),
+    response: envelope(z.object({ signedOut: z.literal(true) })),
+  },
+  [CHANNELS.devicesList]: {
+    request: z.object({}),
+    response: envelope(
+      z.object({
+        devices: z.array(deviceSchema).readonly(),
+        activeDeviceId: z.string().nullable(),
+      }),
+    ),
+  },
+  [CHANNELS.devicesSetActive]: {
+    request: z.object({ deviceId: z.string().min(1) }),
+    response: envelope(deviceSchema),
+  },
+  [CHANNELS.devicesSetPriorities]: {
+    request: z.object({
+      deviceId: z.string().min(1),
+      orderedAddressKeys: z.array(z.string()).min(1),
+    }),
+    response: envelope(deviceSchema),
+  },
+  [CHANNELS.devicesForget]: {
+    request: z.object({ deviceId: z.string().min(1) }),
+    response: envelope(z.object({ forgotten: z.literal(true) })),
   },
   [CHANNELS.appInfo]: {
     request: z.object({}),

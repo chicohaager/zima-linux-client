@@ -31,6 +31,12 @@ export type AppErrorKind =
   | 'unexpected-status'
   | 'malformed-response'
   | 'unauthorized'
+  /** Wrong username or password. ZimaOS answers HTTP 400 for this, not 401. */
+  | 'invalid-credentials'
+  /** The request body was rejected as malformed by the device (ZimaOS code 400). */
+  | 'parameters'
+  /** Refused to store a secret because the OS has no keyring and consent is missing. */
+  | 'plaintext-risk'
   | 'forbidden-path'
   | 'capability-missing'
   | 'cancelled'

@@ -12,9 +12,18 @@ export default defineConfig({
     build: { rollupOptions: { input: { index: resolve('src/main/index.ts') } } },
   },
   preload: {
+    // A sandboxed preload script cannot use ESM and cannot resolve node_modules, so it
+    // must be emitted as CommonJS with everything it needs bundled in. Shipping it as
+    // .mjs made the bridge fail to load silently: `window.zima` was undefined, and the
+    // generic error fallback in the UI made it look like the device was at fault.
     plugins: [externalizeDepsPlugin()],
     resolve: { alias: { '@shared': shared } },
-    build: { rollupOptions: { input: { index: resolve('src/preload/index.ts') } } },
+    build: {
+      rollupOptions: {
+        input: { index: resolve('src/preload/index.ts') },
+        output: { format: 'cjs', entryFileNames: '[name].cjs' },
+      },
+    },
   },
   renderer: {
     root: 'src/renderer',

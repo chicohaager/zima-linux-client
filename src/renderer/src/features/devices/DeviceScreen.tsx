@@ -1,40 +1,43 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from '@tanstack/react-query'
-import type { Capabilities, DiscoveredDevice, ProbeResult } from '@shared/domain'
-import { Card, Muted, Pill, SectionTitle } from '../../shared/ui/Card'
-import { SearchIcon, WifiIcon } from '../../shared/ui/Icons'
-import { CapabilityList } from './CapabilityList'
+import type { Device, DiscoveredDevice, ProbeResult } from '@shared/domain'
+import { Card, Muted, SectionTitle } from '../../shared/ui/Card'
+import { Button, ErrorNote } from '../../shared/ui/Controls'
+import { SearchIcon } from '../../shared/ui/Icons'
+import { DeviceList } from './DeviceList'
+import { DiscoveryResults } from './DiscoveryResults'
+import { SessionCard } from '../session/SessionCard'
+import { SignInForm } from '../session/SignInForm'
 
-interface Found {
-  readonly device: DiscoveredDevice
-  readonly probe: ProbeResult
-  readonly capabilities: Capabilities | null
-  readonly errorKey: string | null
+interface SignInTarget {
+  readonly host: string
+  readonly port: number
+  readonly kind: 'lan' | 'direct'
+  readonly displayName?: string
 }
 
 /**
- * Device discovery and capability detection.
+ * The device screen: active session, saved devices, and the three ways to add one.
  *
- * Everything shown here is measured: the mDNS answers, the round-trip time of a real
- * request, and the feature list derived from the device's own gateway route table.
- * Nothing is inferred from the OS version.
+ * Discovery and probing both happen in the main process; everything shown here is a
+ * measured value (mDNS answer, real round-trip time, route table) rather than an
+ * inference from an address or an OS version.
  */
 export const DeviceScreen = (): React.JSX.Element => {
   const { t } = useTranslation()
-  const [results, setResults] = useState<readonly Found[] | null>(null)
+  const [target, setTarget] = useState<SignInTarget | null>(null)
+  const [found, setFound] = useState<readonly { device: DiscoveredDevice; probe: ProbeResult }[] | null>(
+    null,
+  )
 
   const scan = useMutation({
-    mutationFn: async (): Promise<readonly Found[]> => {
-      const found = await window.zima.scanNetwork({ timeoutMs: 3_000 })
-      if (!found.ok) throw new Error(found.error.i18nKey)
-
+    mutationFn: async () => {
+      const response = await window.zima.scanNetwork({ timeoutMs: 3_000 })
+      if (!response.ok) throw response.error
       return Promise.all(
-        found.value.map(async (device) => {
-          const [probe, caps] = await Promise.all([
-            window.zima.probeHost({ host: device.host, port: device.port }),
-            window.zima.readCapabilities({ host: device.host, port: device.port }),
-          ])
+        response.value.map(async (device) => {
+          const probe = await window.zima.probeHost({ host: device.host, port: device.port })
           return {
             device,
             probe: probe.ok
@@ -46,71 +49,84 @@ export const DeviceScreen = (): React.JSX.Element => {
                   failure: 'timeout' as const,
                   httpStatus: null,
                 },
-            capabilities: caps.ok ? caps.value : null,
-            errorKey: caps.ok ? null : caps.error.i18nKey,
           }
         }),
       )
     },
-    onSuccess: setResults,
+    onSuccess: setFound,
   })
+
+  if (target !== null) {
+    return (
+      <SignInForm
+        initialHost={target.host}
+        initialPort={target.port}
+        kind={target.kind}
+        displayName={target.displayName}
+        onCancel={() => setTarget(null)}
+      />
+    )
+  }
+
+  const scanError = scan.error as { i18nKey?: string } | null
 
   return (
     <>
       <SectionTitle>{t('device.title')}</SectionTitle>
 
-      <div className="mb-4 flex flex-col gap-3">
-        <button
-          type="button"
-          onClick={() => scan.mutate()}
-          disabled={scan.isPending}
-          className="flex items-center justify-center gap-2 rounded-[999px] px-5 py-3.5 font-medium disabled:opacity-60"
-          style={{ background: 'var(--accent)', color: 'var(--accent-contrast)' }}
-        >
+      <SessionCard />
+
+      <DeviceList
+        onConnect={(device: Device) => {
+          const address = [...device.addresses].sort((a, b) => a.priority - b.priority)[0]
+          if (address !== undefined) {
+            setTarget({
+              host: address.host,
+              port: address.port,
+              kind: address.kind === 'remote-id' ? 'direct' : address.kind,
+              displayName: device.displayName,
+            })
+          }
+        }}
+      />
+
+      <div className="mb-4 flex flex-col gap-2">
+        <Button onClick={() => scan.mutate()} disabled={scan.isPending}>
           <SearchIcon />
           {scan.isPending ? t('device.scanning') : t('device.scan')}
-        </button>
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => setTarget({ host: '', port: 80, kind: 'direct' })}
+        >
+          {t('device.directIp')}
+        </Button>
       </div>
 
-      {scan.isError && (
-        <Card className="mb-4">
-          <p style={{ color: 'var(--danger)' }}>{t(scan.error.message)}</p>
-        </Card>
-      )}
+      {scanError !== null && <ErrorNote message={t(scanError.i18nKey ?? 'error.internal')} />}
 
-      {/* An empty result is explained, never left as a blank list. */}
-      {results !== null && results.length === 0 && (
+      {/* An empty result is explained, never left as a blank list: mDNS is routinely
+          blocked between network segments, which is not the same as "no device here". */}
+      {found !== null && found.length === 0 && (
         <Card>
           <p className="font-medium">{t('device.nothingAnswered')}</p>
           <Muted className="mt-1">{t('device.nothingAnsweredHint')}</Muted>
         </Card>
       )}
 
-      {results?.map(({ device, probe, capabilities, errorKey }) => (
-        <div key={device.host} className="mb-5">
-          <h2 className="mb-2 text-xl font-semibold">{device.name}</h2>
-
-          <Pill className="mb-3">
-            <span style={{ color: probe.reachable ? 'var(--success)' : 'var(--danger)' }}>
-              <WifiIcon />
-            </span>
-            <span className="font-medium">{t('device.connection.lan')}</span>
-            <span className="ml-auto tabular-nums" style={{ color: 'var(--text-muted)' }}>
-              {probe.reachable && probe.latencyMs !== null
-                ? t('device.latency', { ms: probe.latencyMs })
-                : t(`error.${probe.failure ?? 'internal'}`)}
-            </span>
-          </Pill>
-
-          {capabilities === null ? (
-            <Card>
-              <p style={{ color: 'var(--danger)' }}>{t(errorKey ?? 'error.internal')}</p>
-            </Card>
-          ) : (
-            <CapabilityList capabilities={capabilities} />
-          )}
-        </div>
-      ))}
+      {found !== null && found.length > 0 && (
+        <DiscoveryResults
+          results={found}
+          onPick={(device) =>
+            setTarget({
+              host: device.host,
+              port: device.port,
+              kind: 'lan',
+              displayName: device.name,
+            })
+          }
+        />
+      )}
     </>
   )
 }

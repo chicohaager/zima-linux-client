@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { CHANNELS, type ChannelName, type RequestOf, type ResponseOf } from '@shared/contract'
+import { CHANNELS, type ChannelName } from '@shared/channels'
+import type { RequestOf, ResponseOf } from '@shared/contract'
 
 /**
  * The only bridge across the process boundary.
@@ -18,7 +19,18 @@ const api = {
   probeHost: invoke(CHANNELS.transportProbe),
   readCapabilities: invoke(CHANNELS.deviceCapabilities),
   secretStoreStatus: invoke(CHANNELS.secretsStatus),
+  setPlaintextConsent: invoke(CHANNELS.secretsConsent),
   appInfo: invoke(CHANNELS.appInfo),
+
+  signIn: invoke(CHANNELS.sessionSignIn),
+  resumeSession: invoke(CHANNELS.sessionResume),
+  currentSession: invoke(CHANNELS.sessionCurrent),
+  signOut: invoke(CHANNELS.sessionSignOut),
+
+  listDevices: invoke(CHANNELS.devicesList),
+  setActiveDevice: invoke(CHANNELS.devicesSetActive),
+  setAddressPriorities: invoke(CHANNELS.devicesSetPriorities),
+  forgetDevice: invoke(CHANNELS.devicesForget),
 } as const
 
 export type ZimaApi = typeof api

@@ -25,7 +25,7 @@ const createWindow = (): BrowserWindow => {
     backgroundColor: '#f5f6f8',
     title: 'ZimaOS Client',
     webPreferences: {
-      preload: join(import.meta.dirname, '../preload/index.mjs'),
+      preload: join(import.meta.dirname, '../preload/index.cjs'),
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,

@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import type { BrowserWindow } from 'electron'
 import { app } from 'electron'
 import { logger } from '@main/logging/logger'
+import { parseScenario, runScenario, type ScenarioResult } from './scenarios'
 
 /**
  * Proves the app actually starts and renders — the acceptance test for every distro
@@ -31,6 +32,8 @@ export interface StartupReport {
   readonly navButtons: number
   readonly rawI18nKeys: readonly string[]
   readonly visibleText: string
+  /** Present only when ZIMA_VERIFY_SCENARIO asked for a scripted interaction. */
+  readonly scenario: ScenarioResult | null
   readonly failures: readonly string[]
 }
 
@@ -118,6 +121,28 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
     failures.push(`raw i18n keys visible: ${probe.rawI18nKeys.join(', ')}`)
   }
 
+  // Scripted interaction runs after the static checks, so a scenario failure cannot be
+  // confused with a broken startup.
+  let scenario: ScenarioResult | null = null
+  const requested = parseScenario()
+  if (requested !== null) {
+    try {
+      scenario = await runScenario(window, requested.name, requested.argument)
+    } catch (cause) {
+      // Without this, a throwing scenario left the whole verifier hanging with no report
+      // written — a silent failure in the very tool meant to prevent silent failures.
+      scenario = {
+        name: requested.name,
+        ok: false,
+        observed: {},
+        failures: [`scenario threw: ${String(cause)}`],
+      }
+    }
+    if (!scenario.ok) {
+      failures.push(...scenario.failures.map((f) => `scenario ${requested.name}: ${f}`))
+    }
+  }
+
   const shot = await window.webContents.capturePage()
   const pngPath = reportPath.replace(/\.json$/, '.png')
   await writeFile(pngPath, shot.toPNG())
@@ -134,6 +159,7 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
     navButtons: probe.navButtons,
     rawI18nKeys: probe.rawI18nKeys,
     visibleText: probe.visibleText,
+    scenario,
     failures,
   }
 

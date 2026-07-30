@@ -6,6 +6,9 @@ import { probe } from '@main/transport/probe'
 import { fetchRoutes } from '@main/zima/client'
 import { deriveCapabilities, parseRoutes } from '@main/zima/capabilities'
 import { readStatus } from '@main/secrets/store'
+import { setPlaintextConsent } from '@main/secrets/credentials'
+import * as session from '@main/session'
+import * as registry from '@main/devices/registry'
 import { logger } from '@main/logging/logger'
 
 /**
@@ -94,6 +97,61 @@ export const registerIpc = (): void => {
       logger.warn('secrets.plaintext-risk', { backend: status.backend })
     }
     return { ok: true, value: status }
+  })
+
+  handle(CHANNELS.secretsConsent, async (input) => {
+    const { granted } = input as { granted: boolean }
+    setPlaintextConsent(granted)
+    return { ok: true, value: readStatus() }
+  })
+
+  handle(CHANNELS.sessionSignIn, async (input) =>
+    toWire(
+      await session.signIn(
+        input as {
+          host: string
+          port: number
+          kind: 'lan' | 'direct' | 'remote-id'
+          username: string
+          password: string
+          displayName?: string
+        },
+      ),
+    ),
+  )
+
+  handle(CHANNELS.sessionResume, async (input) =>
+    toWire(await session.resume((input as { deviceId: string }).deviceId)),
+  )
+
+  handle(CHANNELS.sessionCurrent, async () => toWire(session.current()))
+
+  handle(CHANNELS.sessionSignOut, async () => {
+    session.signOut()
+    return { ok: true, value: { signedOut: true as const } }
+  })
+
+  handle(CHANNELS.devicesList, async () => ({
+    ok: true,
+    value: { devices: registry.list(), activeDeviceId: registry.activeDeviceId() },
+  }))
+
+  handle(CHANNELS.devicesSetActive, async (input) =>
+    toWire(registry.setActive((input as { deviceId: string }).deviceId)),
+  )
+
+  handle(CHANNELS.devicesSetPriorities, async (input) => {
+    const { deviceId, orderedAddressKeys } = input as {
+      deviceId: string
+      orderedAddressKeys: string[]
+    }
+    return toWire(registry.setAddressPriorities(deviceId, orderedAddressKeys))
+  })
+
+  handle(CHANNELS.devicesForget, async (input) => {
+    const { deviceId } = input as { deviceId: string }
+    const result = session.forgetDevice(deviceId)
+    return isErr(result) ? toWire(result) : { ok: true, value: { forgotten: true as const } }
   })
 
   handle(CHANNELS.appInfo, async () => ({
