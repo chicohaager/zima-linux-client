@@ -36,7 +36,12 @@
     "zerotier": "Remote ID（ZeroTier）",
     "backup": "备份",
     "present": "可用",
-    "absent": "此设备不支持"
+    "absent": "此设备不支持",
+    "ztOnline": "已连接",
+    "ztOffline": "已断开",
+    "ztNotRunning": "设备上未运行",
+    "ztUnreachable": "无法确定",
+    "ztUnknown": "尚未检查"
   },
   "photos": {
     "title": "照片",

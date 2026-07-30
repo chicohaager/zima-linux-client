@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
-import type { Device } from '@shared/domain'
+import type { Capabilities, Device } from '@shared/domain'
 import { appError, err, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import { addressKey, applyPriorityOrder, byPriority, mergeDevice } from './ordering'
@@ -89,6 +89,36 @@ export const upsert = (device: Device): Result<Device> => {
   const written = write({
     devices,
     activeDeviceId: state.activeDeviceId ?? merged.id,
+  })
+  return written.ok ? ok(merged) : written
+}
+
+/**
+ * Records the measured ZeroTier state on a device, touching nothing else.
+ *
+ * Deliberately not routed through `upsert`: that merges a whole device and would need a
+ * complete `Capabilities` object, which the caller does not have — it has one measurement.
+ * Writing a partial device through a merge is how a known name or route list gets erased.
+ */
+export const setZerotierState = (id: string, state: Capabilities['zerotier']): Result<Device> => {
+  const current = read()
+  const device = current.devices.find((d) => d.id === id)
+  if (device === undefined) {
+    return err(appError('internal', `unknown device ${id}`, 'error.internal', { id }))
+  }
+  if (device.capabilities === null) {
+    return err(
+      appError('internal', 'device has no capability set to update', 'error.internal', { id }),
+    )
+  }
+
+  const merged: Device = {
+    ...device,
+    capabilities: { ...device.capabilities, zerotier: state },
+  }
+  const written = write({
+    ...current,
+    devices: current.devices.map((d) => (d.id === id ? merged : d)),
   })
   return written.ok ? ok(merged) : written
 }

@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Biztonsági mentés",
     "present": "elérhető",
-    "absent": "ezen az eszközön nem elérhető"
+    "absent": "ezen az eszközön nem elérhető",
+    "ztOnline": "csatlakoztatva",
+    "ztOffline": "leválasztva",
+    "ztNotRunning": "nem fut az eszközön",
+    "ztUnreachable": "nem állapítható meg",
+    "ztUnknown": "még nincs ellenőrizve"
   },
   "photos": {
     "title": "Fotók",

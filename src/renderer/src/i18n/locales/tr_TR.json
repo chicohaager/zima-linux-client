@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Yedekleme",
     "present": "kullanılabilir",
-    "absent": "bu cihazda kullanılamıyor"
+    "absent": "bu cihazda kullanılamıyor",
+    "ztOnline": "bağlı",
+    "ztOffline": "bağlı değil",
+    "ztNotRunning": "cihazda çalışmıyor",
+    "ztUnreachable": "belirlenemedi",
+    "ztUnknown": "henüz denetlenmedi"
   },
   "photos": {
     "title": "Fotoğraflar",

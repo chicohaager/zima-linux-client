@@ -36,7 +36,12 @@
     "zerotier": "Remote ID（ZeroTier）",
     "backup": "バックアップ",
     "present": "利用可能",
-    "absent": "このデバイスでは利用できません"
+    "absent": "このデバイスでは利用できません",
+    "ztOnline": "接続済み",
+    "ztOffline": "切断",
+    "ztNotRunning": "デバイスで動作していません",
+    "ztUnreachable": "判定できませんでした",
+    "ztUnknown": "未確認"
   },
   "photos": {
     "title": "写真",

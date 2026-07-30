@@ -26,7 +26,15 @@ export const BASE = {
   /** routes: legacy system surface */
   sys: '/v1/sys',
   /** routes: ZeroTier surface used for Remote ID */
-  zt: '/v1/zt',
+  /**
+   * routes: die v1-Route steht in der Routentabelle — und ist NICHT die Tür, die die
+   * Web-UI benutzt. Gemessen 2026-07-30 mit Access-Token an zwei v1.7.0-Hosts:
+   * `GET /v1/zt/info` → **404** auf dem einen, **500** auf dem anderen. Die UI ruft
+   * `ZeroTierMethodsApi(basePath: '/v2/zimaos')` mit `/zt/info` und `/zt/status`.
+   * Der Eintrag bleibt hier nur, damit die Routentabelle vollständig abgebildet ist —
+   * er darf NICHT für Aufrufe benutzt werden. Echte Pfade: `ZT` unten.
+   */
+  ztLegacyRouteOnly: '/v1/zt',
   /** routes: app list (legacy) */
   apps: '/v1/apps',
   /** routes: app management, incl. myapps + compose */
@@ -51,6 +59,30 @@ export const USERS = {
   refresh: '/refresh',
   /** bundle: current user */
   current: '/current',
+} as const
+
+/**
+ * Paths relative to BASE.zimaos — the ZeroTier surface behind "Remote ID".
+ *
+ * live 2026-07-30, two v1.7.0 hosts, with an access token:
+ *
+ *   Host A: GET /v2/zimaos/zt/info -> 200 {id, ip, name, status:"online"}
+ *   Host B: GET /v2/zimaos/zt/info -> 500 {"message":"… dial tcp 127.0.0.1:9993:
+ *           connect: connection refused"}   <- route present, daemon not running
+ *
+ * That difference is the whole point: the gateway route `/v1/zt` exists on BOTH hosts,
+ * so route presence says nothing about whether ZeroTier is usable. The feature has to be
+ * probed, not inferred — see `probeZerotier`.
+ */
+export const ZT = {
+  /** live: GET -> {id, ip, name, status}. 500 + "connection refused" = daemon down. */
+  info: '/zt/info',
+  /**
+   * bundle: POST {status: "online"|"offline"|"reset"}, enum read from the shipped UI
+   * (`SetZerotierNetworkStatusRequestStatusEnum`). NOT measured — calling it would change
+   * the device's connectivity, so it stays unverified until that is intended.
+   */
+  status: '/zt/status',
 } as const
 
 /** Paths relative to BASE.files. */

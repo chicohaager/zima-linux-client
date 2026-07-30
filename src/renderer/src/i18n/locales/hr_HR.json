@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Sigurnosna kopija",
     "present": "dostupno",
-    "absent": "nije dostupno na ovom uređaju"
+    "absent": "nije dostupno na ovom uređaju",
+    "ztOnline": "povezano",
+    "ztOffline": "nije povezano",
+    "ztNotRunning": "ne radi na uređaju",
+    "ztUnreachable": "nije moguće utvrditi",
+    "ztUnknown": "još nije provjereno"
   },
   "photos": {
     "title": "Fotografije",

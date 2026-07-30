@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Copie de siguranță",
     "present": "disponibil",
-    "absent": "indisponibil pe acest dispozitiv"
+    "absent": "indisponibil pe acest dispozitiv",
+    "ztOnline": "conectat",
+    "ztOffline": "deconectat",
+    "ztNotRunning": "nu rulează pe dispozitiv",
+    "ztUnreachable": "nu a putut fi determinat",
+    "ztUnknown": "încă neverificat"
   },
   "photos": {
     "title": "Fotografii",

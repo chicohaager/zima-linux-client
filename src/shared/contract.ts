@@ -13,6 +13,23 @@ export type { ChannelName }
  * field rename becomes a loud parse failure instead of an empty list.
  */
 
+/**
+ * ZeroTier state as measured on the device, not derived from the route table.
+ * `'unknown'` is a real member of the union: it says nobody has asked yet, which is
+ * different from the device answering "no".
+ */
+export const zerotierStateSchema = z.union([
+  z.literal('unknown'),
+  z.object({
+    kind: z.enum(['online', 'offline']),
+    networkId: z.string(),
+    ip: z.string().nullable(),
+    networkName: z.string().nullable(),
+  }),
+  z.object({ kind: z.enum(['not-running', 'absent']) }),
+  z.object({ kind: z.literal('unreachable'), reason: z.string() }),
+])
+
 export const capabilitiesSchema = z.object({
   photoLibrary: z.boolean(),
   photoBrowse: z.boolean(),
@@ -21,7 +38,7 @@ export const capabilitiesSchema = z.object({
   apps: z.boolean(),
   appStore: z.boolean(),
   systemPower: z.boolean(),
-  zerotier: z.boolean(),
+  zerotier: zerotierStateSchema,
   backup: z.boolean(),
   routes: z.array(z.string()).readonly(),
 })
