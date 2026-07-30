@@ -1,15 +1,30 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["src/renderer/src/**/*", "src/shared/**/*", "src/preload/index.d.ts"],
+  "include": [
+    "src/renderer/src/**/*",
+    "src/shared/**/*",
+    "src/preload/index.d.ts"
+  ],
   "compilerOptions": {
     "composite": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "jsx": "react-jsx",
-    "types": ["vitest/globals"],
+    "types": [
+      "vitest/globals",
+      "vite/client"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["src/shared/*"],
-      "@renderer/*": ["src/renderer/src/*"]
+      "@shared/*": [
+        "src/shared/*"
+      ],
+      "@renderer/*": [
+        "src/renderer/src/*"
+      ]
     }
   }
 }

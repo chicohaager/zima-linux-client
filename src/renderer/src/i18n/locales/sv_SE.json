@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Filer",
+    "photos": "Foton",
+    "apps": "Appar",
+    "device": "Enhet"
+  },
+  "device": {
+    "title": "Enhet",
+    "noneSelected": "Ingen enhet ansluten",
+    "scan": "Sök i lokala nätverket",
+    "scanning": "Söker…",
+    "directIp": "Anslut via IP-adress",
+    "remoteId": "Anslut via Remote ID",
+    "found": "{{count}} enhet hittad",
+    "found_plural": "{{count}} enheter hittade",
+    "nothingAnswered": "Ingen enhet svarade i detta nätverk",
+    "nothingAnsweredHint": "mDNS blockeras ofta mellan nätverkssegment. Det betyder inte att det inte finns någon enhet — prova IP-adressen.",
+    "connection": {
+      "lan": "Lokalt nätverk",
+      "direct": "Direkt IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Upptäckta funktioner",
+    "routes": "{{count}} gateway-rutter"
+  },
+  "capability": {
+    "photoLibrary": "Fotosökning och facetter",
+    "photoBrowse": "Bläddra i foton",
+    "photoBackup": "Fotosäkerhetskopiering",
+    "files": "Filer",
+    "apps": "Appar",
+    "appStore": "App Store",
+    "systemPower": "Starta om och stäng av",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Säkerhetskopiering",
+    "present": "tillgänglig",
+    "absent": "inte tillgänglig på denna enhet"
+  },
+  "photos": {
+    "title": "Foton",
+    "libraryMissing": "Fotosökning kräver Photos-modulen",
+    "libraryMissingHint": "Denna enhet har ingen registrerad Photos-modul, så semantisk sökning och facetter är otillgängliga. Bläddring och säkerhetskopiering fungerar ändå.",
+    "backupForegroundOnly": "Säkerhetskopieringen körs bara medan detta fönster är öppet."
+  },
+  "files": {
+    "title": "Filer",
+    "search": "Sök",
+    "starred": "Favoriter",
+    "storage": "Lagring"
+  },
+  "apps": {
+    "title": "Appar",
+    "running": "Körs",
+    "stopped": "Stoppad",
+    "cachedAt": "Status: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Lösenord kan inte lagras säkert",
+    "keyringPlaintext": "Detta system erbjuder ingen nyckelring ({{backend}}), så Electron skulle lagra inloggningsuppgifter med ett fast lösenord. Ingenting har sparats.",
+    "keyringOk": "Inloggningsuppgifterna skyddas av {{backend}}.",
+    "storeAnyway": "Spara ändå",
+    "askEveryTime": "Fråga varje gång",
+    "backendChanged": "Den sparade sessionen kan inte läsas: systemets nyckelring har ändrats. Logga in igen.",
+    "consentGiven": "Lagring utan nyckelring har tillåtits för denna dator."
+  },
+  "error": {
+    "refused": "Enheten avvisade anslutningen — inget lyssnar på denna port.",
+    "timeout": "Inget svar alls — en brandvägg kan kasta anslutningen.",
+    "dns": "Värdnamnet kunde inte slås upp.",
+    "unexpectedStatus": "Oväntat svar från enheten (HTTP {{status}}).",
+    "malformedResponse": "Enheten svarade i en form som denna klient inte förstår.",
+    "unauthorized": "Inloggning krävs eller sessionen har gått ut.",
+    "forbiddenPath": "Enheten avvisar denna sökväg (HTTP 400).",
+    "capabilityMissing": "Denna enhet erbjuder inte den funktion som behövs.",
+    "cancelled": "Avbrutet.",
+    "badPort": "Denna port kan inte användas.",
+    "internal": "Något gick fel. Detaljerna finns i loggen.",
+    "invalidCredentials": "Användarnamnet eller lösenordet är felaktigt.",
+    "parameters": "Enheten avvisade begäran som ofullständig.",
+    "invalidHost": "Det är inte en giltig adress.",
+    "invalidPort": "Det är inte en giltig port.",
+    "notAZimaDevice": "Ingen ZimaOS-enhet svarade på denna adress.",
+    "sessionExpired": "Sessionen har gått ut — logga in igen.",
+    "signInRequired": "Logga in.",
+    "strategyUnavailable": "Den här anslutningsvägen är ännu inte tillgänglig i denna version."
+  },
+  "common": {
+    "retry": "Försök igen",
+    "cancel": "Avbryt",
+    "close": "Stäng",
+    "theme": "Utseende",
+    "themeSystem": "System",
+    "themeLight": "Ljust",
+    "themeDark": "Mörkt",
+    "version": "Version {{version}}"
+  },
+  "signIn": {
+    "title": "Logga in",
+    "host": "Adress",
+    "hostPlaceholder": "nas.local eller 192.168.1.100",
+    "username": "Användarnamn",
+    "password": "Lösenord",
+    "submit": "Logga in",
+    "submitting": "Loggar in…",
+    "cancel": "Avbryt",
+    "signOut": "Logga ut",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sessionen gäller i {{minutes}} min till",
+    "notPersisted": "Inloggad, men sessionen sparades inte — den överlever inte en omstart."
+  },
+  "devices": {
+    "title": "Enheter",
+    "none": "Inga sparade enheter ännu",
+    "noneHint": "Sök i det lokala nätverket eller ange en adress direkt.",
+    "active": "Aktiv",
+    "activate": "Växla till denna enhet",
+    "forget": "Ta bort",
+    "forgetConfirm": "Ta bort ”{{name}}” inklusive den sparade sessionen?",
+    "addresses": "Anslutningsvägar",
+    "priorityUp": "Högre prioritet",
+    "lastSeen": "Senast sedd: {{when}}",
+    "resume": "Anslut igen",
+    "connect": "Anslut"
+  },
+  "settings": {
+    "language": "Språk",
+    "unreviewed": "ej granskad",
+    "reviewed": "granskad"
+  }
+}

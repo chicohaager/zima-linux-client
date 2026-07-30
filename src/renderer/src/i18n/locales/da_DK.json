@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Filer",
+    "photos": "Fotos",
+    "apps": "Apps",
+    "device": "Enhed"
+  },
+  "device": {
+    "title": "Enhed",
+    "noneSelected": "Ingen enhed forbundet",
+    "scan": "Scan lokalnetværket",
+    "scanning": "Scanner…",
+    "directIp": "Forbind via IP-adresse",
+    "remoteId": "Forbind via Remote ID",
+    "found": "{{count}} enhed fundet",
+    "found_plural": "{{count}} enheder fundet",
+    "nothingAnswered": "Ingen enhed svarede på dette netværk",
+    "nothingAnsweredHint": "mDNS blokeres ofte mellem netværkssegmenter. Det betyder ikke, at der ikke er nogen enhed — prøv IP-adressen.",
+    "connection": {
+      "lan": "Lokalnetværk",
+      "direct": "Direkte IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Fundne funktioner",
+    "routes": "{{count}} gateway-ruter"
+  },
+  "capability": {
+    "photoLibrary": "Fotosøgning og facetter",
+    "photoBrowse": "Gennemse fotos",
+    "photoBackup": "Fotobackup",
+    "files": "Filer",
+    "apps": "Apps",
+    "appStore": "App Store",
+    "systemPower": "Genstart og sluk",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Backup",
+    "present": "tilgængelig",
+    "absent": "ikke tilgængelig på denne enhed"
+  },
+  "photos": {
+    "title": "Fotos",
+    "libraryMissing": "Fotosøgning kræver Photos-modulet",
+    "libraryMissingHint": "Denne enhed har ikke registreret Photos-modulet, så semantisk søgning og facetter er utilgængelige. Gennemsyn og backup fungerer alligevel.",
+    "backupForegroundOnly": "Backup kører kun, mens dette vindue er åbent."
+  },
+  "files": {
+    "title": "Filer",
+    "search": "Søg",
+    "starred": "Favoritter",
+    "storage": "Lager"
+  },
+  "apps": {
+    "title": "Apps",
+    "running": "Kører",
+    "stopped": "Stoppet",
+    "cachedAt": "Status: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Adgangskoder kan ikke gemmes sikkert",
+    "keyringPlaintext": "Dette system tilbyder ingen nøglering ({{backend}}), så Electron ville gemme legitimationsoplysninger med en fast adgangskode. Der er intet gemt.",
+    "keyringOk": "Legitimationsoplysninger beskyttes af {{backend}}.",
+    "storeAnyway": "Gem alligevel",
+    "askEveryTime": "Spørg hver gang",
+    "backendChanged": "Den gemte session kan ikke læses: systemets nøglering er ændret. Log ind igen.",
+    "consentGiven": "Lagring uden nøglering er tilladt på denne computer."
+  },
+  "error": {
+    "refused": "Enheden afviste forbindelsen — intet lytter på denne port.",
+    "timeout": "Slet intet svar — måske smider en firewall forbindelsen væk.",
+    "dns": "Værtsnavnet kunne ikke slås op.",
+    "unexpectedStatus": "Uventet svar fra enheden (HTTP {{status}}).",
+    "malformedResponse": "Enheden svarede i en form, som denne klient ikke forstår.",
+    "unauthorized": "Login kræves, eller sessionen er udløbet.",
+    "forbiddenPath": "Enheden afviser denne sti (HTTP 400).",
+    "capabilityMissing": "Denne enhed tilbyder ikke den nødvendige funktion.",
+    "cancelled": "Annulleret.",
+    "badPort": "Denne port kan ikke bruges.",
+    "internal": "Noget gik galt. Detaljerne står i loggen.",
+    "invalidCredentials": "Brugernavn eller adgangskode er forkert.",
+    "parameters": "Enheden afviste anmodningen som ufuldstændig.",
+    "invalidHost": "Det er ikke en gyldig adresse.",
+    "invalidPort": "Det er ikke en gyldig port.",
+    "notAZimaDevice": "Ingen ZimaOS-enhed svarede på denne adresse.",
+    "sessionExpired": "Sessionen er udløbet — log ind igen.",
+    "signInRequired": "Log venligst ind.",
+    "strategyUnavailable": "Denne forbindelsesvej er endnu ikke tilgængelig i denne udgave."
+  },
+  "common": {
+    "retry": "Prøv igen",
+    "cancel": "Annuller",
+    "close": "Luk",
+    "theme": "Udseende",
+    "themeSystem": "System",
+    "themeLight": "Lys",
+    "themeDark": "Mørk",
+    "version": "Version {{version}}"
+  },
+  "signIn": {
+    "title": "Log ind",
+    "host": "Adresse",
+    "hostPlaceholder": "nas.local eller 192.168.1.100",
+    "username": "Brugernavn",
+    "password": "Adgangskode",
+    "submit": "Log ind",
+    "submitting": "Logger ind…",
+    "cancel": "Annuller",
+    "signOut": "Log ud",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sessionen er gyldig i {{minutes}} min endnu",
+    "notPersisted": "Logget ind, men sessionen blev ikke gemt — den overlever ikke en genstart."
+  },
+  "devices": {
+    "title": "Enheder",
+    "none": "Endnu ingen gemte enheder",
+    "noneHint": "Scan lokalnetværket, eller indtast en adresse direkte.",
+    "active": "Aktiv",
+    "activate": "Skift til denne enhed",
+    "forget": "Fjern",
+    "forgetConfirm": "Fjern “{{name}}” inklusive den gemte session?",
+    "addresses": "Forbindelsesveje",
+    "priorityUp": "Højere prioritet",
+    "lastSeen": "Sidst set: {{when}}",
+    "resume": "Forbind igen",
+    "connect": "Forbind"
+  },
+  "settings": {
+    "language": "Sprog",
+    "unreviewed": "ikke gennemset",
+    "reviewed": "gennemset"
+  }
+}

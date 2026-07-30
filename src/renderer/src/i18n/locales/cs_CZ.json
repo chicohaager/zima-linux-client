@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Soubory",
+    "photos": "Fotky",
+    "apps": "Aplikace",
+    "device": "Zařízení"
+  },
+  "device": {
+    "title": "Zařízení",
+    "noneSelected": "Žádné připojené zařízení",
+    "scan": "Prohledat místní síť",
+    "scanning": "Hledání…",
+    "directIp": "Připojit přes IP adresu",
+    "remoteId": "Připojit přes Remote ID",
+    "found": "Nalezeno {{count}} zařízení",
+    "found_plural": "Nalezeno {{count}} zařízení",
+    "nothingAnswered": "V této síti neodpovědělo žádné zařízení",
+    "nothingAnsweredHint": "mDNS je mezi segmenty sítě často blokován. Neznamená to, že zařízení neexistuje — zkuste IP adresu.",
+    "connection": {
+      "lan": "Místní síť",
+      "direct": "Přímá IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Zjištěné funkce",
+    "routes": "{{count}} cest brány"
+  },
+  "capability": {
+    "photoLibrary": "Vyhledávání fotek a filtry",
+    "photoBrowse": "Prohlížení fotek",
+    "photoBackup": "Záloha fotek",
+    "files": "Soubory",
+    "apps": "Aplikace",
+    "appStore": "App Store",
+    "systemPower": "Restart a vypnutí",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Záloha",
+    "present": "dostupné",
+    "absent": "na tomto zařízení nedostupné"
+  },
+  "photos": {
+    "title": "Fotky",
+    "libraryMissing": "Vyhledávání fotek vyžaduje modul Photos",
+    "libraryMissingHint": "Na tomto zařízení není registrován modul Photos, proto není dostupné sémantické vyhledávání ani filtry. Prohlížení a záloha fungují i tak.",
+    "backupForegroundOnly": "Záloha běží pouze tehdy, když je toto okno otevřené."
+  },
+  "files": {
+    "title": "Soubory",
+    "search": "Hledat",
+    "starred": "Oblíbené",
+    "storage": "Úložiště"
+  },
+  "apps": {
+    "title": "Aplikace",
+    "running": "Běží",
+    "stopped": "Zastaveno",
+    "cachedAt": "Stav: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Hesla nelze bezpečně uložit",
+    "keyringPlaintext": "Tento systém neposkytuje klíčenku ({{backend}}), takže by Electron uložil přihlašovací údaje s pevným heslem. Nic nebylo uloženo.",
+    "keyringOk": "Přihlašovací údaje chrání {{backend}}.",
+    "storeAnyway": "Přesto uložit",
+    "askEveryTime": "Zeptat se vždy",
+    "backendChanged": "Uloženou sezení nelze přečíst: klíčenka systému se změnila. Přihlaste se znovu.",
+    "consentGiven": "Ukládání bez klíčenky bylo pro tento počítač povoleno."
+  },
+  "error": {
+    "refused": "Zařízení odmítlo připojení — na tomto portu nic neposlouchá.",
+    "timeout": "Žádná odpověď — možná firewall spojení zahazuje.",
+    "dns": "Název hostitele nelze přeložit.",
+    "unexpectedStatus": "Neočekávaná odpověď zařízení (HTTP {{status}}).",
+    "malformedResponse": "Zařízení odpovědělo ve formě, kterou tento klient nerozumí.",
+    "unauthorized": "Je nutné přihlášení nebo sezení vypršelo.",
+    "forbiddenPath": "Zařízení tuto cestu odmítá (HTTP 400).",
+    "capabilityMissing": "Toto zařízení požadovanou funkci nenabízí.",
+    "cancelled": "Zrušeno.",
+    "badPort": "Tento port nelze použít.",
+    "internal": "Něco se pokazilo. Podrobnosti jsou v protokolu.",
+    "invalidCredentials": "Uživatelské jméno nebo heslo je nesprávné.",
+    "parameters": "Zařízení odmítlo požadavek jako neúplný.",
+    "invalidHost": "To není platná adresa.",
+    "invalidPort": "To není platný port.",
+    "notAZimaDevice": "Na této adrese neodpovědělo žádné zařízení ZimaOS.",
+    "sessionExpired": "Sezení vypršelo — přihlaste se znovu.",
+    "signInRequired": "Přihlaste se.",
+    "strategyUnavailable": "Tato cesta připojení v této verzi ještě není dostupná."
+  },
+  "common": {
+    "retry": "Zkusit znovu",
+    "cancel": "Zrušit",
+    "close": "Zavřít",
+    "theme": "Vzhled",
+    "themeSystem": "Systém",
+    "themeLight": "Světlý",
+    "themeDark": "Tmavý",
+    "version": "Verze {{version}}"
+  },
+  "signIn": {
+    "title": "Přihlášení",
+    "host": "Adresa",
+    "hostPlaceholder": "nas.local nebo 192.168.1.100",
+    "username": "Uživatelské jméno",
+    "password": "Heslo",
+    "submit": "Přihlásit se",
+    "submitting": "Přihlašování…",
+    "cancel": "Zrušit",
+    "signOut": "Odhlásit se",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sezení platí ještě {{minutes}} min",
+    "notPersisted": "Přihlášeno, ale sezení nebylo uloženo — nepřežije restart."
+  },
+  "devices": {
+    "title": "Zařízení",
+    "none": "Zatím žádné uložené zařízení",
+    "noneHint": "Prohledejte místní síť nebo zadejte adresu přímo.",
+    "active": "Aktivní",
+    "activate": "Přepnout na toto zařízení",
+    "forget": "Odebrat",
+    "forgetConfirm": "Odebrat „{{name}}“ včetně uloženého sezení?",
+    "addresses": "Cesty připojení",
+    "priorityUp": "Vyšší priorita",
+    "lastSeen": "Naposledy viděno: {{when}}",
+    "resume": "Znovu připojit",
+    "connect": "Připojit"
+  },
+  "settings": {
+    "language": "Jazyk",
+    "unreviewed": "nezkontrolováno",
+    "reviewed": "zkontrolováno"
+  }
+}

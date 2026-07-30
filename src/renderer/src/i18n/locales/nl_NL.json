@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Bestanden",
+    "photos": "Foto’s",
+    "apps": "Apps",
+    "device": "Apparaat"
+  },
+  "device": {
+    "title": "Apparaat",
+    "noneSelected": "Geen apparaat verbonden",
+    "scan": "Lokaal netwerk scannen",
+    "scanning": "Scannen…",
+    "directIp": "Verbinden via IP-adres",
+    "remoteId": "Verbinden via Remote ID",
+    "found": "{{count}} apparaat gevonden",
+    "found_plural": "{{count}} apparaten gevonden",
+    "nothingAnswered": "Geen apparaat heeft in dit netwerk geantwoord",
+    "nothingAnsweredHint": "mDNS wordt tussen netwerksegmenten vaak geblokkeerd. Dat betekent niet dat er geen apparaat is — probeer het IP-adres.",
+    "connection": {
+      "lan": "Lokaal netwerk",
+      "direct": "Direct IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Gevonden functies",
+    "routes": "{{count}} gateway-routes"
+  },
+  "capability": {
+    "photoLibrary": "Fotozoeken en facetten",
+    "photoBrowse": "Foto’s doorbladeren",
+    "photoBackup": "Fotoback-up",
+    "files": "Bestanden",
+    "apps": "Apps",
+    "appStore": "App Store",
+    "systemPower": "Herstarten en afsluiten",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Back-up",
+    "present": "beschikbaar",
+    "absent": "niet beschikbaar op dit apparaat"
+  },
+  "photos": {
+    "title": "Foto’s",
+    "libraryMissing": "Fotozoeken heeft de Photos-module nodig",
+    "libraryMissingHint": "Op dit apparaat is geen Photos-module geregistreerd, dus semantisch zoeken en facetten zijn niet beschikbaar. Doorbladeren en back-up werken wel.",
+    "backupForegroundOnly": "De back-up loopt alleen zolang dit venster open staat."
+  },
+  "files": {
+    "title": "Bestanden",
+    "search": "Zoeken",
+    "starred": "Favorieten",
+    "storage": "Opslag"
+  },
+  "apps": {
+    "title": "Apps",
+    "running": "Actief",
+    "stopped": "Gestopt",
+    "cachedAt": "Stand: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Wachtwoorden kunnen niet veilig worden opgeslagen",
+    "keyringPlaintext": "Dit systeem biedt geen sleutelring ({{backend}}), dus Electron zou inloggegevens met een vast wachtwoord opslaan. Er is niets opgeslagen.",
+    "keyringOk": "Inloggegevens worden beschermd door {{backend}}.",
+    "storeAnyway": "Toch opslaan",
+    "askEveryTime": "Elke keer vragen",
+    "backendChanged": "De opgeslagen sessie is onleesbaar: de sleutelring van het systeem is gewijzigd. Meld je opnieuw aan.",
+    "consentGiven": "Opslaan zonder sleutelring is voor deze computer toegestaan."
+  },
+  "error": {
+    "refused": "Het apparaat weigerde de verbinding — er luistert niets op deze poort.",
+    "timeout": "Helemaal geen antwoord — mogelijk verwerpt een firewall de verbinding.",
+    "dns": "De hostnaam kon niet worden omgezet.",
+    "unexpectedStatus": "Onverwacht antwoord van het apparaat (HTTP {{status}}).",
+    "malformedResponse": "Het apparaat antwoordde in een vorm die deze client niet begrijpt.",
+    "unauthorized": "Aanmelden vereist of sessie verlopen.",
+    "forbiddenPath": "Het apparaat weigert dit pad (HTTP 400).",
+    "capabilityMissing": "Dit apparaat biedt de vereiste functie niet.",
+    "cancelled": "Geannuleerd.",
+    "badPort": "Deze poort kan niet worden gebruikt.",
+    "internal": "Er ging iets mis. Details staan in het logboek.",
+    "invalidCredentials": "Gebruikersnaam of wachtwoord is onjuist.",
+    "parameters": "Het apparaat wees het verzoek af als onvolledig.",
+    "invalidHost": "Dat is geen geldig adres.",
+    "invalidPort": "Dat is geen geldige poort.",
+    "notAZimaDevice": "Op dit adres heeft geen ZimaOS-apparaat geantwoord.",
+    "sessionExpired": "De sessie is verlopen — meld je opnieuw aan.",
+    "signInRequired": "Meld je aan.",
+    "strategyUnavailable": "Deze verbindingsroute is in deze versie nog niet beschikbaar."
+  },
+  "common": {
+    "retry": "Opnieuw",
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "theme": "Weergave",
+    "themeSystem": "Systeem",
+    "themeLight": "Licht",
+    "themeDark": "Donker",
+    "version": "Versie {{version}}"
+  },
+  "signIn": {
+    "title": "Aanmelden",
+    "host": "Adres",
+    "hostPlaceholder": "nas.local of 192.168.1.100",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "submit": "Aanmelden",
+    "submitting": "Aanmelden…",
+    "cancel": "Annuleren",
+    "signOut": "Afmelden",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sessie nog {{minutes}} min geldig",
+    "notPersisted": "Aangemeld, maar de sessie is niet opgeslagen — die overleeft geen herstart."
+  },
+  "devices": {
+    "title": "Apparaten",
+    "none": "Nog geen apparaat opgeslagen",
+    "noneHint": "Scan het lokale netwerk of voer direct een adres in.",
+    "active": "Actief",
+    "activate": "Naar dit apparaat wisselen",
+    "forget": "Verwijderen",
+    "forgetConfirm": "‘{{name}}’ inclusief opgeslagen sessie verwijderen?",
+    "addresses": "Verbindingsroutes",
+    "priorityUp": "Hogere prioriteit",
+    "lastSeen": "Laatst gezien: {{when}}",
+    "resume": "Opnieuw verbinden",
+    "connect": "Verbinden"
+  },
+  "settings": {
+    "language": "Taal",
+    "unreviewed": "niet nagekeken",
+    "reviewed": "nagekeken"
+  }
+}

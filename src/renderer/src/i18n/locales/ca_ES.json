@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Fitxers",
+    "photos": "Fotos",
+    "apps": "Aplicacions",
+    "device": "Dispositiu"
+  },
+  "device": {
+    "title": "Dispositiu",
+    "noneSelected": "Cap dispositiu connectat",
+    "scan": "Cerca a la xarxa local",
+    "scanning": "S’està cercant…",
+    "directIp": "Connecta mitjançant adreça IP",
+    "remoteId": "Connecta mitjançant Remote ID",
+    "found": "{{count}} dispositiu trobat",
+    "found_plural": "{{count}} dispositius trobats",
+    "nothingAnswered": "Cap dispositiu ha respost en aquesta xarxa",
+    "nothingAnsweredHint": "L’mDNS sovint es bloqueja entre segments de xarxa. Això no vol dir que no hi hagi cap dispositiu: prova l’adreça IP.",
+    "connection": {
+      "lan": "Xarxa local",
+      "direct": "IP directa",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Funcions detectades",
+    "routes": "{{count}} rutes de la passarel·la"
+  },
+  "capability": {
+    "photoLibrary": "Cerca de fotos i facetes",
+    "photoBrowse": "Explorar fotos",
+    "photoBackup": "Còpia de fotos",
+    "files": "Fitxers",
+    "apps": "Aplicacions",
+    "appStore": "App Store",
+    "systemPower": "Reinici i aturada",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Còpia de seguretat",
+    "present": "disponible",
+    "absent": "no disponible en aquest dispositiu"
+  },
+  "photos": {
+    "title": "Fotos",
+    "libraryMissing": "La cerca de fotos necessita el mòdul Photos",
+    "libraryMissingHint": "Aquest dispositiu no té registrat el mòdul Photos, per tant la cerca semàntica i les facetes no estan disponibles. Explorar i la còpia funcionen igualment.",
+    "backupForegroundOnly": "La còpia només s’executa mentre aquesta finestra estigui oberta."
+  },
+  "files": {
+    "title": "Fitxers",
+    "search": "Cerca",
+    "starred": "Preferits",
+    "storage": "Emmagatzematge"
+  },
+  "apps": {
+    "title": "Aplicacions",
+    "running": "En execució",
+    "stopped": "Aturada",
+    "cachedAt": "Estat: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Les contrasenyes no es poden desar amb seguretat",
+    "keyringPlaintext": "Aquest sistema no ofereix cap anell de claus ({{backend}}), de manera que l’Electron desaria les credencials amb una contrasenya fixa. No s’ha desat res.",
+    "keyringOk": "Les credencials estan protegides per {{backend}}.",
+    "storeAnyway": "Desa-ho igualment",
+    "askEveryTime": "Pregunta cada vegada",
+    "backendChanged": "La sessió desada no es pot llegir: l’anell de claus del sistema ha canviat. Torna a iniciar la sessió.",
+    "consentGiven": "S’ha permès desar sense anell de claus en aquest ordinador."
+  },
+  "error": {
+    "refused": "El dispositiu ha rebutjat la connexió: res no escolta en aquest port.",
+    "timeout": "Cap resposta: potser un tallafoc descarta la connexió.",
+    "dns": "No s’ha pogut resoldre el nom de l’amfitrió.",
+    "unexpectedStatus": "Resposta inesperada del dispositiu (HTTP {{status}}).",
+    "malformedResponse": "El dispositiu ha respost en un format que aquest client no entén.",
+    "unauthorized": "Cal iniciar la sessió o la sessió ha caducat.",
+    "forbiddenPath": "El dispositiu rebutja aquest camí (HTTP 400).",
+    "capabilityMissing": "Aquest dispositiu no ofereix la funció necessària.",
+    "cancelled": "Cancel·lat.",
+    "badPort": "Aquest port no es pot fer servir.",
+    "internal": "Alguna cosa ha fallat. Els detalls són al registre.",
+    "invalidCredentials": "El nom d’usuari o la contrasenya són incorrectes.",
+    "parameters": "El dispositiu ha rebutjat la sol·licitud perquè és incompleta.",
+    "invalidHost": "Aquesta no és una adreça vàlida.",
+    "invalidPort": "Aquest no és un port vàlid.",
+    "notAZimaDevice": "Cap dispositiu ZimaOS ha respost en aquesta adreça.",
+    "sessionExpired": "La sessió ha caducat: torna a iniciar-la.",
+    "signInRequired": "Inicia la sessió.",
+    "strategyUnavailable": "Aquesta via de connexió encara no està disponible en aquesta versió."
+  },
+  "common": {
+    "retry": "Torna-ho a provar",
+    "cancel": "Cancel·la",
+    "close": "Tanca",
+    "theme": "Aparença",
+    "themeSystem": "Sistema",
+    "themeLight": "Clar",
+    "themeDark": "Fosc",
+    "version": "Versió {{version}}"
+  },
+  "signIn": {
+    "title": "Inicia la sessió",
+    "host": "Adreça",
+    "hostPlaceholder": "nas.local o 192.168.1.100",
+    "username": "Nom d’usuari",
+    "password": "Contrasenya",
+    "submit": "Inicia la sessió",
+    "submitting": "S’està iniciant la sessió…",
+    "cancel": "Cancel·la",
+    "signOut": "Tanca la sessió",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "La sessió és vàlida {{minutes}} min més",
+    "notPersisted": "Sessió iniciada, però no s’ha desat: no sobreviurà a un reinici."
+  },
+  "devices": {
+    "title": "Dispositius",
+    "none": "Encara no hi ha cap dispositiu desat",
+    "noneHint": "Cerca a la xarxa local o introdueix una adreça directament.",
+    "active": "Actiu",
+    "activate": "Canvia a aquest dispositiu",
+    "forget": "Elimina",
+    "forgetConfirm": "Vols eliminar «{{name}}» juntament amb la sessió desada?",
+    "addresses": "Vies de connexió",
+    "priorityUp": "Prioritat més alta",
+    "lastSeen": "Vist per última vegada: {{when}}",
+    "resume": "Torna a connectar",
+    "connect": "Connecta"
+  },
+  "settings": {
+    "language": "Idioma",
+    "unreviewed": "sense revisar",
+    "reviewed": "revisat"
+  }
+}

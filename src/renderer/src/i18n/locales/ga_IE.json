@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Comhaid",
+    "photos": "Grianghraif",
+    "apps": "Aipeanna",
+    "device": "Gléas"
+  },
+  "device": {
+    "title": "Gléas",
+    "noneSelected": "Níl aon ghléas ceangailte",
+    "scan": "Scan an líonra áitiúil",
+    "scanning": "Ag scanadh…",
+    "directIp": "Ceangail trí sheoladh IP",
+    "remoteId": "Ceangail trí Remote ID",
+    "found": "Fuarthas {{count}} ghléas",
+    "found_plural": "Fuarthas {{count}} ghléas",
+    "nothingAnswered": "Níor fhreagair aon ghléas ar an líonra seo",
+    "nothingAnsweredHint": "Cuirtear bac ar mDNS go minic idir codanna líonra. Ní chiallaíonn sé sin nach bhfuil gléas ann — bain triail as an seoladh IP.",
+    "connection": {
+      "lan": "Líonra áitiúil",
+      "direct": "IP díreach",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Gnéithe a braitheadh",
+    "routes": "{{count}} bealach geata"
+  },
+  "capability": {
+    "photoLibrary": "Cuardach grianghraf agus scagairí",
+    "photoBrowse": "Brabhsáil grianghraf",
+    "photoBackup": "Cúltaca grianghraf",
+    "files": "Comhaid",
+    "apps": "Aipeanna",
+    "appStore": "App Store",
+    "systemPower": "Atosú agus múchadh",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Cúltaca",
+    "present": "ar fáil",
+    "absent": "níl ar fáil ar an ngléas seo"
+  },
+  "photos": {
+    "title": "Grianghraif",
+    "libraryMissing": "Teastaíonn an modúl Photos don chuardach grianghraf",
+    "libraryMissingHint": "Níl an modúl Photos cláraithe ar an ngléas seo, mar sin níl cuardach séimeantach ná scagairí ar fáil. Oibríonn brabhsáil agus cúltaca mar sin féin.",
+    "backupForegroundOnly": "Ní ritheann an cúltaca ach fad a bhíonn an fhuinneog seo oscailte."
+  },
+  "files": {
+    "title": "Comhaid",
+    "search": "Cuardaigh",
+    "starred": "Ceanáin",
+    "storage": "Stóráil"
+  },
+  "apps": {
+    "title": "Aipeanna",
+    "running": "Ag rith",
+    "stopped": "Stoptha",
+    "cachedAt": "Staid: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Ní féidir pasfhocail a stóráil go sábháilte",
+    "keyringPlaintext": "Ní chuireann an córas seo fáinne eochracha ar fáil ({{backend}}), mar sin stórálfadh Electron na dintiúir le pasfhocal seasta. Níor sábháladh aon rud.",
+    "keyringOk": "Cosnaíonn {{backend}} na dintiúir.",
+    "storeAnyway": "Sábháil mar sin féin",
+    "askEveryTime": "Fiafraigh gach uair",
+    "backendChanged": "Ní féidir an seisiún sábháilte a léamh: tá fáinne eochracha an chórais athraithe. Logáil isteach arís.",
+    "consentGiven": "Ceadaíodh sábháil gan fáinne eochracha ar an ríomhaire seo."
+  },
+  "error": {
+    "refused": "Dhiúltaigh an gléas an ceangal — níl aon rud ag éisteacht ar an bport seo.",
+    "timeout": "Gan freagra ar bith — b’fhéidir go bhfuil balla dóiteáin ag caitheamh an cheangail uaidh.",
+    "dns": "Níorbh fhéidir ainm an óstaigh a réiteach.",
+    "unexpectedStatus": "Freagra gan choinne ón ngléas (HTTP {{status}}).",
+    "malformedResponse": "Fhreagair an gléas i bhfoirm nach dtuigeann an cliant seo.",
+    "unauthorized": "Tá logáil isteach riachtanach nó tá an seisiún imithe in éag.",
+    "forbiddenPath": "Diúltaíonn an gléas an chonair seo (HTTP 400).",
+    "capabilityMissing": "Ní chuireann an gléas seo an ghné riachtanach ar fáil.",
+    "cancelled": "Curtha ar ceal.",
+    "badPort": "Ní féidir an port seo a úsáid.",
+    "internal": "Chuaigh rud éigin amú. Tá na sonraí sa logchomhad.",
+    "invalidCredentials": "Tá an t-ainm úsáideora nó an pasfhocal mícheart.",
+    "parameters": "Dhiúltaigh an gléas an iarratas mar cheann neamhiomlán.",
+    "invalidHost": "Ní seoladh bailí é sin.",
+    "invalidPort": "Ní port bailí é sin.",
+    "notAZimaDevice": "Níor fhreagair aon ghléas ZimaOS ag an seoladh seo.",
+    "sessionExpired": "Tá an seisiún imithe in éag — logáil isteach arís.",
+    "signInRequired": "Logáil isteach, le do thoil.",
+    "strategyUnavailable": "Níl an bealach ceangail seo ar fáil sa leagan seo go fóill."
+  },
+  "common": {
+    "retry": "Bain triail eile as",
+    "cancel": "Cealaigh",
+    "close": "Dún",
+    "theme": "Cuma",
+    "themeSystem": "Córas",
+    "themeLight": "Sorcha",
+    "themeDark": "Dorcha",
+    "version": "Leagan {{version}}"
+  },
+  "signIn": {
+    "title": "Logáil isteach",
+    "host": "Seoladh",
+    "hostPlaceholder": "nas.local nó 192.168.1.100",
+    "username": "Ainm úsáideora",
+    "password": "Pasfhocal",
+    "submit": "Logáil isteach",
+    "submitting": "Ag logáil isteach…",
+    "cancel": "Cealaigh",
+    "signOut": "Logáil amach",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Tá an seisiún bailí ar feadh {{minutes}} nóiméad eile",
+    "notPersisted": "Logáilte isteach, ach níor sábháladh an seisiún — ní mhairfidh sé thar atosú."
+  },
+  "devices": {
+    "title": "Gléasanna",
+    "none": "Níl aon ghléas sábháilte go fóill",
+    "noneHint": "Scan an líonra áitiúil nó cuir seoladh isteach go díreach.",
+    "active": "Gníomhach",
+    "activate": "Aistrigh chuig an ngléas seo",
+    "forget": "Bain",
+    "forgetConfirm": "An mbainfear „{{name}}“ mar aon leis an seisiún sábháilte?",
+    "addresses": "Bealaí ceangail",
+    "priorityUp": "Tosaíocht níos airde",
+    "lastSeen": "Feicthe go deireanach: {{when}}",
+    "resume": "Ceangail arís",
+    "connect": "Ceangail"
+  },
+  "settings": {
+    "language": "Teanga",
+    "unreviewed": "gan athbhreithniú",
+    "reviewed": "athbhreithnithe"
+  }
+}

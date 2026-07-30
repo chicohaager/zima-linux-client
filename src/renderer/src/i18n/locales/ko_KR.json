@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "파일",
+    "photos": "사진",
+    "apps": "앱",
+    "device": "장치"
+  },
+  "device": {
+    "title": "장치",
+    "noneSelected": "연결된 장치가 없습니다",
+    "scan": "로컬 네트워크 검색",
+    "scanning": "검색 중…",
+    "directIp": "IP 주소로 연결",
+    "remoteId": "Remote ID로 연결",
+    "found": "장치 {{count}}대를 찾았습니다",
+    "found_plural": "장치 {{count}}대를 찾았습니다",
+    "nothingAnswered": "이 네트워크에서 응답한 장치가 없습니다",
+    "nothingAnsweredHint": "mDNS는 네트워크 구간 사이에서 자주 차단됩니다. 장치가 없다는 뜻은 아니니 IP 주소를 시도해 보세요.",
+    "connection": {
+      "lan": "로컬 네트워크",
+      "direct": "직접 IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "감지된 기능",
+    "routes": "게이트웨이 경로 {{count}}개"
+  },
+  "capability": {
+    "photoLibrary": "사진 검색 및 패싯",
+    "photoBrowse": "사진 둘러보기",
+    "photoBackup": "사진 백업",
+    "files": "파일",
+    "apps": "앱",
+    "appStore": "App Store",
+    "systemPower": "재시작 및 종료",
+    "zerotier": "Remote ID(ZeroTier)",
+    "backup": "백업",
+    "present": "사용 가능",
+    "absent": "이 장치에서는 사용할 수 없음"
+  },
+  "photos": {
+    "title": "사진",
+    "libraryMissing": "사진 검색에는 Photos 모듈이 필요합니다",
+    "libraryMissingHint": "이 장치에는 Photos 모듈이 등록되지 않아 의미 검색과 패싯을 사용할 수 없습니다. 둘러보기와 백업은 그래도 작동합니다.",
+    "backupForegroundOnly": "백업은 이 창이 열려 있는 동안에만 실행됩니다."
+  },
+  "files": {
+    "title": "파일",
+    "search": "검색",
+    "starred": "즐겨찾기",
+    "storage": "저장소"
+  },
+  "apps": {
+    "title": "앱",
+    "running": "실행 중",
+    "stopped": "중지됨",
+    "cachedAt": "기준: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "비밀번호를 안전하게 저장할 수 없습니다",
+    "keyringPlaintext": "이 시스템에는 키링이 없습니다({{backend}}). 따라서 Electron은 고정된 비밀번호로 자격 증명을 저장하게 됩니다. 아무것도 저장하지 않았습니다.",
+    "keyringOk": "자격 증명은 {{backend}}가 보호합니다.",
+    "storeAnyway": "그래도 저장",
+    "askEveryTime": "매번 묻기",
+    "backendChanged": "저장된 세션을 읽을 수 없습니다. 시스템 키링이 변경되었습니다. 다시 로그인하세요.",
+    "consentGiven": "이 컴퓨터에서는 키링 없이 저장하는 것이 허용되었습니다."
+  },
+  "error": {
+    "refused": "장치가 연결을 거부했습니다. 이 포트에서 대기 중인 것이 없습니다.",
+    "timeout": "응답이 전혀 없습니다. 방화벽이 연결을 버리는 중일 수 있습니다.",
+    "dns": "호스트 이름을 확인할 수 없습니다.",
+    "unexpectedStatus": "장치에서 예상하지 못한 응답(HTTP {{status}}).",
+    "malformedResponse": "장치가 이 클라이언트가 이해하지 못하는 형식으로 응답했습니다.",
+    "unauthorized": "로그인이 필요하거나 세션이 만료되었습니다.",
+    "forbiddenPath": "장치가 이 경로를 거부합니다(HTTP 400).",
+    "capabilityMissing": "이 장치는 필요한 기능을 제공하지 않습니다.",
+    "cancelled": "취소되었습니다.",
+    "badPort": "이 포트는 사용할 수 없습니다.",
+    "internal": "문제가 발생했습니다. 자세한 내용은 로그에 있습니다.",
+    "invalidCredentials": "사용자 이름 또는 비밀번호가 잘못되었습니다.",
+    "parameters": "장치가 요청을 불완전하다고 거부했습니다.",
+    "invalidHost": "유효한 주소가 아닙니다.",
+    "invalidPort": "유효한 포트가 아닙니다.",
+    "notAZimaDevice": "이 주소에서 응답한 ZimaOS 장치가 없습니다.",
+    "sessionExpired": "세션이 만료되었습니다. 다시 로그인하세요.",
+    "signInRequired": "로그인해 주세요.",
+    "strategyUnavailable": "이 연결 경로는 이 빌드에서 아직 사용할 수 없습니다."
+  },
+  "common": {
+    "retry": "다시 시도",
+    "cancel": "취소",
+    "close": "닫기",
+    "theme": "테마",
+    "themeSystem": "시스템",
+    "themeLight": "밝게",
+    "themeDark": "어둡게",
+    "version": "버전 {{version}}"
+  },
+  "signIn": {
+    "title": "로그인",
+    "host": "주소",
+    "hostPlaceholder": "nas.local 또는 192.168.1.100",
+    "username": "사용자 이름",
+    "password": "비밀번호",
+    "submit": "로그인",
+    "submitting": "로그인 중…",
+    "cancel": "취소",
+    "signOut": "로그아웃",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "세션이 {{minutes}}분 더 유효합니다",
+    "notPersisted": "로그인되었지만 세션이 저장되지 않았습니다. 재시작 후에는 남지 않습니다."
+  },
+  "devices": {
+    "title": "장치",
+    "none": "아직 저장된 장치가 없습니다",
+    "noneHint": "로컬 네트워크를 검색하거나 주소를 직접 입력하세요.",
+    "active": "활성",
+    "activate": "이 장치로 전환",
+    "forget": "제거",
+    "forgetConfirm": "‘{{name}}’을(를) 저장된 세션과 함께 제거하시겠습니까?",
+    "addresses": "연결 경로",
+    "priorityUp": "우선순위 올리기",
+    "lastSeen": "마지막 확인: {{when}}",
+    "resume": "다시 연결",
+    "connect": "연결"
+  },
+  "settings": {
+    "language": "언어",
+    "unreviewed": "미검수",
+    "reviewed": "검수됨"
+  }
+}

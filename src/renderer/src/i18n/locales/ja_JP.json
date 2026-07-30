@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "ファイル",
+    "photos": "写真",
+    "apps": "アプリ",
+    "device": "デバイス"
+  },
+  "device": {
+    "title": "デバイス",
+    "noneSelected": "接続されたデバイスはありません",
+    "scan": "ローカルネットワークを検索",
+    "scanning": "検索中…",
+    "directIp": "IP アドレスで接続",
+    "remoteId": "Remote ID で接続",
+    "found": "{{count}} 台のデバイスが見つかりました",
+    "found_plural": "{{count}} 台のデバイスが見つかりました",
+    "nothingAnswered": "このネットワークで応答したデバイスはありません",
+    "nothingAnsweredHint": "mDNS はネットワークセグメント間でしばしば遮断されます。デバイスが存在しないという意味ではありません。IP アドレスをお試しください。",
+    "connection": {
+      "lan": "ローカルネットワーク",
+      "direct": "直接 IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ミリ秒",
+    "capabilities": "検出された機能",
+    "routes": "ゲートウェイのルート {{count}} 件"
+  },
+  "capability": {
+    "photoLibrary": "写真検索とファセット",
+    "photoBrowse": "写真の閲覧",
+    "photoBackup": "写真のバックアップ",
+    "files": "ファイル",
+    "apps": "アプリ",
+    "appStore": "App Store",
+    "systemPower": "再起動とシャットダウン",
+    "zerotier": "Remote ID（ZeroTier）",
+    "backup": "バックアップ",
+    "present": "利用可能",
+    "absent": "このデバイスでは利用できません"
+  },
+  "photos": {
+    "title": "写真",
+    "libraryMissing": "写真検索には Photos モジュールが必要です",
+    "libraryMissingHint": "このデバイスには Photos モジュールが登録されていないため、意味検索とファセットは利用できません。閲覧とバックアップはそれでも動作します。",
+    "backupForegroundOnly": "バックアップはこのウィンドウが開いている間だけ実行されます。"
+  },
+  "files": {
+    "title": "ファイル",
+    "search": "検索",
+    "starred": "お気に入り",
+    "storage": "ストレージ"
+  },
+  "apps": {
+    "title": "アプリ",
+    "running": "実行中",
+    "stopped": "停止中",
+    "cachedAt": "時点: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "パスワードを安全に保存できません",
+    "keyringPlaintext": "このシステムにはキーリングがありません（{{backend}}）。そのため Electron は固定パスワードで資格情報を保存することになります。何も保存していません。",
+    "keyringOk": "資格情報は {{backend}} によって保護されています。",
+    "storeAnyway": "それでも保存",
+    "askEveryTime": "毎回確認する",
+    "backendChanged": "保存されたセッションを読み取れません。システムのキーリングが変更されました。もう一度サインインしてください。",
+    "consentGiven": "このコンピューターではキーリングなしでの保存が許可されています。"
+  },
+  "error": {
+    "refused": "デバイスが接続を拒否しました。このポートでは何も待ち受けていません。",
+    "timeout": "応答がまったくありません。ファイアウォールが接続を破棄している可能性があります。",
+    "dns": "ホスト名を解決できませんでした。",
+    "unexpectedStatus": "デバイスから予期しない応答（HTTP {{status}}）。",
+    "malformedResponse": "デバイスの応答形式をこのクライアントは解釈できません。",
+    "unauthorized": "サインインが必要か、セッションが期限切れです。",
+    "forbiddenPath": "デバイスがこのパスを拒否しています（HTTP 400）。",
+    "capabilityMissing": "このデバイスは必要な機能を提供していません。",
+    "cancelled": "キャンセルしました。",
+    "badPort": "このポートは使用できません。",
+    "internal": "問題が発生しました。詳細はログにあります。",
+    "invalidCredentials": "ユーザー名またはパスワードが違います。",
+    "parameters": "デバイスが不完全なリクエストとして拒否しました。",
+    "invalidHost": "有効なアドレスではありません。",
+    "invalidPort": "有効なポートではありません。",
+    "notAZimaDevice": "このアドレスで応答した ZimaOS デバイスはありません。",
+    "sessionExpired": "セッションが期限切れです。もう一度サインインしてください。",
+    "signInRequired": "サインインしてください。",
+    "strategyUnavailable": "この接続経路はこのビルドではまだ利用できません。"
+  },
+  "common": {
+    "retry": "再試行",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "theme": "外観",
+    "themeSystem": "システム",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "version": "バージョン {{version}}"
+  },
+  "signIn": {
+    "title": "サインイン",
+    "host": "アドレス",
+    "hostPlaceholder": "nas.local または 192.168.1.100",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "submit": "サインイン",
+    "submitting": "サインイン中…",
+    "cancel": "キャンセル",
+    "signOut": "サインアウト",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "セッションは残り {{minutes}} 分有効",
+    "notPersisted": "サインインしましたが、セッションは保存されていません。再起動後は残りません。"
+  },
+  "devices": {
+    "title": "デバイス",
+    "none": "保存されたデバイスはまだありません",
+    "noneHint": "ローカルネットワークを検索するか、アドレスを直接入力してください。",
+    "active": "使用中",
+    "activate": "このデバイスに切り替える",
+    "forget": "削除",
+    "forgetConfirm": "「{{name}}」を保存されたセッションごと削除しますか？",
+    "addresses": "接続経路",
+    "priorityUp": "優先度を上げる",
+    "lastSeen": "最終確認: {{when}}",
+    "resume": "再接続",
+    "connect": "接続"
+  },
+  "settings": {
+    "language": "言語",
+    "unreviewed": "未校閲",
+    "reviewed": "校閲済み"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Fichiers",
+    "photos": "Photos",
+    "apps": "Applications",
+    "device": "Appareil"
+  },
+  "device": {
+    "title": "Appareil",
+    "noneSelected": "Aucun appareil connecté",
+    "scan": "Analyser le réseau local",
+    "scanning": "Analyse en cours…",
+    "directIp": "Se connecter via une adresse IP",
+    "remoteId": "Se connecter via Remote ID",
+    "found": "{{count}} appareil trouvé",
+    "found_plural": "{{count}} appareils trouvés",
+    "nothingAnswered": "Aucun appareil n’a répondu sur ce réseau",
+    "nothingAnsweredHint": "Le mDNS est souvent bloqué entre segments de réseau. Cela ne signifie pas qu’aucun appareil n’existe — essayez l’adresse IP.",
+    "connection": {
+      "lan": "Réseau local",
+      "direct": "IP directe",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Fonctions détectées",
+    "routes": "{{count}} routes de passerelle"
+  },
+  "capability": {
+    "photoLibrary": "Recherche de photos et facettes",
+    "photoBrowse": "Navigation dans les photos",
+    "photoBackup": "Sauvegarde des photos",
+    "files": "Fichiers",
+    "apps": "Applications",
+    "appStore": "App Store",
+    "systemPower": "Redémarrage et arrêt",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Sauvegarde",
+    "present": "disponible",
+    "absent": "non disponible sur cet appareil"
+  },
+  "photos": {
+    "title": "Photos",
+    "libraryMissing": "La recherche de photos nécessite le module Photos",
+    "libraryMissingHint": "Aucun module Photos n’est enregistré sur cet appareil ; la recherche sémantique et les facettes sont donc indisponibles. La navigation et la sauvegarde fonctionnent malgré tout.",
+    "backupForegroundOnly": "La sauvegarde ne fonctionne que si cette fenêtre reste ouverte."
+  },
+  "files": {
+    "title": "Fichiers",
+    "search": "Rechercher",
+    "starred": "Favoris",
+    "storage": "Stockage"
+  },
+  "apps": {
+    "title": "Applications",
+    "running": "En cours",
+    "stopped": "Arrêtée",
+    "cachedAt": "État : {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Les mots de passe ne peuvent pas être stockés en sécurité",
+    "keyringPlaintext": "Ce système ne fournit aucun trousseau ({{backend}}) ; Electron stockerait donc les identifiants avec un mot de passe codé en dur. Rien n’a été enregistré.",
+    "keyringOk": "Les identifiants sont protégés par {{backend}}.",
+    "storeAnyway": "Enregistrer quand même",
+    "askEveryTime": "Demander chaque fois",
+    "backendChanged": "La session enregistrée est illisible : le trousseau du système a changé. Veuillez vous reconnecter.",
+    "consentGiven": "L’enregistrement sans trousseau a été autorisé pour cet ordinateur."
+  },
+  "error": {
+    "refused": "L’appareil a refusé la connexion — rien n’écoute sur ce port.",
+    "timeout": "Aucune réponse — un pare-feu bloque peut-être la connexion.",
+    "dns": "Le nom d’hôte n’a pas pu être résolu.",
+    "unexpectedStatus": "Réponse inattendue de l’appareil (HTTP {{status}}).",
+    "malformedResponse": "L’appareil a répondu dans un format que ce client ne comprend pas.",
+    "unauthorized": "Connexion requise ou session expirée.",
+    "forbiddenPath": "L’appareil refuse ce chemin (HTTP 400).",
+    "capabilityMissing": "Cet appareil n’offre pas la fonction requise.",
+    "cancelled": "Annulé.",
+    "badPort": "Ce port ne peut pas être utilisé.",
+    "internal": "Une erreur est survenue. Les détails sont dans le journal.",
+    "invalidCredentials": "Nom d’utilisateur ou mot de passe incorrect.",
+    "parameters": "L’appareil a rejeté la requête comme incomplète.",
+    "invalidHost": "Ce n’est pas une adresse valide.",
+    "invalidPort": "Ce n’est pas un port valide.",
+    "notAZimaDevice": "Aucun appareil ZimaOS n’a répondu à cette adresse.",
+    "sessionExpired": "La session a expiré — veuillez vous reconnecter.",
+    "signInRequired": "Veuillez vous connecter.",
+    "strategyUnavailable": "Cette voie de connexion n’est pas encore disponible dans cette version."
+  },
+  "common": {
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "theme": "Apparence",
+    "themeSystem": "Système",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "version": "Version {{version}}"
+  },
+  "signIn": {
+    "title": "Connexion",
+    "host": "Adresse",
+    "hostPlaceholder": "nas.local ou 192.168.1.100",
+    "username": "Nom d’utilisateur",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion…",
+    "cancel": "Annuler",
+    "signOut": "Se déconnecter",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Session valable encore {{minutes}} min",
+    "notPersisted": "Connecté, mais la session n’a pas été enregistrée — elle ne survivra pas à un redémarrage."
+  },
+  "devices": {
+    "title": "Appareils",
+    "none": "Aucun appareil enregistré",
+    "noneHint": "Analysez le réseau local ou saisissez directement une adresse.",
+    "active": "Actif",
+    "activate": "Basculer vers cet appareil",
+    "forget": "Supprimer",
+    "forgetConfirm": "Supprimer « {{name}} » ainsi que sa session enregistrée ?",
+    "addresses": "Voies de connexion",
+    "priorityUp": "Priorité plus élevée",
+    "lastSeen": "Vu pour la dernière fois : {{when}}",
+    "resume": "Reconnecter",
+    "connect": "Connecter"
+  },
+  "settings": {
+    "language": "Langue",
+    "unreviewed": "non relu",
+    "reviewed": "relu"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Filer",
+    "photos": "Bilder",
+    "apps": "Apper",
+    "device": "Enhet"
+  },
+  "device": {
+    "title": "Enhet",
+    "noneSelected": "Ingen enhet tilkoblet",
+    "scan": "Søk i lokalnettet",
+    "scanning": "Søker…",
+    "directIp": "Koble til via IP-adresse",
+    "remoteId": "Koble til via Remote ID",
+    "found": "{{count}} enhet funnet",
+    "found_plural": "{{count}} enheter funnet",
+    "nothingAnswered": "Ingen enhet svarte i dette nettverket",
+    "nothingAnsweredHint": "mDNS blokkeres ofte mellom nettverkssegmenter. Det betyr ikke at det ikke finnes noen enhet — prøv IP-adressen.",
+    "connection": {
+      "lan": "Lokalnett",
+      "direct": "Direkte IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Oppdagede funksjoner",
+    "routes": "{{count}} gateway-ruter"
+  },
+  "capability": {
+    "photoLibrary": "Bildesøk og fasetter",
+    "photoBrowse": "Bla i bilder",
+    "photoBackup": "Bildesikkerhetskopi",
+    "files": "Filer",
+    "apps": "Apper",
+    "appStore": "App Store",
+    "systemPower": "Omstart og avslutning",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Sikkerhetskopi",
+    "present": "tilgjengelig",
+    "absent": "ikke tilgjengelig på denne enheten"
+  },
+  "photos": {
+    "title": "Bilder",
+    "libraryMissing": "Bildesøk krever Photos-modulen",
+    "libraryMissingHint": "Denne enheten har ingen registrert Photos-modul, så semantisk søk og fasetter er utilgjengelige. Blaing og sikkerhetskopi fungerer likevel.",
+    "backupForegroundOnly": "Sikkerhetskopien kjører bare så lenge dette vinduet er åpent."
+  },
+  "files": {
+    "title": "Filer",
+    "search": "Søk",
+    "starred": "Favoritter",
+    "storage": "Lagring"
+  },
+  "apps": {
+    "title": "Apper",
+    "running": "Kjører",
+    "stopped": "Stoppet",
+    "cachedAt": "Status: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Passord kan ikke lagres sikkert",
+    "keyringPlaintext": "Dette systemet tilbyr ingen nøkkelring ({{backend}}), så Electron ville lagre påloggingsdata med et fast passord. Ingenting er lagret.",
+    "keyringOk": "Påloggingsdataene beskyttes av {{backend}}.",
+    "storeAnyway": "Lagre likevel",
+    "askEveryTime": "Spør hver gang",
+    "backendChanged": "Den lagrede økten kan ikke leses: systemets nøkkelring er endret. Logg inn igjen.",
+    "consentGiven": "Lagring uten nøkkelring er tillatt på denne maskinen."
+  },
+  "error": {
+    "refused": "Enheten avviste tilkoblingen — ingenting lytter på denne porten.",
+    "timeout": "Ingen svar i det hele tatt — en brannmur kan forkaste tilkoblingen.",
+    "dns": "Vertsnavnet kunne ikke slås opp.",
+    "unexpectedStatus": "Uventet svar fra enheten (HTTP {{status}}).",
+    "malformedResponse": "Enheten svarte i en form denne klienten ikke forstår.",
+    "unauthorized": "Pålogging kreves, eller økten er utløpt.",
+    "forbiddenPath": "Enheten avviser denne banen (HTTP 400).",
+    "capabilityMissing": "Denne enheten tilbyr ikke den nødvendige funksjonen.",
+    "cancelled": "Avbrutt.",
+    "badPort": "Denne porten kan ikke brukes.",
+    "internal": "Noe gikk galt. Detaljene står i loggen.",
+    "invalidCredentials": "Brukernavn eller passord er feil.",
+    "parameters": "Enheten avviste forespørselen som ufullstendig.",
+    "invalidHost": "Det er ikke en gyldig adresse.",
+    "invalidPort": "Det er ikke en gyldig port.",
+    "notAZimaDevice": "Ingen ZimaOS-enhet svarte på denne adressen.",
+    "sessionExpired": "Økten er utløpt — logg inn igjen.",
+    "signInRequired": "Logg inn.",
+    "strategyUnavailable": "Denne tilkoblingsveien er ennå ikke tilgjengelig i denne utgaven."
+  },
+  "common": {
+    "retry": "Prøv igjen",
+    "cancel": "Avbryt",
+    "close": "Lukk",
+    "theme": "Utseende",
+    "themeSystem": "System",
+    "themeLight": "Lyst",
+    "themeDark": "Mørkt",
+    "version": "Versjon {{version}}"
+  },
+  "signIn": {
+    "title": "Logg inn",
+    "host": "Adresse",
+    "hostPlaceholder": "nas.local eller 192.168.1.100",
+    "username": "Brukernavn",
+    "password": "Passord",
+    "submit": "Logg inn",
+    "submitting": "Logger inn…",
+    "cancel": "Avbryt",
+    "signOut": "Logg ut",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Økten er gyldig i {{minutes}} min til",
+    "notPersisted": "Logget inn, men økten ble ikke lagret — den overlever ikke en omstart."
+  },
+  "devices": {
+    "title": "Enheter",
+    "none": "Ingen lagrede enheter ennå",
+    "noneHint": "Søk i lokalnettet, eller skriv inn en adresse direkte.",
+    "active": "Aktiv",
+    "activate": "Bytt til denne enheten",
+    "forget": "Fjern",
+    "forgetConfirm": "Fjerne «{{name}}» inkludert den lagrede økten?",
+    "addresses": "Tilkoblingsveier",
+    "priorityUp": "Høyere prioritet",
+    "lastSeen": "Sist sett: {{when}}",
+    "resume": "Koble til igjen",
+    "connect": "Koble til"
+  },
+  "settings": {
+    "language": "Språk",
+    "unreviewed": "ikke gjennomgått",
+    "reviewed": "gjennomgått"
+  }
+}

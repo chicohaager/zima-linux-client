@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Pliki",
+    "photos": "Zdjęcia",
+    "apps": "Aplikacje",
+    "device": "Urządzenie"
+  },
+  "device": {
+    "title": "Urządzenie",
+    "noneSelected": "Brak połączonego urządzenia",
+    "scan": "Skanuj sieć lokalną",
+    "scanning": "Skanowanie…",
+    "directIp": "Połącz przez adres IP",
+    "remoteId": "Połącz przez Remote ID",
+    "found": "Znaleziono {{count}} urządzenie",
+    "found_plural": "Znaleziono {{count}} urządzeń",
+    "nothingAnswered": "Żadne urządzenie nie odpowiedziało w tej sieci",
+    "nothingAnsweredHint": "mDNS jest często blokowany między segmentami sieci. Nie znaczy to, że urządzenia nie ma — spróbuj adresu IP.",
+    "connection": {
+      "lan": "Sieć lokalna",
+      "direct": "Bezpośrednie IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Wykryte funkcje",
+    "routes": "{{count}} tras bramy"
+  },
+  "capability": {
+    "photoLibrary": "Wyszukiwanie zdjęć i filtry",
+    "photoBrowse": "Przeglądanie zdjęć",
+    "photoBackup": "Kopia zdjęć",
+    "files": "Pliki",
+    "apps": "Aplikacje",
+    "appStore": "App Store",
+    "systemPower": "Restart i wyłączenie",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Kopia zapasowa",
+    "present": "dostępne",
+    "absent": "niedostępne na tym urządzeniu"
+  },
+  "photos": {
+    "title": "Zdjęcia",
+    "libraryMissing": "Wyszukiwanie zdjęć wymaga modułu Photos",
+    "libraryMissingHint": "To urządzenie nie ma zarejestrowanego modułu Photos, więc wyszukiwanie semantyczne i filtry są niedostępne. Przeglądanie i kopia działają mimo to.",
+    "backupForegroundOnly": "Kopia działa tylko wtedy, gdy to okno jest otwarte."
+  },
+  "files": {
+    "title": "Pliki",
+    "search": "Szukaj",
+    "starred": "Ulubione",
+    "storage": "Pamięć"
+  },
+  "apps": {
+    "title": "Aplikacje",
+    "running": "Działa",
+    "stopped": "Zatrzymana",
+    "cachedAt": "Stan: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Haseł nie można bezpiecznie zapisać",
+    "keyringPlaintext": "Ten system nie udostępnia pęku kluczy ({{backend}}), więc Electron zapisałby dane logowania ze stałym hasłem. Nic nie zostało zapisane.",
+    "keyringOk": "Dane logowania są chronione przez {{backend}}.",
+    "storeAnyway": "Zapisz mimo to",
+    "askEveryTime": "Pytaj za każdym razem",
+    "backendChanged": "Zapisanej sesji nie da się odczytać: pęk kluczy systemu się zmienił. Zaloguj się ponownie.",
+    "consentGiven": "Zapisywanie bez pęku kluczy zostało dozwolone na tym komputerze."
+  },
+  "error": {
+    "refused": "Urządzenie odrzuciło połączenie — na tym porcie nic nie nasłuchuje.",
+    "timeout": "Brak jakiejkolwiek odpowiedzi — być może zapora odrzuca połączenie.",
+    "dns": "Nie udało się rozwiązać nazwy hosta.",
+    "unexpectedStatus": "Nieoczekiwana odpowiedź urządzenia (HTTP {{status}}).",
+    "malformedResponse": "Urządzenie odpowiedziało w formie, której ten klient nie rozumie.",
+    "unauthorized": "Wymagane zalogowanie lub sesja wygasła.",
+    "forbiddenPath": "Urządzenie odrzuca tę ścieżkę (HTTP 400).",
+    "capabilityMissing": "To urządzenie nie oferuje wymaganej funkcji.",
+    "cancelled": "Anulowano.",
+    "badPort": "Tego portu nie można użyć.",
+    "internal": "Coś poszło nie tak. Szczegóły są w dzienniku.",
+    "invalidCredentials": "Nazwa użytkownika lub hasło są nieprawidłowe.",
+    "parameters": "Urządzenie odrzuciło żądanie jako niekompletne.",
+    "invalidHost": "To nie jest prawidłowy adres.",
+    "invalidPort": "To nie jest prawidłowy port.",
+    "notAZimaDevice": "Pod tym adresem nie odpowiedziało żadne urządzenie ZimaOS.",
+    "sessionExpired": "Sesja wygasła — zaloguj się ponownie.",
+    "signInRequired": "Zaloguj się.",
+    "strategyUnavailable": "Ta droga połączenia nie jest jeszcze dostępna w tej wersji."
+  },
+  "common": {
+    "retry": "Ponów",
+    "cancel": "Anuluj",
+    "close": "Zamknij",
+    "theme": "Wygląd",
+    "themeSystem": "System",
+    "themeLight": "Jasny",
+    "themeDark": "Ciemny",
+    "version": "Wersja {{version}}"
+  },
+  "signIn": {
+    "title": "Zaloguj się",
+    "host": "Adres",
+    "hostPlaceholder": "nas.local lub 192.168.1.100",
+    "username": "Nazwa użytkownika",
+    "password": "Hasło",
+    "submit": "Zaloguj się",
+    "submitting": "Logowanie…",
+    "cancel": "Anuluj",
+    "signOut": "Wyloguj",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sesja ważna jeszcze {{minutes}} min",
+    "notPersisted": "Zalogowano, ale sesja nie została zapisana — nie przetrwa ponownego uruchomienia."
+  },
+  "devices": {
+    "title": "Urządzenia",
+    "none": "Nie zapisano jeszcze żadnego urządzenia",
+    "noneHint": "Przeskanuj sieć lokalną lub podaj adres bezpośrednio.",
+    "active": "Aktywne",
+    "activate": "Przełącz na to urządzenie",
+    "forget": "Usuń",
+    "forgetConfirm": "Usunąć „{{name}}” wraz z zapisaną sesją?",
+    "addresses": "Drogi połączenia",
+    "priorityUp": "Wyższy priorytet",
+    "lastSeen": "Ostatnio widziane: {{when}}",
+    "resume": "Połącz ponownie",
+    "connect": "Połącz"
+  },
+  "settings": {
+    "language": "Język",
+    "unreviewed": "niesprawdzone",
+    "reviewed": "sprawdzone"
+  }
+}

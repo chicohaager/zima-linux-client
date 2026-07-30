@@ -15,8 +15,12 @@ import { decidePlatform, markStartupSurvived } from '@main/app/resilientPlatform
  */
 
 const createWindow = (): BrowserWindow => {
+  // The verifier drives the layout breakpoint and the theme from the outside, so the
+  // narrow/wide and light/dark screenshots come from the real build rather than from a
+  // resized screenshot or a hand-set CSS class.
+  const forcedWidth = Number(process.env['ZIMA_VERIFY_WIDTH'] ?? '')
   const window = new BrowserWindow({
-    width: 1180,
+    width: Number.isFinite(forcedWidth) && forcedWidth > 0 ? forcedWidth : 1180,
     height: 820,
     minWidth: 420, // narrow layout keeps the mobile bottom-pill navigation
     minHeight: 620,

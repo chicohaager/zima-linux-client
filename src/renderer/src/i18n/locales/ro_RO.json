@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Fișiere",
+    "photos": "Fotografii",
+    "apps": "Aplicații",
+    "device": "Dispozitiv"
+  },
+  "device": {
+    "title": "Dispozitiv",
+    "noneSelected": "Niciun dispozitiv conectat",
+    "scan": "Scanează rețeaua locală",
+    "scanning": "Se scanează…",
+    "directIp": "Conectare prin adresă IP",
+    "remoteId": "Conectare prin Remote ID",
+    "found": "{{count}} dispozitiv găsit",
+    "found_plural": "{{count}} dispozitive găsite",
+    "nothingAnswered": "Niciun dispozitiv nu a răspuns în această rețea",
+    "nothingAnsweredHint": "mDNS este adesea blocat între segmentele de rețea. Asta nu înseamnă că nu există niciun dispozitiv — încearcă adresa IP.",
+    "connection": {
+      "lan": "Rețea locală",
+      "direct": "IP direct",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Funcții detectate",
+    "routes": "{{count}} rute ale gateway-ului"
+  },
+  "capability": {
+    "photoLibrary": "Căutare foto și filtre",
+    "photoBrowse": "Răsfoire foto",
+    "photoBackup": "Copie de siguranță foto",
+    "files": "Fișiere",
+    "apps": "Aplicații",
+    "appStore": "App Store",
+    "systemPower": "Repornire și oprire",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Copie de siguranță",
+    "present": "disponibil",
+    "absent": "indisponibil pe acest dispozitiv"
+  },
+  "photos": {
+    "title": "Fotografii",
+    "libraryMissing": "Căutarea foto necesită modulul Photos",
+    "libraryMissingHint": "Pe acest dispozitiv nu este înregistrat modulul Photos, deci căutarea semantică și filtrele nu sunt disponibile. Răsfoirea și copia de siguranță funcționează oricum.",
+    "backupForegroundOnly": "Copierea rulează doar cât timp această fereastră este deschisă."
+  },
+  "files": {
+    "title": "Fișiere",
+    "search": "Caută",
+    "starred": "Favorite",
+    "storage": "Stocare"
+  },
+  "apps": {
+    "title": "Aplicații",
+    "running": "În execuție",
+    "stopped": "Oprită",
+    "cachedAt": "Stare: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Parolele nu pot fi stocate în siguranță",
+    "keyringPlaintext": "Acest sistem nu oferă un inel de chei ({{backend}}), deci Electron ar stoca datele de acces cu o parolă fixă. Nu s-a salvat nimic.",
+    "keyringOk": "Datele de acces sunt protejate de {{backend}}.",
+    "storeAnyway": "Salvează oricum",
+    "askEveryTime": "Întreabă de fiecare dată",
+    "backendChanged": "Sesiunea salvată nu poate fi citită: inelul de chei al sistemului s-a schimbat. Autentifică-te din nou.",
+    "consentGiven": "Salvarea fără inel de chei a fost permisă pe acest calculator."
+  },
+  "error": {
+    "refused": "Dispozitivul a refuzat conexiunea — nimic nu ascultă pe acest port.",
+    "timeout": "Niciun răspuns — poate un firewall respinge conexiunea.",
+    "dns": "Numele gazdei nu a putut fi rezolvat.",
+    "unexpectedStatus": "Răspuns neașteptat de la dispozitiv (HTTP {{status}}).",
+    "malformedResponse": "Dispozitivul a răspuns într-o formă pe care acest client nu o înțelege.",
+    "unauthorized": "Este necesară autentificarea sau sesiunea a expirat.",
+    "forbiddenPath": "Dispozitivul refuză această cale (HTTP 400).",
+    "capabilityMissing": "Acest dispozitiv nu oferă funcția necesară.",
+    "cancelled": "Anulat.",
+    "badPort": "Acest port nu poate fi folosit.",
+    "internal": "Ceva a mers prost. Detaliile sunt în jurnal.",
+    "invalidCredentials": "Numele de utilizator sau parola sunt greșite.",
+    "parameters": "Dispozitivul a respins cererea ca incompletă.",
+    "invalidHost": "Aceasta nu este o adresă valabilă.",
+    "invalidPort": "Acesta nu este un port valabil.",
+    "notAZimaDevice": "Niciun dispozitiv ZimaOS nu a răspuns la această adresă.",
+    "sessionExpired": "Sesiunea a expirat — autentifică-te din nou.",
+    "signInRequired": "Te rugăm să te autentifici.",
+    "strategyUnavailable": "Această cale de conectare nu este încă disponibilă în această versiune."
+  },
+  "common": {
+    "retry": "Reîncearcă",
+    "cancel": "Anulează",
+    "close": "Închide",
+    "theme": "Aspect",
+    "themeSystem": "Sistem",
+    "themeLight": "Luminos",
+    "themeDark": "Întunecat",
+    "version": "Versiunea {{version}}"
+  },
+  "signIn": {
+    "title": "Autentificare",
+    "host": "Adresă",
+    "hostPlaceholder": "nas.local sau 192.168.1.100",
+    "username": "Nume de utilizator",
+    "password": "Parolă",
+    "submit": "Autentificare",
+    "submitting": "Se autentifică…",
+    "cancel": "Anulează",
+    "signOut": "Deconectare",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sesiunea este valabilă încă {{minutes}} min",
+    "notPersisted": "Autentificat, dar sesiunea nu a fost salvată — nu va supraviețui unei reporniri."
+  },
+  "devices": {
+    "title": "Dispozitive",
+    "none": "Niciun dispozitiv salvat încă",
+    "noneHint": "Scanează rețeaua locală sau introdu direct o adresă.",
+    "active": "Activ",
+    "activate": "Comută pe acest dispozitiv",
+    "forget": "Elimină",
+    "forgetConfirm": "Elimini „{{name}}” împreună cu sesiunea salvată?",
+    "addresses": "Căi de conectare",
+    "priorityUp": "Prioritate mai mare",
+    "lastSeen": "Văzut ultima dată: {{when}}",
+    "resume": "Reconectează",
+    "connect": "Conectează"
+  },
+  "settings": {
+    "language": "Limbă",
+    "unreviewed": "neverificat",
+    "reviewed": "verificat"
+  }
+}

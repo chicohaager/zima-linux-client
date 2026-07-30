@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "文件",
+    "photos": "照片",
+    "apps": "应用",
+    "device": "设备"
+  },
+  "device": {
+    "title": "设备",
+    "noneSelected": "未连接设备",
+    "scan": "扫描本地网络",
+    "scanning": "正在扫描…",
+    "directIp": "通过 IP 地址连接",
+    "remoteId": "通过 Remote ID 连接",
+    "found": "找到 {{count}} 台设备",
+    "found_plural": "找到 {{count}} 台设备",
+    "nothingAnswered": "此网络中没有设备响应",
+    "nothingAnsweredHint": "mDNS 常在网段之间被阻断。这并不表示没有设备——请尝试使用 IP 地址。",
+    "connection": {
+      "lan": "本地网络",
+      "direct": "直连 IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} 毫秒",
+    "capabilities": "检测到的功能",
+    "routes": "{{count}} 条网关路由"
+  },
+  "capability": {
+    "photoLibrary": "照片搜索与分面",
+    "photoBrowse": "浏览照片",
+    "photoBackup": "照片备份",
+    "files": "文件",
+    "apps": "应用",
+    "appStore": "应用商店",
+    "systemPower": "重启与关机",
+    "zerotier": "Remote ID（ZeroTier）",
+    "backup": "备份",
+    "present": "可用",
+    "absent": "此设备不支持"
+  },
+  "photos": {
+    "title": "照片",
+    "libraryMissing": "照片搜索需要 Photos 模块",
+    "libraryMissingHint": "此设备未注册 Photos 模块，因此语义搜索和分面不可用。浏览和备份仍然可以使用。",
+    "backupForegroundOnly": "备份仅在此窗口打开时运行。"
+  },
+  "files": {
+    "title": "文件",
+    "search": "搜索",
+    "starred": "收藏",
+    "storage": "存储"
+  },
+  "apps": {
+    "title": "应用",
+    "running": "运行中",
+    "stopped": "已停止",
+    "cachedAt": "截至 {{time}}"
+  },
+  "security": {
+    "keyringTitle": "无法安全保存密码",
+    "keyringPlaintext": "本系统未提供密钥环（{{backend}}），Electron 将使用固定密码保存凭据。已保存的内容为空。",
+    "keyringOk": "凭据由 {{backend}} 保护。",
+    "storeAnyway": "仍然保存",
+    "askEveryTime": "每次询问",
+    "backendChanged": "无法读取已保存的会话：系统密钥环已更改。请重新登录。",
+    "consentGiven": "已允许在这台计算机上不使用密钥环保存。"
+  },
+  "error": {
+    "refused": "设备拒绝了连接——此端口上没有任何服务在监听。",
+    "timeout": "完全没有响应——可能有防火墙丢弃了连接。",
+    "dns": "无法解析主机名。",
+    "unexpectedStatus": "设备返回了意外响应（HTTP {{status}}）。",
+    "malformedResponse": "设备的响应格式此客户端无法理解。",
+    "unauthorized": "需要登录或会话已过期。",
+    "forbiddenPath": "设备拒绝此路径（HTTP 400）。",
+    "capabilityMissing": "此设备不提供所需功能。",
+    "cancelled": "已取消。",
+    "badPort": "此端口不可用。",
+    "internal": "出了点问题。详情见日志。",
+    "invalidCredentials": "用户名或密码错误。",
+    "parameters": "设备以请求不完整为由拒绝。",
+    "invalidHost": "这不是有效地址。",
+    "invalidPort": "这不是有效端口。",
+    "notAZimaDevice": "此地址上没有 ZimaOS 设备响应。",
+    "sessionExpired": "会话已过期——请重新登录。",
+    "signInRequired": "请登录。",
+    "strategyUnavailable": "此连接方式在当前版本中尚不可用。"
+  },
+  "common": {
+    "retry": "重试",
+    "cancel": "取消",
+    "close": "关闭",
+    "theme": "外观",
+    "themeSystem": "跟随系统",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "version": "版本 {{version}}"
+  },
+  "signIn": {
+    "title": "登录",
+    "host": "地址",
+    "hostPlaceholder": "nas.local 或 192.168.1.100",
+    "username": "用户名",
+    "password": "密码",
+    "submit": "登录",
+    "submitting": "正在登录…",
+    "cancel": "取消",
+    "signOut": "退出登录",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "会话还有 {{minutes}} 分钟有效",
+    "notPersisted": "已登录，但会话未保存——重启后不会保留。"
+  },
+  "devices": {
+    "title": "设备",
+    "none": "还没有保存的设备",
+    "noneHint": "扫描本地网络，或直接输入地址。",
+    "active": "当前",
+    "activate": "切换到此设备",
+    "forget": "移除",
+    "forgetConfirm": "移除“{{name}}”并删除其已保存的会话？",
+    "addresses": "连接方式",
+    "priorityUp": "提高优先级",
+    "lastSeen": "最后一次看到：{{when}}",
+    "resume": "重新连接",
+    "connect": "连接"
+  },
+  "settings": {
+    "language": "语言",
+    "unreviewed": "未校对",
+    "reviewed": "已校对"
+  }
+}

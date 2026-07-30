@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Datoteke",
+    "photos": "Fotografije",
+    "apps": "Aplikacije",
+    "device": "Uređaj"
+  },
+  "device": {
+    "title": "Uređaj",
+    "noneSelected": "Nema povezanog uređaja",
+    "scan": "Pretraži lokalnu mrežu",
+    "scanning": "Pretraživanje…",
+    "directIp": "Poveži se putem IP adrese",
+    "remoteId": "Poveži se putem Remote ID-a",
+    "found": "Pronađen {{count}} uređaj",
+    "found_plural": "Pronađeno uređaja: {{count}}",
+    "nothingAnswered": "Nijedan uređaj nije odgovorio u ovoj mreži",
+    "nothingAnsweredHint": "mDNS se često blokira između mrežnih segmenata. To ne znači da uređaja nema — pokušajte s IP adresom.",
+    "connection": {
+      "lan": "Lokalna mreža",
+      "direct": "Direktni IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Otkrivene funkcije",
+    "routes": "{{count}} ruta pristupnika"
+  },
+  "capability": {
+    "photoLibrary": "Pretraga fotografija i filtri",
+    "photoBrowse": "Pregled fotografija",
+    "photoBackup": "Sigurnosna kopija fotografija",
+    "files": "Datoteke",
+    "apps": "Aplikacije",
+    "appStore": "App Store",
+    "systemPower": "Ponovno pokretanje i isključivanje",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Sigurnosna kopija",
+    "present": "dostupno",
+    "absent": "nije dostupno na ovom uređaju"
+  },
+  "photos": {
+    "title": "Fotografije",
+    "libraryMissing": "Pretraga fotografija zahtijeva modul Photos",
+    "libraryMissingHint": "Na ovom uređaju modul Photos nije registriran, pa semantička pretraga i filtri nisu dostupni. Pregled i sigurnosna kopija ipak rade.",
+    "backupForegroundOnly": "Sigurnosna kopija radi samo dok je ovaj prozor otvoren."
+  },
+  "files": {
+    "title": "Datoteke",
+    "search": "Traži",
+    "starred": "Favoriti",
+    "storage": "Pohrana"
+  },
+  "apps": {
+    "title": "Aplikacije",
+    "running": "Radi",
+    "stopped": "Zaustavljeno",
+    "cachedAt": "Stanje: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Zaporke nije moguće sigurno pohraniti",
+    "keyringPlaintext": "Ovaj sustav ne nudi privjesak za ključeve ({{backend}}), pa bi Electron pohranio podatke za prijavu s fiksnom zaporkom. Ništa nije pohranjeno.",
+    "keyringOk": "Podatke za prijavu štiti {{backend}}.",
+    "storeAnyway": "Ipak pohrani",
+    "askEveryTime": "Pitaj svaki put",
+    "backendChanged": "Pohranjena sesija nije čitljiva: privjesak za ključeve sustava se promijenio. Prijavite se ponovno.",
+    "consentGiven": "Pohrana bez privjeska za ključeve dopuštena je na ovom računalu."
+  },
+  "error": {
+    "refused": "Uređaj je odbio vezu — na ovom priključku ništa ne sluša.",
+    "timeout": "Nema nikakvog odgovora — možda vatrozid odbacuje vezu.",
+    "dns": "Naziv računala nije bilo moguće razriješiti.",
+    "unexpectedStatus": "Neočekivan odgovor uređaja (HTTP {{status}}).",
+    "malformedResponse": "Uređaj je odgovorio u obliku koji ovaj klijent ne razumije.",
+    "unauthorized": "Potrebna je prijava ili je sesija istekla.",
+    "forbiddenPath": "Uređaj odbija ovu putanju (HTTP 400).",
+    "capabilityMissing": "Ovaj uređaj ne nudi potrebnu funkciju.",
+    "cancelled": "Otkazano.",
+    "badPort": "Ovaj priključak nije moguće koristiti.",
+    "internal": "Nešto je pošlo po zlu. Detalji su u zapisniku.",
+    "invalidCredentials": "Korisničko ime ili zaporka nisu točni.",
+    "parameters": "Uređaj je odbio zahtjev kao nepotpun.",
+    "invalidHost": "To nije važeća adresa.",
+    "invalidPort": "To nije važeći priključak.",
+    "notAZimaDevice": "Na ovoj adresi nije odgovorio nijedan ZimaOS uređaj.",
+    "sessionExpired": "Sesija je istekla — prijavite se ponovno.",
+    "signInRequired": "Prijavite se.",
+    "strategyUnavailable": "Ovaj način povezivanja u ovoj verziji još nije dostupan."
+  },
+  "common": {
+    "retry": "Pokušaj ponovno",
+    "cancel": "Otkaži",
+    "close": "Zatvori",
+    "theme": "Izgled",
+    "themeSystem": "Sustav",
+    "themeLight": "Svijetlo",
+    "themeDark": "Tamno",
+    "version": "Verzija {{version}}"
+  },
+  "signIn": {
+    "title": "Prijava",
+    "host": "Adresa",
+    "hostPlaceholder": "nas.local ili 192.168.1.100",
+    "username": "Korisničko ime",
+    "password": "Zaporka",
+    "submit": "Prijavi se",
+    "submitting": "Prijava…",
+    "cancel": "Otkaži",
+    "signOut": "Odjavi se",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sesija vrijedi još {{minutes}} min",
+    "notPersisted": "Prijavljeni ste, ali sesija nije pohranjena — neće preživjeti ponovno pokretanje."
+  },
+  "devices": {
+    "title": "Uređaji",
+    "none": "Još nema pohranjenih uređaja",
+    "noneHint": "Pretražite lokalnu mrežu ili unesite adresu izravno.",
+    "active": "Aktivno",
+    "activate": "Prebaci na ovaj uređaj",
+    "forget": "Ukloni",
+    "forgetConfirm": "Ukloniti „{{name}}“ zajedno s pohranjenom sesijom?",
+    "addresses": "Načini povezivanja",
+    "priorityUp": "Viši prioritet",
+    "lastSeen": "Zadnje viđeno: {{when}}",
+    "resume": "Ponovno poveži",
+    "connect": "Poveži"
+  },
+  "settings": {
+    "language": "Jezik",
+    "unreviewed": "neprovjereno",
+    "reviewed": "provjereno"
+  }
+}

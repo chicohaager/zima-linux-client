@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "檔案",
+    "photos": "照片",
+    "apps": "應用程式",
+    "device": "裝置"
+  },
+  "device": {
+    "title": "裝置",
+    "noneSelected": "未連線任何裝置",
+    "scan": "掃描本機網路",
+    "scanning": "掃描中…",
+    "directIp": "透過 IP 位址連線",
+    "remoteId": "透過 Remote ID 連線",
+    "found": "找到 {{count}} 台裝置",
+    "found_plural": "找到 {{count}} 台裝置",
+    "nothingAnswered": "此網路中沒有裝置回應",
+    "nothingAnsweredHint": "mDNS 常在網段之間被封鎖。這不代表沒有裝置——請改用 IP 位址。",
+    "connection": {
+      "lan": "本機網路",
+      "direct": "直接 IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} 毫秒",
+    "capabilities": "偵測到的功能",
+    "routes": "{{count}} 條閘道路由"
+  },
+  "capability": {
+    "photoLibrary": "照片搜尋與分面",
+    "photoBrowse": "瀏覽照片",
+    "photoBackup": "照片備份",
+    "files": "檔案",
+    "apps": "應用程式",
+    "appStore": "App Store",
+    "systemPower": "重新啟動與關機",
+    "zerotier": "Remote ID（ZeroTier）",
+    "backup": "備份",
+    "present": "可用",
+    "absent": "此裝置不支援"
+  },
+  "photos": {
+    "title": "照片",
+    "libraryMissing": "照片搜尋需要 Photos 模組",
+    "libraryMissingHint": "此裝置未註冊 Photos 模組，因此語意搜尋與分面無法使用。瀏覽與備份仍然可用。",
+    "backupForegroundOnly": "備份僅在此視窗開啟時執行。"
+  },
+  "files": {
+    "title": "檔案",
+    "search": "搜尋",
+    "starred": "收藏",
+    "storage": "儲存空間"
+  },
+  "apps": {
+    "title": "應用程式",
+    "running": "執行中",
+    "stopped": "已停止",
+    "cachedAt": "截至 {{time}}"
+  },
+  "security": {
+    "keyringTitle": "無法安全儲存密碼",
+    "keyringPlaintext": "本系統未提供金鑰環（{{backend}}），Electron 會以固定密碼儲存憑證。目前尚未儲存任何內容。",
+    "keyringOk": "憑證由 {{backend}} 保護。",
+    "storeAnyway": "仍然儲存",
+    "askEveryTime": "每次詢問",
+    "backendChanged": "無法讀取已儲存的工作階段：系統金鑰環已變更。請重新登入。",
+    "consentGiven": "已允許在這台電腦上不使用金鑰環儲存。"
+  },
+  "error": {
+    "refused": "裝置拒絕連線——此連接埠沒有服務在監聽。",
+    "timeout": "完全沒有回應——可能有防火牆丟棄連線。",
+    "dns": "無法解析主機名稱。",
+    "unexpectedStatus": "裝置傳回未預期的回應（HTTP {{status}}）。",
+    "malformedResponse": "裝置的回應格式此用戶端無法理解。",
+    "unauthorized": "需要登入或工作階段已過期。",
+    "forbiddenPath": "裝置拒絕此路徑（HTTP 400）。",
+    "capabilityMissing": "此裝置未提供所需功能。",
+    "cancelled": "已取消。",
+    "badPort": "此連接埠無法使用。",
+    "internal": "發生問題。詳情請見記錄。",
+    "invalidCredentials": "使用者名稱或密碼錯誤。",
+    "parameters": "裝置以請求不完整為由拒絕。",
+    "invalidHost": "這不是有效的位址。",
+    "invalidPort": "這不是有效的連接埠。",
+    "notAZimaDevice": "此位址上沒有 ZimaOS 裝置回應。",
+    "sessionExpired": "工作階段已過期——請重新登入。",
+    "signInRequired": "請登入。",
+    "strategyUnavailable": "此連線方式在目前版本中尚未提供。"
+  },
+  "common": {
+    "retry": "重試",
+    "cancel": "取消",
+    "close": "關閉",
+    "theme": "外觀",
+    "themeSystem": "跟隨系統",
+    "themeLight": "淺色",
+    "themeDark": "深色",
+    "version": "版本 {{version}}"
+  },
+  "signIn": {
+    "title": "登入",
+    "host": "位址",
+    "hostPlaceholder": "nas.local 或 192.168.1.100",
+    "username": "使用者名稱",
+    "password": "密碼",
+    "submit": "登入",
+    "submitting": "正在登入…",
+    "cancel": "取消",
+    "signOut": "登出",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "工作階段還有 {{minutes}} 分鐘有效",
+    "notPersisted": "已登入，但工作階段未儲存——重新啟動後不會保留。"
+  },
+  "devices": {
+    "title": "裝置",
+    "none": "尚未儲存任何裝置",
+    "noneHint": "掃描本機網路，或直接輸入位址。",
+    "active": "使用中",
+    "activate": "切換到此裝置",
+    "forget": "移除",
+    "forgetConfirm": "要移除「{{name}}」並刪除其已儲存的工作階段嗎？",
+    "addresses": "連線方式",
+    "priorityUp": "提高優先順序",
+    "lastSeen": "最後一次看到：{{when}}",
+    "resume": "重新連線",
+    "connect": "連線"
+  },
+  "settings": {
+    "language": "語言",
+    "unreviewed": "未校閱",
+    "reviewed": "已校閱"
+  }
+}

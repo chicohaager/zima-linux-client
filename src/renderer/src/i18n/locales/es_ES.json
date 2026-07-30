@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Archivos",
+    "photos": "Fotos",
+    "apps": "Aplicaciones",
+    "device": "Dispositivo"
+  },
+  "device": {
+    "title": "Dispositivo",
+    "noneSelected": "Ningún dispositivo conectado",
+    "scan": "Buscar en la red local",
+    "scanning": "Buscando…",
+    "directIp": "Conectar mediante dirección IP",
+    "remoteId": "Conectar mediante Remote ID",
+    "found": "{{count}} dispositivo encontrado",
+    "found_plural": "{{count}} dispositivos encontrados",
+    "nothingAnswered": "Ningún dispositivo respondió en esta red",
+    "nothingAnsweredHint": "mDNS suele estar bloqueado entre segmentos de red. Eso no significa que no haya ningún dispositivo: prueba con la dirección IP.",
+    "connection": {
+      "lan": "Red local",
+      "direct": "IP directa",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Funciones detectadas",
+    "routes": "{{count}} rutas de pasarela"
+  },
+  "capability": {
+    "photoLibrary": "Búsqueda de fotos y facetas",
+    "photoBrowse": "Explorar fotos",
+    "photoBackup": "Copia de fotos",
+    "files": "Archivos",
+    "apps": "Aplicaciones",
+    "appStore": "App Store",
+    "systemPower": "Reiniciar y apagar",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Copia de seguridad",
+    "present": "disponible",
+    "absent": "no disponible en este dispositivo"
+  },
+  "photos": {
+    "title": "Fotos",
+    "libraryMissing": "La búsqueda de fotos necesita el módulo Photos",
+    "libraryMissingHint": "Este dispositivo no tiene registrado el módulo Photos, por lo que la búsqueda semántica y las facetas no están disponibles. Explorar y copiar funcionan igualmente.",
+    "backupForegroundOnly": "La copia solo se ejecuta mientras esta ventana esté abierta."
+  },
+  "files": {
+    "title": "Archivos",
+    "search": "Buscar",
+    "starred": "Favoritos",
+    "storage": "Almacenamiento"
+  },
+  "apps": {
+    "title": "Aplicaciones",
+    "running": "En ejecución",
+    "stopped": "Detenida",
+    "cachedAt": "Estado: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Las contraseñas no se pueden guardar de forma segura",
+    "keyringPlaintext": "Este sistema no ofrece ningún llavero ({{backend}}), por lo que Electron guardaría las credenciales con una contraseña fija. No se ha guardado nada.",
+    "keyringOk": "Las credenciales están protegidas por {{backend}}.",
+    "storeAnyway": "Guardar de todos modos",
+    "askEveryTime": "Preguntar cada vez",
+    "backendChanged": "La sesión guardada no se puede leer: el llavero del sistema ha cambiado. Inicia sesión de nuevo.",
+    "consentGiven": "Se ha permitido guardar sin llavero en este equipo."
+  },
+  "error": {
+    "refused": "El dispositivo rechazó la conexión: nada escucha en ese puerto.",
+    "timeout": "Ninguna respuesta: puede que un cortafuegos esté descartando la conexión.",
+    "dns": "No se pudo resolver el nombre de host.",
+    "unexpectedStatus": "Respuesta inesperada del dispositivo (HTTP {{status}}).",
+    "malformedResponse": "El dispositivo respondió en un formato que este cliente no entiende.",
+    "unauthorized": "Se requiere iniciar sesión o la sesión ha caducado.",
+    "forbiddenPath": "El dispositivo rechaza esta ruta (HTTP 400).",
+    "capabilityMissing": "Este dispositivo no ofrece la función necesaria.",
+    "cancelled": "Cancelado.",
+    "badPort": "Este puerto no se puede usar.",
+    "internal": "Algo ha fallado. Los detalles están en el registro.",
+    "invalidCredentials": "El nombre de usuario o la contraseña son incorrectos.",
+    "parameters": "El dispositivo rechazó la solicitud por estar incompleta.",
+    "invalidHost": "Esa no es una dirección válida.",
+    "invalidPort": "Ese no es un puerto válido.",
+    "notAZimaDevice": "Ningún dispositivo ZimaOS respondió en esta dirección.",
+    "sessionExpired": "La sesión ha caducado: inicia sesión de nuevo.",
+    "signInRequired": "Inicia sesión.",
+    "strategyUnavailable": "Esta vía de conexión aún no está disponible en esta versión."
+  },
+  "common": {
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "theme": "Apariencia",
+    "themeSystem": "Sistema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "version": "Versión {{version}}"
+  },
+  "signIn": {
+    "title": "Iniciar sesión",
+    "host": "Dirección",
+    "hostPlaceholder": "nas.local o 192.168.1.100",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "submit": "Iniciar sesión",
+    "submitting": "Iniciando sesión…",
+    "cancel": "Cancelar",
+    "signOut": "Cerrar sesión",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sesión válida {{minutes}} min más",
+    "notPersisted": "Sesión iniciada, pero no se guardó: no sobrevivirá a un reinicio."
+  },
+  "devices": {
+    "title": "Dispositivos",
+    "none": "Todavía no hay dispositivos guardados",
+    "noneHint": "Busca en la red local o introduce una dirección directamente.",
+    "active": "Activo",
+    "activate": "Cambiar a este dispositivo",
+    "forget": "Quitar",
+    "forgetConfirm": "¿Quitar «{{name}}» junto con su sesión guardada?",
+    "addresses": "Vías de conexión",
+    "priorityUp": "Mayor prioridad",
+    "lastSeen": "Visto por última vez: {{when}}",
+    "resume": "Reconectar",
+    "connect": "Conectar"
+  },
+  "settings": {
+    "language": "Idioma",
+    "unreviewed": "sin revisar",
+    "reviewed": "revisado"
+  }
+}

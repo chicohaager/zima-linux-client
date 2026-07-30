@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Súbory",
+    "photos": "Fotky",
+    "apps": "Aplikácie",
+    "device": "Zariadenie"
+  },
+  "device": {
+    "title": "Zariadenie",
+    "noneSelected": "Žiadne pripojené zariadenie",
+    "scan": "Prehľadať miestnu sieť",
+    "scanning": "Hľadanie…",
+    "directIp": "Pripojiť cez IP adresu",
+    "remoteId": "Pripojiť cez Remote ID",
+    "found": "Nájdené {{count}} zariadenie",
+    "found_plural": "Nájdených zariadení: {{count}}",
+    "nothingAnswered": "V tejto sieti neodpovedalo žiadne zariadenie",
+    "nothingAnsweredHint": "mDNS je medzi segmentmi siete často blokovaný. Neznamená to, že zariadenie neexistuje — vyskúšajte IP adresu.",
+    "connection": {
+      "lan": "Miestna sieť",
+      "direct": "Priama IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Zistené funkcie",
+    "routes": "{{count}} ciest brány"
+  },
+  "capability": {
+    "photoLibrary": "Hľadanie fotiek a filtre",
+    "photoBrowse": "Prehliadanie fotiek",
+    "photoBackup": "Záloha fotiek",
+    "files": "Súbory",
+    "apps": "Aplikácie",
+    "appStore": "App Store",
+    "systemPower": "Restart a vypnutie",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Záloha",
+    "present": "dostupné",
+    "absent": "na tomto zariadení nedostupné"
+  },
+  "photos": {
+    "title": "Fotky",
+    "libraryMissing": "Hľadanie fotiek potrebuje modul Photos",
+    "libraryMissingHint": "Na tomto zariadení nie je registrovaný modul Photos, preto nie je dostupné sémantické hľadanie ani filtre. Prehliadanie a záloha fungujú aj tak.",
+    "backupForegroundOnly": "Záloha beží iba vtedy, keď je toto okno otvorené."
+  },
+  "files": {
+    "title": "Súbory",
+    "search": "Hľadať",
+    "starred": "Obľúbené",
+    "storage": "Úložisko"
+  },
+  "apps": {
+    "title": "Aplikácie",
+    "running": "Beží",
+    "stopped": "Zastavené",
+    "cachedAt": "Stav: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Heslá nie je možné bezpečne uložiť",
+    "keyringPlaintext": "Tento systém neposkytuje kľúčenku ({{backend}}), takže by Electron uložil prihlasovacie údaje s pevným heslom. Nič nebolo uložené.",
+    "keyringOk": "Prihlasovacie údaje chráni {{backend}}.",
+    "storeAnyway": "Aj tak uložiť",
+    "askEveryTime": "Vždy sa opýtať",
+    "backendChanged": "Uložená sesia sa nedá prečítať: kľúčenka systému sa zmenila. Prihláste sa znova.",
+    "consentGiven": "Ukladanie bez kľúčenky bolo pre tento počítač povolené."
+  },
+  "error": {
+    "refused": "Zariadenie odmietlo pripojenie — na tomto porte nič nepočúva.",
+    "timeout": "Žiadna odpoveď — možno firewall spojenie zahadzuje.",
+    "dns": "Názov hostiteľa sa nedal preložiť.",
+    "unexpectedStatus": "Neočekávaná odpoveď zariadenia (HTTP {{status}}).",
+    "malformedResponse": "Zariadenie odpovedalo vo forme, ktorú tento klient nerozumie.",
+    "unauthorized": "Vyžaduje sa prihlásenie alebo sesia vypršala.",
+    "forbiddenPath": "Zariadenie túto cestu odmieta (HTTP 400).",
+    "capabilityMissing": "Toto zariadenie požadovanú funkciu neponúka.",
+    "cancelled": "Zrušené.",
+    "badPort": "Tento port sa nedá použiť.",
+    "internal": "Niečo sa pokazilo. Podrobnosti sú v protokole.",
+    "invalidCredentials": "Používateľské meno alebo heslo je nesprávne.",
+    "parameters": "Zariadenie odmietlo požiadavku ako neúplnú.",
+    "invalidHost": "To nie je platná adresa.",
+    "invalidPort": "To nie je platný port.",
+    "notAZimaDevice": "Na tejto adrese neodpovedalo žiadne zariadenie ZimaOS.",
+    "sessionExpired": "Sesia vypršala — prihláste sa znova.",
+    "signInRequired": "Prihláste sa.",
+    "strategyUnavailable": "Táto cesta pripojenia v tejto verzii ešte nie je dostupná."
+  },
+  "common": {
+    "retry": "Skúsiť znova",
+    "cancel": "Zrušiť",
+    "close": "Zavrieť",
+    "theme": "Vzhľad",
+    "themeSystem": "Systém",
+    "themeLight": "Svetlý",
+    "themeDark": "Tmavý",
+    "version": "Verzia {{version}}"
+  },
+  "signIn": {
+    "title": "Prihlásenie",
+    "host": "Adresa",
+    "hostPlaceholder": "nas.local alebo 192.168.1.100",
+    "username": "Používateľské meno",
+    "password": "Heslo",
+    "submit": "Prihlásiť sa",
+    "submitting": "Prihlasovanie…",
+    "cancel": "Zrušiť",
+    "signOut": "Odhlásiť sa",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sesia platí ešte {{minutes}} min",
+    "notPersisted": "Prihlásené, ale sesia nebola uložená — neprežije restart."
+  },
+  "devices": {
+    "title": "Zariadenia",
+    "none": "Zatiaľ žiadne uložené zariadenie",
+    "noneHint": "Prehľadajte miestnu sieť alebo zadajte adresu priamo.",
+    "active": "Aktívne",
+    "activate": "Prepnúť na toto zariadenie",
+    "forget": "Odobrať",
+    "forgetConfirm": "Odobrať „{{name}}“ vrátane uloženej sesie?",
+    "addresses": "Cesty pripojenia",
+    "priorityUp": "Vyššia priorita",
+    "lastSeen": "Naposledy videné: {{when}}",
+    "resume": "Znova pripojiť",
+    "connect": "Pripojiť"
+  },
+  "settings": {
+    "language": "Jazyk",
+    "unreviewed": "neskontrolované",
+    "reviewed": "skontrolované"
+  }
+}

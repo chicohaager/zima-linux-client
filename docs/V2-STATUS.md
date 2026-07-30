@@ -143,13 +143,81 @@ Das prüft die ganze Kette: Formular → IPC → HTTP → Hüllen-Auswertung →
 Benutzt wurde ein **nicht existierender** Benutzername, damit kein echtes Konto Fehlversuche
 sammelt. **Der Erfolgsfall ist damit nicht belegt** — dafür braucht es ein Testkonto (siehe unten).
 
+## Phase 3 — Design-System: läuft
+
+### Adaptives Layout
+
+Eine Informationsarchitektur, zwei Layouts — **gemessen**, nicht behauptet:
+
+| Fenster | Navigation | Beleg |
+| --- | --- | --- |
+| < 860 px | schwebende Pill (Dateien/Fotos/Apps) + abgesetzter „Z"-Knopf, wie im Mobile-Client | `layout=pill` bei `width=560` |
+| ≥ 860 px | Seitenleiste mit denselben **vier** Zielen samt Beschriftung, Kopfzeile mit Sprache/Theme | `layout=sidebar` bei `width=1180` |
+
+Der Umbruch ist kein CSS-Breakpoint, sondern zwei Komponentenbäume — die Pill und die
+Seitenleiste sind verschieden aufgebaut, nicht dasselbe anders gestylt.
+
+### Dark Mode, in beide Richtungen
+
+Drei Zustände statt Umschalter: **System / Hell / Dunkel**. „Dem System folgen" ist ein eigener
+Wunsch, den ein Zweizustands-Toggle nicht ausdrücken kann — einmal getippt käme man nie zurück.
+Der Verifier liest das Ergebnis aus der **berechneten Hintergrundhelligkeit**, nicht aus dem
+Attribut, das er selbst gesetzt hat.
+
+### 28 Sprachen, vollständig
+
+```
+i18n gate: clean — 28 locales, 104 keys each
+  ca_ES cs_CZ da_DK de_DE el_GR en_GB en_US es_ES fr_FR ga_IE hr_HR hu_HU it_IT ja_JP
+  ko_KR ml_IN nb_NO nl_NL pl_PL pt_BR pt_PT ro_RO ru_RU sk_SK sv_SE tr_TR zh_CN zh_TW
+```
+
+Alle 28 bei **100 % Abdeckung**. Nachladen per Chunk (`import.meta.glob`), damit nicht 28
+Kataloge im Startbündel liegen; `en_US` ist fest eingebaut, weil es der Rückfall für alle ist.
+
+**Ehrliche Kennzeichnung:** nur `de_DE`, `en_US` und `en_GB` sind als **geprüft** markiert. Die
+anderen 25 habe **ich** übersetzt, ohne muttersprachliche Kontrolle — sie stehen im Sprachmenü mit
+dem Hinweis „ungeprüft" daneben. Maschinenausgabe als fertige Arbeit auszugeben wäre genau die
+ungedeckte Zusicherung, die dieses Projekt vermeiden will.
+
+**Das Gate prüft mehr als Vollständigkeit:** unbekannte Schlüssel, abweichende Platzhalter (ein
+verlorenes `{{count}}` landet als Text beim Nutzer) und den Verdacht „diese Datei ist nur eine
+englische Kopie" (> 90 % identisch zu `en_US` bei einer nicht-englischen Sprache). Gemessene
+Identitätsquoten: 2 % (`zh_CN`) bis 11 % (`da_DK`) — der Rest sind Eigennamen wie „App Store",
+„Remote ID" und `{{platzhalter}}`.
+
+### Belege Phase 3 (2026-07-30)
+
+```
+npm run verify   ✓   type-check · lint · 63 Tests · build · build-gate · i18n-gate · privacy-gate
+```
+
+Vier Startbeweise aus dem **echten Build**, je mit Screenshot und JSON-Report:
+
+```
+wide-light    ok=True  width=1180  theme=light  lang=de-DE  layout=sidebar  keine rohen Keys
+wide-dark     ok=True  width=1180  theme=dark   lang=de-DE  layout=sidebar  keine rohen Keys
+narrow-light  ok=True  width=560   theme=light  lang=de-DE  layout=pill     keine rohen Keys
+narrow-dark   ok=True  width=560   theme=dark   lang=de-DE  layout=pill     keine rohen Keys
+```
+
+Gegenprobe mit nicht-lateinischer Schrift: `ja_JP` → „デバイス", `ru_RU` → „Устройство",
+beide ohne rohe i18n-Keys.
+
+### Ein Bug, den der Linter gefunden hat — kein Stilproblem
+
+`bg.match(/oklch\(([0-9.]+)/)` stand **innerhalb eines Template-Strings**, der in den Renderer
+injiziert wird. Der String verschluckt den Backslash, und im Browser wäre `oklch(` als
+**Gruppenanfang** angekommen statt als Klammer — die Prüfung hätte stillschweigend das Falsche
+gemessen. `no-useless-escape` hat genau das gemeldet. Jetzt ohne Regex.
+
 ## Was ausdrücklich noch nicht existiert
 
 Dateien, Fotos und Apps zeigen einen benannten Platzhalter mit Phasennummer — **kein leerer
 Bildschirm**, weil „leer" wie „nichts vorhanden" aussieht und etwas anderes behauptet als „noch
-nicht gebaut". Es fehlen: Remote-ID über ZeroTier (Phase 3), Restart/Shutdown, File Hub,
-Photos-Oberfläche und -Backup, Apps mit Offline-Cache, die 26 weiteren Sprachdateien,
-Playwright-E2E, Paketbau und die Distro-Start-Matrix.
+nicht gebaut". Es fehlen: Remote-ID über ZeroTier (**Phase 3b**), Restart/Shutdown, File Hub,
+Photos-Oberfläche und -Backup, Apps mit Offline-Cache, Playwright-E2E, Paketbau und die
+Distro-Start-Matrix. Die 28 Sprachdateien sind vollständig, 25 davon ungeprüft.
 
 **Was ich für den nächsten Beleg brauche:** ein **Testkonto** auf einem Gerät (gern ein
 Sub-Account mit wenig Rechten). Damit lässt sich der Erfolgspfad belegen — Anmeldung, Sitzung

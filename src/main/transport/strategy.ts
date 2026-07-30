@@ -60,7 +60,7 @@ export const directStrategy = (host: string, port = MDNS_PORT): Result<StrategyO
 /**
  * Remote ID over ZeroTier.
  *
- * NOT wired up yet. It needs the bundled zerotier-one lifecycle, which is phase 3 work.
+ * NOT wired up yet. It needs the bundled zerotier-one lifecycle, which is phase 3b of docs/V2-PLAN.md.
  * It returns an explicit `unavailableReason` rather than an empty candidate list,
  * because an empty list would render as "no device found" — a different statement from
  * "this route does not exist yet in this build".

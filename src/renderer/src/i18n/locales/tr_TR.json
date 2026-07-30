@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "files": "Dosyalar",
+    "photos": "Fotoğraflar",
+    "apps": "Uygulamalar",
+    "device": "Cihaz"
+  },
+  "device": {
+    "title": "Cihaz",
+    "noneSelected": "Bağlı cihaz yok",
+    "scan": "Yerel ağı tara",
+    "scanning": "Taranıyor…",
+    "directIp": "IP adresiyle bağlan",
+    "remoteId": "Remote ID ile bağlan",
+    "found": "{{count}} cihaz bulundu",
+    "found_plural": "{{count}} cihaz bulundu",
+    "nothingAnswered": "Bu ağda hiçbir cihaz yanıt vermedi",
+    "nothingAnsweredHint": "mDNS ağ bölümleri arasında sıkça engellenir. Bu, cihaz olmadığı anlamına gelmez — IP adresini deneyin.",
+    "connection": {
+      "lan": "Yerel ağ",
+      "direct": "Doğrudan IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Bulunan özellikler",
+    "routes": "{{count}} ağ geçidi yolu"
+  },
+  "capability": {
+    "photoLibrary": "Fotoğraf arama ve süzgeçler",
+    "photoBrowse": "Fotoğraflara göz atma",
+    "photoBackup": "Fotoğraf yedeği",
+    "files": "Dosyalar",
+    "apps": "Uygulamalar",
+    "appStore": "App Store",
+    "systemPower": "Yeniden başlatma ve kapatma",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Yedekleme",
+    "present": "kullanılabilir",
+    "absent": "bu cihazda kullanılamıyor"
+  },
+  "photos": {
+    "title": "Fotoğraflar",
+    "libraryMissing": "Fotoğraf arama Photos modülünü gerektirir",
+    "libraryMissingHint": "Bu cihazda Photos modülü kayıtlı değil, bu yüzden anlamsal arama ve süzgeçler kullanılamıyor. Göz atma ve yedekleme yine de çalışır.",
+    "backupForegroundOnly": "Yedekleme yalnızca bu pencere açıkken çalışır."
+  },
+  "files": {
+    "title": "Dosyalar",
+    "search": "Ara",
+    "starred": "Sık kullanılanlar",
+    "storage": "Depolama"
+  },
+  "apps": {
+    "title": "Uygulamalar",
+    "running": "Çalışıyor",
+    "stopped": "Durduruldu",
+    "cachedAt": "Durum: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Şifreler güvenli biçimde saklanamıyor",
+    "keyringPlaintext": "Bu sistem bir anahtar zinciri sunmuyor ({{backend}}), bu nedenle Electron kimlik bilgilerini sabit bir şifreyle saklardı. Hiçbir şey kaydedilmedi.",
+    "keyringOk": "Kimlik bilgileri {{backend}} tarafından korunuyor.",
+    "storeAnyway": "Yine de kaydet",
+    "askEveryTime": "Her seferinde sor",
+    "backendChanged": "Kaydedilen oturum okunamıyor: sistemin anahtar zinciri değişti. Lütfen yeniden oturum açın.",
+    "consentGiven": "Anahtar zinciri olmadan kaydetmeye bu bilgisayarda izin verildi."
+  },
+  "error": {
+    "refused": "Cihaz bağlantıyı reddetti — bu portta hiçbir şey dinlemiyor.",
+    "timeout": "Hiç yanıt yok — bir güvenlik duvarı bağlantıyı düşürüyor olabilir.",
+    "dns": "Ana makine adı çözümlenemedi.",
+    "unexpectedStatus": "Cihazdan beklenmeyen yanıt (HTTP {{status}}).",
+    "malformedResponse": "Cihaz, bu istemcinin anlamadığı bir biçimde yanıt verdi.",
+    "unauthorized": "Oturum açmak gerekiyor ya da oturum süresi doldu.",
+    "forbiddenPath": "Cihaz bu yolu reddediyor (HTTP 400).",
+    "capabilityMissing": "Bu cihaz gereken özelliği sunmuyor.",
+    "cancelled": "İptal edildi.",
+    "badPort": "Bu port kullanılamaz.",
+    "internal": "Bir şeyler ters gitti. Ayrıntılar günlükte.",
+    "invalidCredentials": "Kullanıcı adı veya şifre yanlış.",
+    "parameters": "Cihaz isteği eksik olduğu için reddetti.",
+    "invalidHost": "Bu geçerli bir adres değil.",
+    "invalidPort": "Bu geçerli bir port değil.",
+    "notAZimaDevice": "Bu adreste hiçbir ZimaOS cihazı yanıt vermedi.",
+    "sessionExpired": "Oturum süresi doldu — lütfen yeniden oturum açın.",
+    "signInRequired": "Lütfen oturum açın.",
+    "strategyUnavailable": "Bu bağlantı yolu bu sürümde henüz kullanılamıyor."
+  },
+  "common": {
+    "retry": "Yeniden dene",
+    "cancel": "İptal",
+    "close": "Kapat",
+    "theme": "Görünüm",
+    "themeSystem": "Sistem",
+    "themeLight": "Açık",
+    "themeDark": "Koyu",
+    "version": "Sürüm {{version}}"
+  },
+  "signIn": {
+    "title": "Oturum aç",
+    "host": "Adres",
+    "hostPlaceholder": "nas.local veya 192.168.1.100",
+    "username": "Kullanıcı adı",
+    "password": "Şifre",
+    "submit": "Oturum aç",
+    "submitting": "Oturum açılıyor…",
+    "cancel": "İptal",
+    "signOut": "Oturumu kapat",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Oturum {{minutes}} dakika daha geçerli",
+    "notPersisted": "Oturum açıldı, ancak kaydedilmedi — yeniden başlatmadan sonra kalmaz."
+  },
+  "devices": {
+    "title": "Cihazlar",
+    "none": "Henüz kayıtlı cihaz yok",
+    "noneHint": "Yerel ağı tarayın veya doğrudan bir adres girin.",
+    "active": "Etkin",
+    "activate": "Bu cihaza geç",
+    "forget": "Kaldır",
+    "forgetConfirm": "“{{name}}” cihazını kayıtlı oturumuyla birlikte kaldırmak istiyor musunuz?",
+    "addresses": "Bağlantı yolları",
+    "priorityUp": "Daha yüksek öncelik",
+    "lastSeen": "En son görülme: {{when}}",
+    "resume": "Yeniden bağlan",
+    "connect": "Bağlan"
+  },
+  "settings": {
+    "language": "Dil",
+    "unreviewed": "gözden geçirilmedi",
+    "reviewed": "gözden geçirildi"
+  }
+}
