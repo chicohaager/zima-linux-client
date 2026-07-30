@@ -49,3 +49,7 @@ backup-jobs.json
 
 # v2 build output
 out/
+
+# Measurement reports. They carry the device address and are host-specific, so they stay
+# out of anything shareable (project rule: no private data in shareable files).
+reports/
