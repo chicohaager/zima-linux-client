@@ -1,20 +1,9 @@
-import { useTranslation } from 'react-i18next'
-import { PILL_SECTIONS, type Section } from './sections'
-import { FolderIcon, GridIcon, PhotoIcon } from '../shared/ui/Icons'
+import type { Section } from './sections'
+import { BottomPillNavigation, SidebarNavigation } from './Navigation'
+import { useIsWide } from './useViewportWidth'
+import { ThemeMenu } from '../features/settings/ThemeMenu'
+import { LanguageMenu } from '../features/settings/LanguageMenu'
 import type { Theme } from './useTheme'
-
-/**
- * The shell reproduces the mobile client's navigation: a floating pill with three
- * icons and the device as a separate round button beside it. On a wide window the
- * same four destinations become a sidebar — identical information architecture,
- * desktop ergonomics.
- */
-
-const ICONS: Record<(typeof PILL_SECTIONS)[number], () => React.JSX.Element> = {
-  files: FolderIcon,
-  photos: PhotoIcon,
-  apps: GridIcon,
-}
 
 interface Props {
   readonly section: Section
@@ -23,92 +12,57 @@ interface Props {
   readonly children: React.ReactNode
 }
 
+/**
+ * Application frame.
+ *
+ * Two layouts, one information architecture: a narrow window keeps the mobile client's
+ * floating pill, a wide one turns the same four destinations into a sidebar. Theme and
+ * language controls sit in the top bar when there is room, and beside the pill when there
+ * is not — they must be reachable in both, not only in the comfortable case.
+ */
 export const AppShell = ({
   section,
   onSectionChange,
   theme,
   children,
 }: Props): React.JSX.Element => {
-  const { t } = useTranslation()
+  const wide = useIsWide()
 
-  const cycleTheme = (): void => {
-    const order = ['system', 'light', 'dark'] as const
-    const next = order[(order.indexOf(theme.choice) + 1) % order.length] ?? 'system'
-    theme.setChoice(next)
+  if (wide) {
+    return (
+      <div className="flex h-full">
+        <SidebarNavigation section={section} onSectionChange={onSectionChange} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header
+            className="flex items-center justify-end gap-2 px-6 py-3"
+            style={{ borderBottom: '1px solid var(--border-subtle)' }}
+          >
+            <LanguageMenu />
+            <ThemeMenu theme={theme} />
+          </header>
+          <main className="flex-1 overflow-y-auto px-6 py-6">
+            <div className="mx-auto w-full max-w-3xl">{children}</div>
+          </main>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="flex h-full flex-col">
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-28 sm:px-8">
+      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-28">
         <div className="mx-auto w-full max-w-3xl">{children}</div>
       </main>
 
       <nav
-        aria-label={t('nav.files')}
-        className="pointer-events-none fixed inset-x-0 bottom-0 flex justify-center pb-5"
+        aria-label="ZimaOS"
+        className="pointer-events-none fixed inset-x-0 bottom-0 flex flex-col items-center gap-2 pb-5"
       >
-        <div className="pointer-events-auto flex items-center gap-3">
-          <div
-            className="flex items-center gap-1 rounded-[999px] p-1.5"
-            style={{
-              background: 'var(--surface-card)',
-              boxShadow: 'var(--shadow-float)',
-            }}
-          >
-            {PILL_SECTIONS.map((key) => {
-              const Icon = ICONS[key]
-              const active = section === key
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => onSectionChange(key)}
-                  aria-current={active ? 'page' : undefined}
-                  title={t(`nav.${key}`)}
-                  className="flex h-11 w-14 items-center justify-center rounded-[999px] transition-colors"
-                  style={{
-                    background: active ? 'var(--surface-sunken)' : 'transparent',
-                    color: active ? 'var(--text-strong)' : 'var(--text-muted)',
-                  }}
-                >
-                  <Icon />
-                  <span className="sr-only">{t(`nav.${key}`)}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* The device button sits apart, exactly as in the mobile client. */}
-          <button
-            type="button"
-            onClick={() => onSectionChange('device')}
-            aria-current={section === 'device' ? 'page' : undefined}
-            title={t('nav.device')}
-            className="flex h-14 w-14 items-center justify-center rounded-full text-lg font-semibold transition-transform active:scale-95"
-            style={{
-              background: section === 'device' ? 'var(--accent)' : 'var(--surface-card)',
-              color: section === 'device' ? 'var(--accent-contrast)' : 'var(--accent)',
-              boxShadow: 'var(--shadow-float)',
-            }}
-          >
-            Z<span className="sr-only">{t('nav.device')}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={cycleTheme}
-            title={`${t('common.theme')}: ${t(`common.theme${theme.choice[0]?.toUpperCase()}${theme.choice.slice(1)}`)}`}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-xs font-medium"
-            style={{
-              background: 'var(--surface-card)',
-              color: 'var(--text-muted)',
-              boxShadow: 'var(--shadow-card)',
-            }}
-          >
-            {theme.resolved === 'dark' ? '☾' : '☀'}
-            <span className="sr-only">{t('common.theme')}</span>
-          </button>
+        <div className="pointer-events-auto flex items-center gap-2">
+          <LanguageMenu />
+          <ThemeMenu theme={theme} />
         </div>
+        <BottomPillNavigation section={section} onSectionChange={onSectionChange} />
       </nav>
     </div>
   )

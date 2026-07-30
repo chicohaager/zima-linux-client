@@ -25,6 +25,9 @@ export interface StartupReport {
   readonly electron: string
   readonly platform: string
   readonly sessionType: string
+  readonly viewportWidth: number
+  readonly theme: string
+  readonly locale: string
   /** Reported, not thresholded: a drop between releases is visible as a number. */
   readonly cssRuleCount: number
   readonly resolvedAccent: string
@@ -56,6 +59,23 @@ const PROBE = `(() => {
     bodyFontFamily: body.fontFamily.split(',')[0].trim(),
     // Tailwind utility on a real element — proves the utility layer reached the DOM.
     navButtonRadius: deviceButton ? getComputedStyle(deviceButton).borderRadius : '',
+    // Which theme actually took effect, read from the resolved background rather than
+    // from the attribute we set — the attribute is our own request, not the result.
+    resolvedTheme: (() => {
+      // Parsed without a regex on purpose: this code lives inside a template string, so
+      // a backslash escape would be consumed by the string and the pattern would arrive
+      // at the runtime meaning something else. ESLint caught that as a "useless escape".
+      const bg = body.backgroundColor
+      const after = bg.split('oklch(')[1]
+      if (!after) return 'unknown'
+      const lightness = parseFloat(after)
+      if (Number.isNaN(lightness)) return 'unknown'
+      return lightness < 0.5 ? 'dark' : 'light'
+    })(),
+    htmlLang: document.documentElement.lang || 'unset',
+    layout: document.querySelector('nav[aria-label]')
+      ? (getComputedStyle(document.querySelector('nav[aria-label]')).position === 'fixed' ? 'pill' : 'sidebar')
+      : 'none',
   }
 
   const text = document.body.innerText || ''
@@ -88,6 +108,29 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
     rawI18nKeys: [] as string[],
     appliedStyles: {} as Record<string, string>,
     visibleText: '',
+  }
+
+  // Theme and language are applied before probing so the report describes the state the
+  // screenshot actually shows.
+  const forcedTheme = process.env['ZIMA_VERIFY_THEME']
+  if (forcedTheme === 'light' || forcedTheme === 'dark') {
+    await window.webContents.executeJavaScript(
+      `(() => { localStorage.setItem('zima.theme', '${forcedTheme}');
+        document.documentElement.setAttribute('data-theme', '${forcedTheme}'); return 'ok' })()`,
+      true,
+    )
+  }
+  const forcedLocale = process.env['ZIMA_VERIFY_LOCALE']
+  if (forcedLocale !== undefined && forcedLocale.length > 0) {
+    await window.webContents.executeJavaScript(
+      `(() => { localStorage.setItem('zima.locale', '${forcedLocale}'); return 'ok' })()`,
+      true,
+    )
+    window.webContents.reload()
+    await new Promise<void>((resolve) => {
+      window.webContents.once('did-finish-load', () => resolve())
+    })
+    await new Promise<void>((resolve) => setTimeout(resolve, 900))
   }
 
   try {
@@ -153,6 +196,9 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
     electron: process.versions.electron ?? 'unknown',
     platform: `${process.platform}-${process.arch}`,
     sessionType: process.env['XDG_SESSION_TYPE'] ?? 'unknown',
+    viewportWidth: window.getBounds().width,
+    theme: probe.appliedStyles['resolvedTheme'] ?? 'unknown',
+    locale: probe.appliedStyles['htmlLang'] ?? 'unknown',
     cssRuleCount: probe.cssRuleCount,
     resolvedAccent: probe.resolvedAccent,
     appliedStyles: probe.appliedStyles,

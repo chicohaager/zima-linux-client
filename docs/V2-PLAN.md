@@ -607,6 +607,7 @@ riskanten Unbekannten früh fallen.
 | **1 — Fundament** | Neues Gerüst (electron-vite, TS strict, ESLint-Boundaries, Vitest, Playwright), `shared/contract`, Logging, CI-Skelett | `npm run type-check`, `lint`, `test` grün; leere App startet auf 2 Distros mit Screenshot |
 | **2 — Verbinden** | Auth + Refresh, Capabilities, Transport-Strategien mit Probe-Semantik, Geräte-Registry, `safeStorage` samt Backend-Warnung | E2E: Login und Gerätewechsel in `de_DE`; Screenshot der Warnung bei `basic_text` |
 | **3 — Design-System** | Tokens aus ZimaOS, Komponenten, adaptives Layout, Dark Mode, i18n-Gerüst mit 28 Locales | Screenshots hell/dunkel, schmal/breit; Playwright: kein roher i18n-Key |
+| **3b — Remote ID** | ZeroTier-Bündelung und Daemon-Lebenszyklus, damit der dritte Verbindungsweg echt wird | Beitritt zu einem Netz, danach Login über die ZT-Adresse, Screenshot des Verbindungswegs |
 | **4 — File Hub** | Navigation, Suche, Preview, Aktionen als Tasks, Papierkorb, Teilen, Upload/Download-Queue | E2E-Flow Suche→Preview→Kopieren mit Task-Fortschritt; Fehlerfall `400 invalid path` sichtbar |
 | **5 — Photos** | Galerie, Facetten, Suche, Detail-Viewer, Vordergrund-Backup mit Resume und Protokoll | E2E-Backup 3 Dateien inkl. Abbruch; Verhalten ohne `/v2/photos` als Screenshot |
 | **6 — Apps & System** | App-Liste, Web-App-Fenster, Offline-Cache mit Altersangabe, Restart/Shutdown/Remove, Dashboard-Kennzahlen | E2E: App öffnen; Cache-Anzeige nach Netztrennung; Power-Aktionen am Testgerät protokolliert |
