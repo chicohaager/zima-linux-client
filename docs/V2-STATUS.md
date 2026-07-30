@@ -70,13 +70,91 @@ Negativkontrolle nicht-geroutet  -> timeout
 Damit ist die Zusage aus Plan §7.3.1 gemessen: **Fotos-Durchsehen und -Backup sind auf beiden
 Geräten verfügbar**, auch auf dem ohne Photos-Modul.
 
+## Phase 2 — Verbinden: läuft
+
+### Am echten Gerät gemessener Login-Vertrag
+
+Vor der ersten Zeile Code den Endpunkt befragt, damit keine Antwortform erfunden wird:
+
+| Anfrage | HTTP | Hülle |
+| --- | --- | --- |
+| `POST /v1/users/login`, falsches Passwort | **400** | `{"success":10013,"message":"User does not exist or password is invalid"}` |
+| `POST /v1/users/login`, leerer Body | 400 | `{"success":400,"message":"Parameters Error"}` |
+| `POST /v1/users/refresh` ohne Token | 401 | `{"success":20006,"message":"Verification failure"}` |
+| `GET /v1/users/status` | 200 | `{"success":200,"message":"ok","data":{…}}` |
+| `GET /v2/zimaos/sys/hardware` ohne Token | 401 | `{"message":"invalid or expired jwt"}` — **keine** Hülle |
+| `GET /v2_1/files/file` ohne Token | 401 | `{"message":"Unauthorized"}` — **keine** Hülle |
+
+🔴 **Ein falsches Passwort ist HTTP 400, nicht 401** — und 400 heißt auf der Files-API „ungültiger
+Pfad". Wer nur den Status liest, zeigt dem Nutzer bei falschem Passwort „Das Gerät lehnt diesen Pfad
+ab". Deshalb entscheidet in `src/main/zima/envelope.ts` der **Anwendungscode**, und der HTTP-Status
+ist nur der Rückfall. Nur gemessene Codes sind abgebildet; ein unbekannter fällt sichtbar durch.
+
+### Was gebaut ist
+
+* **`iss`-Pinning** (`src/main/zima/jwt.ts`): Access-Token trägt `iss:"casaos"` (~3 h),
+  Refresh-Token `iss:"refresh"` (~7 Tage) — **mit demselben Schlüssel signiert**. Ein unbekannter
+  Aussteller wird abgewiesen statt als Access-Token angenommen. Die Signatur wird bewusst **nicht**
+  lokal geprüft: wir sind der Client, nicht die Ressourcenseite.
+* **Single-Flight-Erneuerung** (`auth.ts`): drei gleichzeitige Anfragen lösen **eine** Erneuerung
+  aus. ZimaOS rotiert den Refresh-Token, ein Rennen würde einen Aufrufer mit einem bereits
+  ersetzten Token zurücklassen.
+* **Credentials** (`secrets/credentials.ts`): nur der **Refresh-Token** wird gespeichert, nie das
+  Passwort. Bei fehlendem Schlüsselbund verweigert der Hauptprozess das Schreiben und liefert
+  `plaintext-risk`, bis der Nutzer im UI zugestimmt hat. Wechselt das Backend, ist das ein benannter
+  Fehler und kein stilles „nie angemeldet".
+* **Geräte-Registry** (`devices/`): Mehrere Geräte, mehrere Wege pro Gerät, Umschalten, Priorität
+  hochstufen, Entfernen samt Sitzung. Reine Logik in `ordering.ts` — deshalb testbar ohne Electron.
+* **Transport-Strategien** (`transport/strategy.ts`): LAN und Direct IP vollständig; **Remote-ID
+  liefert einen benannten Grund** statt einer leeren Kandidatenliste, weil „leer" wie „kein Gerät
+  gefunden" aussieht.
+* **Oberfläche**: Anmeldeformular, Sitzungskarte im Layout des Mobile-Clients (Konto, Verbindungs-
+  Pill, Restlaufzeit der Sitzung), Geräteliste mit Wechseln/Priorität/Entfernen, Keyring-Banner mit
+  echter Rückfrage.
+
+### 🔴 Der Fehler, den erst das Fenster gezeigt hat
+
+Typprüfung, Lint, 63 Tests und Build waren grün — im Fenster meldete jede Anmeldung „Da ist etwas
+schiefgegangen". Ursache: das **Preload-Skript wurde als ESM gebaut** (`index.mjs`), der Renderer
+läuft aber in der Sandbox, und ein sandboxed Preload kann kein ESM laden. `window.zima` war
+`undefined`, jeder Aufruf warf einen TypeError, und der generische Fallback ließ das wie einen
+Gerätefehler aussehen. Behoben: Preload wird als **CJS** ausgegeben, die Kanalnamen liegen jetzt in
+einem zod-freien Modul (`src/shared/channels.ts`) — das Preload schrumpfte von 6,2 kB auf 1,57 kB
+und bringt keine Fremdabhängigkeit mehr an die privilegierteste Grenze der App.
+
+Damit das nicht zurückkommt: **`npm run verify:build`** liest die **erzeugten Dateien** —
+Preload ist CJS, enthält kein Top-Level-`import`, ruft `exposeInMainWorld`, bündelt kein zod; der
+Hauptprozess verweist auf `.cjs`; Sandbox und Context-Isolation sind an; CSP ohne `unsafe-eval`;
+CSS-Klammerbilanz und Dark-Variante vorhanden. *(Der CSP-Check schlug zuerst falsch an — er fand
+`unsafe-eval` in meinem eigenen Kommentar. Er liest jetzt den Attributwert, nicht die Datei.)*
+
+### Belege Phase 2
+
+```
+npm run verify   ✓   type-check · lint · 63 Tests · build · build-gate · privacy-gate
+Startbeweis      ✓   ok=true, keine rohen i18n-Keys, Locale de
+```
+
+Szenario **im echten Fenster** gegen ein echtes Gerät (`ZIMA_VERIFY_SCENARIO=signin-wrong-password`):
+Formular öffnen → ausfüllen → absenden → gerendert erscheint **„Benutzername oder Passwort ist
+falsch."** mit der technischen Herkunft darunter (`path=/v1/users/login code=10013 status=400`).
+Das prüft die ganze Kette: Formular → IPC → HTTP → Hüllen-Auswertung → Übersetzung → DOM.
+
+Benutzt wurde ein **nicht existierender** Benutzername, damit kein echtes Konto Fehlversuche
+sammelt. **Der Erfolgsfall ist damit nicht belegt** — dafür braucht es ein Testkonto (siehe unten).
+
 ## Was ausdrücklich noch nicht existiert
 
 Dateien, Fotos und Apps zeigen einen benannten Platzhalter mit Phasennummer — **kein leerer
 Bildschirm**, weil „leer" wie „nichts vorhanden" aussieht und etwas anderes behauptet als „noch
-nicht gebaut". Es fehlen: Login und Token-Erneuerung, Geräte-Registry samt Umschalten,
-Restart/Shutdown, File Hub, Photos-Oberfläche und -Backup, Apps mit Offline-Cache, die
-26 weiteren Sprachdateien, Playwright-E2E, Paketbau und die Distro-Start-Matrix.
+nicht gebaut". Es fehlen: Remote-ID über ZeroTier (Phase 3), Restart/Shutdown, File Hub,
+Photos-Oberfläche und -Backup, Apps mit Offline-Cache, die 26 weiteren Sprachdateien,
+Playwright-E2E, Paketbau und die Distro-Start-Matrix.
+
+**Was ich für den nächsten Beleg brauche:** ein **Testkonto** auf einem Gerät (gern ein
+Sub-Account mit wenig Rechten). Damit lässt sich der Erfolgspfad belegen — Anmeldung, Sitzung
+über einen Neustart hinweg, Gerätewechsel — und gleichzeitig die offene Frage aus Plan § 14
+Punkt 6 klären, welche Endpunkte ein Nicht-Admin überhaupt benutzen darf.
 
 ## Alt-Stand
 

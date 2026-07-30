@@ -1,5 +1,6 @@
 import { appError, err, fromUnknown, ok, type Result } from '@shared/result'
 import { BASE } from './endpoints'
+import { envelopeIsOk, envelopeToError, isEnvelope, unwrap } from './envelope'
 
 /**
  * Thin HTTP client for the ZimaOS gateway.
@@ -69,12 +70,31 @@ export const request = async <T>(
       ...(opts.body === undefined ? {} : { body: JSON.stringify(opts.body) }),
     })
 
+    const text = await response.text()
+    let body: unknown = undefined
+    let parseFailed = false
+    if (text.length > 0) {
+      try {
+        body = JSON.parse(text)
+      } catch {
+        parseFailed = true
+      }
+    }
+
+    // The body decides before the status does. ZimaOS overloads HTTP 400: on the files
+    // API it means "invalid path", on login it means "wrong password" (measured:
+    // {"success":10013,…} with HTTP 400). Reading only the status produced the wrong
+    // message for one of the two.
+    if (isEnvelope(body) && !envelopeIsOk(body)) {
+      return err(envelopeToError(body, response.status, context))
+    }
+
     if (response.status === 401) {
       return err(appError('unauthorized', 'token rejected', 'error.unauthorized', context))
     }
-    // ZimaOS answers 400 "invalid path" for some directories (a measured
-    // regression in the files API). Surfaced as its own kind so the UI can say
-    // "the server refuses this path" instead of blaming the client.
+    // No envelope and a bare 400: this is the files API's "invalid path" case, kept as
+    // its own kind so the UI can say the server refuses the path instead of blaming
+    // the user's input.
     if (response.status === 400) {
       return err(
         appError('forbidden-path', 'server rejected the path', 'error.forbiddenPath', {
@@ -91,21 +111,17 @@ export const request = async <T>(
         }),
       )
     }
-
-    const text = await response.text()
-    try {
-      return ok(JSON.parse(text) as T)
-    } catch (cause) {
+    if (parseFailed) {
       return err(
-        appError(
-          'malformed-response',
-          'response was not JSON',
-          'error.malformedResponse',
-          { ...context, bytes: text.length },
-          cause,
-        ),
+        appError('malformed-response', 'response was not JSON', 'error.malformedResponse', {
+          ...context,
+          bytes: text.length,
+        }),
       )
     }
+
+    // Unwrap the envelope so callers always see the payload, never the wrapper.
+    return ok(unwrap(body) as T)
   } catch (cause) {
     return err(fromUnknown(cause, context))
   } finally {

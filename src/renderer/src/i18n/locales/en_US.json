@@ -61,7 +61,9 @@
     "keyringPlaintext": "This system provides no keyring ({{backend}}), so Electron would store credentials with a hardcoded password. Nothing has been saved.",
     "keyringOk": "Credentials are protected by {{backend}}.",
     "storeAnyway": "Store anyway",
-    "askEveryTime": "Ask every time"
+    "askEveryTime": "Ask every time",
+    "backendChanged": "The saved session cannot be read: the system keyring has changed. Please sign in again.",
+    "consentGiven": "Storing without a keyring was allowed for this machine."
   },
   "error": {
     "refused": "The device refused the connection — nothing is listening on this port.",
@@ -74,7 +76,15 @@
     "capabilityMissing": "This device does not offer the required feature.",
     "cancelled": "Cancelled.",
     "badPort": "This port cannot be used.",
-    "internal": "Something went wrong. Details are in the log."
+    "internal": "Something went wrong. Details are in the log.",
+    "invalidCredentials": "User name or password is wrong.",
+    "parameters": "The device rejected the request as incomplete.",
+    "invalidHost": "That is not a valid address.",
+    "invalidPort": "That is not a valid port.",
+    "notAZimaDevice": "No ZimaOS device answered at this address.",
+    "sessionExpired": "The session has expired — please sign in again.",
+    "signInRequired": "Please sign in.",
+    "strategyUnavailable": "This connection route is not available in this build yet."
   },
   "common": {
     "retry": "Retry",
@@ -85,5 +95,33 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "version": "Version {{version}}"
+  },
+  "signIn": {
+    "title": "Sign in",
+    "host": "Address",
+    "hostPlaceholder": "nas.local or 192.168.1.100",
+    "username": "User name",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "cancel": "Cancel",
+    "signOut": "Sign out",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Session valid for another {{minutes}} min",
+    "notPersisted": "Signed in, but the session was not saved — it will not survive a restart."
+  },
+  "devices": {
+    "title": "Devices",
+    "none": "No device saved yet",
+    "noneHint": "Search the local network or enter an address directly.",
+    "active": "Active",
+    "activate": "Switch to this device",
+    "forget": "Remove",
+    "forgetConfirm": "Remove “{{name}}” including its saved session?",
+    "addresses": "Connection paths",
+    "priorityUp": "Higher priority",
+    "lastSeen": "Last seen: {{when}}",
+    "resume": "Reconnect",
+    "connect": "Connect"
   }
 }

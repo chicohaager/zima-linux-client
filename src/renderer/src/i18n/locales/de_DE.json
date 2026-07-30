@@ -61,7 +61,9 @@
     "keyringPlaintext": "Dieses System stellt keinen Schlüsselbund bereit ({{backend}}). Electron würde Zugangsdaten mit einem festen Passwort ablegen. Es wurde nichts gespeichert.",
     "keyringOk": "Zugangsdaten werden durch {{backend}} geschützt.",
     "storeAnyway": "Trotzdem speichern",
-    "askEveryTime": "Jedes Mal fragen"
+    "askEveryTime": "Jedes Mal fragen",
+    "backendChanged": "Die gespeicherte Sitzung ist nicht lesbar: der Schlüsselbund des Systems hat sich geändert. Bitte erneut anmelden.",
+    "consentGiven": "Speichern ohne Schlüsselbund ist für diesen Rechner erlaubt."
   },
   "error": {
     "refused": "Das Gerät hat die Verbindung abgewiesen — auf diesem Port lauscht nichts.",
@@ -74,7 +76,15 @@
     "capabilityMissing": "Dieses Gerät bietet die benötigte Funktion nicht.",
     "cancelled": "Abgebrochen.",
     "badPort": "Dieser Port ist nicht verwendbar.",
-    "internal": "Da ist etwas schiefgegangen. Details stehen im Protokoll."
+    "internal": "Da ist etwas schiefgegangen. Details stehen im Protokoll.",
+    "invalidCredentials": "Benutzername oder Passwort ist falsch.",
+    "parameters": "Das Gerät hat die Anfrage als unvollständig abgewiesen.",
+    "invalidHost": "Das ist keine gültige Adresse.",
+    "invalidPort": "Das ist kein gültiger Port.",
+    "notAZimaDevice": "Unter dieser Adresse hat kein ZimaOS-Gerät geantwortet.",
+    "sessionExpired": "Die Sitzung ist abgelaufen — bitte erneut anmelden.",
+    "signInRequired": "Bitte anmelden.",
+    "strategyUnavailable": "Dieser Verbindungsweg ist in dieser Fassung noch nicht verfügbar."
   },
   "common": {
     "retry": "Erneut versuchen",
@@ -85,5 +95,33 @@
     "themeLight": "Hell",
     "themeDark": "Dunkel",
     "version": "Version {{version}}"
+  },
+  "signIn": {
+    "title": "Anmelden",
+    "host": "Adresse",
+    "hostPlaceholder": "nas.local oder 192.168.1.100",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "submitting": "Anmeldung läuft…",
+    "cancel": "Abbrechen",
+    "signOut": "Abmelden",
+    "signedInAs": "{{username}} · {{role}}",
+    "expiresIn": "Sitzung noch {{minutes}} min gültig",
+    "notPersisted": "Angemeldet, aber die Sitzung wurde nicht gespeichert — sie übersteht keinen Neustart."
+  },
+  "devices": {
+    "title": "Geräte",
+    "none": "Noch kein Gerät gespeichert",
+    "noneHint": "Durchsuche das lokale Netzwerk oder gib eine Adresse direkt ein.",
+    "active": "Aktiv",
+    "activate": "Zu diesem Gerät wechseln",
+    "forget": "Entfernen",
+    "forgetConfirm": "„{{name}}“ samt gespeicherter Sitzung entfernen?",
+    "addresses": "Verbindungswege",
+    "priorityUp": "Höhere Priorität",
+    "lastSeen": "Zuletzt gesehen: {{when}}",
+    "resume": "Neu verbinden",
+    "connect": "Verbinden"
   }
 }
