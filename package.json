@@ -21,7 +21,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify:live": "node --experimental-strip-types scripts/verify-live.ts",
+    "verify:live": "node scripts/verify-live.mjs",
     "verify:privacy": "node scripts/verify-privacy.mjs",
     "package:linux": "npm run build && electron-builder --linux",
     "package:appimage": "npm run build && electron-builder --linux AppImage",

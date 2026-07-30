@@ -32,7 +32,10 @@ export const deriveCapabilities = (routes: readonly string[]): Capabilities => {
     photoBrowse: files,
     photoBackup: files,
     files,
-    apps: hasRoute(routes, BASE.appManagement) || hasRoute(routes, BASE.apps),
+    // Only `/v2/app_management`. The `/v1/apps` route was measured to answer 404 with a
+    // valid token on v1.7.0, so accepting it as an alternative would have reported apps as
+    // available on the strength of a route that leads nowhere.
+    apps: hasRoute(routes, BASE.appManagement),
     appStore: hasRoute(routes, '/v3/app_store'),
     systemPower: hasRoute(routes, BASE.zimaos),
     // Deliberately NOT derived from the route table. `/v1/zt` is present on hosts where

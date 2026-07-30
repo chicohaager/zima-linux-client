@@ -4,6 +4,7 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { registerIpc } from '@main/ipc/register'
 import { logger } from '@main/logging/logger'
 import { isEnabled as verifyStartupEnabled, runStartupVerification } from '@main/app/startupVerification'
+import { isEnabled as verifyLiveEnabled, runLiveVerification } from '@main/app/liveVerification'
 import { decidePlatform, markStartupSurvived } from '@main/app/resilientPlatform'
 
 /**
@@ -102,12 +103,27 @@ if (!app.requestSingleInstanceLock()) {
 
   // First thing that happens: if the previous launch never painted, this call
   // relaunches the process with the X11 flag in argv and we must not continue.
-  const platform = decidePlatform()
+  //
+  // Skipped for the headless endpoint measurement: platform resilience is about getting a
+  // window painted, and a relaunch there would detach the process from the runner that is
+  // waiting for its report — measured as a run that "wrote no report" while it actually
+  // succeeded a second later.
+  const platform = verifyLiveEnabled()
+    ? { forcedX11: false, sessionType: 'headless', relaunching: false }
+    : decidePlatform()
 
   void (platform.relaunching ? Promise.resolve() : app.whenReady()).then(() => {
     if (platform.relaunching) return
     electronApp.setAppUserModelId('com.zimaos.client')
     app.on('browser-window-created', (_event, window) => optimizer.watchWindowShortcuts(window))
+
+    // Endpoint measurement runs headless: it needs a session and a network, not a window.
+    // Placed before createWindow so a measurement run can never be confused with, or
+    // disturbed by, a rendering app.
+    if (verifyLiveEnabled()) {
+      void runLiveVerification()
+      return
+    }
 
     registerIpc()
     logger.info('app.ready', {
