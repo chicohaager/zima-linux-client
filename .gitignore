@@ -46,3 +46,6 @@ tmp/
 # Backup files
 *.backup
 backup-jobs.json
+
+# v2 build output
+out/

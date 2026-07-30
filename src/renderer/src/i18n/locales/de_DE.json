@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "files": "Dateien",
+    "photos": "Fotos",
+    "apps": "Apps",
+    "device": "Gerät"
+  },
+  "device": {
+    "title": "Gerät",
+    "noneSelected": "Kein Gerät verbunden",
+    "scan": "Lokales Netzwerk durchsuchen",
+    "scanning": "Suche läuft…",
+    "directIp": "Über IP-Adresse verbinden",
+    "remoteId": "Über Remote-ID verbinden",
+    "found": "{{count}} Gerät gefunden",
+    "found_plural": "{{count}} Geräte gefunden",
+    "nothingAnswered": "Kein Gerät hat in diesem Netzwerk geantwortet",
+    "nothingAnsweredHint": "mDNS wird zwischen Netzsegmenten häufig blockiert. Das heißt nicht, dass kein Gerät vorhanden ist — versuche es über die IP-Adresse.",
+    "connection": {
+      "lan": "LAN",
+      "direct": "Direkte IP",
+      "remote-id": "Remote-ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Erkannte Funktionen",
+    "routes": "{{count}} Gateway-Routen"
+  },
+  "capability": {
+    "photoLibrary": "Fotosuche & Facetten",
+    "photoBrowse": "Fotos durchsehen",
+    "photoBackup": "Foto-Backup",
+    "files": "Dateien",
+    "apps": "Apps",
+    "appStore": "App Store",
+    "systemPower": "Neustart & Ausschalten",
+    "zerotier": "Remote-ID (ZeroTier)",
+    "backup": "Backup",
+    "present": "verfügbar",
+    "absent": "auf diesem Gerät nicht verfügbar"
+  },
+  "photos": {
+    "title": "Fotos",
+    "libraryMissing": "Die Fotosuche braucht das Photos-Modul",
+    "libraryMissingHint": "Auf diesem Gerät ist kein Photos-Modul registriert, deshalb fehlen semantische Suche und Facetten. Durchsehen und Backup funktionieren trotzdem.",
+    "backupForegroundOnly": "Das Backup läuft nur, solange dieses Fenster offen ist."
+  },
+  "files": {
+    "title": "Dateien",
+    "search": "Suchen",
+    "starred": "Favoriten",
+    "storage": "Speicher"
+  },
+  "apps": {
+    "title": "Apps",
+    "running": "Läuft",
+    "stopped": "Gestoppt",
+    "cachedAt": "Stand: {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Passwörter können nicht sicher gespeichert werden",
+    "keyringPlaintext": "Dieses System stellt keinen Schlüsselbund bereit ({{backend}}). Electron würde Zugangsdaten mit einem festen Passwort ablegen. Es wurde nichts gespeichert.",
+    "keyringOk": "Zugangsdaten werden durch {{backend}} geschützt.",
+    "storeAnyway": "Trotzdem speichern",
+    "askEveryTime": "Jedes Mal fragen"
+  },
+  "error": {
+    "refused": "Das Gerät hat die Verbindung abgewiesen — auf diesem Port lauscht nichts.",
+    "timeout": "Überhaupt keine Antwort — möglicherweise verwirft eine Firewall die Verbindung.",
+    "dns": "Der Hostname war nicht auflösbar.",
+    "unexpectedStatus": "Unerwartete Antwort vom Gerät (HTTP {{status}}).",
+    "malformedResponse": "Das Gerät hat in einer Form geantwortet, die dieser Client nicht versteht.",
+    "unauthorized": "Anmeldung erforderlich oder Sitzung abgelaufen.",
+    "forbiddenPath": "Das Gerät lehnt diesen Pfad ab (HTTP 400).",
+    "capabilityMissing": "Dieses Gerät bietet die benötigte Funktion nicht.",
+    "cancelled": "Abgebrochen.",
+    "badPort": "Dieser Port ist nicht verwendbar.",
+    "internal": "Da ist etwas schiefgegangen. Details stehen im Protokoll."
+  },
+  "common": {
+    "retry": "Erneut versuchen",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "theme": "Darstellung",
+    "themeSystem": "System",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "version": "Version {{version}}"
+  }
+}
