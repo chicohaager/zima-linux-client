@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "files": "Files",
+    "photos": "Photos",
+    "apps": "Apps",
+    "device": "Device"
+  },
+  "device": {
+    "title": "Device",
+    "noneSelected": "No device connected",
+    "scan": "Scan local network",
+    "scanning": "Scanning…",
+    "directIp": "Connect via IP address",
+    "remoteId": "Connect via Remote ID",
+    "found": "{{count}} device found",
+    "found_plural": "{{count}} devices found",
+    "nothingAnswered": "No device answered on this network",
+    "nothingAnsweredHint": "mDNS is often blocked between network segments. This does not mean there is no device — try the IP address instead.",
+    "connection": {
+      "lan": "LAN",
+      "direct": "Direct IP",
+      "remote-id": "Remote ID"
+    },
+    "latency": "{{ms}} ms",
+    "capabilities": "Detected features",
+    "routes": "{{count}} gateway routes"
+  },
+  "capability": {
+    "photoLibrary": "Photo search & facets",
+    "photoBrowse": "Photo browsing",
+    "photoBackup": "Photo backup",
+    "files": "Files",
+    "apps": "Apps",
+    "appStore": "App Store",
+    "systemPower": "Restart & shutdown",
+    "zerotier": "Remote ID (ZeroTier)",
+    "backup": "Backup",
+    "present": "available",
+    "absent": "not available on this device"
+  },
+  "photos": {
+    "title": "Photos",
+    "libraryMissing": "Photo search needs the Photos module",
+    "libraryMissingHint": "This device has no Photos module registered, so semantic search and facets are unavailable. Browsing and backup work regardless.",
+    "backupForegroundOnly": "Backup runs only while this window is open."
+  },
+  "files": {
+    "title": "Files",
+    "search": "Search",
+    "starred": "Starred",
+    "storage": "Storage"
+  },
+  "apps": {
+    "title": "Apps",
+    "running": "Running",
+    "stopped": "Stopped",
+    "cachedAt": "As of {{time}}"
+  },
+  "security": {
+    "keyringTitle": "Passwords cannot be stored securely",
+    "keyringPlaintext": "This system provides no keyring ({{backend}}), so Electron would store credentials with a hardcoded password. Nothing has been saved.",
+    "keyringOk": "Credentials are protected by {{backend}}.",
+    "storeAnyway": "Store anyway",
+    "askEveryTime": "Ask every time"
+  },
+  "error": {
+    "refused": "The device refused the connection — nothing is listening on this port.",
+    "timeout": "No answer at all — a firewall may be dropping the connection.",
+    "dns": "The host name could not be resolved.",
+    "unexpectedStatus": "Unexpected response from the device (HTTP {{status}}).",
+    "malformedResponse": "The device answered in a form this client does not understand.",
+    "unauthorized": "Sign-in required or session expired.",
+    "forbiddenPath": "The device rejects this path (HTTP 400).",
+    "capabilityMissing": "This device does not offer the required feature.",
+    "cancelled": "Cancelled.",
+    "badPort": "This port cannot be used.",
+    "internal": "Something went wrong. Details are in the log."
+  },
+  "common": {
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "close": "Close",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "version": "Version {{version}}"
+  }
+}

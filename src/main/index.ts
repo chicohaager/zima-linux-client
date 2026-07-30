@@ -1,131 +1,131 @@
-import { app, BrowserWindow } from 'electron';
-import { logger } from './utils/logger';
-import * as path from 'path';
-import { IPCHandlers } from './ipc/handlers';
-import { updateManager } from './updater';
-
-// Suppress Electron security warnings for local HTTP connections
-// ZimaOS typically runs on local network via HTTP which is acceptable
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
-
-// Linux-specific fixes for various distributions
-if (process.platform === 'linux') {
-  // Disable sandbox - Ubuntu 24.04+ disables unprivileged user namespaces by default
-  app.commandLine.appendSwitch('no-sandbox');
-
-  // Disable GPU hardware acceleration to fix Vulkan driver issues on Arch Linux and others
-  // This prevents "vkCreateInstance failed with VK_ERROR_INCOMPATIBLE_DRIVER" errors
-  app.commandLine.appendSwitch('disable-gpu');
-  app.commandLine.appendSwitch('disable-software-rasterizer');
-}
-
-let mainWindow: BrowserWindow | null = null;
-let ipcHandlers: IPCHandlers | null = null;
-let isCleaningUp = false;
+import { join } from 'node:path'
+import { app, BrowserWindow, shell } from 'electron'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { registerIpc } from '@main/ipc/register'
+import { logger } from '@main/logging/logger'
+import { isEnabled as verifyStartupEnabled, runStartupVerification } from '@main/app/startupVerification'
+import { decidePlatform, markStartupSurvived } from '@main/app/resilientPlatform'
 
 /**
- * Perform cleanup with timeout protection
- * Ensures app doesn't hang if cleanup takes too long
+ * Main process entry point.
+ *
+ * Security posture is fixed here and nowhere else: the renderer runs sandboxed with
+ * context isolation and no Node integration, and any attempt to navigate away or open
+ * a window goes through an explicit decision instead of being allowed by default.
  */
-async function performCleanup(): Promise<void> {
-  if (isCleaningUp || !ipcHandlers) return;
-  isCleaningUp = true;
 
-  const cleanupPromise = ipcHandlers.cleanup();
-  const timeoutPromise = new Promise<void>((resolve) => {
-    setTimeout(() => {
-      logger.warn('⚠️  Cleanup timeout after 5s, forcing quit');
-      resolve();
-    }, 5000);
-  });
-
-  try {
-    await Promise.race([cleanupPromise, timeoutPromise]);
-    logger.info('✓ Cleanup completed');
-  } catch (error) {
-    logger.error('❌ Cleanup error:', error);
-  }
-}
-
-function createWindow(): void {
-  mainWindow = new BrowserWindow({
-    width: 1800,
-    height: 1000,
-    minWidth: 1200,
-    minHeight: 700,
-    title: 'ZimaOS Client',
-    icon: path.join(__dirname, '../../logo.png'),
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
-    },
-    backgroundColor: '#1A1A1A',
+const createWindow = (): BrowserWindow => {
+  const window = new BrowserWindow({
+    width: 1180,
+    height: 820,
+    minWidth: 420, // narrow layout keeps the mobile bottom-pill navigation
+    minHeight: 620,
     show: false,
-  });
+    autoHideMenuBar: true,
+    backgroundColor: '#f5f6f8',
+    title: 'ZimaOS Client',
+    webPreferences: {
+      preload: join(import.meta.dirname, '../preload/index.mjs'),
+      sandbox: true,
+      contextIsolation: true,
+      nodeIntegration: false,
+      webviewTag: false,
+    },
+  })
 
-  // Load the app
-  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  window.on('ready-to-show', () => {
+    window.show()
+    // First paint reached: clear the sentinel so the next launch keeps its normal
+    // platform instead of staying on the X11 fallback forever.
+    markStartupSurvived()
+  })
 
-  // Open DevTools in development
-  if (process.env.NODE_ENV !== 'production') {
-    mainWindow.webContents.openDevTools();
+  // A dead GPU or renderer process must be loud. Silence here is how "it just does
+  // not start" reports come to exist with nothing in the log.
+  app.on('child-process-gone', (_event, details) => {
+    logger.error('process.gone', {
+      type: details.type,
+      reason: details.reason,
+      exitCode: details.exitCode,
+    })
+  })
+  window.webContents.on('render-process-gone', (_event, details) => {
+    logger.error('renderer.gone', { reason: details.reason, exitCode: details.exitCode })
+  })
+
+  // Startup verification runs after the first paint, then writes its report and quits.
+  // Wired here rather than in a test harness so the exact same binary a user installs
+  // is the one that gets verified on each distro.
+  if (verifyStartupEnabled()) {
+    window.webContents.once('did-finish-load', () => {
+      setTimeout(() => void runStartupVerification(window), 1_200)
+    })
   }
 
-  // Show window when ready
-  mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
-
-    // Set the main window for update manager
-    if (mainWindow) {
-      updateManager.setMainWindow(mainWindow);
+  // Anything that wants a new window is opened in the user's browser instead, so a
+  // link inside the app cannot silently become an uncontrolled Electron window.
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      void shell.openExternal(url)
+    } else {
+      logger.warn('window.open-blocked', { url })
     }
-  });
+    return { action: 'deny' }
+  })
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+  const devServer = process.env['ELECTRON_RENDERER_URL']
+  if (is.dev && devServer !== undefined) {
+    void window.loadURL(devServer)
+  } else {
+    void window.loadFile(join(import.meta.dirname, '../renderer/index.html'))
+  }
+
+  return window
 }
 
-app.whenReady().then(() => {
-  // Initialize IPC handlers
-  ipcHandlers = new IPCHandlers();
-
-  createWindow();
-
-  // Start periodic update checks (every 24 hours) in production
-  if (process.env.NODE_ENV === 'production') {
-    updateManager.startPeriodicCheck(24);
-  }
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+// One instance only: a second launch focuses the existing window rather than
+// starting a second upload queue against the same device.
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    const [existing] = BrowserWindow.getAllWindows()
+    if (existing !== undefined) {
+      if (existing.isMinimized()) existing.restore()
+      existing.focus()
     }
-  });
-});
+  })
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+  // First thing that happens: if the previous launch never painted, this call
+  // relaunches the process with the X11 flag in argv and we must not continue.
+  const platform = decidePlatform()
 
-app.on('before-quit', async (event) => {
-  event.preventDefault();
-  await performCleanup();
-  app.exit(0);
-});
+  void (platform.relaunching ? Promise.resolve() : app.whenReady()).then(() => {
+    if (platform.relaunching) return
+    electronApp.setAppUserModelId('com.zimaos.client')
+    app.on('browser-window-created', (_event, window) => optimizer.watchWindowShortcuts(window))
 
-// Handle uncaught exceptions - perform cleanup before exiting
-process.on('uncaughtException', async (error) => {
-  logger.error('❌ Uncaught exception:', error);
-  await performCleanup();
-  process.exit(1);
-});
+    registerIpc()
+    logger.info('app.ready', {
+      version: app.getVersion(),
+      electron: process.versions.electron,
+      platform: `${process.platform}-${process.arch}`,
+      locale: app.getLocale(),
+      sessionType: platform.sessionType,
+      forcedX11: platform.forcedX11,
+      logFile: logger.filePath(),
+    })
 
-process.on('unhandledRejection', async (error) => {
-  logger.error('❌ Unhandled rejection:', error);
-  await performCleanup();
-  process.exit(1);
-});
+    createWindow()
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+  })
+
+  app.on('window-all-closed', () => {
+    // No background work by design: photo backup runs only while the window is open,
+    // so closing the window really does mean nothing is left running.
+    if (process.platform !== 'darwin') app.quit()
+  })
+}

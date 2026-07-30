@@ -1,84 +1,67 @@
 {
   "name": "zima-linux-client",
-  "version": "0.9.23",
-  "description": "Modern Desktop Client for ZimaOS with integrated ZeroTier and SMB management",
-  "main": "dist/main/index.js",
+  "version": "2.0.0-alpha.1",
+  "description": "Desktop client for ZimaOS on Linux — files, photos, apps and device management",
+  "main": "out/main/index.js",
   "author": {
     "name": "Holger Kühn"
   },
-  "homepage": "https://www.zimaspace.com",
+  "homepage": "https://github.com/chicohaager/zima-linux-client",
   "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:electron\"",
-    "dev:main": "webpack --config webpack.main.config.js --mode development --watch",
-    "dev:preload": "webpack --config webpack.preload.config.js --mode development --watch",
-    "dev:renderer": "webpack --config webpack.renderer.config.js --mode development --watch",
-    "dev:electron": "sleep 5 && NODE_ENV=production electron .",
-    "build": "npm run build:main && npm run build:preload && npm run build:renderer",
-    "build:main": "webpack --config webpack.main.config.js --mode production",
-    "build:preload": "webpack --config webpack.preload.config.js --mode production",
-    "build:renderer": "webpack --config webpack.renderer.config.js --mode production",
-    "start": "electron .",
-    "package": "npm run build && electron-builder",
+    "dev": "electron-vite dev",
+    "build": "npm run type-check && electron-vite build",
+    "start": "electron-vite preview",
+    "type-check": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify:live": "node --experimental-strip-types scripts/verify-live.ts",
+    "verify:privacy": "node scripts/verify-privacy.mjs",
     "package:linux": "npm run build && electron-builder --linux",
-    "package:mac": "npm run build && electron-builder --mac",
-    "package:all": "npm run build && electron-builder --linux --mac",
-    "lint": "eslint src --ext .ts,.tsx",
-    "type-check": "tsc --noEmit",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "analyze": "ANALYZE=true npm run build:renderer"
+    "package:appimage": "npm run build && electron-builder --linux AppImage",
+    "package:flatpak": "npm run build && electron-builder --linux flatpak"
   },
   "dependencies": {
-    "@types/node-cron": "^3.0.11",
+    "@tanstack/react-query": "^5.90.21",
     "electron-log": "^5.4.3",
     "electron-updater": "^6.6.2",
     "i18next": "^25.6.3",
-    "i18next-browser-languagedetector": "^8.2.0",
-    "keytar": "^7.9.0",
-    "node-cron": "^4.2.1",
     "react-i18next": "^16.3.5",
-    "shell-quote": "^1.8.3",
-    "winston": "^3.18.3",
-    "winston-daily-rotate-file": "^5.0.0",
-    "zustand": "^4.5.0"
+    "zod": "^4.1.13",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
+    "@eslint/js": "^9.39.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.19.0",
-    "autoprefixer": "^10.4.17",
-    "concurrently": "^8.2.2",
-    "css-loader": "^6.9.1",
-    "electron": "^28.2.0",
-    "electron-builder": "^24.9.1",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "events": "^3.3.0",
-    "html-webpack-plugin": "^5.6.0",
-    "jest": "^30.2.0",
-    "path-browserify": "^1.0.1",
-    "postcss": "^8.4.33",
-    "postcss-loader": "^8.1.0",
-    "process": "^0.11.10",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "style-loader": "^3.3.4",
-    "tailwindcss": "^3.4.1",
-    "ts-jest": "^29.4.5",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.3.3",
-    "webpack": "^5.89.0",
-    "webpack-bundle-analyzer": "^5.0.1",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "@types/node": "^22.18.11",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "jsdom": "^27.0.0",
+    "prettier": "^3.6.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.4"
   },
   "build": {
     "productName": "ZimaOS Client",
@@ -91,79 +74,34 @@
         "releaseType": "release"
       }
     ],
-    "electronLanguages": ["en", "de"],
     "files": [
-      "dist/main/**/*",
-      "dist/renderer/**/*",
+      "out/**/*",
       "package.json"
     ],
     "extraResources": [
-      {
-        "from": "bin/zerotier/x64",
-        "to": "bin/zerotier/x64",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
-        "from": "resources",
-        "to": "resources",
-        "filter": [
-          "*.service",
-          "*.sh",
-          "copyright"
-        ]
-      },
       "icon.png"
     ],
-    "mac": {
-      "target": [
-        "zip"
-      ],
-      "category": "public.app-category.utilities",
-      "hardenedRuntime": false,
-      "gatekeeperAssess": false,
-      "entitlements": null,
-      "entitlementsInherit": null
-    },
     "linux": {
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "rpm",
+        "flatpak",
+        "pacman",
+        "tar.gz"
       ],
       "category": "Network",
-      "icon": "icon.png"
+      "icon": "icon.png",
+      "synopsis": "Desktop client for ZimaOS",
+      "description": "Files, photos, apps and device management for ZimaOS devices — over LAN, direct IP or Remote ID."
     },
     "deb": {
-      "depends": [
-        "libfuse2",
-        "smbclient",
-        "libnss3",
-        "libgtk-3-0",
-        "libgbm1",
-        "libasound2 | libasound2t64",
-        "libatk1.0-0 | libatk1.0-0t64",
-        "libatk-bridge2.0-0 | libatk-bridge2.0-0t64",
-        "libcups2 | libcups2t64",
-        "libdrm2",
-        "libxkbcommon0",
-        "libxcb1",
-        "libx11-6",
-        "libxcomposite1",
-        "libxdamage1",
-        "libxext6",
-        "libxfixes3",
-        "libxrandr2"
-      ],
       "maintainer": "Holger Kühn <zima-client@virtual-services.info>",
-      "afterInstall": "resources/postinst.sh",
-      "synopsis": "Desktop Client for ZimaOS",
-      "description": "Modern desktop client for ZimaOS with integrated ZeroTier VPN and SMB file sharing. Connect to your ZimaOS server locally or remotely.",
-      "priority": "optional",
-      "vendor": "Holger Kühn",
+      "priority": "optional"
+    },
+    "rpm": {
       "fpm": [
-        "--license=MIT",
-        "--url=https://github.com/chicohaager/zima-linux-client"
+        "--license=MIT"
       ]
     }
   }
