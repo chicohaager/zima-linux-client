@@ -1,0 +1,166 @@
+{
+  "app": {
+    "title": "ZimaOS İstemcisi",
+    "version": "Version {{version}}"
+  },
+  "navigation": {
+    "connect": "Bağlan",
+    "devices": "Cihazlar",
+    "backup": "Yedekleme",
+    "apps": "Uygulamalar",
+    "settings": "Ayarlar"
+  },
+  "connect": {
+    "title": "ZimaOS'a bağlan",
+    "subtitle": "ZimaOS cihaz adresinizi girin",
+    "address": "Cihaz Adresi",
+    "addressPlaceholder": "http://192.168.1.100 veya http://zimaos.local",
+    "connect": "Bağlan",
+    "connecting": "Bağlanıyor...",
+    "success": "Başarıyla bağlandı",
+    "error": "Bağlantı kurulamadı",
+    "zerotier": {
+      "title": "ZeroTier Ağı",
+      "status": "Durum",
+      "running": "Çalışıyor",
+      "stopped": "Durduruldu",
+      "start": "ZeroTier ağını başlat",
+      "stop": "ZeroTier ağını durdur",
+      "networkId": "Ağ Kimliği",
+      "join": "Ağa Katıl",
+      "leave": "Ağdan Ayrıl",
+      "connected": "Ağa Bağlandı",
+      "disconnected": "Ağ Bağlantısı Kesildi"
+    }
+  },
+  "devices": {
+    "title": "Kullanılabilir Cihazlar",
+    "scanning": "Yerel ağ taranıyor...",
+    "noDevices": "Hiç cihaz bulunamadı",
+    "refresh": "Yenile",
+    "local": "Yerel",
+    "remote": "ZeroTier ile uzak bağlantı",
+    "shares": "{{count}} paylaşım",
+    "shares_plural": "{{count}} paylaşım",
+    "apps": "{{count}} uygulama",
+    "apps_plural": "{{count}} uygulama"
+  },
+  "backup": {
+    "title": "Yedekleme Görevleri",
+    "noJobs": "Hiç yedekleme görevi yapılandırılmamış",
+    "create": "Yedekleme Görevi Oluştur",
+    "edit": "Görevi Düzenle",
+    "delete": "Görevi Sil",
+    "run": "Şimdi Çalıştır",
+    "running": "Çalışıyor...",
+    "lastRun": "Son Çalıştırma: {{time}}",
+    "neverRun": "Hiç çalışmadı",
+    "schedule": "Zamanlama",
+    "source": "Kaynak",
+    "destination": "Hedef",
+    "status": {
+      "idle": "Boşta",
+      "running": "Çalışıyor",
+      "success": "Başarılı",
+      "failed": "Başarısız"
+    },
+    "form": {
+      "name": "Görev Adı",
+      "sourcePath": "Kaynak Yol",
+      "targetShare": "Hedef Paylaşım",
+      "targetPath": "Hedef Yol",
+      "schedule": "Zamanlama (cron)",
+      "username": "Kullanıcı Adı",
+      "password": "Şifre",
+      "save": "Kaydet",
+      "cancel": "İptal"
+    }
+  },
+  "apps": {
+    "title": "ZimaOS Uygulamaları",
+    "noApps": "Hiç uygulama bulunamadı",
+    "open": "Aç",
+    "install": "Kur",
+    "uninstall": "Kaldır",
+    "update": "Güncelle",
+    "running": "Çalışıyor",
+    "stopped": "Durduruldu"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "general": {
+      "title": "Genel",
+      "language": "Dil",
+      "theme": "Tema",
+      "light": "Açık",
+      "dark": "Koyu",
+      "system": "Sistem Ayarı"
+    },
+    "zerotier": {
+      "title": "ZeroTier",
+      "autoStart": "Uygulama başlatıldığında otomatik başlat",
+      "networkId": "Varsayılan Ağ Kimliği"
+    },
+    "backup": {
+      "title": "Yedekleme",
+      "notifications": "Yedekleme bildirimlerini etkinleştir",
+      "logLevel": "Hata Günlüğü Seviyesi"
+    },
+    "about": {
+      "title": "Hakkında",
+      "version": "Versiyon",
+      "license": "Lisans",
+      "repository": "Repository",
+      "reportIssue": "Hata Bildir",
+      "updates": "Güncellemeler",
+      "checkForUpdates": "Güncellemeleri Kontrol Et",
+      "checkingForUpdates": "Güncellemeler kontrol ediliyor...",
+      "updateAvailable": "Güncelleme mevcut",
+      "downloadUpdate": "Güncellemeyi İndir",
+      "downloading": "Güncelleme indiriliyor...",
+      "updateReady": "Güncelleme kuruluma hazır",
+      "installAndRestart": "Kur ve Yeniden Başlat",
+      "updateError": "Güncelleme kontrolü başarısız oldu",
+      "tryAgain": "Tekrar Dene",
+      "upToDate": "Güncel"
+    }
+  },
+  "common": {
+    "ok": "Tamam",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "İleri",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "warning": "Uyarı",
+    "info": "Bilgi",
+    "confirm": "Onayla",
+    "yes": "Evet",
+    "no": "Hayır"
+  },
+  "errors": {
+    "generic": "Bir hata oluştu",
+    "network": "Ağ hatası",
+    "notFound": "Bulunamadı",
+    "unauthorized": "Yetkilendirme hatası",
+    "forbidden": "Erişim engellendi",
+    "serverError": "Sunucu hatası",
+    "timeout": "İstek zaman aşımına uğradı",
+    "offline": "Çevrimdışısınız"
+  },
+  "notifications": {
+    "backupStarted": "Yedekleme başlatıldı",
+    "backupCompleted": "Yedekleme başarıyla tamamlandı",
+    "backupFailed": "Yedekleme başarısız oldu: {{error}}",
+    "deviceConnected": "Cihaz bağlandı: {{device}}",
+    "deviceDisconnected": "Cihaz bağlantısı kesildi: {{device}}",
+    "zerotierStarted": "ZeroTier başlatıldı",
+    "zerotierStopped": "ZeroTier durduruldu",
+    "updateAvailable": "Güncelleme mevcut: {{version}}"
+  }
+}
