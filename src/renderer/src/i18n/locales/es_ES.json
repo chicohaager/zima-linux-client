@@ -108,7 +108,9 @@
     "signOut": "Cerrar sesión",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sesión válida {{minutes}} min más",
-    "notPersisted": "Sesión iniciada, pero no se guardó: no sobrevivirá a un reinicio."
+    "notPersisted": "Sesión iniciada, pero no se guardó: no sobrevivirá a un reinicio.",
+    "resuming": "Restaurando la sesión guardada…",
+    "resumeFailed": "No se pudo restaurar la sesión guardada."
   },
   "devices": {
     "title": "Dispositivos",

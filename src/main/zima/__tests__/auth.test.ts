@@ -34,6 +34,22 @@ const makeTokens = (accessOffsetMs: number, suffix = '') => ({
 
 const envelope = (data: unknown) => ({ success: 200, message: 'ok', data })
 
+/**
+ * The two endpoints answer in DIFFERENT shapes, both measured live on 2026-07-30:
+ *
+ *   POST /v1/users/login    -> data.token.{access_token,refresh_token}   (nested)
+ *   POST /v1/users/refresh  -> data.{access_token,refresh_token,...}     (flat)
+ *
+ * Until then this file mocked renewal with the *login* shape. That is why 63 green tests
+ * coexisted with renewal being broken in production: the fixture had flattened the very
+ * difference the code got wrong, so the bug could not occur in the test world. The helpers
+ * below keep the two shapes apart on purpose — using the wrong one now goes red.
+ */
+const loginBody = (accessOffsetMs: number, suffix = '') =>
+  envelope({ token: makeTokens(accessOffsetMs, suffix) })
+const refreshBody = (accessOffsetMs: number, suffix = '') =>
+  envelope({ ...makeTokens(accessOffsetMs, suffix), expires_at: sec(NOW + accessOffsetMs) })
+
 let fetchMock: ReturnType<typeof vi.fn>
 
 beforeEach(() => {
@@ -100,6 +116,38 @@ describe('login', () => {
   })
 })
 
+describe('refresh — its own response shape', () => {
+  it('reads the two tokens FLAT under data, the way the device really answers', async () => {
+    const { refresh } = await import('../auth')
+    fetchMock.mockResolvedValue(jsonResponse(refreshBody(3 * 3_600_000)))
+
+    const result = await refresh('device.local', 80, 'stored-refresh-token')
+    expect(isOk(result)).toBe(true)
+    if (!isOk(result)) return
+    expect(result.value.access.kind).toBe('access')
+    expect(result.value.refresh.kind).toBe('refresh')
+  })
+
+  // Positivkontrolle für den behobenen Fehler: genau diese Form hat der Code vorher
+  // erwartet. Sie darf jetzt NICHT mehr durchgehen — sonst prüft der Test oben nichts,
+  // weil ein Parser, der beide Formen frisst, den Unterschied gar nicht bemerkt.
+  it('rejects the login shape — nested tokens are not what refresh returns', async () => {
+    const { refresh } = await import('../auth')
+    fetchMock.mockResolvedValue(jsonResponse(loginBody(3 * 3_600_000)))
+
+    const result = await refresh('device.local', 80, 'stored-refresh-token')
+    expect(isErr(result) && result.error.kind).toBe('malformed-response')
+  })
+
+  it('names the endpoint in the error, so a shape change is traceable', async () => {
+    const { refresh } = await import('../auth')
+    fetchMock.mockResolvedValue(jsonResponse(envelope({ expires_at: 1 })))
+
+    const result = await refresh('device.local', 80, 'stored-refresh-token')
+    expect(isErr(result) && result.error.message).toContain('refresh')
+  })
+})
+
 describe('TokenHolder', () => {
   it('returns the current token untouched while it is still fresh', async () => {
     const { TokenHolder, login } = await import('../auth')
@@ -129,7 +177,7 @@ describe('TokenHolder', () => {
 
     // Fresh tokens for the renewal, distinguishable from the initial pair.
     fetchMock.mockClear()
-    fetchMock.mockResolvedValue(jsonResponse(envelope({ token: makeTokens(3 * 3_600_000, '2') })))
+    fetchMock.mockResolvedValue(jsonResponse(refreshBody(3 * 3_600_000, '2')))
 
     const results = await Promise.all([
       holder.accessToken(),

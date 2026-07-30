@@ -219,10 +219,106 @@ nicht gebaut". Es fehlen: Remote-ID über ZeroTier (**Phase 3b**), Restart/Shutd
 Photos-Oberfläche und -Backup, Apps mit Offline-Cache, Playwright-E2E, Paketbau und die
 Distro-Start-Matrix. Die 28 Sprachdateien sind vollständig, 25 davon ungeprüft.
 
-**Was ich für den nächsten Beleg brauche:** ein **Testkonto** auf einem Gerät (gern ein
-Sub-Account mit wenig Rechten). Damit lässt sich der Erfolgspfad belegen — Anmeldung, Sitzung
-über einen Neustart hinweg, Gerätewechsel — und gleichzeitig die offene Frage aus Plan § 14
-Punkt 6 klären, welche Endpunkte ein Nicht-Admin überhaupt benutzen darf.
+## Erfolgspfad der Anmeldung — belegt, und zwar nicht von meinem eigenen Skript
+
+Bis hierher war jeder Beleg von einem Skript erzeugt, das ich selbst geschrieben habe. Der
+folgende stammt aus einer Sitzung, die ein Mensch an der gestarteten App durchgeklickt hat
+(lokaler Scan → Gerät auswählen → anmelden), auf einem ZimaOS-1.7.0-Host im LAN:
+
+| Behauptung | Gemessen woran |
+| --- | --- |
+| Der lokale Scan findet ein Gerät | Discovery-Treffer, Adresse ins Formular vorbelegt |
+| Anmeldung gelingt, Rolle wird gelesen | Sitzungskarte zeigt Benutzer + Rolle `admin` |
+| Zugriffs-Token läuft nach ~3 h ab | Anzeige „Sitzung noch **179 min** gültig" — deckt sich mit dem in Phase 2 gemessenen `casaos`-TTL |
+| Capability-Erkennung liest die echte Routenliste | **38 Gateway-Routen**, daraus 9 Funktionen als `verfügbar` |
+| Fotos sind auf diesem Host vollständig | „Fotos durchsehen", „Foto-Backup" **und** „Fotosuche & Facetten" alle verfügbar — dieser Host hat das Modul, der zweite nicht (siehe Plan § 7.3.1) |
+| Gerät landet in der Registry | `devices.json`, Eintrag mit „Zuletzt gesehen" und Verbindungsweg `#0` |
+
+### Was auf der Platte liegt — nachgesehen, nicht angenommen
+
+`credentials.json`, Modus **600**, 491 Bytes. Inhalt geprüft **ohne** die Werte auszugeben:
+
+- enthält genau drei Felder: `secret`, `backend`, `savedAt`
+- die Zeichenketten `password`, `accessToken`, `access_token` kommen **nicht** vor — es wird
+  nur der Refresh-Token gespeichert, wie vorgesehen
+- `backend` = `gnome_libsecret`, also ein **echter** Schlüsselbund. Nicht der
+  `basic_text`-Rückfall, bei dem Electron mit einem fest eingebauten Passwort „verschlüsselt"
+- der Wert beginnt base64-dekodiert mit `v11\0` — der OSCrypt-AES-Kopf. Gegenprobe: der
+  Klartext-JWT (`eyJ`) ist **nirgends** in der Datei zu finden. Damit ist „verschlüsselt" an der
+  Sache gemessen und nicht am Rückgabewert des Verschlüsselers
+
+### Offener Punkt, der dabei aufgefallen ist
+
+`devices.json` hat Modus **664** — lesbar für jeden lokalen Benutzer. Es enthält keine
+Geheimnisse, aber Gerätenamen und LAN-Adressen, also Netz-Topologie. Sollte auf 600 wie die
+Credentials. Noch **nicht** geändert.
+
+## Zwei echte Fehler, die erst der Neustart am laufenden Programm gezeigt hat
+
+Beide wurden von **Handbenutzung** gefunden, nicht von Tests oder Gates — es lohnt sich, das
+festzuhalten, weil beide Klassen für Prüfungen unsichtbar sind.
+
+### 1. Die Erneuerung hat nie funktioniert — bei 63 grünen Tests
+
+Symptom: Gerät nach dem Neustart gemerkt, Sitzung weg. Erst als der fehlende Aufruf eingebaut
+war, wurde der Grund laut sichtbar: **„Das Gerät hat in einer Form geantwortet, die dieser
+Client nicht versteht."**
+
+Gemessen an einem echten Gerät — die beiden Auth-Endpunkte antworten **unterschiedlich**:
+
+| Endpunkt | Antwort |
+| --- | --- |
+| `POST /v1/users/login` | `data.token.{access_token,refresh_token}` — **verschachtelt** |
+| `POST /v1/users/refresh` | `data.{access_token,refresh_token,expires_at}` — **flach** |
+
+Ich hatte `login` live gemessen und `refresh` nur aus dem Web-Bundle abgeleitet — der Vermerk am
+Endpunkt sagte selbst `bundle` statt `live`. Dann liefen beide durch **einen** Parser. Zwei
+Dinge haben das verborgen:
+
+- Der Fehlerpfad wird im Alltag nie betreten: beim Entwickeln ist man frisch angemeldet.
+- Das Test-Fixture baute die Antwort der *Erneuerung* mit der Form des *Logins*. Die Testwelt
+  hatte genau den Unterschied wegvereinfacht, an dem der Code zerbrach — der Fehler *konnte*
+  dort nicht auftreten.
+
+Jetzt zwei getrennte Leser mit je ihrem Messdatum, und drei Tests, darunter eine
+**Positivkontrolle**, die die *fremde* Form ausdrücklich ablehnt. Gegenprobe gefahren: den
+Fehler kurz wieder eingebaut → **4 von 11 Tests rot**, darunter der Renewal-Test, der vorher
+grün log. Ein Test, der nie rot war, ist kein Wächter.
+
+**Beleg am laufenden Programm:** Der gespeicherte Refresh-Token ist beim Neustart **rotiert**
+(SHA-256-Präfix `d860af1d` → `343cc23c`, `savedAt` auf die Sekunde des App-Starts), und die
+Sitzungskarte zeigt wieder Konto, Rolle, Verbindungsweg und 180 Minuten — ohne Passwort. Der
+Hash-Wechsel ist der Zeuge, dass der Token *ausgegeben* wurde; eine Erfolgsmeldung allein wäre
+nur das Echo der eigenen Anfrage. Das nicht aktive Gerät blieb unangetastet.
+
+### 2. Die Anmeldemaske blieb nach korrektem Passwort stehen
+
+Der Erfolgs-Handler tat alles am **Modell** — Passwort verwerfen, Abfragen invalidieren — und
+nichts am **Ansichtszustand**: der Bildschirm hielt weiter seinen Anmelde-Ziel-Zustand und
+rendelte deshalb weiter das Formular. Wegklicken und Zurückkommen entlud die Komponente, und die
+Übersicht erschien. Für den Nutzer las sich das als „Anmeldung tut nichts", obwohl die Sitzung
+längst stand. Behoben über einen `onSignedIn`-Rückruf, der den Zustand dort zurücksetzt, wo er
+liegt.
+
+Keine Fehlermeldung, kein roter Test, kein Log-Eintrag — die Anmeldung war ja erfolgreich. Diese
+Lücke sitzt ausschließlich zwischen „Daten sind neu" und „der Nutzer sieht das Neue".
+
+⚠️ **Was daran noch unbelegt ist:** Fehler 1 ist am laufenden Programm bewiesen, Fehler 2
+**nicht** — dafür braucht es eine echte Anmeldung mit Passwort, also einen Menschen mit
+Zugangsdaten. Bis dahin gilt: im Code behoben, im Bild nicht bestätigt.
+
+## Nebenbefund, der Plan § 7.3.1 live bestätigt
+
+Die Registry hält jetzt zwei Geräte. Das zweite meldet `photoLibrary: false`, aber
+`photoBrowse: true` und `photoBackup: true` — genau die Aufteilung, mit der „Photos ist Pflicht"
+auflösbar war: Durchsehen und Backup hängen an der Files-API und gehen auf **jedem** Gerät, nur
+Suche und Facetten brauchen das Modul. Das war bisher aus der Routentabelle abgeleitet; jetzt
+steht es als gespeicherte Fähigkeit eines echten Geräts da.
+
+**Was für die restlichen Belege noch fehlt:** ein **Sub-Account mit wenig Rechten** für Plan
+§ 14 Punkt 6 — welche Endpunkte ein Nicht-Admin überhaupt benutzen darf. Der Admin-Pfad allein
+beantwortet das nicht. Und der Gerätewechsel zwischen den beiden gespeicherten Geräten ist
+angelegt, aber noch nicht durchgeklickt.
 
 ## Alt-Stand
 

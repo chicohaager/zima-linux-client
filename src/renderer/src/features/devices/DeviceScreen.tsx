@@ -9,6 +9,7 @@ import { DeviceList } from './DeviceList'
 import { DiscoveryResults } from './DiscoveryResults'
 import { SessionCard } from '../session/SessionCard'
 import { SignInForm } from '../session/SignInForm'
+import { useAutoResume } from '../session/useAutoResume'
 
 interface SignInTarget {
   readonly host: string
@@ -26,6 +27,9 @@ interface SignInTarget {
  */
 export const DeviceScreen = (): React.JSX.Element => {
   const { t } = useTranslation()
+  // Restores a stored session before the user has to do anything. Its outcome is rendered
+  // below, because a failed restore that says nothing looks like an unexplained logout.
+  const resume = useAutoResume()
   const [target, setTarget] = useState<SignInTarget | null>(null)
   const [found, setFound] = useState<readonly { device: DiscoveredDevice; probe: ProbeResult }[] | null>(
     null,
@@ -64,6 +68,7 @@ export const DeviceScreen = (): React.JSX.Element => {
         kind={target.kind}
         displayName={target.displayName}
         onCancel={() => setTarget(null)}
+        onSignedIn={() => setTarget(null)}
       />
     )
   }
@@ -75,6 +80,30 @@ export const DeviceScreen = (): React.JSX.Element => {
       <SectionTitle>{t('device.title')}</SectionTitle>
 
       <SessionCard />
+
+      {resume.phase === 'running' && (
+        <Card className="mb-4">
+          <Muted>{t('signIn.resuming')}</Muted>
+        </Card>
+      )}
+
+      {/* A stored token that fails to restore is named, with the technical reason
+          underneath. "nothing-stored" is deliberately silent — that is a fresh install,
+          not a fault. */}
+      {resume.phase === 'failed' && (
+        <div className="mb-4">
+          <ErrorNote
+            message={`${t('signIn.resumeFailed')} ${t(resume.error.i18nKey)}`}
+            detail={
+              resume.error.context === undefined
+                ? undefined
+                : Object.entries(resume.error.context)
+                    .map(([key, value]) => `${key}=${String(value)}`)
+                    .join('  ')
+            }
+          />
+        </div>
+      )}
 
       <DeviceList
         onConnect={(device: Device) => {

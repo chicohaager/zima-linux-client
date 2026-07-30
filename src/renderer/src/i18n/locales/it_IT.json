@@ -108,7 +108,9 @@
     "signOut": "Esci",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sessione valida per altri {{minutes}} min",
-    "notPersisted": "Accesso effettuato, ma la sessione non è stata salvata: non sopravvivrà a un riavvio."
+    "notPersisted": "Accesso effettuato, ma la sessione non è stata salvata: non sopravvivrà a un riavvio.",
+    "resuming": "Ripristino della sessione salvata…",
+    "resumeFailed": "Non è stato possibile ripristinare la sessione salvata."
   },
   "devices": {
     "title": "Dispositivi",

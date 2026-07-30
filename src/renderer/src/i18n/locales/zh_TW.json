@@ -108,7 +108,9 @@
     "signOut": "登出",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "工作階段還有 {{minutes}} 分鐘有效",
-    "notPersisted": "已登入，但工作階段未儲存——重新啟動後不會保留。"
+    "notPersisted": "已登入，但工作階段未儲存——重新啟動後不會保留。",
+    "resuming": "正在還原已儲存的工作階段…",
+    "resumeFailed": "無法還原已儲存的工作階段。"
   },
   "devices": {
     "title": "裝置",

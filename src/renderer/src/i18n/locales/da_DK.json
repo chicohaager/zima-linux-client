@@ -108,7 +108,9 @@
     "signOut": "Log ud",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sessionen er gyldig i {{minutes}} min endnu",
-    "notPersisted": "Logget ind, men sessionen blev ikke gemt — den overlever ikke en genstart."
+    "notPersisted": "Logget ind, men sessionen blev ikke gemt — den overlever ikke en genstart.",
+    "resuming": "Gendanner den gemte session…",
+    "resumeFailed": "Den gemte session kunne ikke gendannes."
   },
   "devices": {
     "title": "Enheder",

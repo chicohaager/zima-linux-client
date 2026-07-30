@@ -108,7 +108,9 @@
     "signOut": "サインアウト",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "セッションは残り {{minutes}} 分有効",
-    "notPersisted": "サインインしましたが、セッションは保存されていません。再起動後は残りません。"
+    "notPersisted": "サインインしましたが、セッションは保存されていません。再起動後は残りません。",
+    "resuming": "保存されたセッションを復元しています…",
+    "resumeFailed": "保存されたセッションを復元できませんでした。"
   },
   "devices": {
     "title": "デバイス",

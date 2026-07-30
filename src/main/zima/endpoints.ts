@@ -43,7 +43,11 @@ export const BASE = {
 export const USERS = {
   /** live: POST {username,password} -> data.token.{access_token,refresh_token} */
   login: '/login',
-  /** bundle (17 occurrences): token renewal */
+  /**
+   * live 2026-07-30: POST {refresh_token} -> data.{access_token,refresh_token,expires_at}
+   * FLACH unter `data` — anders als /login, das die Tokens unter `data.token` verschachtelt.
+   * Vorher stand hier nur „bundle", und genau diese ungemessene Stelle war falsch geparst.
+   */
   refresh: '/refresh',
   /** bundle: current user */
   current: '/current',

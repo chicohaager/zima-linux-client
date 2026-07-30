@@ -108,7 +108,9 @@
     "signOut": "Sair",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sessão válida por mais {{minutes}} min",
-    "notPersisted": "Conectado, mas a sessão não foi salva — ela não sobreviverá a uma reinicialização."
+    "notPersisted": "Conectado, mas a sessão não foi salva — ela não sobreviverá a uma reinicialização.",
+    "resuming": "Restaurando a sessão salva…",
+    "resumeFailed": "Não foi possível restaurar a sessão salva."
   },
   "devices": {
     "title": "Dispositivos",

@@ -108,7 +108,9 @@
     "signOut": "Logga ut",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sessionen gäller i {{minutes}} min till",
-    "notPersisted": "Inloggad, men sessionen sparades inte — den överlever inte en omstart."
+    "notPersisted": "Inloggad, men sessionen sparades inte — den överlever inte en omstart.",
+    "resuming": "Återställer den sparade sessionen…",
+    "resumeFailed": "Den sparade sessionen kunde inte återställas."
   },
   "devices": {
     "title": "Enheter",

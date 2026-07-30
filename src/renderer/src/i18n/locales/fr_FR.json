@@ -108,7 +108,9 @@
     "signOut": "Se déconnecter",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Session valable encore {{minutes}} min",
-    "notPersisted": "Connecté, mais la session n’a pas été enregistrée — elle ne survivra pas à un redémarrage."
+    "notPersisted": "Connecté, mais la session n’a pas été enregistrée — elle ne survivra pas à un redémarrage.",
+    "resuming": "Restauration de la session enregistrée…",
+    "resumeFailed": "La session enregistrée n'a pas pu être restaurée."
   },
   "devices": {
     "title": "Appareils",

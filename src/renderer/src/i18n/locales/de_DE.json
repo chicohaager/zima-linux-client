@@ -108,7 +108,9 @@
     "signOut": "Abmelden",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sitzung noch {{minutes}} min gültig",
-    "notPersisted": "Angemeldet, aber die Sitzung wurde nicht gespeichert — sie übersteht keinen Neustart."
+    "notPersisted": "Angemeldet, aber die Sitzung wurde nicht gespeichert — sie übersteht keinen Neustart.",
+    "resuming": "Gespeicherte Sitzung wird wiederhergestellt…",
+    "resumeFailed": "Die gespeicherte Sitzung konnte nicht wiederhergestellt werden."
   },
   "devices": {
     "title": "Geräte",

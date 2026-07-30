@@ -108,7 +108,9 @@
     "signOut": "退出登录",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "会话还有 {{minutes}} 分钟有效",
-    "notPersisted": "已登录，但会话未保存——重启后不会保留。"
+    "notPersisted": "已登录，但会话未保存——重启后不会保留。",
+    "resuming": "正在恢复已保存的会话…",
+    "resumeFailed": "无法恢复已保存的会话。"
   },
   "devices": {
     "title": "设备",

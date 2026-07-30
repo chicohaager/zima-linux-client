@@ -108,7 +108,9 @@
     "signOut": "Tanca la sessió",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "La sessió és vàlida {{minutes}} min més",
-    "notPersisted": "Sessió iniciada, però no s’ha desat: no sobreviurà a un reinici."
+    "notPersisted": "Sessió iniciada, però no s’ha desat: no sobreviurà a un reinici.",
+    "resuming": "S'està restaurant la sessió desada…",
+    "resumeFailed": "No s'ha pogut restaurar la sessió desada."
   },
   "devices": {
     "title": "Dispositius",
