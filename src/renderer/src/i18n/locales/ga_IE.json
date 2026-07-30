@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Cúltaca",
     "present": "ar fáil",
-    "absent": "níl ar fáil ar an ngléas seo"
+    "absent": "níl ar fáil ar an ngléas seo",
+    "ztOnline": "ceangailte",
+    "ztOffline": "dícheangailte",
+    "ztNotRunning": "níl sé ag rith ar an ngléas",
+    "ztUnreachable": "níorbh fhéidir a dheimhniú",
+    "ztUnknown": "níor seiceáladh go fóill"
   },
   "photos": {
     "title": "Grianghraif",

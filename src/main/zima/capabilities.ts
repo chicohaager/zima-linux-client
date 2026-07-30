@@ -1,4 +1,5 @@
-import type { Capabilities } from '@shared/domain'
+import type { Capabilities, ZerotierState } from '@shared/domain'
+import { isErr, type Result } from '@shared/result'
 import { BASE } from './endpoints'
 
 /**
@@ -34,10 +35,48 @@ export const deriveCapabilities = (routes: readonly string[]): Capabilities => {
     apps: hasRoute(routes, BASE.appManagement) || hasRoute(routes, BASE.apps),
     appStore: hasRoute(routes, '/v3/app_store'),
     systemPower: hasRoute(routes, BASE.zimaos),
-    zerotier: hasRoute(routes, BASE.zt),
+    // Deliberately NOT derived from the route table. `/v1/zt` is present on hosts where
+    // the ZeroTier daemon is not running at all — measured 2026-07-30: one host answered
+    // `/v2/zimaos/zt/info` with 200 and status "online", the other with 500 and
+    // "dial tcp 127.0.0.1:9993: connect: connection refused". Route presence was a proxy
+    // signal, and it showed a green "available" for a feature that could not be used.
+    // 'unknown' means nobody has asked the device yet; `probeZerotier` replaces it.
+    zerotier: 'unknown',
     backup: hasRoute(routes, '/v2/backup'),
     routes,
   }
+}
+
+/**
+ * Asks the device whether ZeroTier actually works, instead of inferring it.
+ *
+ * Needs an access token, so it runs after sign-in — the route table alone cannot answer
+ * this. The three outcomes are kept apart because they call for different words in the UI:
+ * "connected", "installed but switched off", "this device does not offer it".
+ */
+export const probeZerotier = async (
+  fetchInfo: () => Promise<Result<unknown>>,
+): Promise<ZerotierState> => {
+  const result = await fetchInfo()
+  if (isErr(result)) {
+    // A 500 whose message names port 9993 is the daemon being down — a different statement
+    // from "the endpoint is missing", and the user can act on it (enable it on the device).
+    const text = `${result.error.message} ${JSON.stringify(result.error.context ?? {})}`
+    if (text.includes('9993') || text.includes('connection refused')) return { kind: 'not-running' }
+    if (result.error.kind === 'unexpected-status') return { kind: 'absent' }
+    return { kind: 'unreachable', reason: result.error.i18nKey }
+  }
+
+  const info = result.value as Partial<Record<'id' | 'ip' | 'name' | 'status', unknown>> | null
+  const id = typeof info?.id === 'string' ? info.id : null
+  const ip = typeof info?.ip === 'string' ? info.ip : null
+  const name = typeof info?.name === 'string' ? info.name : null
+  const status = typeof info?.status === 'string' ? info.status : null
+  if (id === null || status === null) {
+    // Answering 200 with a shape we do not know must not read as "online".
+    return { kind: 'unreachable', reason: 'error.malformedResponse' }
+  }
+  return { kind: status === 'online' ? 'online' : 'offline', networkId: id, ip, networkName: name }
 }
 
 /**

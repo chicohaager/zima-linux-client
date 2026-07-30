@@ -11,6 +11,11 @@ import { Card, Muted } from '../../shared/ui/Card'
  * an absent feature is spelled out rather than hidden.
  */
 
+/**
+ * Only the plainly boolean rows. ZeroTier is rendered separately below because it has
+ * four distinct answers — a green dot for "route exists" was exactly the false green this
+ * list is supposed to prevent.
+ */
 const ORDER = [
   'photoBrowse',
   'photoBackup',
@@ -19,9 +24,31 @@ const ORDER = [
   'apps',
   'appStore',
   'systemPower',
-  'zerotier',
   'backup',
 ] as const satisfies readonly (keyof Capabilities)[]
+
+/** Maps the measured state to a dot colour and a phrase — no state falls through. */
+const zerotierLook = (
+  state: Capabilities['zerotier'],
+): { readonly tone: string; readonly key: string; readonly detail: string | null } => {
+  if (state === 'unknown') return { tone: 'var(--text-muted)', key: 'capability.ztUnknown', detail: null }
+  switch (state.kind) {
+    case 'online':
+      return {
+        tone: 'var(--success)',
+        key: 'capability.ztOnline',
+        detail: state.networkName,
+      }
+    case 'offline':
+      return { tone: 'var(--warning)', key: 'capability.ztOffline', detail: state.networkName }
+    case 'not-running':
+      return { tone: 'var(--warning)', key: 'capability.ztNotRunning', detail: null }
+    case 'absent':
+      return { tone: 'var(--text-muted)', key: 'capability.absent', detail: null }
+    case 'unreachable':
+      return { tone: 'var(--text-muted)', key: 'capability.ztUnreachable', detail: null }
+  }
+}
 
 interface Props {
   readonly capabilities: Capabilities
@@ -54,6 +81,26 @@ export const CapabilityList = ({ capabilities }: Props): React.JSX.Element => {
             </li>
           )
         })}
+
+        {/* ZeroTier: the measured state, with the network name when the device gave one.
+            Never a bare green dot — that was the false green this list exists to avoid. */}
+        {(() => {
+          const look = zerotierLook(capabilities.zerotier)
+          return (
+            <li className="flex items-center gap-2 text-sm">
+              <span
+                aria-hidden
+                className="inline-block h-2 w-2 shrink-0 rounded-full"
+                style={{ background: look.tone }}
+              />
+              <span>{t('capability.zerotier')}</span>
+              <span className="ml-auto text-right" style={{ color: 'var(--text-muted)' }}>
+                {t(look.key)}
+                {look.detail !== null && ` · ${look.detail}`}
+              </span>
+            </li>
+          )
+        })()}
       </ul>
 
       {!capabilities.photoLibrary && (

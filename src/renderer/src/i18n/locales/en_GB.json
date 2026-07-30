@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Backup",
     "present": "available",
-    "absent": "not available on this device"
+    "absent": "not available on this device",
+    "ztOnline": "connected",
+    "ztOffline": "disconnected",
+    "ztNotRunning": "not running on the device",
+    "ztUnreachable": "could not be determined",
+    "ztUnknown": "not checked yet"
   },
   "photos": {
     "title": "Photos",

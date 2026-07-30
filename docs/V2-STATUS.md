@@ -303,9 +303,10 @@ liegt.
 Keine Fehlermeldung, kein roter Test, kein Log-Eintrag — die Anmeldung war ja erfolgreich. Diese
 Lücke sitzt ausschließlich zwischen „Daten sind neu" und „der Nutzer sieht das Neue".
 
-⚠️ **Was daran noch unbelegt ist:** Fehler 1 ist am laufenden Programm bewiesen, Fehler 2
-**nicht** — dafür braucht es eine echte Anmeldung mit Passwort, also einen Menschen mit
-Zugangsdaten. Bis dahin gilt: im Code behoben, im Bild nicht bestätigt.
+**Beleg:** von der Person bestätigt, die den Fehler gemeldet hat — Abmelden, neu anmelden, die
+Übersicht erscheint direkt. Diesen Beleg konnte ich nicht selbst führen: er braucht ein Passwort,
+und das habe ich nicht. Genau deshalb steht hier, **wer** gemessen hat und nicht nur, dass
+gemessen wurde.
 
 ## Nebenbefund, der Plan § 7.3.1 live bestätigt
 

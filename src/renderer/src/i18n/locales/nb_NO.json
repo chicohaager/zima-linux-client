@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Sikkerhetskopi",
     "present": "tilgjengelig",
-    "absent": "ikke tilgjengelig på denne enheten"
+    "absent": "ikke tilgjengelig på denne enheten",
+    "ztOnline": "tilkoblet",
+    "ztOffline": "frakoblet",
+    "ztNotRunning": "kjører ikke på enheten",
+    "ztUnreachable": "kunne ikke fastslås",
+    "ztUnknown": "ikke kontrollert ennå"
   },
   "photos": {
     "title": "Bilder",

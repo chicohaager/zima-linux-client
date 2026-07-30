@@ -65,7 +65,23 @@ export const request = async <T>(
       headers: {
         accept: 'application/json',
         ...(opts.body === undefined ? {} : { 'content-type': 'application/json' }),
-        ...(opts.token === undefined ? {} : { authorization: `Bearer ${opts.token}` }),
+        /**
+         * The BARE token, no `Bearer ` prefix.
+         *
+         * Measured 2026-07-30 against a v1.7.0 host on `GET /v2/zimaos/zt/info`:
+         *   Authorization: <jwt>          -> 200 (or 500 from the service behind it)
+         *   Authorization: Bearer <jwt>   -> 401 {"message":"invalid or expired jwt"}
+         *   Authorization: bearer <jwt>   -> 401 (same)
+         *
+         * The `Bearer` form was an assumption carried over from habit — it is what almost
+         * every other API wants, and it was never measured here. Nothing had caught it
+         * because the client had not made a single authenticated request yet.
+         *
+         * ⚠️ The witness matters: `/v2/zimaos/device/info` answers 200 for every variant
+         * INCLUDING no header at all, so it cannot decide this question. An endpoint that
+         * does not enforce auth is useless as proof about auth.
+         */
+        ...(opts.token === undefined ? {} : { authorization: opts.token }),
       },
       ...(opts.body === undefined ? {} : { body: JSON.stringify(opts.body) }),
     })

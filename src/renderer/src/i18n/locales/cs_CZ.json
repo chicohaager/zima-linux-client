@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Záloha",
     "present": "dostupné",
-    "absent": "na tomto zařízení nedostupné"
+    "absent": "na tomto zařízení nedostupné",
+    "ztOnline": "připojeno",
+    "ztOffline": "odpojeno",
+    "ztNotRunning": "na zařízení neběží",
+    "ztUnreachable": "nelze zjistit",
+    "ztUnknown": "ještě neověřeno"
   },
   "photos": {
     "title": "Fotky",

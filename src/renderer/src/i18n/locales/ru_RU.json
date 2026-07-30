@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Резервная копия",
     "present": "доступно",
-    "absent": "недоступно на этом устройстве"
+    "absent": "недоступно на этом устройстве",
+    "ztOnline": "подключено",
+    "ztOffline": "отключено",
+    "ztNotRunning": "не запущено на устройстве",
+    "ztUnreachable": "не удалось определить",
+    "ztUnknown": "ещё не проверено"
   },
   "photos": {
     "title": "Фото",

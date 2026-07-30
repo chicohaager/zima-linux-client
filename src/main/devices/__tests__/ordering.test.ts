@@ -103,7 +103,7 @@ describe('mergeDevice', () => {
         apps: true,
         appStore: true,
         systemPower: true,
-        zerotier: true,
+        zerotier: { kind: 'online', networkId: 'aa11bb22cc33dd44', ip: '10.147.17.9', networkName: 'net' },
         backup: true,
         routes: ['/v2/photos'],
       },

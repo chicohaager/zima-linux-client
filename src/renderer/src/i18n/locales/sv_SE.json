@@ -36,7 +36,12 @@
     "zerotier": "Remote ID (ZeroTier)",
     "backup": "Säkerhetskopiering",
     "present": "tillgänglig",
-    "absent": "inte tillgänglig på denna enhet"
+    "absent": "inte tillgänglig på denna enhet",
+    "ztOnline": "ansluten",
+    "ztOffline": "frånkopplad",
+    "ztNotRunning": "körs inte på enheten",
+    "ztUnreachable": "kunde inte fastställas",
+    "ztUnknown": "inte kontrollerad än"
   },
   "photos": {
     "title": "Foton",

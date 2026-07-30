@@ -8,6 +8,33 @@
  * present on only one of them. The OS version therefore proves nothing about the
  * feature surface — the route table does.
  */
+/**
+ * What the device says about its own ZeroTier state — the basis for "Remote ID".
+ *
+ * Measured 2026-07-30 on two v1.7.0 hosts via `GET /v2/zimaos/zt/info`:
+ * one answered 200 with `status:"online"` and an IceWhale-managed network, the other 500
+ * with `dial tcp 127.0.0.1:9993: connect: connection refused`. Both had the `/v1/zt`
+ * gateway route, so the route proved nothing.
+ *
+ * The cases are kept apart because each needs different words and a different next step:
+ * a switched-off daemon is fixable on the device, a missing endpoint is not.
+ */
+export type ZerotierState =
+  | {
+      readonly kind: 'online' | 'offline'
+      /** ZeroTier network id the device belongs to. */
+      readonly networkId: string
+      /** The device's address inside that network. */
+      readonly ip: string | null
+      readonly networkName: string | null
+    }
+  /** Endpoint answered, daemon behind it is not listening (port 9993 refused). */
+  | { readonly kind: 'not-running' }
+  /** This device does not offer the endpoint at all. */
+  | { readonly kind: 'absent' }
+  /** We could not find out — the reason is carried so the UI never invents one. */
+  | { readonly kind: 'unreachable'; readonly reason: string }
+
 export interface Capabilities {
   /** Semantic photo search, facets, memories. Needs the photos module. */
   readonly photoLibrary: boolean
@@ -19,7 +46,13 @@ export interface Capabilities {
   readonly apps: boolean
   readonly appStore: boolean
   readonly systemPower: boolean
-  readonly zerotier: boolean
+  /**
+   * Measured, never derived. `/v1/zt` sits in the route table of hosts where the ZeroTier
+   * daemon is not running, so route presence would report a usable feature that is not.
+   * `'unknown'` until `probeZerotier` has asked the device — deliberately not `false`,
+   * because "nobody looked yet" and "the device says no" are different statements.
+   */
+  readonly zerotier: ZerotierState | 'unknown'
   readonly backup: boolean
   /** Raw route paths, kept so the UI can explain exactly what it found. */
   readonly routes: readonly string[]

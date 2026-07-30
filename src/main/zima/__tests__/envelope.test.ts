@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { envelopeIsOk, envelopeToError, isEnvelope, unwrap } from '../envelope'
 
 /**
@@ -83,5 +83,53 @@ describe('unwrap', () => {
     expect(unwrap(STATUS_OK)).toEqual(STATUS_OK.data)
     const routes = [{ path: '/v1/users' }]
     expect(unwrap(routes)).toBe(routes)
+  })
+})
+
+/**
+ * The Authorization header format, pinned by a test because it is invisible otherwise.
+ *
+ * Measured 2026-07-30: ZimaOS wants the BARE JWT. `Bearer <jwt>` is answered with
+ * 401 {"message":"invalid or expired jwt"} on an endpoint that actually enforces auth.
+ * The client had shipped the `Bearer` form for weeks without anything noticing, because
+ * no authenticated request had been made yet.
+ */
+describe('request — Authorization header', () => {
+  it('sends the token bare, without a Bearer prefix', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ success: 200, message: 'ok', data: { ok: true } }),
+    } as Response)
+    vi.stubGlobal('fetch', fetchMock)
+
+    const { request } = await import('../client')
+    await request('device.local', 80, '/v2/zimaos/zt/info', { token: 'the-jwt' })
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+    const headers = init.headers as Record<string, string>
+    expect(headers['authorization']).toBe('the-jwt')
+    expect(headers['authorization']).not.toContain('Bearer')
+
+    vi.unstubAllGlobals()
+    vi.resetModules()
+  })
+
+  it('sends no Authorization header at all when there is no token', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ success: 200, message: 'ok', data: {} }),
+    } as Response)
+    vi.stubGlobal('fetch', fetchMock)
+
+    const { request } = await import('../client')
+    await request('device.local', 80, '/v1/gateway/routes')
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+    expect(Object.keys(init.headers as Record<string, string>)).not.toContain('authorization')
+
+    vi.unstubAllGlobals()
+    vi.resetModules()
   })
 })
