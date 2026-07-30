@@ -108,7 +108,9 @@
     "signOut": "Deconectare",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sesiunea este valabilă încă {{minutes}} min",
-    "notPersisted": "Autentificat, dar sesiunea nu a fost salvată — nu va supraviețui unei reporniri."
+    "notPersisted": "Autentificat, dar sesiunea nu a fost salvată — nu va supraviețui unei reporniri.",
+    "resuming": "Se restaurează sesiunea salvată…",
+    "resumeFailed": "Sesiunea salvată nu a putut fi restaurată."
   },
   "devices": {
     "title": "Dispozitive",

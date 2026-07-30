@@ -108,7 +108,9 @@
     "signOut": "Odhlásiť sa",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sesia platí ešte {{minutes}} min",
-    "notPersisted": "Prihlásené, ale sesia nebola uložená — neprežije restart."
+    "notPersisted": "Prihlásené, ale sesia nebola uložená — neprežije restart.",
+    "resuming": "Obnovuje sa uložená sesia…",
+    "resumeFailed": "Uloženú sesiu sa nepodarilo obnoviť."
   },
   "devices": {
     "title": "Zariadenia",

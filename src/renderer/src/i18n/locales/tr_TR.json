@@ -108,7 +108,9 @@
     "signOut": "Oturumu kapat",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Oturum {{minutes}} dakika daha geçerli",
-    "notPersisted": "Oturum açıldı, ancak kaydedilmedi — yeniden başlatmadan sonra kalmaz."
+    "notPersisted": "Oturum açıldı, ancak kaydedilmedi — yeniden başlatmadan sonra kalmaz.",
+    "resuming": "Kaydedilmiş oturum geri yükleniyor…",
+    "resumeFailed": "Kaydedilmiş oturum geri yüklenemedi."
   },
   "devices": {
     "title": "Cihazlar",

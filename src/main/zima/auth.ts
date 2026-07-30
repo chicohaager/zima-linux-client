@@ -26,23 +26,46 @@ interface LoginPayload {
   readonly token?: { readonly access_token?: unknown; readonly refresh_token?: unknown }
 }
 
-const readTokenPair = (payload: unknown): Result<{ access: string; refresh: string }> => {
-  const token = (payload as LoginPayload | null)?.token
-  const access = token?.access_token
-  const refresh = token?.refresh_token
+interface RefreshPayload {
+  readonly access_token?: unknown
+  readonly refresh_token?: unknown
+}
 
+const pairOrMalformed = (
+  access: unknown,
+  refresh: unknown,
+  where: string,
+): Result<{ access: string; refresh: string }> => {
   if (typeof access !== 'string' || typeof refresh !== 'string') {
     // A shape we do not recognise is an error, never an empty session. An empty
     // session would silently look like "not signed in" and hide a protocol change.
     return err(
-      appError(
-        'malformed-response',
-        'login response did not contain data.token.access_token/refresh_token',
-        'error.malformedResponse',
-      ),
+      appError('malformed-response', `${where} response had an unexpected token shape`, 'error.malformedResponse'),
     )
   }
   return ok({ access, refresh })
+}
+
+/** live 2026-07-30: `data.token.{access_token,refresh_token}` — NESTED under `token`. */
+const readLoginTokens = (payload: unknown): Result<{ access: string; refresh: string }> => {
+  const token = (payload as LoginPayload | null)?.token
+  return pairOrMalformed(token?.access_token, token?.refresh_token, 'login')
+}
+
+/**
+ * live 2026-07-30 against a v1.7.0 host: `POST /v1/users/refresh` answers
+ * `{"success":200,"message":"ok","data":{"refresh_token":…,"access_token":…,"expires_at":…}}`
+ * — the two tokens sit **flat under `data`**, NOT nested under `token` the way login does.
+ *
+ * Reusing the login reader here was a real bug: renewal always failed with
+ * `malformed-response`, which meant the stored refresh token was written on every sign-in
+ * and could never be spent. The symptom was "device remembered, but logged out after a
+ * restart". Two endpoints of the same API family, two shapes — so two readers, each
+ * carrying the date its shape was measured.
+ */
+const readRefreshTokens = (payload: unknown): Result<{ access: string; refresh: string }> => {
+  const data = payload as RefreshPayload | null
+  return pairOrMalformed(data?.access_token, data?.refresh_token, 'refresh')
 }
 
 const buildTokens = (access: string, refresh: string): Result<Tokens> => {
@@ -79,7 +102,7 @@ export const login = async (
   })
   if (isErr(response)) return response
 
-  const pair = readTokenPair(response.value)
+  const pair = readLoginTokens(response.value)
   if (isErr(pair)) return pair
   return buildTokens(pair.value.access, pair.value.refresh)
 }
@@ -96,7 +119,7 @@ export const refresh = async (
   })
   if (isErr(response)) return response
 
-  const pair = readTokenPair(response.value)
+  const pair = readRefreshTokens(response.value)
   if (isErr(pair)) return pair
   return buildTokens(pair.value.access, pair.value.refresh)
 }

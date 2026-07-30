@@ -108,7 +108,9 @@
     "signOut": "Logg ut",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Økten er gyldig i {{minutes}} min til",
-    "notPersisted": "Logget inn, men økten ble ikke lagret — den overlever ikke en omstart."
+    "notPersisted": "Logget inn, men økten ble ikke lagret — den overlever ikke en omstart.",
+    "resuming": "Gjenoppretter den lagrede økten…",
+    "resumeFailed": "Den lagrede økten kunne ikke gjenopprettes."
   },
   "devices": {
     "title": "Enheter",

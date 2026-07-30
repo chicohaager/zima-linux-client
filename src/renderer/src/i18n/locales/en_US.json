@@ -108,7 +108,9 @@
     "signOut": "Sign out",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Session valid for another {{minutes}} min",
-    "notPersisted": "Signed in, but the session was not saved — it will not survive a restart."
+    "notPersisted": "Signed in, but the session was not saved — it will not survive a restart.",
+    "resuming": "Restoring the saved session…",
+    "resumeFailed": "The saved session could not be restored."
   },
   "devices": {
     "title": "Devices",

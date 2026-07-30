@@ -24,8 +24,16 @@ const RULES = [
   {
     name: 'maintainer identity',
     pattern: /\b(?:holgi|holger\.kuehn)\b/gi,
-    // The public funding slug and the deliberate maintainer contact are intentional.
-    allow: [/^holgi18114$/i, /^holgi$/i],
+    /**
+     * NO value-level allowance here, on purpose.
+     *
+     * This list used to contain /^holgi$/i — an exception exactly as wide as the pattern,
+     * which silently disabled the whole rule: the gate reported "clean" while the name sat
+     * in a tracked doc, and it could never have reported anything else. An allowance must
+     * be narrower than the thing it excuses, otherwise it is a deletion wearing a
+     * whitelist's clothes. Where the maintainer name is deliberate (funding slug, package
+     * author, licence) the exemption belongs in allowFiles, which is scoped to a path.
+     */
     allowFiles: ['package.json', 'README.md', 'liesmich.md', 'LICENSE'],
   },
   {

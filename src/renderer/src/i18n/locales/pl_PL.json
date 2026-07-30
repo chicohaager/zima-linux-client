@@ -108,7 +108,9 @@
     "signOut": "Wyloguj",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sesja ważna jeszcze {{minutes}} min",
-    "notPersisted": "Zalogowano, ale sesja nie została zapisana — nie przetrwa ponownego uruchomienia."
+    "notPersisted": "Zalogowano, ale sesja nie została zapisana — nie przetrwa ponownego uruchomienia.",
+    "resuming": "Przywracanie zapisanej sesji…",
+    "resumeFailed": "Nie udało się przywrócić zapisanej sesji."
   },
   "devices": {
     "title": "Urządzenia",

@@ -108,7 +108,9 @@
     "signOut": "로그아웃",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "세션이 {{minutes}}분 더 유효합니다",
-    "notPersisted": "로그인되었지만 세션이 저장되지 않았습니다. 재시작 후에는 남지 않습니다."
+    "notPersisted": "로그인되었지만 세션이 저장되지 않았습니다. 재시작 후에는 남지 않습니다.",
+    "resuming": "저장된 세션을 복원하는 중…",
+    "resumeFailed": "저장된 세션을 복원할 수 없습니다."
   },
   "devices": {
     "title": "장치",

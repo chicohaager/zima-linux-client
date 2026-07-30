@@ -108,7 +108,9 @@
     "signOut": "Kijelentkezés",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "A munkamenet még {{minutes}} percig érvényes",
-    "notPersisted": "Bejelentkezve, de a munkamenet nem lett mentve — nem éli túl az újraindítást."
+    "notPersisted": "Bejelentkezve, de a munkamenet nem lett mentve — nem éli túl az újraindítást.",
+    "resuming": "A mentett munkamenet visszaállítása…",
+    "resumeFailed": "A mentett munkamenetet nem sikerült visszaállítani."
   },
   "devices": {
     "title": "Eszközök",

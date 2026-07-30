@@ -108,7 +108,9 @@
     "signOut": "Afmelden",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sessie nog {{minutes}} min geldig",
-    "notPersisted": "Aangemeld, maar de sessie is niet opgeslagen — die overleeft geen herstart."
+    "notPersisted": "Aangemeld, maar de sessie is niet opgeslagen — die overleeft geen herstart.",
+    "resuming": "De opgeslagen sessie wordt hersteld…",
+    "resumeFailed": "De opgeslagen sessie kon niet worden hersteld."
   },
   "devices": {
     "title": "Apparaten",

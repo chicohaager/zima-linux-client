@@ -108,7 +108,9 @@
     "signOut": "Logáil amach",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Tá an seisiún bailí ar feadh {{minutes}} nóiméad eile",
-    "notPersisted": "Logáilte isteach, ach níor sábháladh an seisiún — ní mhairfidh sé thar atosú."
+    "notPersisted": "Logáilte isteach, ach níor sábháladh an seisiún — ní mhairfidh sé thar atosú.",
+    "resuming": "An seisiún sábháilte á athchóiriú…",
+    "resumeFailed": "Níorbh fhéidir an seisiún sábháilte a athchóiriú."
   },
   "devices": {
     "title": "Gléasanna",

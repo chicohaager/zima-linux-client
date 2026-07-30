@@ -108,7 +108,9 @@
     "signOut": "Odhlásit se",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sezení platí ještě {{minutes}} min",
-    "notPersisted": "Přihlášeno, ale sezení nebylo uloženo — nepřežije restart."
+    "notPersisted": "Přihlášeno, ale sezení nebylo uloženo — nepřežije restart.",
+    "resuming": "Obnovuje se uložené sezení…",
+    "resumeFailed": "Uložené sezení se nepodařilo obnovit."
   },
   "devices": {
     "title": "Zařízení",

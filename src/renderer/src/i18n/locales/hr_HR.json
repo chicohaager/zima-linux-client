@@ -108,7 +108,9 @@
     "signOut": "Odjavi se",
     "signedInAs": "{{username}} · {{role}}",
     "expiresIn": "Sesija vrijedi još {{minutes}} min",
-    "notPersisted": "Prijavljeni ste, ali sesija nije pohranjena — neće preživjeti ponovno pokretanje."
+    "notPersisted": "Prijavljeni ste, ali sesija nije pohranjena — neće preživjeti ponovno pokretanje.",
+    "resuming": "Obnavljanje spremljene sesije…",
+    "resumeFailed": "Spremljenu sesiju nije bilo moguće obnoviti."
   },
   "devices": {
     "title": "Uređaji",
