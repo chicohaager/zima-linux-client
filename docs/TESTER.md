@@ -1,0 +1,166 @@
+# ZimaOS Client 2.0.0-alpha.1 — Hinweise für Testerinnen und Tester
+
+Danke fürs Mittesten. Das hier ist ein **Alpha-Stand**: er ist auf genau **einer** Maschine
+gestartet worden (Ubuntu 24.04, GNOME auf Wayland, x86_64). Ob er auf deiner startet, ist die
+erste Frage, die dieser Test beantworten soll.
+
+Was in diesem Dokument steht, ist gemessen. Wo etwas **nicht** gemessen ist, steht das ausdrücklich
+dabei — dann ist es eine Bitte um einen Test, keine Zusage.
+
+---
+
+## 1. Was du bekommst
+
+| Datei | Für | Größe |
+| --- | --- | --- |
+| `zima-linux-client_2.0.0-alpha.1_amd64.deb` | Debian, Ubuntu, Linux Mint, Pop!_OS … | 101,3 MiB |
+| `zima-linux-client-2.0.0-alpha.1.x86_64.rpm` | Fedora, openSUSE, RHEL-Abkömmlinge | 89,4 MiB |
+
+**Nur 64-Bit-Intel/AMD (x86_64).** Für ARM (Raspberry Pi, ARM-Notebooks) gibt es nichts — ein
+arm64-Paket ist nicht gebaut und wäre ungetestet.
+
+Beide Pakete sind **nicht signiert**. Prüfsummen dieses Standes (Bau vom 2026-07-31):
+
+```
+4d3e822f4c80e6a846335a98e4afb3bd77f6ad2ea7f21ba2bf771bf6f9c29cd1  …_amd64.deb
+8383fe403277de884c634877242f4ca96737363e8b5aaa0152e4e5c40b6c313e  …x86_64.rpm
+
+sha256sum <datei>       # zum Vergleichen
+```
+
+---
+
+## 2. Installieren
+
+**Debian/Ubuntu:**
+
+```bash
+sudo apt install ./zima-linux-client_2.0.0-alpha.1_amd64.deb
+```
+
+`apt` zieht dabei `libcap2-bin` mit — das braucht das Paket, siehe Punkt 4.
+
+**Fedora:**
+
+```bash
+sudo dnf install ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+```
+
+**openSUSE:**
+
+```bash
+sudo zypper install --allow-unsigned-rpm ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+```
+
+Weil die Pakete unsigniert sind, kann `dnf` je nach Einstellung (`localpkg_gpgcheck`) meckern;
+dann `--nogpgcheck` anhängen. Das RPM deklariert **nicht**, welches Paket `setcap` mitbringt —
+falls beim Installieren die Meldung `setcap not found` kommt, bitte melden **und** dazu die Ausgabe
+von `rpm -q --whatprovides /usr/sbin/setcap` schicken; damit kann die Abhängigkeit richtig
+eingetragen werden.
+
+Installiert wird nach `/opt/ZimaOS Client/`.
+
+**Deinstallieren:** `sudo apt remove zima-linux-client` bzw. `sudo dnf remove zima-linux-client`.
+Deine Einstellungen unter `~/.config/zima-linux-client/` bleiben dabei liegen; wenn du sie loswerden
+willst, dieses Verzeichnis von Hand löschen.
+
+---
+
+## 3. Starten — und was die erste Sorte Fehler wäre
+
+Über das Anwendungsmenü („ZimaOS Client") oder im Terminal:
+
+```bash
+zima-linux-client
+```
+
+🔎 **Bitte einmal ausdrücklich prüfen:** ob der Terminal-Befehl existiert. Das Paket legt den
+Verweis `/usr/bin/zima-linux-client` an, aber das ist auf einer installierten Maschine **noch nicht
+nachgemessen** worden — genau deshalb steht es hier.
+
+**Wenn gar kein Fenster kommt**, ist die Ausgabe im Terminal das Wichtigste. Zwei Meldungen sind
+bekannt und interessant:
+
+* `The SUID sandbox helper binary was found, but is not configured correctly …` — dann greift auf
+  deinem System der Namespace-Sandkasten nicht. Bitte melden, das ist ein echter Befund.
+* irgendetwas mit `ozone`, `wayland` oder `GPU` — der Client startet sich auf problematischen
+  Grafiktreibern absichtlich selbst unter X11 neu; wenn das schiefgeht, will ich es wissen.
+
+Bitte in beiden Fällen dazuschreiben: Distribution + Version, Wayland oder X11, Grafiktreiber.
+
+---
+
+## 4. Was die Installation an Rechten vergibt
+
+Das Paket bringt ein eigenes `zerotier-one` mit (für den Verbindungsweg „Remote ID") und erteilt
+ihm beim Installieren `CAP_NET_ADMIN`. Das läuft im Post-Install-Skript, das ohnehin als root
+läuft — die Anwendung selbst fragt **nie** nach einem Passwort.
+
+Gemessen: ohne dieses Recht nimmt ZeroTier einen Netzbeitritt an, den es nie ausführen kann — es
+sieht aus wie Erfolg und bleibt wirkungslos. Deshalb meldet das Skript jeden Fehlschlag laut. Falls
+beim Installieren eine Zeile mit `zima-linux-client:` erscheint, bitte mitschicken.
+
+Ein bereits auf deinem Rechner installiertes ZeroTier wird **nicht** angefasst.
+
+---
+
+## 5. Die „muss gehen"-Liste
+
+Bitte der Reihe nach durchklicken. Alles, was hakt, ist ein Befund — auch Kleinigkeiten.
+
+1. **Erststart:** Fenster erscheint, Oberfläche ist in deiner Sprache (oder Englisch), nirgends
+   stehen rohe Schlüssel wie `devices.none` statt eines Satzes.
+2. **Gerät finden:** „Lokales Netzwerk durchsuchen" → dein ZimaOS taucht auf. Alternativ
+   „Über IP-Adresse verbinden".
+3. **Anmelden:** Benutzername/Passwort deines ZimaOS. Danach zeigt die Gerätekarte Benutzer, Rolle
+   und die verbleibende Gültigkeit der Sitzung.
+4. **Neu starten:** Programm schließen, wieder öffnen — du solltest **angemeldet bleiben**.
+5. **Dateien:** Ordner öffnen, navigieren, eine Vorschau ansehen.
+6. **Fotos:** Galerie öffnen. Auf Geräten ohne das Fotos-Modul soll dort eine verständliche Meldung
+   stehen, keine leere Fläche.
+7. **Apps:** Liste der installierten Apps, jede mit ihrem eigenen Symbol. Wenn dort dauerhaft „wird
+   geladen" steht: melden, mit ungefährer Wartezeit.
+8. **Sprache umschalten** (oben im Fenster) — die Oberfläche muss sofort umspringen.
+9. **Hell/Dunkel umschalten** — beides muss lesbar sein.
+10. **Remote ID** (nur wenn du eine hast): „Über Remote-ID verbinden".
+
+**Nicht enthalten** — bitte nicht danach suchen: Hintergrund-Synchronisation von Fotos
+(ausdrücklich nicht gewollt), SMB-Einbindungen und Backup-Jobs aus der 0.9-Linie.
+
+---
+
+## 6. Wenn etwas schiefgeht: das Protokoll
+
+```
+~/.config/zima-linux-client/logs/main.log
+```
+
+Die Datei hat Rechte `600`, liest also nur dein Benutzerkonto. Sie enthält **Adressen und
+Gerätenamen aus deinem Netz** — bitte vor dem Weiterschicken einmal durchsehen und ersetzen, was
+du nicht teilen willst. Die letzten paar hundert Zeilen um den Fehler herum reichen:
+
+```bash
+tail -300 ~/.config/zima-linux-client/logs/main.log
+```
+
+Hilfreich in einer Meldung: was du geklickt hast, was passiert ist, was passieren sollte, plus
+Distribution, Desktop-Umgebung und Wayland/X11.
+
+---
+
+## 7. Was bekannt und noch offen ist
+
+* **Nur eine Maschine hat diesen Stand gestartet** (Ubuntu 24.04, GNOME/Wayland). Fedora, Arch und
+  openSUSE sind ungetestet — das ist der Hauptgrund für diesen Test.
+* **Die Wirkung der Installation ist nicht nachgemessen** (Terminal-Befehl, AppArmor-Profil,
+  Sandkasten-Rechte). Siehe Punkt 3.
+* **Übersetzungen:** 28 Sprachen sind vollständig, aber 25 davon sind maschinell übersetzt und von
+  keinem Muttersprachler geprüft. Holprige Formulierungen sind erwartbar — Meldungen trotzdem
+  willkommen.
+* **Tailscale** wird nur **erkannt**, nicht verwaltet: der Client benutzt einen bereits laufenden
+  Tunnel und ändert keine DNS- oder Routing-Einstellungen. Eine Anmeldung über eine
+  Tailscale-Adresse ist noch nicht von Anfang bis Ende durchgeklickt.
+* **Keine automatische Aktualisierung.** Eine neue Fassung kommt als neues Paket.
+* **Kein Flatpak, kein arm64.**
+* **Konten ohne Admin-Rechte** sind ungetestet — falls du eines hast, ist das ein besonders
+  wertvoller Test.
