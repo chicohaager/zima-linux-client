@@ -10,8 +10,8 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 ```
 npm run verify   ✓  type-check · lint · build · build-gate · i18n-gate · privacy-gate
 npx vitest run   ✓  139 Tests in 11 Dateien
-i18n gate           clean — 280 Schlüssel in en_US; 2 Sprachen bei 100 %, 26 bei 111/280
-privacy gate        clean, 115 verfolgte Dateien
+i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
+privacy gate        clean, 169 verfolgte Dateien
 ```
 
 Die Testzahlen weiter unten (21, 63) sind **Messwerte ihrer jeweiligen Phase** und bleiben so
@@ -188,14 +188,13 @@ Alle 28 bei **100 % Abdeckung** — Stand Phase 3, bei 104 Schlüsseln. Nachlade
 (`import.meta.glob`), damit nicht 28 Kataloge im Startbündel liegen; `en_US` ist fest
 eingebaut, weil es der Rückfall für alle ist.
 
-> ⚠️ **Nicht mehr gültig.** Die Bildschirme der Phasen 3b–7 haben den Katalog auf **280**
-> Schlüssel gebracht (Messung 2026-07-31); gepflegt sind bisher nur `de_DE` und `en_US`. Die
-> anderen 26 stehen bei 111 von 280 (40 %) und fallen für den Rest auf Englisch zurück. Das Gate
-> erzwingt keine
-> Vollständigkeit — Übersetzen ist laufende Arbeit —, aber seine **Kopfzeile** behauptete
+> ⚠️ **Zwischenstand, inzwischen aufgeholt.** Die Bildschirme der Phasen 3b–7 haben den Katalog
+> auf **280** Schlüssel gebracht; eine Zeit lang waren nur `de_DE` und `en_US` gepflegt und die
+> anderen 26 standen bei 111 von 280 (40 %). Das Gate erzwingt keine Vollständigkeit —
+> Übersetzen ist laufende Arbeit —, aber seine **Kopfzeile** behauptete damals
 > `28 locales, 253 keys each`, was für 26 Dateien falsch war. Sie nennt jetzt beide Zahlen:
-> `2 locale(s) at 100%, 26 partial`. Eine Zusammenfassung darf nicht grüner sein als die
-> Zeilen darunter.
+> `28 locale(s) at 100%, 0 partial`. Eine Zusammenfassung darf nicht grüner sein als die
+> Zeilen darunter. Der Nachzug ist unten beschrieben.
 
 **Ehrliche Kennzeichnung:** nur `de_DE`, `en_US` und `en_GB` sind als **geprüft** markiert. Die
 anderen 25 habe **ich** übersetzt, ohne muttersprachliche Kontrolle — sie stehen im Sprachmenü mit
@@ -322,7 +321,7 @@ Drei Befunde, die **nur** dieser Lauf gezeigt hat:
 
 ### Nachtrag: die App-Icons werden jetzt geladen
 
-Auf Holgis Wunsch (2026-07-30) holt der Client **alle** Icons, die die App-Metadaten nennen —
+Auf Wunsch des Betreuers (2026-07-30) holt der Client **alle** Icons, die die App-Metadaten nennen —
 auch von fremden Hosts (github, jsdelivr, imgur, `icon.casaos.io`). Vorher zeigten 16 von 18
 Kacheln nur einen Buchstaben.
 
@@ -730,6 +729,73 @@ Verbindungsweg ist verdrahtet und typgeprüft, aber nicht durchgeklickt — daf�
 Passwort), und die 26 unvollständigen Sprachdateien enthalten die fünf neuen
 `tailscale.*`-Schlüssel noch nicht.
 
+## 28 Sprachen vollständig — und der Wächter, der das gar nicht hätte sehen können
+
+Am 2026-07-31 sind die fehlenden **169 Schlüssel × 26 Sprachen** nachgezogen. Das Gate:
+
+```
+i18n gate: clean — 28 locales, 280 keys in en_US; 28 locale(s) at 100%, 0 partial
+höchste Identitätsquote zu en_US: 8 %   (zh_CN/zh_TW: 2 %)
+```
+
+Die Identitätsquote ist die Gegenprobe gegen „englische Kopie mit anderem Dateinamen": bliebe
+eine Datei bei über 90 % identisch zu `en_US`, schlägt das Gate an. Der Rest sind Eigennamen
+(`Tailscale`, `ZeroTier`, `Remote ID`, `W`) und Platzhalter.
+
+Zusammengeführt wurde **additiv**: ein Schlüssel, der schon einen Wert hatte, wird nicht
+überschrieben — sonst hätte der Nachzug die gepflegten 111 Zeilen jeder Datei stillschweigend
+ersetzt.
+
+### 🔴 Der Rundgang konnte in keiner anderen Sprache als Deutsch laufen
+
+Beim Versuch, die neuen Zeichenketten **im Fenster** zu belegen, meldete
+`ZIMA_VERIFY_LOCALE=ja_JP ZIMA_VERIFY_SCENARIO=tour`:
+
+```
+navigation button for "Gerät" not found
+navigation button for "Dateien" not found
+navigation button for "Fotos" not found
+navigation button for "Apps" not found       ← ok=false, bei völlig heiler Navigation
+```
+
+Der Rundgang suchte seine Knöpfe am **gerenderten Text** — also am deutschen. Damit prüfte er
+die Übersetzung statt die Navigation und konnte genau dort nichts belegen, wo er gebraucht
+wurde: in den 27 anderen Sprachen. Jetzt tragen die Knöpfe `data-nav="<section>"`, und der
+Rundgang klickt darauf; der Text darf sich ändern, ohne die Prüfung umzuwerfen.
+
+**Zweiter Fund derselben Familie im selben Werkzeug:** die Liste verbotener Bildschirmtexte
+(„Da ist etwas schiefgegangen", „lehnt diesen Pfad ab") ist **deutscher Fließtext**. In `ja_JP`
+kann sie nicht auftauchen, auch wenn die App kaputt ist — die Prüfung wäre grün gewesen und
+hätte nichts geprüft. Sie ist jetzt geteilt: sprachunabhängig (`NaN`, `undefined`,
+`Not implemented yet`) gilt immer, die deutschen nur bei `lang=de*`, und der Report schreibt
+mit, **welcher Satz in Kraft war** (`forbidden.scope`).
+
+### Was damit belegt ist — und was nicht
+
+```
+Startbeweis in sechs Sprachen (frisches Profil):
+  ja_JP ru_RU ml_IN ga_IE zh_TW tr_TR   ok=true, rawKeys=[], failures=[]
+Rundgang ja_JP über alle vier Bildschirme:
+  locale=ja-JP  device/files/photos/apps: click ok, keine rohen Keys, keine verbotenen Texte
+```
+
+**Ehrliche Grenze:** in diesem Lauf stand **keine** Sitzung, deshalb zeigten Dateien, Fotos und
+Apps ihre Abmelde- bzw. Leerzustände (`サインインしてください。`). Belegt sind damit die
+Navigation, das Geräte-Panel, das Tailscale-Panel und die Fehler-/Leertexte auf Japanisch —
+**nicht** die Listentexte mit echten Daten. Dafür braucht es einen Rundgang mit angemeldeter
+Sitzung in einer nicht-deutschen Sprache; der steht aus.
+
+> **Stolperstein fürs nächste Mal:** `./node_modules/.bin/electron out/main/index.js` benutzt
+> `~/.config/Electron` als Profil, **nicht** `~/.config/zima-linux-client`. Der erste Lauf sah
+> deshalb „noch keine Geräte gespeichert" und das sah nach Datenverlust aus. Wer das echte
+> Profil messen will, muss `--user-data-dir` mitgeben.
+
+> **Nebenbefund, nicht behoben:** die Testsuite schreibt in die **echte** Logdatei des Nutzers —
+> in `main.log` stehen Zeilen mit `VitestExecutor` im Stack. Ein Testlauf sollte das
+> Benutzerverzeichnis nicht anfassen; wer das Log liest, hält Testverkehr sonst für
+> Programmverkehr (mich hat eine `401`-Zeile aus einem Test kurz auf die falsche Fährte
+> geführt).
+
 ## Was ausdrücklich noch nicht existiert
 
 *(Stand Phase 3 — die Platzhalter sind inzwischen durch die echten Bildschirme ersetzt, siehe
@@ -742,8 +808,9 @@ Es fehlen weiterhin:
 * **Paketbau und Distro-Start-Matrix** (Phase 8), einschließlich der arm64-Frage beim
   mitgelieferten ZeroTier-Binary.
 * **Anmeldung über eine Tailscale-Adresse**, durchgeklickt von Anfang bis Ende.
-* **Übersetzungen:** 26 der 28 Kataloge stehen bei 111 von 280 Schlüsseln; 25 sind zudem
-  ungeprüft (nur `de_DE`, `en_US`, `en_GB` sind als geprüft markiert).
+* **Muttersprachliche Prüfung der Übersetzungen.** Alle 28 Kataloge sind seit 2026-07-31
+  vollständig (280/280), aber 25 davon habe **ich** übersetzt — sie stehen weiterhin als
+  `reviewed: false` im Sprachmenü. Vollständig ist nicht dasselbe wie richtig.
 * **Sub-Account-Rechte** (Plan § 14 Punkt 6) — der Admin-Pfad allein beantwortet nicht,
   welche Endpunkte ein Nicht-Admin benutzen darf.
 

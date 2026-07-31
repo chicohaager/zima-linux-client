@@ -23,7 +23,14 @@ const RULES = [
   },
   {
     name: 'maintainer identity',
-    pattern: /\b(?:holgi|holger\.kuehn)\b/gi,
+    /*
+     * The trailing \b used to sit right after the name, so the rule matched "Holgi" and
+     * missed "Holgis" — German puts the genitive -s straight onto the name, and that is how
+     * it actually occurs in these documents. Measured 2026-07-31: the gate reported clean
+     * while "Holgis Wunsch" stood in a tracked doc. A name check has to survive inflection,
+     * so the word may continue after the name.
+     */
+    pattern: /\b(?:holgi\w*|holger[._-]?kuehn)\b/gi,
     /**
      * NO value-level allowance here, on purpose.
      *

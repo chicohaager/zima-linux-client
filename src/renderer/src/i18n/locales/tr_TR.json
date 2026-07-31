@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Yerel ağ",
       "direct": "Doğrudan IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Bulunan özellikler",
-    "routes": "{{count}} ağ geçidi yolu"
+    "routes": "{{count}} ağ geçidi yolu",
+    "remoteIdTitle": "Remote ID ile bağlan",
+    "remoteIdHint": "Cihazda görünen Remote ID’yi girin. Bağlantı sizin için kurulur — ardından her zamanki gibi oturum açın.",
+    "remoteIdLabel": "Remote ID (16 karakter)",
+    "remoteIdConnecting": "Bağlanıyor…",
+    "connect": "Bağlan"
   },
   "capability": {
     "photoLibrary": "Fotoğraf arama ve süzgeçler",
@@ -47,19 +53,99 @@
     "title": "Fotoğraflar",
     "libraryMissing": "Fotoğraf arama Photos modülünü gerektirir",
     "libraryMissingHint": "Bu cihazda Photos modülü kayıtlı değil, bu yüzden anlamsal arama ve süzgeçler kullanılamıyor. Göz atma ve yedekleme yine de çalışır.",
-    "backupForegroundOnly": "Yedekleme yalnızca bu pencere açıkken çalışır."
+    "backupForegroundOnly": "Yedekleme yalnızca bu pencere açıkken çalışır.",
+    "video": "Video",
+    "loading": "Yükleniyor…",
+    "noneHere": "Bu klasörde fotoğraf veya video yok.",
+    "noHits": "Sonuç yok.",
+    "search": "Ara",
+    "searching": "Aranıyor…",
+    "searchPlaceholder": "Resimde ne olması gerektiğini yazın",
+    "clearSearch": "Temizle",
+    "searchSummary": "{{ms}} ms içinde {{count}} sonuç",
+    "modeLibrary": "Kitaplık",
+    "modeFolder": "Klasör",
+    "switchToFolder": "Bir klasöre göz at",
+    "switchToLibrary": "Kitaplığa dön",
+    "countSummary": "{{total}} içinden {{shown}} gösteriliyor",
+    "indexed": "{{total}} içinden {{processed}} dizinlendi",
+    "pending": "{{count}} bekliyor",
+    "indexStatus": {
+      "idle": "bitti",
+      "working": "sürüyor"
+    },
+    "semanticIncomplete": "Anlamsal dizin % {{percent}} seviyesinde. Tamamlanana kadar metin araması yalnızca dosya adlarındaki tam kelimeleri bulur.",
+    "semanticUnavailable": "Bu cihazda fotoğraf araması kullanılamıyor",
+    "semanticUnavailableHint": "Cihazda görüntü modeli kurulu değil; bu yüzden arama «sonuç yok» yerine hiçbir şey döndürmezdi. Göz atma ve yedekleme bundan etkilenmez.",
+    "semanticState": "Cihaz durumu: {{state}} · eksik: {{missing}}"
   },
   "files": {
     "title": "Dosyalar",
     "search": "Ara",
     "starred": "Sık kullanılanlar",
-    "storage": "Depolama"
+    "storage": "Depolama",
+    "up": "Bir üst düzey",
+    "select": "{{name}} ögesini seç",
+    "media": "ortam",
+    "loading": "Yükleniyor…",
+    "loadingVolumes": "Cihazdan birimleri isteniyor…",
+    "noVolumes": "Cihaz tek bir birim bile bildirmedi, dolayısıyla göz atılacak bir şey yok.",
+    "emptyFolder": "Bu klasör boş.",
+    "searching": "Aranıyor…",
+    "searchPlaceholder": "Bu klasörde ve altında dosya adı ara",
+    "clearSearch": "Temizle",
+    "searchSummary": "{{scanned}} kayıt incelendikten sonra {{hits}} sonuç. Bu arama istemcide çalışır — ZimaOS 1.7’de sunucu tarafı dosya araması yok.",
+    "searchTruncated": "Arama sınırında erken durduruldu, bu yüzden aşağıda daha fazla eşleşme olabilir.",
+    "noHits": "Hiçbir dosya adı eşleşmedi.",
+    "newFolder": "Yeni klasör",
+    "newFolderPrompt": "Yeni klasörün adı",
+    "upload": "Yükle",
+    "download": "İndir",
+    "copy": "Kopyala",
+    "move": "Taşı",
+    "pasteCopy": "{{count}} kopyayı buraya yapıştır",
+    "pasteMove": "{{count}} ögeyi buraya taşı",
+    "toTrash": "Çöp kutusuna taşı",
+    "refresh": "Yenile",
+    "showTrash": "Çöp kutusunu göster",
+    "hideTrash": "Çöp kutusunu gizle",
+    "trash": "Çöp kutusu",
+    "trashEmpty": "Çöp kutusu boş.",
+    "trashCount": "Çöp kutusunda {{count}} kayıt",
+    "restore": "{{count}} ögeyi geri yükle",
+    "deletedAt": "silinme {{when}}",
+    "tasks": "Süren işlemler",
+    "tasksHint": "Kopyalama ve taşıma cihazda çalışır, bu yüzden bu pencere meşgulken bile devam eder.",
+    "countSummary": "{{total}} kayıttan {{shown}} tanesi gösteriliyor",
+    "sortedBy": "{{field}} ölçütüne göre sıralı",
+    "changeSort": "değiştir",
+    "ascending": "artan",
+    "descending": "azalan",
+    "sort": {
+      "name": "ad",
+      "size": "boyut",
+      "modified": "tarih"
+    }
   },
   "apps": {
     "title": "Uygulamalar",
     "running": "Çalışıyor",
     "stopped": "Durduruldu",
-    "cachedAt": "Durum: {{time}}"
+    "cachedAt": "Durum: {{time}}",
+    "loading": "Yükleniyor…",
+    "none": "Bu cihazda kurulu uygulama yok.",
+    "cached": "Kaydedilmiş liste",
+    "retry": "Yeniden dene",
+    "port": "Bağlantı noktası {{port}}",
+    "status": {
+      "running": "çalışıyor",
+      "stopped": "durduruldu"
+    },
+    "openHere": "Burada aç",
+    "openBrowser": "Tarayıcıda aç",
+    "noWebUi": "Bu uygulama bir web arayüzü yayımlamıyor.",
+    "start": "Başlat",
+    "stop": "Durdur"
   },
   "security": {
     "keyringTitle": "Şifreler güvenli biçimde saklanamıyor",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Bu adreste hiçbir ZimaOS cihazı yanıt vermedi.",
     "sessionExpired": "Oturum süresi doldu — lütfen yeniden oturum açın.",
     "signInRequired": "Lütfen oturum açın.",
-    "strategyUnavailable": "Bu bağlantı yolu bu sürümde henüz kullanılamıyor."
+    "strategyUnavailable": "Bu bağlantı yolu bu sürümde henüz kullanılamıyor.",
+    "notFound": "Cihaz bu yolun bulunmadığını söylüyor.",
+    "endpointUnknown": "Bu cihaz, istemcinin istediği arayüzü sunmuyor.",
+    "invalidRequest": "İstek gönderilmeden önce reddedildi — bu, bu istemcinin bir kusuru.",
+    "invalidFolderName": "Klasör adı eğik çizgi içeremez.",
+    "uploadRejected": "Cihaz yüklemeyi reddetti.",
+    "uploadNotAFile": "Yalnızca normal dosyalar yüklenebilir.",
+    "downloadRejected": "Cihaz indirmeyi reddetti.",
+    "photosModuleMissing": "Bu cihazda fotoğraf modülü yok, bu yüzden arama ve süzgeçler kullanılamıyor.",
+    "appNotFound": "Bu uygulama artık cihazın listesinde değil.",
+    "appHasNoWebUi": "Bu uygulama bir web arayüzü yayımlamıyor.",
+    "powerDeviceMismatch": "Ekran, etkin olandan başka bir cihaza işaret ediyor. Yeniden yükleyip tekrar deneyin.",
+    "zerotierNoToken": "Yerel ZeroTier belirteci okunamadı.",
+    "zerotierApi": "Yerel ZeroTier hizmeti bir hatayla yanıt verdi.",
+    "zerotierMissing": "Hiçbir zerotier-one bulunamadı — ne kurulu ne de birlikte gelen.",
+    "zerotierNoStart": "Yerel ZeroTier hizmeti başlamadı.",
+    "unexpected-status": "Cihaz beklenmedik bir durumla yanıt verdi.",
+    "zerotierNoCapability": "Yerel ZeroTier hizmetinin sanal ağ aygıtı oluşturmasına izin yok. Bunu vermek için gereken tam komut aşağıda.",
+    "remoteIdUnknown": "Bu cihaz için kayıtlı bir Remote ID yok. Bir kez «Remote ID ile bağlan» üzerinden oturum açın."
   },
   "common": {
     "retry": "Yeniden dene",
@@ -135,5 +239,96 @@
     "language": "Dil",
     "unreviewed": "gözden geçirilmedi",
     "reviewed": "gözden geçirildi"
+  },
+  "backup": {
+    "title": "Fotoğraf yedeği",
+    "foregroundOnly": "yalnızca bu pencere açıkken",
+    "explainer": "Yerel klasörler seçin; içlerindeki fotoğraf ve videolar {{destination}} konumuna yüklenir. Arka planda eşitleme yoktur — pencereyi kapatınca aktarım durur ve bir sonraki sefer kaldığı yerden sürer.",
+    "pickFolders": "Klasör seç",
+    "start": "{{count}} klasörü yedekle",
+    "cancel": "İptal",
+    "counts": "{{total}} içinden {{uploaded}} · {{skipped}} atlandı · {{failed}} başarısız",
+    "notes": "Notlu {{count}} dosya",
+    "phase": {
+      "idle": "Başlatılmadı",
+      "scanning": "Fotoğraflar aranıyor…",
+      "uploading": "Yükleniyor…",
+      "done": "Bitti, hiçbir şey atlanmadı",
+      "cancelled": "İptal edildi — zaten yüklenmiş dosyalar kalır",
+      "failed": "Hatalarla tamamlandı"
+    },
+    "outcome": {
+      "skipped-duplicate": "zaten var",
+      "skipped-unsupported": "resim değil",
+      "failed": "başarısız"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Adsız cihaz",
+    "cpu": "{{model}}, {{cores}} çekirdek",
+    "cpuLoad": "CPU yükü",
+    "cpuTemperature": "CPU sıcaklığı",
+    "watt": "{{watt}} W",
+    "memory": "Bellek",
+    "systemDisk": "Sistem diskinde boş",
+    "freeOf": "/ {{total}}",
+    "storage": "Depolama",
+    "usedPercent": "% {{percent}} kullanımda",
+    "unhealthy": "sağlık denetimi başarısız"
+  },
+  "power": {
+    "title": "Güç",
+    "restart": "Yeniden başlat",
+    "off": "Kapat",
+    "confirmRestart": "{{name}} gerçekten yeniden başlatılsın mı?",
+    "confirmOff": "{{name}} gerçekten kapatılsın mı?",
+    "yes": "Evet, yap",
+    "no": "İptal",
+    "restarting": "Yeniden başlatma istendi. Cihaz bir süre erişilemez olacak.",
+    "shuttingDown": "Kapatma istendi. Cihaz açılana kadar yanıt vermeyecek.",
+    "noConfirmation": "Hiçbir onay alınmadı:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "arka plan hizmeti çalışıyor",
+    "notRunning": "arka plan hizmeti çalışmıyor",
+    "daemon": {
+      "system": "sistem kurulumu",
+      "bundled": "bu uygulamayla birlikte gelir",
+      "managed": "bu uygulamanın kendi kopyası",
+      "absent": "çalıştırılabilir dosya bulunamadı"
+    },
+    "nodeId": "Bu makine: {{id}}",
+    "networkId": "Ağ kimliği (16 onaltılık karakter)",
+    "join": "Katıl",
+    "leave": "Ayrıl",
+    "hint": "Herkese açık bir ağ bu makineyi hemen kabul eder. Özel bir ağın önce yetki vermesi gerekir — hangisi olduğunu her ağın yanındaki etiket söyler.",
+    "hintAccessDenied": "Bu ağ makineyi reddetti (ACCESS_DENIED): ağ özel ve sahibinin bu düğüme ağ denetleyicisinde yetki vermesi gerekiyor.",
+    "provision": "Kurulumu hazırla",
+    "provisioning": "Hazırlanıyor…",
+    "provisionHint": "Bu uygulama zerotier-one’ın kendi kopyasını kurar. Bir ağ aygıtı oluşturabilmesi için hâlâ tek bir izne ihtiyacı var; onu tek bir komutla kendiniz verirsiniz. Sistemin kendi ZeroTier’ine dokunulmaz.",
+    "commandHint": "Bunu bir uçbirimde bir kez çalıştırın, sonra burada yeniden bağlanın:",
+    "copy": "Komutu kopyala",
+    "copied": "Kopyalandı",
+    "recheck": "Yeniden bağlan",
+    "capable": "İzin verilmiş durumda. Hizmet bir ağ aygıtı oluşturabilir."
+  },
+  "legacy": {
+    "title": "Eski istemciden devral",
+    "explainer": "0.9 kurulumundaki adresler devralınabilir. Parolalar taşınmaz — bir kez oturum açarsınız ve eski yapılandırma hiç değiştirilmez.",
+    "summary": "{{connections}} bağlantı, {{jobs}} yedekleme işi, son sunucu {{host}}",
+    "adopt": "Adresleri devral",
+    "result": "{{imported}} devralındı, {{skipped}} zaten biliniyor"
+  },
+  "logs": {
+    "title": "Günlük dosyası",
+    "open": "Klasörü aç"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Algılandı, yönetilmiyor. Bu istemci hâlihazırda çalışan bir tüneli kullanır ve hiçbir DNS veya yönlendirme ayarını değiştirmez.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Kullan",
+    "noPeers": "Bu tailnet’te başka çevrimiçi makine yok."
   }
 }

@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Sieć lokalna",
       "direct": "Bezpośrednie IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Wykryte funkcje",
-    "routes": "{{count}} tras bramy"
+    "routes": "{{count}} tras bramy",
+    "remoteIdTitle": "Połącz przez Remote ID",
+    "remoteIdHint": "Wpisz Remote ID wyświetlone na urządzeniu. Połączenie zostanie przygotowane automatycznie — potem zaloguj się jak zwykle.",
+    "remoteIdLabel": "Remote ID (16 znaków)",
+    "remoteIdConnecting": "Łączenie…",
+    "connect": "Połącz"
   },
   "capability": {
     "photoLibrary": "Wyszukiwanie zdjęć i filtry",
@@ -47,19 +53,99 @@
     "title": "Zdjęcia",
     "libraryMissing": "Wyszukiwanie zdjęć wymaga modułu Photos",
     "libraryMissingHint": "To urządzenie nie ma zarejestrowanego modułu Photos, więc wyszukiwanie semantyczne i filtry są niedostępne. Przeglądanie i kopia działają mimo to.",
-    "backupForegroundOnly": "Kopia działa tylko wtedy, gdy to okno jest otwarte."
+    "backupForegroundOnly": "Kopia działa tylko wtedy, gdy to okno jest otwarte.",
+    "video": "Wideo",
+    "loading": "Wczytywanie…",
+    "noneHere": "W tym folderze nie ma zdjęć ani filmów.",
+    "noHits": "Brak wyników.",
+    "search": "Szukaj",
+    "searching": "Szukanie…",
+    "searchPlaceholder": "Opisz, co ma być na zdjęciu",
+    "clearSearch": "Wyczyść",
+    "searchSummary": "{{count}} wynik(ów) w {{ms}} ms",
+    "modeLibrary": "Biblioteka",
+    "modeFolder": "Folder",
+    "switchToFolder": "Przeglądaj folder",
+    "switchToLibrary": "Wróć do biblioteki",
+    "countSummary": "{{shown}} z {{total}} pokazanych",
+    "indexed": "{{processed}} z {{total}} zindeksowanych",
+    "pending": "{{count}} oczekuje",
+    "indexStatus": {
+      "idle": "zakończone",
+      "working": "w toku"
+    },
+    "semanticIncomplete": "Indeks semantyczny jest na poziomie {{percent}} %. Dopóki nie będzie gotowy, wyszukiwanie tekstowe znajduje tylko całe słowa w nazwach plików.",
+    "semanticUnavailable": "Wyszukiwanie zdjęć nie jest dostępne na tym urządzeniu",
+    "semanticUnavailableHint": "Na urządzeniu nie zainstalowano modelu wizyjnego, więc wyszukiwanie nie zwróciłoby zupełnie niczego zamiast «brak wyników». Przeglądanie i kopia zapasowa działają normalnie.",
+    "semanticState": "Stan urządzenia: {{state}} · brakuje: {{missing}}"
   },
   "files": {
     "title": "Pliki",
     "search": "Szukaj",
     "starred": "Ulubione",
-    "storage": "Pamięć"
+    "storage": "Pamięć",
+    "up": "Poziom wyżej",
+    "select": "Zaznacz {{name}}",
+    "media": "media",
+    "loading": "Wczytywanie…",
+    "loadingVolumes": "Pytanie urządzenia o wolumeny…",
+    "noVolumes": "Urządzenie nie zgłosiło ani jednego wolumenu, więc nie ma czego przeglądać.",
+    "emptyFolder": "Ten folder jest pusty.",
+    "searching": "Szukanie…",
+    "searchPlaceholder": "Szukaj nazw plików w tym folderze i niżej",
+    "clearSearch": "Wyczyść",
+    "searchSummary": "{{hits}} wynik(ów) po sprawdzeniu {{scanned}} pozycji. To wyszukiwanie działa w kliencie — ZimaOS 1.7 nie ma wyszukiwania plików po stronie serwera.",
+    "searchTruncated": "Przerwano na limicie wyszukiwania, więc niżej mogą być kolejne wyniki.",
+    "noHits": "Żadna nazwa pliku nie pasuje.",
+    "newFolder": "Nowy folder",
+    "newFolderPrompt": "Nazwa nowego folderu",
+    "upload": "Wyślij",
+    "download": "Pobierz",
+    "copy": "Kopiuj",
+    "move": "Przenieś",
+    "pasteCopy": "Wklej tu {{count}} kopię",
+    "pasteMove": "Przenieś tu {{count}}",
+    "toTrash": "Przenieś do kosza",
+    "refresh": "Odśwież",
+    "showTrash": "Pokaż kosz",
+    "hideTrash": "Ukryj kosz",
+    "trash": "Kosz",
+    "trashEmpty": "Kosz jest pusty.",
+    "trashCount": "{{count}} pozycja/e w koszu",
+    "restore": "Przywróć {{count}}",
+    "deletedAt": "usunięto {{when}}",
+    "tasks": "Trwające operacje",
+    "tasksHint": "Kopiowanie i przenoszenie działają na urządzeniu, więc trwają dalej, nawet gdy to okno jest zajęte.",
+    "countSummary": "{{shown}} z {{total}} pozycji pokazanych",
+    "sortedBy": "posortowane wg {{field}}",
+    "changeSort": "zmień",
+    "ascending": "rosnąco",
+    "descending": "malejąco",
+    "sort": {
+      "name": "nazwa",
+      "size": "rozmiar",
+      "modified": "data"
+    }
   },
   "apps": {
     "title": "Aplikacje",
     "running": "Działa",
     "stopped": "Zatrzymana",
-    "cachedAt": "Stan: {{time}}"
+    "cachedAt": "Stan: {{time}}",
+    "loading": "Wczytywanie…",
+    "none": "Na tym urządzeniu nie ma zainstalowanych aplikacji.",
+    "cached": "Zapisana lista",
+    "retry": "Spróbuj ponownie",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "działa",
+      "stopped": "zatrzymana"
+    },
+    "openHere": "Otwórz tutaj",
+    "openBrowser": "Otwórz w przeglądarce",
+    "noWebUi": "Ta aplikacja nie udostępnia interfejsu webowego.",
+    "start": "Uruchom",
+    "stop": "Zatrzymaj"
   },
   "security": {
     "keyringTitle": "Haseł nie można bezpiecznie zapisać",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Pod tym adresem nie odpowiedziało żadne urządzenie ZimaOS.",
     "sessionExpired": "Sesja wygasła — zaloguj się ponownie.",
     "signInRequired": "Zaloguj się.",
-    "strategyUnavailable": "Ta droga połączenia nie jest jeszcze dostępna w tej wersji."
+    "strategyUnavailable": "Ta droga połączenia nie jest jeszcze dostępna w tej wersji.",
+    "notFound": "Urządzenie twierdzi, że ta ścieżka nie istnieje.",
+    "endpointUnknown": "To urządzenie nie oferuje interfejsu, o który poprosił klient.",
+    "invalidRequest": "Żądanie zostało odrzucone, zanim je wysłano — to usterka tego klienta.",
+    "invalidFolderName": "Nazwa folderu nie może zawierać ukośnika.",
+    "uploadRejected": "Urządzenie odrzuciło wysyłkę.",
+    "uploadNotAFile": "Wysłać można tylko zwykłe pliki.",
+    "downloadRejected": "Urządzenie odrzuciło pobieranie.",
+    "photosModuleMissing": "To urządzenie nie ma modułu zdjęć, więc wyszukiwanie i aspekty są niedostępne.",
+    "appNotFound": "Tej aplikacji nie ma już na liście urządzenia.",
+    "appHasNoWebUi": "Ta aplikacja nie udostępnia interfejsu webowego.",
+    "powerDeviceMismatch": "Ekran odnosi się do innego urządzenia niż aktywne. Odśwież i spróbuj ponownie.",
+    "zerotierNoToken": "Nie udało się odczytać lokalnego tokenu ZeroTier.",
+    "zerotierApi": "Lokalna usługa ZeroTier odpowiedziała błędem.",
+    "zerotierMissing": "Nie znaleziono zerotier-one — ani zainstalowanego, ani dołączonego.",
+    "zerotierNoStart": "Lokalna usługa ZeroTier nie wystartowała.",
+    "unexpected-status": "Urządzenie odpowiedziało nieoczekiwanym statusem.",
+    "zerotierNoCapability": "Lokalna usługa ZeroTier nie ma prawa tworzyć wirtualnego urządzenia sieciowego. Dokładne polecenie, które to nadaje, znajduje się poniżej.",
+    "remoteIdUnknown": "Dla tego urządzenia nie zapisano żadnego Remote ID. Zaloguj się raz przez «Połącz przez Remote ID»."
   },
   "common": {
     "retry": "Ponów",
@@ -135,5 +239,96 @@
     "language": "Język",
     "unreviewed": "niesprawdzone",
     "reviewed": "sprawdzone"
+  },
+  "backup": {
+    "title": "Kopia zapasowa zdjęć",
+    "foregroundOnly": "tylko dopóki to okno jest otwarte",
+    "explainer": "Wybierz foldery lokalne; zdjęcia i filmy z nich są wysyłane do {{destination}}. Nie ma synchronizacji w tle — po zamknięciu okna transfer się zatrzymuje i następnym razem wznawia w miejscu przerwania.",
+    "pickFolders": "Wybierz foldery",
+    "start": "Zarchiwizuj {{count}} folder(ów)",
+    "cancel": "Anuluj",
+    "counts": "{{uploaded}} z {{total}} · {{skipped}} pominiętych · {{failed}} nieudanych",
+    "notes": "{{count}} plik(ów) z uwagą",
+    "phase": {
+      "idle": "Nie rozpoczęto",
+      "scanning": "Szukanie zdjęć…",
+      "uploading": "Wysyłanie…",
+      "done": "Zakończono, nic nie pominięto",
+      "cancelled": "Anulowano — już wysłane pliki zostają",
+      "failed": "Zakończono z błędami"
+    },
+    "outcome": {
+      "skipped-duplicate": "już jest",
+      "skipped-unsupported": "to nie obraz",
+      "failed": "nie powiodło się"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Urządzenie bez nazwy",
+    "cpu": "{{model}}, rdzenie: {{cores}}",
+    "cpuLoad": "Obciążenie CPU",
+    "cpuTemperature": "Temperatura CPU",
+    "watt": "{{watt}} W",
+    "memory": "Pamięć",
+    "systemDisk": "Wolne na dysku systemowym",
+    "freeOf": "z {{total}}",
+    "storage": "Magazyn",
+    "usedPercent": "{{percent}} % zajęte",
+    "unhealthy": "kontrola stanu nie powiodła się"
+  },
+  "power": {
+    "title": "Zasilanie",
+    "restart": "Uruchom ponownie",
+    "off": "Wyłącz",
+    "confirmRestart": "Na pewno uruchomić ponownie {{name}}?",
+    "confirmOff": "Na pewno wyłączyć {{name}}?",
+    "yes": "Tak, zrób to",
+    "no": "Anuluj",
+    "restarting": "Ponowne uruchomienie zostało zlecone. Urządzenie przez chwilę będzie nieosiągalne.",
+    "shuttingDown": "Wyłączenie zostało zlecone. Urządzenie odezwie się dopiero po ponownym włączeniu.",
+    "noConfirmation": "Nie otrzymano żadnego potwierdzenia:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "demon działa",
+    "notRunning": "demon nie działa",
+    "daemon": {
+      "system": "instalacja systemowa",
+      "bundled": "dołączony do tej aplikacji",
+      "managed": "własna kopia tej aplikacji",
+      "absent": "nie znaleziono pliku binarnego"
+    },
+    "nodeId": "Ta maszyna: {{id}}",
+    "networkId": "ID sieci (16 znaków szesnastkowych)",
+    "join": "Dołącz",
+    "leave": "Opuść",
+    "hint": "Sieć publiczna przyjmuje tę maszynę od razu. Prywatna musi ją najpierw autoryzować — która to z dwóch, mówi etykieta obok każdej sieci.",
+    "hintAccessDenied": "Ta sieć odrzuciła maszynę (ACCESS_DENIED): jest prywatna, a jej właściciel musi autoryzować ten węzeł w kontrolerze sieci.",
+    "provision": "Przygotuj instalację",
+    "provisioning": "Przygotowywanie…",
+    "provisionHint": "Ta aplikacja instaluje własną kopię zerotier-one. Aby mogła utworzyć urządzenie sieciowe, brakuje jej jeszcze jednego uprawnienia, które nadajesz sam jednym poleceniem. Systemowy ZeroTier pozostaje nietknięty.",
+    "commandHint": "Wykonaj to raz w terminalu, a potem połącz się tu ponownie:",
+    "copy": "Kopiuj polecenie",
+    "copied": "Skopiowano",
+    "recheck": "Połącz ponownie",
+    "capable": "Uprawnienie jest nadane. Demon może utworzyć urządzenie sieciowe."
+  },
+  "legacy": {
+    "title": "Przejmij ze starego klienta",
+    "explainer": "Adresy z instalacji 0.9 można przejąć. Hasła nie są przenoszone — logujesz się raz, a stara konfiguracja nigdy nie jest zmieniana.",
+    "summary": "{{connections}} połączenie/a, {{jobs}} zadanie/a kopii, ostatni host {{host}}",
+    "adopt": "Przejmij adresy",
+    "result": "{{imported}} przejętych, {{skipped}} już znanych"
+  },
+  "logs": {
+    "title": "Plik dziennika",
+    "open": "Otwórz folder"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Wykryty, nie zarządzany. Ten klient korzysta z już działającego tunelu i nie zmienia żadnych ustawień DNS ani tras.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Użyj",
+    "noPeers": "Żadna inna maszyna w tym tailnecie nie jest online."
   }
 }

@@ -37,6 +37,7 @@ export const BottomPillNavigation = ({ section, onSectionChange }: Props): React
             <button
               key={key}
               type="button"
+              data-nav={key}
               onClick={() => onSectionChange(key)}
               aria-current={active ? 'page' : undefined}
               title={t(`nav.${key}`)}
@@ -56,6 +57,7 @@ export const BottomPillNavigation = ({ section, onSectionChange }: Props): React
       {/* Set apart from the pill, exactly as in the mobile client. */}
       <button
         type="button"
+        data-nav="device"
         onClick={() => onSectionChange('device')}
         aria-current={section === 'device' ? 'page' : undefined}
         title={t('nav.device')}
@@ -107,12 +109,17 @@ export const SidebarNavigation = ({ section, onSectionChange }: Props): React.JS
           <button
             key={key}
             type="button"
+            // The tour finds its buttons by this attribute, not by the label. Matching on
+            // rendered text meant matching on *German* rendered text: the tour could only
+            // ever run in one locale, and failed with "button not found" in every other —
+            // a check that measures the translation instead of the navigation.
+            data-nav={key}
             onClick={() => onSectionChange(key)}
             aria-current={active ? 'page' : undefined}
             // Named explicitly rather than left to the computed name. The device entry's
             // icon is the letter "Z", so its text content reads "ZGerät" — fine for a
             // screen reader (the icon is aria-hidden), wrong for anything matching on
-            // rendered text, which is how the tour scenario finds its buttons.
+            // rendered text.
             aria-label={t(`nav.${key}`)}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors"
             style={{

@@ -19,11 +19,17 @@
     "connection": {
       "lan": "ローカルネットワーク",
       "direct": "直接 IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ミリ秒",
     "capabilities": "検出された機能",
-    "routes": "ゲートウェイのルート {{count}} 件"
+    "routes": "ゲートウェイのルート {{count}} 件",
+    "remoteIdTitle": "リモート ID で接続",
+    "remoteIdHint": "デバイスに表示されているリモート ID を入力してください。接続は自動で用意されます — そのあとはいつも通りサインインしてください。",
+    "remoteIdLabel": "リモート ID（16 文字）",
+    "remoteIdConnecting": "接続中…",
+    "connect": "接続"
   },
   "capability": {
     "photoLibrary": "写真検索とファセット",
@@ -47,19 +53,99 @@
     "title": "写真",
     "libraryMissing": "写真検索には Photos モジュールが必要です",
     "libraryMissingHint": "このデバイスには Photos モジュールが登録されていないため、意味検索とファセットは利用できません。閲覧とバックアップはそれでも動作します。",
-    "backupForegroundOnly": "バックアップはこのウィンドウが開いている間だけ実行されます。"
+    "backupForegroundOnly": "バックアップはこのウィンドウが開いている間だけ実行されます。",
+    "video": "動画",
+    "loading": "読み込み中…",
+    "noneHere": "このフォルダーに写真や動画はありません。",
+    "noHits": "該当なし。",
+    "search": "検索",
+    "searching": "検索中…",
+    "searchPlaceholder": "写真に写っているものを説明してください",
+    "clearSearch": "消去",
+    "searchSummary": "{{ms}} ミリ秒で {{count}} 件",
+    "modeLibrary": "ライブラリ",
+    "modeFolder": "フォルダー",
+    "switchToFolder": "フォルダーを見る",
+    "switchToLibrary": "ライブラリに戻る",
+    "countSummary": "{{total}} 件中 {{shown}} 件を表示",
+    "indexed": "{{total}} 件中 {{processed}} 件を索引化",
+    "pending": "残り {{count}} 件",
+    "indexStatus": {
+      "idle": "完了",
+      "working": "処理中"
+    },
+    "semanticIncomplete": "意味検索の索引は {{percent}} % です。完成するまで、テキスト検索はファイル名の完全な単語しか見つけられません。",
+    "semanticUnavailable": "このデバイスでは写真検索を利用できません",
+    "semanticUnavailableHint": "デバイスに画像モデルが入っていないため、検索は「該当なし」ではなく何も返しません。閲覧とバックアップには影響しません。",
+    "semanticState": "デバイスの状態: {{state}} · 不足: {{missing}}"
   },
   "files": {
     "title": "ファイル",
     "search": "検索",
     "starred": "お気に入り",
-    "storage": "ストレージ"
+    "storage": "ストレージ",
+    "up": "1 つ上の階層へ",
+    "select": "{{name}} を選択",
+    "media": "メディア",
+    "loading": "読み込み中…",
+    "loadingVolumes": "デバイスにボリュームを問い合わせ中…",
+    "noVolumes": "デバイスはボリュームを 1 つも報告しませんでした。閲覧できるものがありません。",
+    "emptyFolder": "このフォルダーは空です。",
+    "searching": "検索中…",
+    "searchPlaceholder": "このフォルダーとその下のファイル名を検索",
+    "clearSearch": "消去",
+    "searchSummary": "{{scanned}} 件を調べて {{hits}} 件。この検索はクライアント側で動きます — ZimaOS 1.7 にサーバー側のファイル検索はありません。",
+    "searchTruncated": "検索上限で早めに打ち切ったため、下にさらに該当があるかもしれません。",
+    "noHits": "一致するファイル名はありません。",
+    "newFolder": "新しいフォルダー",
+    "newFolderPrompt": "新しいフォルダーの名前",
+    "upload": "アップロード",
+    "download": "ダウンロード",
+    "copy": "コピー",
+    "move": "移動",
+    "pasteCopy": "{{count}} 件をここに貼り付け",
+    "pasteMove": "{{count}} 件をここに移動",
+    "toTrash": "ごみ箱へ移動",
+    "refresh": "更新",
+    "showTrash": "ごみ箱を表示",
+    "hideTrash": "ごみ箱を隠す",
+    "trash": "ごみ箱",
+    "trashEmpty": "ごみ箱は空です。",
+    "trashCount": "ごみ箱に {{count}} 件",
+    "restore": "{{count}} 件を復元",
+    "deletedAt": "削除 {{when}}",
+    "tasks": "実行中の操作",
+    "tasksHint": "コピーと移動はデバイス上で実行されるため、このウィンドウが忙しくても続きます。",
+    "countSummary": "{{total}} 件中 {{shown}} 件を表示",
+    "sortedBy": "{{field}} で並べ替え",
+    "changeSort": "変更",
+    "ascending": "昇順",
+    "descending": "降順",
+    "sort": {
+      "name": "名前",
+      "size": "サイズ",
+      "modified": "日付"
+    }
   },
   "apps": {
     "title": "アプリ",
     "running": "実行中",
     "stopped": "停止中",
-    "cachedAt": "時点: {{time}}"
+    "cachedAt": "時点: {{time}}",
+    "loading": "読み込み中…",
+    "none": "このデバイスにアプリはインストールされていません。",
+    "cached": "保存された一覧",
+    "retry": "再試行",
+    "port": "ポート {{port}}",
+    "status": {
+      "running": "実行中",
+      "stopped": "停止中"
+    },
+    "openHere": "ここで開く",
+    "openBrowser": "ブラウザーで開く",
+    "noWebUi": "このアプリは Web インターフェースを公開していません。",
+    "start": "開始",
+    "stop": "停止"
   },
   "security": {
     "keyringTitle": "パスワードを安全に保存できません",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "このアドレスで応答した ZimaOS デバイスはありません。",
     "sessionExpired": "セッションが期限切れです。もう一度サインインしてください。",
     "signInRequired": "サインインしてください。",
-    "strategyUnavailable": "この接続経路はこのビルドではまだ利用できません。"
+    "strategyUnavailable": "この接続経路はこのビルドではまだ利用できません。",
+    "notFound": "デバイスはこのパスが存在しないと言っています。",
+    "endpointUnknown": "このデバイスは、クライアントが要求したインターフェースを提供していません。",
+    "invalidRequest": "要求は送信前に拒否されました — これはこのクライアントの欠陥です。",
+    "invalidFolderName": "フォルダー名にスラッシュは使えません。",
+    "uploadRejected": "デバイスがアップロードを拒否しました。",
+    "uploadNotAFile": "アップロードできるのは通常のファイルだけです。",
+    "downloadRejected": "デバイスがダウンロードを拒否しました。",
+    "photosModuleMissing": "このデバイスには写真モジュールがないため、検索とファセットは利用できません。",
+    "appNotFound": "このアプリはデバイスの一覧にもうありません。",
+    "appHasNoWebUi": "このアプリは Web インターフェースを公開していません。",
+    "powerDeviceMismatch": "画面は現在有効なデバイスとは別のデバイスを指しています。再読み込みしてやり直してください。",
+    "zerotierNoToken": "ローカルの ZeroTier トークンを読み取れませんでした。",
+    "zerotierApi": "ローカルの ZeroTier サービスがエラーを返しました。",
+    "zerotierMissing": "zerotier-one が見つかりません — インストール済みのものも同梱のものもありません。",
+    "zerotierNoStart": "ローカルの ZeroTier サービスが起動しませんでした。",
+    "unexpected-status": "デバイスが予期しないステータスを返しました。",
+    "zerotierNoCapability": "ローカルの ZeroTier サービスには仮想ネットワークデバイスを作成する権限がありません。付与するための正確なコマンドは以下です。",
+    "remoteIdUnknown": "このデバイスにはリモート ID が保存されていません。一度「リモート ID で接続」からサインインしてください。"
   },
   "common": {
     "retry": "再試行",
@@ -135,5 +239,96 @@
     "language": "言語",
     "unreviewed": "未校閲",
     "reviewed": "校閲済み"
+  },
+  "backup": {
+    "title": "写真バックアップ",
+    "foregroundOnly": "このウィンドウが開いている間だけ",
+    "explainer": "ローカルのフォルダーを選ぶと、その中の写真と動画が {{destination}} にアップロードされます。バックグラウンド同期はありません — ウィンドウを閉じると転送は止まり、次回は続きから再開します。",
+    "pickFolders": "フォルダーを選ぶ",
+    "start": "{{count}} 個のフォルダーをバックアップ",
+    "cancel": "中止",
+    "counts": "{{total}} 件中 {{uploaded}} 件 · {{skipped}} 件スキップ · {{failed}} 件失敗",
+    "notes": "注記のあるファイル {{count}} 件",
+    "phase": {
+      "idle": "未開始",
+      "scanning": "写真を探しています…",
+      "uploading": "アップロード中…",
+      "done": "完了、抜けはありません",
+      "cancelled": "中止しました — アップロード済みのファイルは残ります",
+      "failed": "失敗ありで終了"
+    },
+    "outcome": {
+      "skipped-duplicate": "すでにあります",
+      "skipped-unsupported": "画像ではありません",
+      "failed": "失敗"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "名前のないデバイス",
+    "cpu": "{{model}}、{{cores}} コア",
+    "cpuLoad": "CPU 負荷",
+    "cpuTemperature": "CPU 温度",
+    "watt": "{{watt}} W",
+    "memory": "メモリ",
+    "systemDisk": "システムディスクの空き",
+    "freeOf": "/ {{total}}",
+    "storage": "ストレージ",
+    "usedPercent": "{{percent}} % 使用中",
+    "unhealthy": "ヘルスチェック失敗"
+  },
+  "power": {
+    "title": "電源",
+    "restart": "再起動",
+    "off": "電源を切る",
+    "confirmRestart": "本当に {{name}} を再起動しますか？",
+    "confirmOff": "本当に {{name}} の電源を切りますか？",
+    "yes": "はい、実行する",
+    "no": "中止",
+    "restarting": "再起動を要求しました。しばらくデバイスに接続できません。",
+    "shuttingDown": "シャットダウンを要求しました。電源を入れ直すまでデバイスは応答しません。",
+    "noConfirmation": "確認は受け取れませんでした:"
+  },
+  "zerotier": {
+    "title": "リモート ID（ZeroTier）",
+    "running": "デーモン実行中",
+    "notRunning": "デーモン停止中",
+    "daemon": {
+      "system": "システムのインストール",
+      "bundled": "このアプリに同梱",
+      "managed": "このアプリ専用のコピー",
+      "absent": "実行ファイルが見つかりません"
+    },
+    "nodeId": "このマシン: {{id}}",
+    "networkId": "ネットワーク ID（16 桁の 16 進数）",
+    "join": "参加",
+    "leave": "退出",
+    "hint": "公開ネットワークはこのマシンをすぐに受け入れます。非公開ネットワークは先に承認が必要です — どちらかは各ネットワークの横のラベルに書かれています。",
+    "hintAccessDenied": "このネットワークはマシンを拒否しました（ACCESS_DENIED）。非公開ネットワークであり、所有者がネットワークコントローラーでこのノードを承認する必要があります。",
+    "provision": "セットアップを準備",
+    "provisioning": "準備中…",
+    "provisionHint": "このアプリは zerotier-one の専用コピーをインストールします。ネットワークデバイスを作成するには、あと 1 つ権限が必要です。コマンド 1 つでご自身で付与してください。システム側の ZeroTier には手を触れません。",
+    "commandHint": "端末でこれを一度実行し、それからここで再接続してください:",
+    "copy": "コマンドをコピー",
+    "copied": "コピーしました",
+    "recheck": "再接続",
+    "capable": "権限は付与済みです。デーモンはネットワークデバイスを作成できます。"
+  },
+  "legacy": {
+    "title": "旧クライアントから引き継ぐ",
+    "explainer": "0.9 のインストールからアドレスを引き継げます。パスワードは引き継がれません — 一度サインインするだけで、古い設定は一切変更されません。",
+    "summary": "接続 {{connections}} 件、バックアップ {{jobs}} 件、最後のホスト {{host}}",
+    "adopt": "アドレスを引き継ぐ",
+    "result": "{{imported}} 件を引き継ぎ、{{skipped}} 件は既知"
+  },
+  "logs": {
+    "title": "ログファイル",
+    "open": "フォルダーを開く"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "検出のみで、管理はしません。このクライアントはすでに動作しているトンネルを使い、DNS やルート設定は変更しません。",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "使う",
+    "noPeers": "この tailnet でオンラインの他のマシンはありません。"
   }
 }

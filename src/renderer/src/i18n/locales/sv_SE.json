@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Lokalt nätverk",
       "direct": "Direkt IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Upptäckta funktioner",
-    "routes": "{{count}} gateway-rutter"
+    "routes": "{{count}} gateway-rutter",
+    "remoteIdTitle": "Anslut via Remote ID",
+    "remoteIdHint": "Ange det Remote ID som visas på enheten. Anslutningen sätts upp åt dig — sedan loggar du in som vanligt.",
+    "remoteIdLabel": "Remote ID (16 tecken)",
+    "remoteIdConnecting": "Ansluter…",
+    "connect": "Anslut"
   },
   "capability": {
     "photoLibrary": "Fotosökning och facetter",
@@ -47,19 +53,99 @@
     "title": "Foton",
     "libraryMissing": "Fotosökning kräver Photos-modulen",
     "libraryMissingHint": "Denna enhet har ingen registrerad Photos-modul, så semantisk sökning och facetter är otillgängliga. Bläddring och säkerhetskopiering fungerar ändå.",
-    "backupForegroundOnly": "Säkerhetskopieringen körs bara medan detta fönster är öppet."
+    "backupForegroundOnly": "Säkerhetskopieringen körs bara medan detta fönster är öppet.",
+    "video": "Video",
+    "loading": "Läser in…",
+    "noneHere": "Inga bilder eller videor i den här mappen.",
+    "noHits": "Inga träffar.",
+    "search": "Sök",
+    "searching": "Söker…",
+    "searchPlaceholder": "Beskriv vad som ska finnas på bilden",
+    "clearSearch": "Rensa",
+    "searchSummary": "{{count}} träff(ar) på {{ms}} ms",
+    "modeLibrary": "Bibliotek",
+    "modeFolder": "Mapp",
+    "switchToFolder": "Bläddra i en mapp",
+    "switchToLibrary": "Tillbaka till biblioteket",
+    "countSummary": "{{shown}} av {{total}} visas",
+    "indexed": "{{processed}} av {{total}} indexerade",
+    "pending": "{{count}} återstår",
+    "indexStatus": {
+      "idle": "klart",
+      "working": "pågår"
+    },
+    "semanticIncomplete": "Det semantiska indexet ligger på {{percent}} %. Tills det är klart hittar textsökningen bara hela ord i filnamn.",
+    "semanticUnavailable": "Fotosökning är inte tillgänglig på den här enheten",
+    "semanticUnavailableHint": "Enheten har ingen bildmodell installerad, så en sökning skulle inte ge något alls i stället för «inga träffar». Bläddring och säkerhetskopiering påverkas inte.",
+    "semanticState": "Enhetens tillstånd: {{state}} · saknas: {{missing}}"
   },
   "files": {
     "title": "Filer",
     "search": "Sök",
     "starred": "Favoriter",
-    "storage": "Lagring"
+    "storage": "Lagring",
+    "up": "Upp en nivå",
+    "select": "Välj {{name}}",
+    "media": "media",
+    "loading": "Läser in…",
+    "loadingVolumes": "Frågar enheten efter dess volymer…",
+    "noVolumes": "Enheten rapporterade inte en enda volym, så det finns inget att bläddra i.",
+    "emptyFolder": "Den här mappen är tom.",
+    "searching": "Söker…",
+    "searchPlaceholder": "Sök filnamn i den här mappen och nedanför",
+    "clearSearch": "Rensa",
+    "searchSummary": "{{hits}} träff(ar) efter att ha gått igenom {{scanned}} poster. Sökningen körs i klienten — ZimaOS 1.7 har ingen filsökning på servern.",
+    "searchTruncated": "Avbröts tidigt vid sökgränsen, så det kan finnas fler träffar längre ned.",
+    "noHits": "Inget filnamn matchade.",
+    "newFolder": "Ny mapp",
+    "newFolderPrompt": "Namn på den nya mappen",
+    "upload": "Ladda upp",
+    "download": "Ladda ned",
+    "copy": "Kopiera",
+    "move": "Flytta",
+    "pasteCopy": "Klistra in {{count}} kopia här",
+    "pasteMove": "Flytta {{count}} hit",
+    "toTrash": "Flytta till papperskorgen",
+    "refresh": "Uppdatera",
+    "showTrash": "Visa papperskorgen",
+    "hideTrash": "Dölj papperskorgen",
+    "trash": "Papperskorg",
+    "trashEmpty": "Papperskorgen är tom.",
+    "trashCount": "{{count}} post(er) i papperskorgen",
+    "restore": "Återställ {{count}}",
+    "deletedAt": "borttagen {{when}}",
+    "tasks": "Pågående åtgärder",
+    "tasksHint": "Kopiering och flyttning körs på enheten, så de fortsätter även när det här fönstret är upptaget.",
+    "countSummary": "{{shown}} av {{total}} poster visas",
+    "sortedBy": "sorterat efter {{field}}",
+    "changeSort": "ändra",
+    "ascending": "stigande",
+    "descending": "fallande",
+    "sort": {
+      "name": "namn",
+      "size": "storlek",
+      "modified": "datum"
+    }
   },
   "apps": {
     "title": "Appar",
     "running": "Körs",
     "stopped": "Stoppad",
-    "cachedAt": "Status: {{time}}"
+    "cachedAt": "Status: {{time}}",
+    "loading": "Läser in…",
+    "none": "Inga appar är installerade på den här enheten.",
+    "cached": "Sparad lista",
+    "retry": "Försök igen",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "körs",
+      "stopped": "stoppad"
+    },
+    "openHere": "Öppna här",
+    "openBrowser": "Öppna i webbläsaren",
+    "noWebUi": "Den här appen publicerar inget webbgränssnitt.",
+    "start": "Starta",
+    "stop": "Stoppa"
   },
   "security": {
     "keyringTitle": "Lösenord kan inte lagras säkert",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Ingen ZimaOS-enhet svarade på denna adress.",
     "sessionExpired": "Sessionen har gått ut — logga in igen.",
     "signInRequired": "Logga in.",
-    "strategyUnavailable": "Den här anslutningsvägen är ännu inte tillgänglig i denna version."
+    "strategyUnavailable": "Den här anslutningsvägen är ännu inte tillgänglig i denna version.",
+    "notFound": "Enheten säger att den här sökvägen inte finns.",
+    "endpointUnknown": "Den här enheten erbjuder inte det gränssnitt som klienten bad om.",
+    "invalidRequest": "Förfrågan avvisades innan den skickades — det är ett fel i den här klienten.",
+    "invalidFolderName": "Ett mappnamn får inte innehålla snedstreck.",
+    "uploadRejected": "Enheten avvisade uppladdningen.",
+    "uploadNotAFile": "Bara vanliga filer kan laddas upp.",
+    "downloadRejected": "Enheten avvisade nedladdningen.",
+    "photosModuleMissing": "Den här enheten har ingen fotomodul, så sökning och facetter är inte tillgängliga.",
+    "appNotFound": "Den här appen finns inte längre i enhetens lista.",
+    "appHasNoWebUi": "Den här appen publicerar inget webbgränssnitt.",
+    "powerDeviceMismatch": "Skärmen syftar på en annan enhet än den aktiva. Läs om och försök igen.",
+    "zerotierNoToken": "Den lokala ZeroTier-token kunde inte läsas.",
+    "zerotierApi": "Den lokala ZeroTier-tjänsten svarade med ett fel.",
+    "zerotierMissing": "Ingen zerotier-one hittades — varken installerad eller medföljande.",
+    "zerotierNoStart": "Den lokala ZeroTier-tjänsten startade inte.",
+    "unexpected-status": "Enheten svarade med en oväntad status.",
+    "zerotierNoCapability": "Den lokala ZeroTier-tjänsten får inte skapa en virtuell nätverksenhet. Det exakta kommandot för att ge den rätten står nedan.",
+    "remoteIdUnknown": "Inget Remote ID är sparat för den här enheten. Logga in en gång via «Anslut via Remote ID»."
   },
   "common": {
     "retry": "Försök igen",
@@ -135,5 +239,96 @@
     "language": "Språk",
     "unreviewed": "ej granskad",
     "reviewed": "granskad"
+  },
+  "backup": {
+    "title": "Fotosäkerhetskopiering",
+    "foregroundOnly": "bara medan det här fönstret är öppet",
+    "explainer": "Välj lokala mappar; bilder och videor i dem laddas upp till {{destination}}. Det finns ingen synkronisering i bakgrunden — när fönstret stängs stannar överföringen och fortsätter nästa gång där den slutade.",
+    "pickFolders": "Välj mappar",
+    "start": "Säkerhetskopiera {{count}} mapp(ar)",
+    "cancel": "Avbryt",
+    "counts": "{{uploaded}} av {{total}} · {{skipped}} överhoppade · {{failed}} misslyckades",
+    "notes": "{{count}} fil(er) med en anmärkning",
+    "phase": {
+      "idle": "Inte startad",
+      "scanning": "Letar efter bilder…",
+      "uploading": "Laddar upp…",
+      "done": "Klar, inget utelämnades",
+      "cancelled": "Avbruten — redan uppladdade filer blir kvar",
+      "failed": "Klar med fel"
+    },
+    "outcome": {
+      "skipped-duplicate": "finns redan",
+      "skipped-unsupported": "ingen bild",
+      "failed": "misslyckades"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Namnlös enhet",
+    "cpu": "{{model}}, {{cores}} kärnor",
+    "cpuLoad": "CPU-belastning",
+    "cpuTemperature": "CPU-temperatur",
+    "watt": "{{watt}} W",
+    "memory": "Minne",
+    "systemDisk": "Ledig systemdisk",
+    "freeOf": "av {{total}}",
+    "storage": "Lagring",
+    "usedPercent": "{{percent}} % använt",
+    "unhealthy": "hälsokontrollen misslyckades"
+  },
+  "power": {
+    "title": "Ström",
+    "restart": "Starta om",
+    "off": "Stäng av",
+    "confirmRestart": "Vill du verkligen starta om {{name}}?",
+    "confirmOff": "Vill du verkligen stänga av {{name}}?",
+    "yes": "Ja, gör det",
+    "no": "Avbryt",
+    "restarting": "Omstarten har begärts. Enheten är onåbar en stund.",
+    "shuttingDown": "Avstängningen har begärts. Enheten svarar inte igen förrän den slås på.",
+    "noConfirmation": "Ingen bekräftelse togs emot:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "daemon körs",
+    "notRunning": "daemon körs inte",
+    "daemon": {
+      "system": "systeminstallation",
+      "bundled": "levereras med den här appen",
+      "managed": "appens egen kopia",
+      "absent": "ingen binär hittades"
+    },
+    "nodeId": "Den här maskinen: {{id}}",
+    "networkId": "Nätverks-ID (16 hextecken)",
+    "join": "Anslut",
+    "leave": "Lämna",
+    "hint": "Ett publikt nätverk släpper in den här maskinen direkt. Ett privat måste godkänna den först — vilket av de två det är står som märkning bredvid varje nätverk.",
+    "hintAccessDenied": "Det här nätverket avvisade maskinen (ACCESS_DENIED): det är privat, och ägaren måste godkänna den här noden i nätverkskontrollern.",
+    "provision": "Förbered installationen",
+    "provisioning": "Förbereder…",
+    "provisionHint": "Den här appen installerar en egen kopia av zerotier-one. För att få skapa en nätverksenhet saknar den fortfarande en behörighet, som du själv ger med ett enda kommando. Systemets eget ZeroTier lämnas orört.",
+    "commandHint": "Kör det här en gång i en terminal och anslut sedan igen här:",
+    "copy": "Kopiera kommandot",
+    "copied": "Kopierat",
+    "recheck": "Anslut igen",
+    "capable": "Behörigheten finns. Daemonen får skapa en nätverksenhet."
+  },
+  "legacy": {
+    "title": "Ta över från den gamla klienten",
+    "explainer": "Adresser från en 0.9-installation kan tas över. Lösenord följer inte med — du loggar in en gång, och den gamla konfigurationen ändras aldrig.",
+    "summary": "{{connections}} anslutning(ar), {{jobs}} säkerhetskopieringsjobb, senaste värd {{host}}",
+    "adopt": "Ta över adresser",
+    "result": "{{imported}} övertagna, {{skipped}} redan kända"
+  },
+  "logs": {
+    "title": "Loggfil",
+    "open": "Öppna mappen"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Upptäckt, inte hanterat. Den här klienten använder en tunnel som redan körs och ändrar inga DNS- eller routinginställningar.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Använd",
+    "noPeers": "Ingen annan maskin på det här tailnetet är online."
   }
 }

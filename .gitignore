@@ -53,3 +53,9 @@ out/
 # Measurement reports. They carry the device address and are host-specific, so they stay
 # out of anything shareable (project rule: no private data in shareable files).
 reports/
+
+# Screenshots und Reports der Verifikationsläufe — Messartefakte, kein Quelltext.
+# Sie zeigen echte Geräte: Tailnet-Namen, Peer-Adressen, Ordnernamen.
+tour-*.png
+startup-report*.json
+scenario-report*.json

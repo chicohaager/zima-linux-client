@@ -23,11 +23,17 @@ import type { ScenarioResult } from './scenarios'
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
 
-/** Clicks a navigation button by its accessible name. */
-const CLICK_NAV = (label: string): string => `(() => {
-  const buttons = Array.from(document.querySelectorAll('nav button'))
-  const target = buttons.find((b) => (b.getAttribute('aria-label') || b.textContent || '').trim() === ${JSON.stringify(label)})
-  if (!target) return 'missing:' + ${JSON.stringify(label)}
+/**
+ * Clicks a navigation button by its section key.
+ *
+ * Deliberately not by label: the label is translated, so matching on it made the tour a
+ * German-only check. Measured 2026-07-31 with `ZIMA_VERIFY_LOCALE=ja_JP`: all four clicks
+ * reported `missing:Gerät` while the navigation was on screen and working. A verification
+ * that fails on a correct app teaches people to ignore it.
+ */
+const CLICK_NAV = (key: string): string => `(() => {
+  const target = document.querySelector('nav button[data-nav=' + ${JSON.stringify(JSON.stringify(key))} + ']')
+  if (!target) return 'missing:' + ${JSON.stringify(key)}
   target.click()
   return 'ok'
 })()`
@@ -73,23 +79,19 @@ interface Observation {
   readonly buttons: number
 }
 
-/** German labels of the four destinations — the tour runs in the user's locale. */
-const SECTIONS = [
-  { key: 'device', label: 'Gerät' },
-  { key: 'files', label: 'Dateien' },
-  { key: 'photos', label: 'Fotos' },
-  { key: 'apps', label: 'Apps' },
-] as const
+/** The four destinations, by section key — locale-independent. */
+const SECTIONS = ['device', 'files', 'photos', 'apps'] as const
 
-/** Phrases that must never be on screen: they mean a mapping or a load went wrong. */
-const FORBIDDEN = [
-  'Da ist etwas schiefgegangen',
-  'lehnt diesen Pfad ab',
-  'nicht implementiert',
-  'Not implemented yet',
-  'NaN',
-  'undefined',
-] as const
+/**
+ * Phrases that must never be on screen: they mean a mapping or a load went wrong.
+ *
+ * Split by scope on purpose. The German ones are the *rendered translations* of two error
+ * states — in `ja_JP` they cannot appear even when the app is broken, so a tour run in
+ * another locale that lists them would be checking nothing while looking thorough. Only the
+ * locale-independent ones apply everywhere, and the report says which set was in force.
+ */
+const FORBIDDEN_ANY_LOCALE = ['NaN', 'undefined', 'Not implemented yet'] as const
+const FORBIDDEN_DE = ['Da ist etwas schiefgegangen', 'lehnt diesen Pfad ab', 'nicht implementiert'] as const
 
 export const runTour = async (window: BrowserWindow, reportPath: string): Promise<ScenarioResult> => {
   const failures: string[] = []
@@ -102,11 +104,20 @@ export const runTour = async (window: BrowserWindow, reportPath: string): Promis
   // path that a returning user never takes.
   await sleep(3_500)
 
+  // Which error phrases can even appear depends on the locale on screen — asked of the
+  // running document, not of the environment variable that was meant to set it.
+  const locale = String(await run(`document.documentElement.lang || ''`))
+  const forbidden = locale.startsWith('de')
+    ? [...FORBIDDEN_ANY_LOCALE, ...FORBIDDEN_DE]
+    : FORBIDDEN_ANY_LOCALE
+  observed['locale'] = locale
+  observed['forbidden.scope'] = locale.startsWith('de') ? 'any+de' : 'any-locale only'
+
   for (const section of SECTIONS) {
-    const clicked = String(await run(CLICK_NAV(section.label)))
-    observed[`${section.key}.click`] = clicked
+    const clicked = String(await run(CLICK_NAV(section)))
+    observed[`${section}.click`] = clicked
     if (clicked.startsWith('missing')) {
-      failures.push(`navigation button for "${section.label}" not found`)
+      failures.push(`navigation button for "${section}" not found`)
       continue
     }
 
@@ -117,28 +128,28 @@ export const runTour = async (window: BrowserWindow, reportPath: string): Promis
     // The full captured excerpt, not a quarter of it. A 400-character cut stopped inside
     // the capability list on the device screen, so anything rendered below it was absent
     // from the report and had to be checked by eye in the screenshot.
-    observed[`${section.key}.text`] = look.text
-    observed[`${section.key}.counts`] =
+    observed[`${section}.text`] = look.text
+    observed[`${section}.counts`] =
       `cards=${look.cards} rows=${look.listRows} images=${look.images} ` +
       `broken=${look.brokenImages} buttons=${look.buttons}`
 
     if (look.rawKeys.length > 0) {
-      failures.push(`${section.key}: raw i18n keys visible: ${look.rawKeys.join(', ')}`)
+      failures.push(`${section}: raw i18n keys visible: ${look.rawKeys.join(', ')}`)
     }
-    for (const phrase of FORBIDDEN) {
+    for (const phrase of forbidden) {
       if (look.text.includes(phrase)) {
-        failures.push(`${section.key}: forbidden text on screen: "${phrase}"`)
+        failures.push(`${section}: forbidden text on screen: "${phrase}"`)
       }
     }
     if (look.brokenImages > 0) {
-      failures.push(`${section.key}: ${look.brokenImages} image(s) failed to load`)
+      failures.push(`${section}: ${look.brokenImages} image(s) failed to load`)
     }
     if (look.buttons < 4) {
-      failures.push(`${section.key}: only ${look.buttons} buttons rendered — the screen looks empty`)
+      failures.push(`${section}: only ${look.buttons} buttons rendered — the screen looks empty`)
     }
 
     const shot = await window.webContents.capturePage()
-    await writeFile(join(dirname(reportPath), `tour-${section.key}.png`), shot.toPNG())
+    await writeFile(join(dirname(reportPath), `tour-${section}.png`), shot.toPNG())
   }
 
   return { name: 'tour', ok: failures.length === 0, observed, failures }

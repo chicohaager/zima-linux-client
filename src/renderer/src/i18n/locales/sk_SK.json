@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Miestna sieť",
       "direct": "Priama IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Zistené funkcie",
-    "routes": "{{count}} ciest brány"
+    "routes": "{{count}} ciest brány",
+    "remoteIdTitle": "Pripojiť cez Remote ID",
+    "remoteIdHint": "Zadajte Remote ID zobrazené na zariadení. Spojenie sa pripraví samo — potom sa prihláste ako zvyčajne.",
+    "remoteIdLabel": "Remote ID (16 znakov)",
+    "remoteIdConnecting": "Pripája sa…",
+    "connect": "Pripojiť"
   },
   "capability": {
     "photoLibrary": "Hľadanie fotiek a filtre",
@@ -47,19 +53,99 @@
     "title": "Fotky",
     "libraryMissing": "Hľadanie fotiek potrebuje modul Photos",
     "libraryMissingHint": "Na tomto zariadení nie je registrovaný modul Photos, preto nie je dostupné sémantické hľadanie ani filtre. Prehliadanie a záloha fungujú aj tak.",
-    "backupForegroundOnly": "Záloha beží iba vtedy, keď je toto okno otvorené."
+    "backupForegroundOnly": "Záloha beží iba vtedy, keď je toto okno otvorené.",
+    "video": "Video",
+    "loading": "Načítava sa…",
+    "noneHere": "V tomto priečinku nie sú žiadne fotky ani videá.",
+    "noHits": "Žiadne výsledky.",
+    "search": "Hľadať",
+    "searching": "Hľadá sa…",
+    "searchPlaceholder": "Opíšte, čo má byť na obrázku",
+    "clearSearch": "Vymazať",
+    "searchSummary": "{{count}} výsledkov za {{ms}} ms",
+    "modeLibrary": "Knižnica",
+    "modeFolder": "Priečinok",
+    "switchToFolder": "Prehliadať priečinok",
+    "switchToLibrary": "Späť do knižnice",
+    "countSummary": "{{shown}} z {{total}} zobrazených",
+    "indexed": "{{processed}} z {{total}} zaindexovaných",
+    "pending": "{{count}} čaká",
+    "indexStatus": {
+      "idle": "hotovo",
+      "working": "prebieha"
+    },
+    "semanticIncomplete": "Sémantický index je na {{percent}} %. Kým nie je hotový, textové hľadanie nájde len celé slová v názvoch súborov.",
+    "semanticUnavailable": "Hľadanie fotiek nie je na tomto zariadení dostupné",
+    "semanticUnavailableHint": "Zariadenie nemá nainštalovaný žiadny obrazový model, takže hľadanie by nevrátilo vôbec nič namiesto «žiadne výsledky». Prehliadanie a zálohovanie to neovplyvní.",
+    "semanticState": "Stav zariadenia: {{state}} · chýba: {{missing}}"
   },
   "files": {
     "title": "Súbory",
     "search": "Hľadať",
     "starred": "Obľúbené",
-    "storage": "Úložisko"
+    "storage": "Úložisko",
+    "up": "O úroveň vyššie",
+    "select": "Vybrať {{name}}",
+    "media": "médiá",
+    "loading": "Načítava sa…",
+    "loadingVolumes": "Zisťujú sa zväzky zariadenia…",
+    "noVolumes": "Zariadenie nenahlásilo ani jeden zväzok, takže niet čo prehliadať.",
+    "emptyFolder": "Tento priečinok je prázdny.",
+    "searching": "Hľadá sa…",
+    "searchPlaceholder": "Hľadať názvy súborov v tomto priečinku a nižšie",
+    "clearSearch": "Vymazať",
+    "searchSummary": "{{hits}} výsledkov po prezretí {{scanned}} položiek. Toto hľadanie beží v klientovi — ZimaOS 1.7 nemá hľadanie súborov na strane servera.",
+    "searchTruncated": "Zastavené skôr na limite hľadania, takže nižšie môžu byť ďalšie zhody.",
+    "noHits": "Žiadny názov súboru nezodpovedá.",
+    "newFolder": "Nový priečinok",
+    "newFolderPrompt": "Názov nového priečinka",
+    "upload": "Nahrať",
+    "download": "Stiahnuť",
+    "copy": "Kopírovať",
+    "move": "Presunúť",
+    "pasteCopy": "Vložiť sem {{count}} kópiu",
+    "pasteMove": "Presunúť sem {{count}}",
+    "toTrash": "Presunúť do koša",
+    "refresh": "Obnoviť",
+    "showTrash": "Zobraziť kôš",
+    "hideTrash": "Skryť kôš",
+    "trash": "Kôš",
+    "trashEmpty": "Kôš je prázdny.",
+    "trashCount": "{{count}} položiek v koši",
+    "restore": "Obnoviť {{count}}",
+    "deletedAt": "zmazané {{when}}",
+    "tasks": "Prebiehajúce operácie",
+    "tasksHint": "Kopírovanie a presúvanie bežia na zariadení, takže pokračujú aj keď je toto okno zaneprázdnené.",
+    "countSummary": "{{shown}} z {{total}} položiek zobrazených",
+    "sortedBy": "zoradené podľa {{field}}",
+    "changeSort": "zmeniť",
+    "ascending": "vzostupne",
+    "descending": "zostupne",
+    "sort": {
+      "name": "názov",
+      "size": "veľkosť",
+      "modified": "dátum"
+    }
   },
   "apps": {
     "title": "Aplikácie",
     "running": "Beží",
     "stopped": "Zastavené",
-    "cachedAt": "Stav: {{time}}"
+    "cachedAt": "Stav: {{time}}",
+    "loading": "Načítava sa…",
+    "none": "Na tomto zariadení nie sú nainštalované žiadne aplikácie.",
+    "cached": "Uložený zoznam",
+    "retry": "Skúsiť znova",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "beží",
+      "stopped": "zastavená"
+    },
+    "openHere": "Otvoriť tu",
+    "openBrowser": "Otvoriť v prehliadači",
+    "noWebUi": "Táto aplikácia nezverejňuje žiadne webové rozhranie.",
+    "start": "Spustiť",
+    "stop": "Zastaviť"
   },
   "security": {
     "keyringTitle": "Heslá nie je možné bezpečne uložiť",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Na tejto adrese neodpovedalo žiadne zariadenie ZimaOS.",
     "sessionExpired": "Sesia vypršala — prihláste sa znova.",
     "signInRequired": "Prihláste sa.",
-    "strategyUnavailable": "Táto cesta pripojenia v tejto verzii ešte nie je dostupná."
+    "strategyUnavailable": "Táto cesta pripojenia v tejto verzii ešte nie je dostupná.",
+    "notFound": "Zariadenie hovorí, že táto cesta neexistuje.",
+    "endpointUnknown": "Toto zariadenie neponúka rozhranie, o ktoré klient požiadal.",
+    "invalidRequest": "Požiadavka bola odmietnutá ešte pred odoslaním — to je chyba tohto klienta.",
+    "invalidFolderName": "Názov priečinka nesmie obsahovať lomku.",
+    "uploadRejected": "Zariadenie odmietlo nahranie.",
+    "uploadNotAFile": "Nahrať možno len bežné súbory.",
+    "downloadRejected": "Zariadenie odmietlo stiahnutie.",
+    "photosModuleMissing": "Toto zariadenie nemá modul fotiek, takže hľadanie a fazety nie sú dostupné.",
+    "appNotFound": "Táto aplikácia už nie je v zozname zariadenia.",
+    "appHasNoWebUi": "Táto aplikácia nezverejňuje žiadne webové rozhranie.",
+    "powerDeviceMismatch": "Obrazovka odkazuje na iné zariadenie než na aktívne. Načítajte znova a skúste to znova.",
+    "zerotierNoToken": "Miestny token ZeroTier sa nepodarilo prečítať.",
+    "zerotierApi": "Miestna služba ZeroTier odpovedala chybou.",
+    "zerotierMissing": "Nenašiel sa žiadny zerotier-one — ani nainštalovaný, ani priložený.",
+    "zerotierNoStart": "Miestna služba ZeroTier sa nespustila.",
+    "unexpected-status": "Zariadenie odpovedalo neočakávaným stavom.",
+    "zerotierNoCapability": "Miestna služba ZeroTier nesmie vytvoriť virtuálne sieťové zariadenie. Presný príkaz, ktorý to povolí, je nižšie.",
+    "remoteIdUnknown": "Pre toto zariadenie nie je uložené žiadne Remote ID. Prihláste sa raz cez «Pripojiť cez Remote ID»."
   },
   "common": {
     "retry": "Skúsiť znova",
@@ -135,5 +239,96 @@
     "language": "Jazyk",
     "unreviewed": "neskontrolované",
     "reviewed": "skontrolované"
+  },
+  "backup": {
+    "title": "Záloha fotiek",
+    "foregroundOnly": "len kým je toto okno otvorené",
+    "explainer": "Vyberte miestne priečinky; fotky a videá v nich sa nahrajú do {{destination}}. Neexistuje synchronizácia na pozadí — zatvorením okna sa prenos zastaví a nabudúce pokračuje tam, kde skončil.",
+    "pickFolders": "Vybrať priečinky",
+    "start": "Zálohovať {{count}} priečinkov",
+    "cancel": "Zrušiť",
+    "counts": "{{uploaded}} z {{total}} · {{skipped}} preskočených · {{failed}} zlyhalo",
+    "notes": "{{count}} súborov s poznámkou",
+    "phase": {
+      "idle": "Nezačaté",
+      "scanning": "Hľadajú sa fotky…",
+      "uploading": "Nahráva sa…",
+      "done": "Hotovo, nič nebolo vynechané",
+      "cancelled": "Zrušené — už nahrané súbory zostávajú",
+      "failed": "Dokončené s chybami"
+    },
+    "outcome": {
+      "skipped-duplicate": "už tam je",
+      "skipped-unsupported": "nie je obrázok",
+      "failed": "zlyhalo"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Zariadenie bez názvu",
+    "cpu": "{{model}}, jadier: {{cores}}",
+    "cpuLoad": "Zaťaženie CPU",
+    "cpuTemperature": "Teplota CPU",
+    "watt": "{{watt}} W",
+    "memory": "Pamäť",
+    "systemDisk": "Voľné na systémovom disku",
+    "freeOf": "z {{total}}",
+    "storage": "Úložisko",
+    "usedPercent": "{{percent}} % využité",
+    "unhealthy": "kontrola stavu zlyhala"
+  },
+  "power": {
+    "title": "Napájanie",
+    "restart": "Reštartovať",
+    "off": "Vypnúť",
+    "confirmRestart": "Naozaj reštartovať {{name}}?",
+    "confirmOff": "Naozaj vypnúť {{name}}?",
+    "yes": "Áno, vykonať",
+    "no": "Zrušiť",
+    "restarting": "Reštart bol vyžiadaný. Zariadenie bude chvíľu nedostupné.",
+    "shuttingDown": "Vypnutie bolo vyžiadané. Zariadenie sa ozve až po zapnutí.",
+    "noConfirmation": "Neprišlo žiadne potvrdenie:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "démon beží",
+    "notRunning": "démon nebeží",
+    "daemon": {
+      "system": "systémová inštalácia",
+      "bundled": "dodané s touto aplikáciou",
+      "managed": "vlastná kópia tejto aplikácie",
+      "absent": "nenašiel sa žiadny binárny súbor"
+    },
+    "nodeId": "Tento stroj: {{id}}",
+    "networkId": "ID siete (16 hex znakov)",
+    "join": "Pripojiť sa",
+    "leave": "Opustiť",
+    "hint": "Verejná sieť tento stroj prijme okamžite. Súkromná ho musí najprv autorizovať — ktorá z oboch to je, hovorí štítok vedľa každej siete.",
+    "hintAccessDenied": "Táto sieť stroj odmietla (ACCESS_DENIED): je súkromná a jej vlastník musí tento uzol autorizovať v radiči siete.",
+    "provision": "Pripraviť inštaláciu",
+    "provisioning": "Pripravuje sa…",
+    "provisionHint": "Táto aplikácia inštaluje vlastnú kópiu zerotier-one. Aby smela vytvoriť sieťové zariadenie, chýba jej ešte jedno oprávnenie, ktoré udelíte sami jediným príkazom. Systémový ZeroTier zostane nedotknutý.",
+    "commandHint": "Spustite toto raz v termináli a potom sa tu pripojte znova:",
+    "copy": "Kopírovať príkaz",
+    "copied": "Skopírované",
+    "recheck": "Pripojiť znova",
+    "capable": "Oprávnenie je udelené. Démon smie vytvoriť sieťové zariadenie."
+  },
+  "legacy": {
+    "title": "Prevziať zo starého klienta",
+    "explainer": "Adresy z inštalácie 0.9 možno prevziať. Heslá sa neprenášajú — prihlásite sa raz a stará konfigurácia sa nikdy nemení.",
+    "summary": "{{connections}} spojení, {{jobs}} zálohovacích úloh, posledný hostiteľ {{host}}",
+    "adopt": "Prevziať adresy",
+    "result": "{{imported}} prevzatých, {{skipped}} už známych"
+  },
+  "logs": {
+    "title": "Súbor protokolu",
+    "open": "Otvoriť priečinok"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Rozpoznané, nespravované. Tento klient používa už bežiaci tunel a nemení žiadne nastavenia DNS ani trás.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Použiť",
+    "noPeers": "Žiadny iný stroj v tomto tailnete nie je online."
   }
 }

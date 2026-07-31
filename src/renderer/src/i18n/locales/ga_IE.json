@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Líonra áitiúil",
       "direct": "IP díreach",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Gnéithe a braitheadh",
-    "routes": "{{count}} bealach geata"
+    "routes": "{{count}} bealach geata",
+    "remoteIdTitle": "Ceangail le Remote ID",
+    "remoteIdHint": "Cuir isteach an Remote ID atá ar taispeáint ar an ngléas. Cuirtear an ceangal ar bun duit — ansin sínigh isteach mar is gnách.",
+    "remoteIdLabel": "Remote ID (16 carachtar)",
+    "remoteIdConnecting": "Á cheangal…",
+    "connect": "Ceangail"
   },
   "capability": {
     "photoLibrary": "Cuardach grianghraf agus scagairí",
@@ -47,19 +53,99 @@
     "title": "Grianghraif",
     "libraryMissing": "Teastaíonn an modúl Photos don chuardach grianghraf",
     "libraryMissingHint": "Níl an modúl Photos cláraithe ar an ngléas seo, mar sin níl cuardach séimeantach ná scagairí ar fáil. Oibríonn brabhsáil agus cúltaca mar sin féin.",
-    "backupForegroundOnly": "Ní ritheann an cúltaca ach fad a bhíonn an fhuinneog seo oscailte."
+    "backupForegroundOnly": "Ní ritheann an cúltaca ach fad a bhíonn an fhuinneog seo oscailte.",
+    "video": "Físeán",
+    "loading": "Á lódáil…",
+    "noneHere": "Níl aon phictiúr ná físeán san fhillteán seo.",
+    "noHits": "Gan torthaí.",
+    "search": "Cuardaigh",
+    "searching": "Á chuardach…",
+    "searchPlaceholder": "Déan cur síos ar a bhfuil sa phictiúr",
+    "clearSearch": "Glan",
+    "searchSummary": "{{count}} toradh in {{ms}} ms",
+    "modeLibrary": "Leabharlann",
+    "modeFolder": "Fillteán",
+    "switchToFolder": "Brabhsáil fillteán",
+    "switchToLibrary": "Ar ais go dtí an leabharlann",
+    "countSummary": "{{shown}} as {{total}} á dtaispeáint",
+    "indexed": "{{processed}} as {{total}} innéacsaithe",
+    "pending": "{{count}} fágtha",
+    "indexStatus": {
+      "idle": "críochnaithe",
+      "working": "ar siúl"
+    },
+    "semanticIncomplete": "Tá an t-innéacs séimeantach ag {{percent}} %. Go dtí go mbeidh sé críochnaithe, ní aimsíonn an cuardach téacs ach focail iomlána in ainmneacha comhad.",
+    "semanticUnavailable": "Níl cuardach grianghraf ar fáil ar an ngléas seo",
+    "semanticUnavailableHint": "Níl aon mhúnla físe suiteáilte ar an ngléas, agus mar sin ní thabharfadh cuardach faic ar ais in ionad «gan torthaí». Ní chuireann sé isteach ar bhrabhsáil ná ar chúltaca.",
+    "semanticState": "Staid an ghléis: {{state}} · in easnamh: {{missing}}"
   },
   "files": {
     "title": "Comhaid",
     "search": "Cuardaigh",
     "starred": "Ceanáin",
-    "storage": "Stóráil"
+    "storage": "Stóráil",
+    "up": "Leibhéal amháin suas",
+    "select": "Roghnaigh {{name}}",
+    "media": "meáin",
+    "loading": "Á lódáil…",
+    "loadingVolumes": "Na himleabhair á n-iarraidh ar an ngléas…",
+    "noVolumes": "Níor thuairiscigh an gléas aon imleabhar, mar sin níl aon rud le brabhsáil.",
+    "emptyFolder": "Tá an fillteán seo folamh.",
+    "searching": "Á chuardach…",
+    "searchPlaceholder": "Cuardaigh ainmneacha comhad san fhillteán seo agus faoi",
+    "clearSearch": "Glan",
+    "searchSummary": "{{hits}} toradh tar éis {{scanned}} iontráil a scrúdú. Ritheann an cuardach seo sa chliant — níl cuardach comhad ar an bhfreastalaí ag ZimaOS 1.7.",
+    "searchTruncated": "Stopadh go luath ag teorainn an chuardaigh, mar sin d’fhéadfadh tuilleadh torthaí a bheith níos faide síos.",
+    "noHits": "Níor mheaitseáil aon ainm comhaid.",
+    "newFolder": "Fillteán nua",
+    "newFolderPrompt": "Ainm an fhillteáin nua",
+    "upload": "Uaslódáil",
+    "download": "Íoslódáil",
+    "copy": "Cóipeáil",
+    "move": "Bog",
+    "pasteCopy": "Greamaigh {{count}} cóip anseo",
+    "pasteMove": "Bog {{count}} anseo",
+    "toTrash": "Bog go dtí an bruscar",
+    "refresh": "Athnuaigh",
+    "showTrash": "Taispeáin an bruscar",
+    "hideTrash": "Folaigh an bruscar",
+    "trash": "Bruscar",
+    "trashEmpty": "Tá an bruscar folamh.",
+    "trashCount": "{{count}} iontráil sa bhruscar",
+    "restore": "Athchóirigh {{count}}",
+    "deletedAt": "scriosta {{when}}",
+    "tasks": "Oibríochtaí ar siúl",
+    "tasksHint": "Ritheann cóipeáil agus bogadh ar an ngléas, mar sin leanann siad ar aghaidh fiú nuair atá an fhuinneog seo gnóthach.",
+    "countSummary": "{{shown}} as {{total}} iontráil á dtaispeáint",
+    "sortedBy": "sórtáilte de réir {{field}}",
+    "changeSort": "athraigh",
+    "ascending": "ardaitheach",
+    "descending": "íslitheach",
+    "sort": {
+      "name": "ainm",
+      "size": "méid",
+      "modified": "dáta"
+    }
   },
   "apps": {
     "title": "Aipeanna",
     "running": "Ag rith",
     "stopped": "Stoptha",
-    "cachedAt": "Staid: {{time}}"
+    "cachedAt": "Staid: {{time}}",
+    "loading": "Á lódáil…",
+    "none": "Níl aon aip suiteáilte ar an ngléas seo.",
+    "cached": "Liosta sábháilte",
+    "retry": "Bain triail eile as",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "ag rith",
+      "stopped": "stoptha"
+    },
+    "openHere": "Oscail anseo",
+    "openBrowser": "Oscail sa bhrabhsálaí",
+    "noWebUi": "Ní fhoilsíonn an aip seo aon chomhéadan gréasáin.",
+    "start": "Tosaigh",
+    "stop": "Stop"
   },
   "security": {
     "keyringTitle": "Ní féidir pasfhocail a stóráil go sábháilte",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Níor fhreagair aon ghléas ZimaOS ag an seoladh seo.",
     "sessionExpired": "Tá an seisiún imithe in éag — logáil isteach arís.",
     "signInRequired": "Logáil isteach, le do thoil.",
-    "strategyUnavailable": "Níl an bealach ceangail seo ar fáil sa leagan seo go fóill."
+    "strategyUnavailable": "Níl an bealach ceangail seo ar fáil sa leagan seo go fóill.",
+    "notFound": "Deir an gléas nach bhfuil an chonair seo ann.",
+    "endpointUnknown": "Ní chuireann an gléas seo an comhéadan a d’iarr an cliant ar fáil.",
+    "invalidRequest": "Diúltaíodh don iarratas sular seoladh é — locht sa chliant seo é sin.",
+    "invalidFolderName": "Ní féidir slais a bheith in ainm fillteáin.",
+    "uploadRejected": "Dhiúltaigh an gléas don uaslódáil.",
+    "uploadNotAFile": "Ní féidir ach gnáthchomhaid a uaslódáil.",
+    "downloadRejected": "Dhiúltaigh an gléas don íoslódáil.",
+    "photosModuleMissing": "Níl modúl grianghraf ar an ngléas seo, mar sin níl cuardach ná gnéithe ar fáil.",
+    "appNotFound": "Níl an aip seo ar liosta an ghléis a thuilleadh.",
+    "appHasNoWebUi": "Ní fhoilsíonn an aip seo aon chomhéadan gréasáin.",
+    "powerDeviceMismatch": "Tagraíonn an scáileán do ghléas eile seachas an ceann gníomhach. Athlódáil agus bain triail eile as.",
+    "zerotierNoToken": "Níorbh fhéidir an ceadchomhartha ZeroTier áitiúil a léamh.",
+    "zerotierApi": "D’fhreagair an tseirbhís ZeroTier áitiúil le hearráid.",
+    "zerotierMissing": "Níor aimsíodh aon zerotier-one — ceann suiteáilte ná ceann a tháinig leis an aip.",
+    "zerotierNoStart": "Níor thosaigh an tseirbhís ZeroTier áitiúil.",
+    "unexpected-status": "D’fhreagair an gléas le stádas nach rabhthas ag súil leis.",
+    "zerotierNoCapability": "Níl cead ag an tseirbhís ZeroTier áitiúil gléas líonra fíorúil a chruthú. Tá an t-ordú beacht chun é sin a dheonú thíos.",
+    "remoteIdUnknown": "Níl aon Remote ID stóráilte don ghléas seo. Sínigh isteach uair amháin trí «Ceangail le Remote ID»."
   },
   "common": {
     "retry": "Bain triail eile as",
@@ -135,5 +239,96 @@
     "language": "Teanga",
     "unreviewed": "gan athbhreithniú",
     "reviewed": "athbhreithnithe"
+  },
+  "backup": {
+    "title": "Cúltaca grianghraf",
+    "foregroundOnly": "ach amháin fad is atá an fhuinneog seo oscailte",
+    "explainer": "Roghnaigh fillteáin áitiúla; uaslódáiltear na pictiúir agus na físeáin iontu go {{destination}}. Níl aon sioncronú sa chúlra — nuair a dhúnann tú an fhuinneog stopann an t-aistriú agus leanann sé an chéad uair eile ón áit ar stop sé.",
+    "pickFolders": "Roghnaigh fillteáin",
+    "start": "Déan cúltaca ar {{count}} fillteán",
+    "cancel": "Cealaigh",
+    "counts": "{{uploaded}} as {{total}} · {{skipped}} scipeáilte · {{failed}} teipthe",
+    "notes": "{{count}} comhad le nóta",
+    "phase": {
+      "idle": "Gan tosú",
+      "scanning": "Ag lorg pictiúr…",
+      "uploading": "Á uaslódáil…",
+      "done": "Críochnaithe, níor fágadh aon rud ar lár",
+      "cancelled": "Cealaithe — fanann na comhaid atá uaslódáilte cheana",
+      "failed": "Críochnaithe le teipeanna"
+    },
+    "outcome": {
+      "skipped-duplicate": "ann cheana",
+      "skipped-unsupported": "ní pictiúr é",
+      "failed": "theip air"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Gléas gan ainm",
+    "cpu": "{{model}}, {{cores}} croí",
+    "cpuLoad": "Ualach LAP",
+    "cpuTemperature": "Teocht LAP",
+    "watt": "{{watt}} W",
+    "memory": "Cuimhne",
+    "systemDisk": "Diosca an chórais saor",
+    "freeOf": "as {{total}}",
+    "storage": "Stóras",
+    "usedPercent": "{{percent}} % in úsáid",
+    "unhealthy": "theip ar an tseiceáil sláinte"
+  },
+  "power": {
+    "title": "Cumhacht",
+    "restart": "Atosaigh",
+    "off": "Múch",
+    "confirmRestart": "An bhfuil tú cinnte gur mhaith leat {{name}} a atosú?",
+    "confirmOff": "An bhfuil tú cinnte gur mhaith leat {{name}} a mhúchadh?",
+    "yes": "Tá, déan é",
+    "no": "Cealaigh",
+    "restarting": "Iarradh an t-atosú. Ní bheidh an gléas insroichte ar feadh tamaill.",
+    "shuttingDown": "Iarradh an múchadh. Ní fhreagróidh an gléas arís go dtí go gcuirfear ar siúl é.",
+    "noConfirmation": "Níor tháinig aon deimhniú:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "deamhan ag rith",
+    "notRunning": "deamhan gan rith",
+    "daemon": {
+      "system": "suiteáil an chórais",
+      "bundled": "seolta leis an aip seo",
+      "managed": "cóip féin na haipe seo",
+      "absent": "níor aimsíodh aon dénártha"
+    },
+    "nodeId": "An ríomhaire seo: {{id}}",
+    "networkId": "ID líonra (16 carachtar heicsidheachúlach)",
+    "join": "Bí páirteach",
+    "leave": "Fág",
+    "hint": "Ligeann líonra poiblí an ríomhaire seo isteach láithreach. Caithfidh líonra príobháideach é a údarú ar dtús — insíonn an lipéad in aice le gach líonra cé acu atá i gceist.",
+    "hintAccessDenied": "Dhiúltaigh an líonra seo don ríomhaire (ACCESS_DENIED): tá sé príobháideach, agus caithfidh a úinéir an nód seo a údarú sa rialtóir líonra.",
+    "provision": "Ullmhaigh an tsuiteáil",
+    "provisioning": "Á ullmhú…",
+    "provisionHint": "Suiteálann an aip seo a cóip féin de zerotier-one. Chun go mbeadh cead aici gléas líonra a chruthú tá cead amháin fós de dhíth, a dheonaíonn tú féin le hordú amháin. Ní chuirtear isteach ar ZeroTier an chórais.",
+    "commandHint": "Rith é seo uair amháin i dteirminéal, agus ceangail arís anseo:",
+    "copy": "Cóipeáil an t-ordú",
+    "copied": "Cóipeáilte",
+    "recheck": "Ceangail arís",
+    "capable": "Tá an cead i bhfeidhm. Is féidir leis an deamhan gléas líonra a chruthú."
+  },
+  "legacy": {
+    "title": "Tóg ar láimh ón seanchliant",
+    "explainer": "Is féidir seoltaí ó shuiteáil 0.9 a ghlacadh. Ní thugtar na pasfhocail leo — síníonn tú isteach uair amháin, agus ní athraítear an seanchumraíocht riamh.",
+    "summary": "{{connections}} ceangal, {{jobs}} post cúltaca, óstríomhaire deireanach {{host}}",
+    "adopt": "Glac na seoltaí",
+    "result": "{{imported}} glactha, {{skipped}} ar eolas cheana"
+  },
+  "logs": {
+    "title": "Comhad logála",
+    "open": "Oscail an fillteán"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Braite, gan bainistiú. Úsáideann an cliant seo tollán atá ag rith cheana agus ní athraíonn sé aon socruithe DNS ná ródaithe.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Úsáid",
+    "noPeers": "Níl aon ríomhaire eile ar an tailnet seo ar líne."
   }
 }

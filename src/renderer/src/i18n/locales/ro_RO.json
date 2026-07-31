@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Rețea locală",
       "direct": "IP direct",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Funcții detectate",
-    "routes": "{{count}} rute ale gateway-ului"
+    "routes": "{{count}} rute ale gateway-ului",
+    "remoteIdTitle": "Conectare prin Remote ID",
+    "remoteIdHint": "Introduceți Remote ID-ul afișat pe dispozitiv. Conexiunea este pregătită automat — apoi autentificați-vă ca de obicei.",
+    "remoteIdLabel": "Remote ID (16 caractere)",
+    "remoteIdConnecting": "Se conectează…",
+    "connect": "Conectare"
   },
   "capability": {
     "photoLibrary": "Căutare foto și filtre",
@@ -47,19 +53,99 @@
     "title": "Fotografii",
     "libraryMissing": "Căutarea foto necesită modulul Photos",
     "libraryMissingHint": "Pe acest dispozitiv nu este înregistrat modulul Photos, deci căutarea semantică și filtrele nu sunt disponibile. Răsfoirea și copia de siguranță funcționează oricum.",
-    "backupForegroundOnly": "Copierea rulează doar cât timp această fereastră este deschisă."
+    "backupForegroundOnly": "Copierea rulează doar cât timp această fereastră este deschisă.",
+    "video": "Video",
+    "loading": "Se încarcă…",
+    "noneHere": "Niciun fotografie sau videoclip în acest dosar.",
+    "noHits": "Niciun rezultat.",
+    "search": "Căutare",
+    "searching": "Se caută…",
+    "searchPlaceholder": "Descrieți ce trebuie să fie în imagine",
+    "clearSearch": "Golește",
+    "searchSummary": "{{count}} rezultate în {{ms}} ms",
+    "modeLibrary": "Bibliotecă",
+    "modeFolder": "Dosar",
+    "switchToFolder": "Răsfoiește un dosar",
+    "switchToLibrary": "Înapoi la bibliotecă",
+    "countSummary": "{{shown}} din {{total}} afișate",
+    "indexed": "{{processed}} din {{total}} indexate",
+    "pending": "{{count}} în așteptare",
+    "indexStatus": {
+      "idle": "gata",
+      "working": "în curs"
+    },
+    "semanticIncomplete": "Indexul semantic este la {{percent}} %. Până se termină, căutarea textuală găsește doar cuvinte întregi în numele fișierelor.",
+    "semanticUnavailable": "Căutarea de fotografii nu este disponibilă pe acest dispozitiv",
+    "semanticUnavailableHint": "Dispozitivul nu are niciun model de viziune instalat, așa că o căutare nu ar returna absolut nimic în loc de «niciun rezultat». Răsfoirea și copia de siguranță nu sunt afectate.",
+    "semanticState": "Starea dispozitivului: {{state}} · lipsește: {{missing}}"
   },
   "files": {
     "title": "Fișiere",
     "search": "Caută",
     "starred": "Favorite",
-    "storage": "Stocare"
+    "storage": "Stocare",
+    "up": "Un nivel mai sus",
+    "select": "Selectează {{name}}",
+    "media": "media",
+    "loading": "Se încarcă…",
+    "loadingVolumes": "Se cer volumele dispozitivului…",
+    "noVolumes": "Dispozitivul nu a raportat niciun volum, deci nu există nimic de răsfoit.",
+    "emptyFolder": "Acest dosar este gol.",
+    "searching": "Se caută…",
+    "searchPlaceholder": "Caută nume de fișiere în acest dosar și mai jos",
+    "clearSearch": "Golește",
+    "searchSummary": "{{hits}} rezultate după examinarea a {{scanned}} intrări. Această căutare rulează în client — ZimaOS 1.7 nu are căutare de fișiere pe server.",
+    "searchTruncated": "S-a oprit devreme la limita de căutare, deci mai jos pot exista alte potriviri.",
+    "noHits": "Niciun nume de fișier nu se potrivește.",
+    "newFolder": "Dosar nou",
+    "newFolderPrompt": "Numele dosarului nou",
+    "upload": "Încarcă",
+    "download": "Descarcă",
+    "copy": "Copiază",
+    "move": "Mută",
+    "pasteCopy": "Lipește {{count}} copie aici",
+    "pasteMove": "Mută {{count}} aici",
+    "toTrash": "Mută la coș",
+    "refresh": "Reîmprospătează",
+    "showTrash": "Arată coșul",
+    "hideTrash": "Ascunde coșul",
+    "trash": "Coș",
+    "trashEmpty": "Coșul este gol.",
+    "trashCount": "{{count}} intrări în coș",
+    "restore": "Restaurează {{count}}",
+    "deletedAt": "șters {{when}}",
+    "tasks": "Operațiuni în curs",
+    "tasksHint": "Copierea și mutarea rulează pe dispozitiv, deci continuă și când această fereastră este ocupată.",
+    "countSummary": "{{shown}} din {{total}} intrări afișate",
+    "sortedBy": "sortat după {{field}}",
+    "changeSort": "schimbă",
+    "ascending": "crescător",
+    "descending": "descrescător",
+    "sort": {
+      "name": "nume",
+      "size": "dimensiune",
+      "modified": "dată"
+    }
   },
   "apps": {
     "title": "Aplicații",
     "running": "În execuție",
     "stopped": "Oprită",
-    "cachedAt": "Stare: {{time}}"
+    "cachedAt": "Stare: {{time}}",
+    "loading": "Se încarcă…",
+    "none": "Pe acest dispozitiv nu este instalată nicio aplicație.",
+    "cached": "Listă salvată",
+    "retry": "Încearcă din nou",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "pornită",
+      "stopped": "oprită"
+    },
+    "openHere": "Deschide aici",
+    "openBrowser": "Deschide în browser",
+    "noWebUi": "Această aplicație nu publică nicio interfață web.",
+    "start": "Pornește",
+    "stop": "Oprește"
   },
   "security": {
     "keyringTitle": "Parolele nu pot fi stocate în siguranță",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Niciun dispozitiv ZimaOS nu a răspuns la această adresă.",
     "sessionExpired": "Sesiunea a expirat — autentifică-te din nou.",
     "signInRequired": "Te rugăm să te autentifici.",
-    "strategyUnavailable": "Această cale de conectare nu este încă disponibilă în această versiune."
+    "strategyUnavailable": "Această cale de conectare nu este încă disponibilă în această versiune.",
+    "notFound": "Dispozitivul spune că această cale nu există.",
+    "endpointUnknown": "Acest dispozitiv nu oferă interfața cerută de client.",
+    "invalidRequest": "Cererea a fost respinsă înainte de a fi trimisă — este un defect al acestui client.",
+    "invalidFolderName": "Numele unui dosar nu poate conține bară oblică.",
+    "uploadRejected": "Dispozitivul a refuzat încărcarea.",
+    "uploadNotAFile": "Se pot încărca doar fișiere obișnuite.",
+    "downloadRejected": "Dispozitivul a refuzat descărcarea.",
+    "photosModuleMissing": "Acest dispozitiv nu are modul de fotografii, deci căutarea și fațetele nu sunt disponibile.",
+    "appNotFound": "Această aplicație nu mai este în lista dispozitivului.",
+    "appHasNoWebUi": "Această aplicație nu publică nicio interfață web.",
+    "powerDeviceMismatch": "Ecranul se referă la alt dispozitiv decât cel activ. Reîncărcați și încercați din nou.",
+    "zerotierNoToken": "Tokenul ZeroTier local nu a putut fi citit.",
+    "zerotierApi": "Serviciul ZeroTier local a răspuns cu o eroare.",
+    "zerotierMissing": "Nu s-a găsit niciun zerotier-one — nici instalat, nici livrat.",
+    "zerotierNoStart": "Serviciul ZeroTier local nu a pornit.",
+    "unexpected-status": "Dispozitivul a răspuns cu o stare neașteptată.",
+    "zerotierNoCapability": "Serviciul ZeroTier local nu are voie să creeze un dispozitiv de rețea virtual. Comanda exactă pentru a acorda acest drept este mai jos.",
+    "remoteIdUnknown": "Pentru acest dispozitiv nu este salvat niciun Remote ID. Autentificați-vă o dată prin «Conectare prin Remote ID»."
   },
   "common": {
     "retry": "Reîncearcă",
@@ -135,5 +239,96 @@
     "language": "Limbă",
     "unreviewed": "neverificat",
     "reviewed": "verificat"
+  },
+  "backup": {
+    "title": "Copie de siguranță a fotografiilor",
+    "foregroundOnly": "doar cât timp această fereastră este deschisă",
+    "explainer": "Alegeți dosare locale; fotografiile și videoclipurile din ele sunt încărcate în {{destination}}. Nu există sincronizare în fundal — la închiderea ferestrei transferul se oprește și data viitoare continuă de unde a rămas.",
+    "pickFolders": "Alege dosare",
+    "start": "Salvează {{count}} dosare",
+    "cancel": "Anulează",
+    "counts": "{{uploaded}} din {{total}} · {{skipped}} omise · {{failed}} eșuate",
+    "notes": "{{count}} fișiere cu observație",
+    "phase": {
+      "idle": "Neînceput",
+      "scanning": "Se caută fotografii…",
+      "uploading": "Se încarcă…",
+      "done": "Gata, nimic nu a fost omis",
+      "cancelled": "Anulat — fișierele deja încărcate rămân",
+      "failed": "Terminat cu erori"
+    },
+    "outcome": {
+      "skipped-duplicate": "există deja",
+      "skipped-unsupported": "nu este o imagine",
+      "failed": "a eșuat"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Dispozitiv fără nume",
+    "cpu": "{{model}}, {{cores}} nuclee",
+    "cpuLoad": "Încărcarea CPU",
+    "cpuTemperature": "Temperatura CPU",
+    "watt": "{{watt}} W",
+    "memory": "Memorie",
+    "systemDisk": "Spațiu liber pe discul de sistem",
+    "freeOf": "din {{total}}",
+    "storage": "Stocare",
+    "usedPercent": "{{percent}} % utilizat",
+    "unhealthy": "verificarea stării a eșuat"
+  },
+  "power": {
+    "title": "Alimentare",
+    "restart": "Repornire",
+    "off": "Oprire",
+    "confirmRestart": "Chiar reporniți {{name}}?",
+    "confirmOff": "Chiar opriți {{name}}?",
+    "yes": "Da, execută",
+    "no": "Anulează",
+    "restarting": "Repornirea a fost cerută. Dispozitivul va fi inaccesibil o vreme.",
+    "shuttingDown": "Oprirea a fost cerută. Dispozitivul nu va mai răspunde până când nu este pornit.",
+    "noConfirmation": "Nu s-a primit nicio confirmare:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "demonul rulează",
+    "notRunning": "demonul nu rulează",
+    "daemon": {
+      "system": "instalare de sistem",
+      "bundled": "livrat cu această aplicație",
+      "managed": "copia proprie a acestei aplicații",
+      "absent": "nu s-a găsit niciun binar"
+    },
+    "nodeId": "Această mașină: {{id}}",
+    "networkId": "ID de rețea (16 caractere hexazecimale)",
+    "join": "Alătură-te",
+    "leave": "Părăsește",
+    "hint": "O rețea publică admite această mașină imediat. Una privată trebuie să o autorizeze mai întâi — care dintre cele două este, spune eticheta de lângă fiecare rețea.",
+    "hintAccessDenied": "Această rețea a refuzat mașina (ACCESS_DENIED): este privată, iar proprietarul ei trebuie să autorizeze acest nod în controlerul de rețea.",
+    "provision": "Pregătește instalarea",
+    "provisioning": "Se pregătește…",
+    "provisionHint": "Această aplicație instalează propria copie de zerotier-one. Pentru a putea crea un dispozitiv de rețea îi mai lipsește o permisiune, pe care o acordați chiar dumneavoastră cu o singură comandă. ZeroTier-ul sistemului rămâne neatins.",
+    "commandHint": "Rulați asta o dată într-un terminal, apoi conectați-vă din nou aici:",
+    "copy": "Copiază comanda",
+    "copied": "Copiat",
+    "recheck": "Conectează din nou",
+    "capable": "Permisiunea este acordată. Demonul poate crea un dispozitiv de rețea."
+  },
+  "legacy": {
+    "title": "Preia de la clientul vechi",
+    "explainer": "Adresele dintr-o instalare 0.9 pot fi preluate. Parolele nu sunt aduse — vă autentificați o dată, iar configurația veche nu este modificată niciodată.",
+    "summary": "{{connections}} conexiuni, {{jobs}} sarcini de copiere, ultima gazdă {{host}}",
+    "adopt": "Preia adresele",
+    "result": "{{imported}} preluate, {{skipped}} deja cunoscute"
+  },
+  "logs": {
+    "title": "Fișier jurnal",
+    "open": "Deschide dosarul"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Detectat, nu administrat. Acest client folosește un tunel care rulează deja și nu schimbă setări DNS sau de rutare.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Folosește",
+    "noPeers": "Nicio altă mașină din acest tailnet nu este online."
   }
 }
