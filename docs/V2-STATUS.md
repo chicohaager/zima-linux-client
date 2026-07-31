@@ -1254,13 +1254,43 @@ ohne Fenster. Das Fenster ist klein und war hier nicht die Ursache, aber ein Ren
 sichtbare Form „es startet nichts" ist, bleibt nicht stehen: die Sperre wird jetzt vor dem `spawn`
 zurückgegeben.
 
+### 🟢 Nachgetragen: das installierte Paket, mit Rechten
+
+Am 2026-07-31 mit `sudo` installiert (`dpkg -i`, Ubuntu 24.04) — damit fällt der Punkt, der Phase 3b
+offen hielt.
+
+| Geprüft | Ergebnis |
+| --- | --- |
+| Post-Install-Skript | `zima-linux-client: granted CAP_NET_ADMIN to /opt/ZimaOS Client/resources/zerotier/x64/zerotier-one` |
+| Datei-Capability | `cap_net_bind_service,cap_net_admin,cap_net_raw=eip` (`getcap`) |
+| Start aus dem Installationspfad | `ok=true`, 51 CSS-Regeln, 4 Navigationsknöpfe, `de-DE`, 1180 px, PNG 89 031 Bytes |
+| X11-Rückfall im Paket | `platform.relaunch-on-x11 {"via":"self","execPath":"/opt/ZimaOS Client/zima-linux-client"}` — der Pfad mit Leerzeichen trägt |
+
+**Und die Rechteerteilung wirkt auch wirklich** — `getcap` beschreibt nur die Datei, also wurde der
+laufende Prozess befragt, mit exakt dem Aufruf des Clients (`-p<port> -U <home>`):
+
+| Lauf | `NoNewPrivs` | `CapEff` |
+| --- | --- | --- |
+| A — aus dem Startweg der App | 0 | `0000000000003400` = cap_net_bind_service, cap_net_admin, cap_net_raw |
+| B — identisch, unter `setpriv --no-new-privs` | 1 | `0000000000000000` |
+
+Lauf B ist die Gegenprobe und zeigt die Bedingung: `no_new_privs` **des Aufrufers** entwertet die
+Datei-Capability. Genau deshalb bevorzugt `daemon.ts` den Weg über `systemd --user`.
+
+> ⚠️ **Korrektur einer zu breiten Aussage.** Im Code stand „der Electron-Hauptprozess läuft mit
+> `NoNewPrivs: 1`" — gemessen am 2026-07-30, aber aus einem Editor-Terminal gestartet. Am
+> installierten Paket ist es **0**, sowohl über den Desktop-Eintrag (`gio launch`, systemd-Scope
+> `app-zima-linux-client-<pid>.scope`) als auch aus einer Shell. Das Flag ist eine Eigenschaft des
+> **Aufrufers**, nicht der Anwendung. Der Rückfall „als Kindprozess starten" ist damit kein toter
+> Code, und der `systemd --user`-Weg bleibt trotzdem erste Wahl, weil er nicht davon abhängt, wer
+> uns gestartet hat.
+
+**Nicht belegt:** dass der Remote-ID-Weg *fachlich* durchläuft (Netzwerk beitreten, Mitglied
+werden). Gemessen ist, dass das Binary mit den nötigen Rechten hochkommt — nicht, was es danach
+im Netz tut.
+
 ### Was an Phase 8 ausdrücklich offen ist
 
-* **Kein installiertes Paket geprüft.** `sudo` steht mir hier nicht zur Verfügung; gestartet wurde
-  die **entpackte** Nutzlast des `.deb` unter genau dem Pfad, den die Installation anlegt
-  (`…/ZimaOS Client/`). Damit ist die Nutzlast belegt — **nicht** das Post-Install-Skript und damit
-  auch nicht die Erteilung von `CAP_NET_ADMIN` an das mitgelieferte `zerotier-one`. Das ist der
-  eine Beleg, der Phase 3b endgültig schließt, und er fehlt weiterhin.
 * **rpm, pacman, flatpak** sind ungebaut (fehlende Werkzeuge, siehe Tabelle).
 * **arm64** ist nicht gebaut und schon gar nicht gestartet — das mitgelieferte arm64-ZeroTier ist
   bisher nur eine Datei im Repository, keine belegte Funktion.
