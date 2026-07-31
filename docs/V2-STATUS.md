@@ -9,7 +9,7 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 
 ```
 npm run verify   ✓  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓  135 Tests in 10 Dateien
+npx vitest run   ✓  139 Tests in 11 Dateien
 i18n gate           clean — 280 Schlüssel in en_US; 2 Sprachen bei 100 %, 26 bei 111/280
 privacy gate        clean, 115 verfolgte Dateien
 ```
@@ -798,9 +798,43 @@ mit 0664. **Positivkontrolle gefahren** — `chmodSync` wieder entfernt:
 
 Genau der eine Test wird rot, und zwar mit `664` — die Zahl, die vorher auf der Platte stand.
 
-> ⚠️ **Noch offen, gleiche Klasse:** die Logdateien unter `logs/` stehen auf **664** und
-> enthalten LAN-Adressen (`main.log`: 23 Treffer). Der Dateimodus liegt bei electron-log, nicht
-> bei uns — noch nicht angefasst.
+### Dieselbe Klasse eine Ebene weiter: die Logdateien
+
+Die Logs nennen Hosts, LAN- und ZeroTier-Adressen und Anfragepfade — dieselbe Topologie wie
+`devices.json`, und sie standen auf **664** (`main.log`: 23 Treffer auf RFC1918-Adressen).
+electron-log legt Dateien mit `0o666 & umask` an; die Voreinstellung ist world-readable.
+
+Beide Hälften, weil die eine ohne die andere nichts ändert:
+
+* `transports.file.writeOptions.mode = 0o600` — gilt für **neue** Dateien.
+* `tightenLogFiles()` (`src/main/logging/permissions.ts`), einmal beim Start — für die, die
+  schon da sind. Bewusst eng: nur `*.log` und rotierte `*.log.<n>` **direkt** in diesem einen
+  Verzeichnis, keine Rekursion, kein anderes Suffix. Eine Rechte-Umstellung fasst Dateien an,
+  die sie nicht geschrieben hat; die Grenze ist der Punkt.
+
+**Am echten Build gemessen** (frisches `--user-data-dir`, `ZIMA_VERIFY_STARTUP`):
+
+```
+Lauf 1, leeres Profil     main.log neu angelegt → 600      (writeOptions wirkt)
+Lauf 2, davor auf 664     main.log 664 → 600
+                          zima-client-2025-11-22.log 664 → 600
+                          logging.tightened {"count":2}    (im Log selbst)
+ok=true  failures=[]
+```
+
+Dazu vier Tests mit **zwei** Positivkontrollen: Filter entfernt → der Wächter-Test wird rot
+(`devices.json`, `README.md`, `main.logger` würden mitgefasst); `chmod` entfernt → der
+Wirkungs-Test wird rot mit `expected '664' to be '600'`.
+
+> ⚠️ **Maß halten bei der Einordnung:** `~/.config/zima-linux-client` selbst ist **700**. Kein
+> anderer lokaler Benutzer kam also durch dieses Verzeichnis hindurch, gleich welchen Modus die
+> Dateien darin trugen. Der Modus war trotzdem falsch — er trägt, wenn das Verzeichnis einmal
+> nicht 700 ist (Sicherung, entpacktes Archiv, kopiertes Profil) —, aber „world-readable" war
+> **wirksam** nicht der Fall. Gemessen, nicht angenommen.
+>
+> Nicht mitgefasst: die `.<hash>-audit.json` von `winston-daily-rotate-file` aus dem
+> 0.9-Client. Sie stehen weiter auf 664 und enthalten Logdateipfade, keine Messwerte. Der
+> Filter lässt sie bewusst liegen — sie stammen nicht von diesem Programm.
 
 ## Zwei echte Fehler, die erst der Neustart am laufenden Programm gezeigt hat
 

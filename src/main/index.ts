@@ -2,7 +2,7 @@ import { join } from 'node:path'
 import { app, BrowserWindow, shell } from 'electron'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { registerIpc } from '@main/ipc/register'
-import { logger } from '@main/logging/logger'
+import { logger, tightenExistingLogs } from '@main/logging/logger'
 import { isEnabled as verifyStartupEnabled, runStartupVerification } from '@main/app/startupVerification'
 import { isEnabled as verifyLiveEnabled, runLiveVerification } from '@main/app/liveVerification'
 import { decidePlatform, markStartupSurvived } from '@main/app/resilientPlatform'
@@ -121,6 +121,10 @@ if (!app.requestSingleInstanceLock()) {
 
   void (platform.relaunching ? Promise.resolve() : app.whenReady()).then(() => {
     if (platform.relaunching) return
+    // Before anything else writes: earlier builds left their logs world-readable, and they
+    // name hosts and LAN addresses. Placed ahead of the live-verification branch so a
+    // headless run tightens them too.
+    tightenExistingLogs()
     electronApp.setAppUserModelId('com.zimaos.client')
     app.on('browser-window-created', (_event, window) => optimizer.watchWindowShortcuts(window))
 
