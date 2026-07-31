@@ -1,8 +1,9 @@
-import { readFileSync, writeFileSync, rmSync, mkdirSync, existsSync, chmodSync } from 'node:fs'
+import { readFileSync, writeFileSync, rmSync, mkdirSync, existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app, safeStorage } from 'electron'
 import { appError, err, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
+import { writePrivateJson } from '@main/storage/privateFile'
 import { readStatus } from './store'
 
 /**
@@ -47,13 +48,7 @@ const readStore = (): Store => {
 
 const writeStore = (store: Store): Result<void> => {
   try {
-    mkdirSync(dirname(filePath()), { recursive: true })
-    writeFileSync(filePath(), `${JSON.stringify(store, null, 2)}\n`, {
-      encoding: 'utf8',
-      mode: 0o600,
-    })
-    // `mode` only applies on creation; an existing file keeps whatever mode it had.
-    chmodSync(filePath(), 0o600)
+    writePrivateJson(filePath(), store)
     return ok(undefined)
   } catch (cause) {
     return err(

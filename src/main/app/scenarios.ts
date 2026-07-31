@@ -233,8 +233,23 @@ const remoteIdScenario = async (
     failures.push('neither the sign-in form nor a signed-in session was reached; see observed.screen')
   }
 
-  const shot = await window.webContents.capturePage()
-  await writeFile(join(dirname(process.env['ZIMA_VERIFY_STARTUP'] ?? 'report.json'), 'remote-id.png'), shot.toPNG())
+  /*
+   * 🔴 The same defect the tour had, two functions away: `?? 'report.json'` makes `dirname`
+   * return `.`, and the screenshot lands in the current working directory — which is the
+   * repository when this is run from a checkout. The tour's version put four PNGs of a real
+   * tailnet into a commit on 2026-07-31. Fixed there and, at the time, not here: a sibling
+   * inherits the bug as readily as it inherits the assumption.
+   *
+   * No fallback now. A screenshot with nowhere to go is not written, and the report says so.
+   */
+  const reportDir = process.env['ZIMA_VERIFY_STARTUP']
+  if (reportDir === undefined || reportDir.length === 0) {
+    observed['screenshot'] = 'not written — ZIMA_VERIFY_STARTUP names no report path'
+  } else {
+    const shot = await window.webContents.capturePage()
+    await writeFile(join(dirname(reportDir), 'remote-id.png'), shot.toPNG())
+    observed['screenshot'] = join(dirname(reportDir), 'remote-id.png')
+  }
 
   return { name: 'remote-id', ok: failures.length === 0, observed, failures }
 }

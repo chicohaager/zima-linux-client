@@ -2,6 +2,7 @@ import type { ConnectionKind, DeviceAddress, DiscoveredDevice, ProbeResult } fro
 import { appError, err, isErr, ok, type Result } from '@shared/result'
 import { discover } from '@main/discovery/mdns'
 import * as zerotier from '@main/zerotier/daemon'
+import { isNetworkId, normaliseNetworkId } from '@main/zerotier/networkId'
 import { candidateAddresses, readRuntime as readTailscale } from '@main/tailscale/detect'
 import { MDNS_PORT } from '@main/zima/endpoints'
 import { probe } from './probe'
@@ -128,10 +129,11 @@ export const remoteIdStrategy = async (
   remoteId: string,
   port = MDNS_PORT,
 ): Promise<StrategyOutcome> => {
-  const networkId = remoteId.trim().toLowerCase()
-  // 16 hex characters — the ZeroTier network id format. Validated before anything is
-  // started, so a typo does not spawn a daemon and join nothing.
-  if (!/^[0-9a-f]{16}$/.test(networkId)) {
+  // The format lives in one place now (`zerotier/networkId.ts`): this file and the daemon
+  // each had their own copy of the same regex.
+  const networkId = normaliseNetworkId(remoteId)
+  // Validated before anything is started, so a typo does not spawn a daemon and join nothing.
+  if (!isNetworkId(networkId)) {
     return {
       kind: 'remote-id',
       candidates: [],

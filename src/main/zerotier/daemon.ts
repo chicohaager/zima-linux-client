@@ -4,6 +4,8 @@ import { join } from 'node:path'
 import { app } from 'electron'
 import { appError, err, fromUnknown, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
+import { diagnoseJoin } from './diagnosis'
+import { isNetworkId } from './networkId'
 import { hasNetAdmin, managedBinaryPath } from './provision'
 import {
   canEscapeProcessTree,
@@ -135,8 +137,6 @@ const daemonComplaint = (): string | null => lastDaemonError
  * /usr/sbin/zerotier-one has no capabilities because systemd runs it as root, and its API
  * token is root-only — measured: not readable even as a member of group `zerotier-one`.
  */
-const TUN_FAILURE = 'unable to configure TUN/TAP device'
-
 /**
  * The binary to run as OUR unprivileged daemon.
  *
@@ -478,7 +478,28 @@ export const ensureRunning = async (): Promise<Result<ZerotierRuntime>> => {
   )
 }
 
+/**
+ * Guard for the two functions that put an id into a URL path.
+ *
+ * Checked HERE, in the module that builds the request, not only in the two callers that
+ * happen to check today. Both of them do — the IPC schema and `remoteIdStrategy` — and that
+ * is precisely the arrangement that rots: the guarantee lives somewhere else, so the third
+ * caller inherits an assumption nobody restated.
+ */
+const rejectBadId = (networkId: string): Result<never> | null =>
+  isNetworkId(networkId)
+    ? null
+    : err(
+        // `error.invalidRequest` rather than a new key: this guard should never fire in
+        // normal use, so the honest message is that the request was rejected before it was
+        // sent because this client built it wrong.
+        appError('parameters', `not a ZeroTier network id: ${networkId.slice(0, 24)}`,
+          'error.invalidRequest', { length: networkId.length }),
+      )
+
 export const joinNetwork = async (networkId: string): Promise<Result<ZerotierRuntime>> => {
+  const bad = rejectBadId(networkId)
+  if (bad !== null) return bad
   lastDaemonError = null
   const started = await ensureRunning()
   if (!started.ok) return started
@@ -510,6 +531,9 @@ export const joinNetwork = async (networkId: string): Promise<Result<ZerotierRun
 /**
  * Why a join can be accepted and still not take effect. Null when nothing is known to be
  * wrong — the caller then reports the plain fact rather than a guessed cause.
+ *
+ * Gathers the facts here (this is where the measuring mistakes were made and where they must
+ * stay visible) and leaves the choice of message to `diagnosis.ts`, which is testable.
  */
 export const joinBlockedReason = async (): Promise<string | null> => {
   const binary = locateBinary()
@@ -522,36 +546,17 @@ export const joinBlockedReason = async (): Promise<string | null> => {
    * still had `CapEff: 0`. The real cause was invisible and the user got the generic
    * "joined but the daemon does not list it", which names the symptom and nothing else.
    */
-  const capable = (await runningDaemonHasNetAdmin()) ?? hasNetAdmin(binary.path)
-  const complaint = daemonComplaint()
-  const tunFailed = complaint !== null && complaint.includes(TUN_FAILURE)
-  if (capable !== false && !tunFailed) return null
-
-  /*
-   * 🔴 Two different causes, and they need different advice — conflating them is what sent
-   * the last round of work at the wrong target.
-   *
-   * `launchedVia === 'child'` means the daemon inherited this app's `no_new_privs`, so the
-   * kernel ignored the binary's file capabilities on exec. Setting them harder does not
-   * help; the process tree is the problem. Saying "grant the capability" here would send
-   * someone to fix a file that is already correct.
-   */
-  if (launchedVia === 'child') {
-    return (
-      `the local ZeroTier daemon cannot create a virtual network device. It had to be ` +
-      `started as a child of this application, which runs with no_new_privs, and the kernel ` +
-      `ignores a binary's capabilities in that case. This client normally has systemd start ` +
-      `the daemon outside its own process tree; that was not available here.`
-    )
-  }
-  return (
-    `the local ZeroTier daemon cannot create a virtual network device, so it accepts a ` +
-    `join without ever entering the network. ${managedBinaryPath()} needs CAP_NET_ADMIN — ` +
-    `the system's zerotier-one is left untouched.`
-  )
+  return diagnoseJoin({
+    capable: (await runningDaemonHasNetAdmin()) ?? hasNetAdmin(binary.path),
+    complaint: daemonComplaint(),
+    launchedVia,
+    managedBinary: managedBinaryPath(),
+  })
 }
 
 export const leaveNetwork = async (networkId: string): Promise<Result<ZerotierRuntime>> => {
+  const bad = rejectBadId(networkId)
+  if (bad !== null) return bad
   const left = await callApi<unknown>(`/network/${networkId}`, { method: 'DELETE' })
   if (!left.ok) return left
   logger.info('zerotier.left', { networkId })

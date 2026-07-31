@@ -32,8 +32,17 @@ export const openInWindow = (params: {
     title: params.title,
     autoHideMenuBar: true,
     webPreferences: {
-      // A per-app partition, not the default session: separate cookies, cache and storage.
-      partition: `persist:zima-app-${encodeURIComponent(params.title)}`,
+      /*
+       * A per-app partition, not the default session: separate cookies, cache and storage.
+       *
+       * Keyed on the ORIGIN, not on the display title. The title is metadata from the device
+       * and it is neither unique nor stable: two apps called "Dashboard" would have shared one
+       * cookie jar — the isolation this line exists for, silently absent — and renaming an app
+       * would have moved it to a fresh partition, logging the user out of it for no visible
+       * reason. The origin is what the browser's own security model is keyed on, so it is what
+       * the partition should follow.
+       */
+      partition: `persist:zima-app-${encodeURIComponent(origin)}`,
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,

@@ -1,8 +1,9 @@
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { app } from 'electron'
 import type { AppTile } from '@shared/domain'
 import { logger } from '@main/logging/logger'
+import { writePrivateJson } from '@main/storage/privateFile'
 
 /**
  * The offline cache for the app list — Plan § 7.4.
@@ -48,13 +49,9 @@ export const read = (deviceId: string): CachedApps | null => {
 export const write = (deviceId: string, apps: readonly AppTile[]): void => {
   try {
     const all = readAll()
-    writeFileSync(
-      filePath(),
-      `${JSON.stringify({ ...all, [deviceId]: { cachedAtMs: Date.now(), apps } }, null, 2)}\n`,
-      // 0600: the app list names what runs on the user's device. Not a secret, but not
-      // something every local account needs to read either.
-      { encoding: 'utf8', mode: 0o600 },
-    )
+    // 0600: the app list names what runs on the user's device. Not a secret, but not
+    // something every local account needs to read either.
+    writePrivateJson(filePath(), { ...all, [deviceId]: { cachedAtMs: Date.now(), apps } })
   } catch (cause) {
     // A cache that cannot be written is a degradation, not a failure of the request that
     // triggered it — but it is logged, because "the list is never cached" would otherwise
@@ -70,10 +67,7 @@ export const forget = (deviceId: string): void => {
     const remaining = Object.fromEntries(
       Object.entries(all).filter(([id]) => id !== deviceId),
     )
-    writeFileSync(filePath(), `${JSON.stringify(remaining, null, 2)}\n`, {
-      encoding: 'utf8',
-      mode: 0o600,
-    })
+    writePrivateJson(filePath(), remaining)
   } catch (cause) {
     logger.warn('apps-cache.unremovable', { deviceId, cause: String(cause) })
   }
