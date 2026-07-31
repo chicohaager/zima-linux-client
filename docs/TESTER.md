@@ -32,6 +32,31 @@ sha256sum <datei>       # zum Vergleichen
 
 ## 2. Installieren
 
+### Der bequeme Weg: `install.sh`
+
+Lege `install.sh` neben die Paketdatei und starte es. Es sucht das Paket, das zu deiner
+Distribution passt, vergleicht die Prüfsumme, installiert mit dem richtigen Werkzeug — und
+**misst danach nach**, ob die Anwendung überhaupt starten kann:
+
+```bash
+chmod +x install.sh
+sudo ./install.sh
+```
+
+Weitere Aufrufe:
+
+```bash
+./install.sh --check       # nur nachsehen, ändert nichts (braucht kein sudo)
+sudo ./install.sh --repair # behebt, was behebbar ist (Sandkasten-Rechte)
+sudo ./install.sh --uninstall
+```
+
+Das Skript endet mit `0`, wenn alles gemessen in Ordnung ist, und mit `1`, wenn die Anwendung so
+nicht laufen wird — dann bitte **die ganze Ausgabe** schicken. Es startet die Anwendung nicht: eine
+Prüfung, die ein Fenster aufmacht, ist keine Prüfung.
+
+### Der Weg von Hand
+
 **Debian/Ubuntu:**
 
 ```bash
