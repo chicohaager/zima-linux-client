@@ -1,4 +1,4 @@
-import { net, protocol } from 'electron'
+import { protocol } from 'electron'
 import { isErr } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import { fetchBinary } from '@main/zima/client'
@@ -136,9 +136,35 @@ const handle = async (request: Request): Promise<Response> => {
     const foreign = icon.hostname !== ctx.value.host
     let fetched: Response
     try {
-      fetched = await net.fetch(icon.toString(), {
-        // Never send anything identifying to a third-party host.
+      /*
+       * 🔴 Node's `fetch`, deliberately NOT Electron's `net.fetch` — measured 2026-07-31.
+       *
+       * `net.fetch` leaves `response.url` EMPTY on every answer, redirect or not:
+       *
+       *   {"requested":"https://cdn.jsdelivr.net/…/immich.png","status":200,
+       *    "responseUrl":"","responseUrlIsEmpty":true,"bytes":13619,"contentType":"image/png"}
+       *
+       * The redirect check below reads exactly that field. With `''` it took the "landed
+       * somewhere else" branch, ran `new URL('')`, and refused **every** icon with
+       * `redirected to a host that not a URL` — 24 of them in one session of the real app,
+       * all from legitimate CDNs, the bytes already downloaded and then thrown away by our
+       * own guard. A guard that refuses everything reads as "secure" and is simply broken;
+       * the mangled grammar of that message was the only thing pointing at it.
+       *
+       * Node's fetch reports the landing URL for real — measured on the same three URLs:
+       * `github.com/…` -> `raw.githubusercontent.com/…` with `redirected: true`, and the
+       * direct ones reporting themselves. That is what turns the check below into a check.
+       *
+       * What this costs, said plainly rather than hidden: Node's fetch uses neither the
+       * system proxy nor the system certificate store, while Chromium's does. Behind a
+       * corporate proxy foreign icons will not load — which is exactly today's state,
+       * where none of them load at all.
+       */
+      fetched = await fetch(icon.toString(), {
+        // Never send anything identifying to a third-party host. Node's fetch keeps no
+        // cookie jar either, so this states the intent that the stack already enforces.
         credentials: 'omit',
+        redirect: 'follow',
         signal: AbortSignal.timeout(ICON_TIMEOUT_MS),
       })
     } catch (cause) {

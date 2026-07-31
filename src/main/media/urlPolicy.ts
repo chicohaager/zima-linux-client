@@ -124,6 +124,22 @@ export const iconFetchAllowed = (raw: string, deviceHost: string): UrlVerdict =>
  * followed for jsdelivr and github to work at all.
  */
 export const redirectAllowed = (finalUrl: string, requested: string, deviceHost: string): UrlVerdict => {
+  /*
+   * 🔴 "The fetch told me nothing" is its own answer, not a redirect to a bad host.
+   *
+   * Measured 2026-07-31: Electron's `net.fetch` leaves `response.url` EMPTY on every
+   * answer — no redirect involved. Fed through the old code that became
+   * `redirected to a host that not a URL`, and the caller refused **every** icon while
+   * reporting a redirect that had never happened. Two failures in one: the guard blocked
+   * the feature it was guarding, and its message sent the reader hunting for a redirect.
+   *
+   * Still fails closed — an unverifiable landing host must not be served — but it now says
+   * which of the two things went wrong. `protocol.ts` documents the stack that answers this
+   * question truthfully.
+   */
+  if (finalUrl.length === 0) {
+    return { allowed: false, reason: 'the fetch reported no final URL, so the landing host is unverifiable' }
+  }
   if (finalUrl === requested) return ALLOW
   const verdict = iconFetchAllowed(finalUrl, deviceHost)
   return verdict.allowed ? ALLOW : { allowed: false, reason: `redirected to a host that ${verdict.reason}` }
