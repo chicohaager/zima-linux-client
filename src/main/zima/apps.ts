@@ -3,6 +3,7 @@ import type { AppTile } from '@shared/domain'
 import { appError, err, isErr, ok, type Result } from '@shared/result'
 import { authed, type DeviceContext } from './client'
 import { APPS, BASE } from './endpoints'
+import { isPrivateHostLiteral } from '@main/media/urlPolicy'
 
 /**
  * The installed apps.
@@ -36,14 +37,60 @@ const port = (value: string | number | null | undefined): number | null => {
   return Number.isInteger(numeric) && numeric > 0 && numeric <= 65_535 ? numeric : null
 }
 
-const toTile = (raw: z.infer<typeof appSchema>): AppTile => ({
+/**
+ * An icon URL the device hands out, made reachable from wherever this client actually sits.
+ *
+ * 🔴 Measured 2026-07-31 over a Remote-ID connection: two tiles showed a bare letter while
+ * the rest had logos. Their icons are hosted by the apps themselves and the device names
+ * them by its **LAN** address (`http://<device-lan>:8086/static/logo.png`,
+ * `…:8718/icon.svg`). From a laptop on the tunnel that address is both refused — a foreign
+ * private host, see `urlPolicy` — and genuinely unreachable. Same fact, two independent
+ * reasons to fail.
+ *
+ * So the host is replaced by the one this client is actually talking to, exactly as
+ * `webUiUrl` below already does for the "open in browser" button and for the same reason:
+ * the device writes those URLs for a browser standing on its own network.
+ *
+ * **Only when the port matches the app's own published port.** That is what makes this a
+ * rewrite of *this app's* icon rather than a general redirect of any private address onto
+ * the device — an icon field saying `http://192.168.1.1/reboot` (the router) keeps pointing
+ * at the router and stays refused, instead of being aimed at the device.
+ *
+ * Verified over the tunnel before this was written: both rewritten URLs answer 200 with
+ * `image/png` (1 499 594 bytes) and `image/svg+xml` (260 bytes).
+ */
+export const reachableIconUrl = (
+  rawIcon: string,
+  tilePort: number | null,
+  deviceHost: string,
+): string => {
+  if (rawIcon.length === 0) return rawIcon
+  let url: URL
+  try {
+    url = new URL(rawIcon)
+  } catch {
+    // Not a URL at all — handed on untouched so the media policy refuses it and says so,
+    // rather than being silently repaired into something that was never meant.
+    return rawIcon
+  }
+  if (url.hostname.toLowerCase() === deviceHost.toLowerCase()) return rawIcon
+  if (!isPrivateHostLiteral(url.hostname)) return rawIcon
+  if (tilePort === null) return rawIcon
+  const iconPort = url.port === '' ? (url.protocol === 'https:' ? 443 : 80) : Number(url.port)
+  if (iconPort !== tilePort) return rawIcon
+  url.hostname = deviceHost
+  return url.toString()
+}
+
+const toTile = (raw: z.infer<typeof appSchema>, deviceHost: string): AppTile => ({
   id: raw.id,
   name: raw.name,
   title: raw.title ?? {},
-  // The icon is a full URL on the device (often pointing at a CDN). Kept verbatim: the
-  // renderer never loads it directly — it goes through the media protocol, so a broken or
-  // hostile icon URL cannot reach the renderer's network context.
-  iconUrl: raw.icon ?? '',
+  // A full URL on the device, often pointing at a CDN. Never loaded by the renderer — it
+  // goes through the media protocol, so a broken or hostile icon URL cannot reach the
+  // renderer's network context. Only the host is touched, and only in the narrow case
+  // `reachableIconUrl` documents.
+  iconUrl: reachableIconUrl(raw.icon ?? '', port(raw.port), deviceHost),
   status: raw.status ?? 'unknown',
   installStatus: raw.install_status ?? 'unknown',
   port: port(raw.port),
@@ -80,7 +127,7 @@ export const listApps = async (ctx: DeviceContext): Promise<Result<readonly AppT
         'error.malformedResponse', { where: 'app list' }),
     )
   }
-  return ok((parsed.data ?? []).map(toTile))
+  return ok((parsed.data ?? []).map((raw) => toTile(raw, ctx.host)))
 }
 
 /**

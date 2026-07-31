@@ -65,7 +65,7 @@ beforeEach(() => {
   vi.resetModules()
   handler = null
   deviceContext.mockReturnValue(
-    Promise.resolve({ ok: true, value: { host: '10.0.0.5', port: 80, token: 'tok' } }),
+    Promise.resolve({ ok: true, value: { host: '10.0.0.1', port: 80, token: 'tok' } }),
   )
 })
 
