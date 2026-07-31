@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, readlinkSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
@@ -162,14 +163,142 @@ export const decidePlatform = (): PlatformDecision => {
       : previousLaunchDied
         ? 'previous launch never painted'
         : `known-problematic drm driver: ${riskyDriver}`
-    logger.warn('platform.relaunch-on-x11', { reason, sessionType, electronVersion })
-    app.relaunch({ args: [...process.argv.slice(1), X11_FLAG] })
+
+    const target = resolveRelaunchTarget(process.env, process.execPath)
+    if (target.kind === 'no-stable-path') {
+      /*
+       * Nothing to relaunch FROM. Saying so beats spawning a process that cannot start:
+       * that was the measured AppImage failure — the replacement died with its own mount
+       * and the user saw a double-click that did nothing at all.
+       */
+      logger.error('platform.relaunch-impossible', {
+        reason,
+        sessionType,
+        execPath: process.execPath,
+        why: target.why,
+        advice: `start it again with ${X11_FLAG}`,
+      })
+      process.stderr.write(
+        `\n  Wayland is unreliable here (${reason}), but this build cannot restart itself:\n` +
+          `  ${target.why}\n` +
+          `  Start it again with:  ${X11_FLAG}\n\n`,
+      )
+      armSentinel()
+      return { forcedX11: false, sessionType, relaunching: false }
+    }
+
+    const args = [...process.argv.slice(1), X11_FLAG]
+    logger.warn('platform.relaunch-on-x11', {
+      reason,
+      sessionType,
+      electronVersion,
+      via: target.kind,
+      execPath: target.execPath,
+    })
+
+    /*
+     * 🔴 `app.relaunch()` is deliberately NOT used. Two independent failures were measured
+     * on the packaged artifacts on 2026-07-31, and each one alone is fatal:
+     *
+     *  1. Inside an AppImage it never returns. Electron's relaunch goes through a helper
+     *     started from `process.execPath` — the squashfs mount that dies with this
+     *     process. Passing `execPath: <the .AppImage file>` does not help: measured, same
+     *     result, `via: "appimage"` in the log and still no replacement.
+     *
+     *  2. It cannot handle a space in the path. Same payload, two directories:
+     *       .../ZimaOS Client/zima-linux-client   → no second app.ready, nothing survives
+     *       .../nospace/zima-linux-client         → app.ready, ok=true
+     *     That is not a detail: `/opt/ZimaOS Client/` IS the install directory of the
+     *     .deb/.rpm/.pacman (sanitizedProductName, measured in the built package). On any
+     *     machine that needs this fallback, the installed package would have started
+     *     nothing at all — and the earlier "it relaunches fine" result came from
+     *     `dist/linux-unpacked`, a path that happens to have no space in it.
+     *
+     * Spawning it ourselves has neither problem: the argument vector is passed as an
+     * array, so nothing is re-parsed, and the child is started NOW, while this process
+     * (and, in an AppImage, its mount) is still alive.
+     *
+     * stdio is dropped on purpose: the child's durable record is its own main.log — the
+     * same file this line went into — and the pipes of this process are about to close.
+     */
+    const child = spawn(target.execPath, args, { detached: true, stdio: 'ignore' })
+    child.unref()
+
     app.exit(0)
     return { forcedX11: true, sessionType, relaunching: true }
   }
 
   armSentinel()
   return { forcedX11: false, sessionType, relaunching: false }
+}
+
+export type RelaunchTarget =
+  /** A path that outlives this process — start the replacement from it. */
+  | { readonly kind: 'self' | 'appimage'; readonly execPath: string }
+  /** No such path exists; relaunching would spawn a process that cannot start. */
+  | { readonly kind: 'no-stable-path'; readonly why: string }
+
+/**
+ * Decides what a replacement process may be started from.
+ *
+ * 🔴 Measured 2026-07-31, and the reason this function exists at all: inside an AppImage
+ * `process.execPath` is `/tmp/.mount_<random>/zima-linux-client` — a FUSE mount owned by
+ * THIS process, gone the moment it exits. On the packaged AppImage the log ends at
+ * `platform.relaunch-on-x11`, no second `app.ready` ever arrives, no process survives,
+ * and — because the relaunch path returns before the sentinel is written — not even a
+ * trace is left behind. A user on such a graphics stack double-clicks the AppImage and
+ * nothing whatsoever happens.
+ *
+ * ⚠️ Honest limit of this function: handing `app.relaunch()` a stable execPath was
+ * measured NOT to be enough — the second run failed exactly like the first, with
+ * `via: "appimage"` in the log and still no replacement. What this function decides is
+ * therefore only WHERE a replacement may come from; that it is started by spawning it
+ * directly, rather than through `app.relaunch()`, is decided at the call site and for
+ * reasons documented there.
+ *
+ * The same code is fine when installed from .deb/.rpm/.pacman/tar.gz: execPath is
+ * `/opt/<product>/zima-linux-client`, which stays put. Measured in the same session —
+ * that build relaunches and writes its report with `forcedX11: true`.
+ *
+ * The stable path for an AppImage is the `.AppImage` file itself, which its runtime
+ * publishes in `APPIMAGE`. Measured from inside the packaged artifact
+ * (`ELECTRON_RUN_AS_NODE=1 ./ZimaOS*.AppImage -e '…'`):
+ *
+ *   APPIMAGE  /home/…/dist/ZimaOS Client-2.0.0-alpha.1.AppImage
+ *   APPDIR    /tmp/.mount_ZimaOSkCxb9M
+ *   execPath  /tmp/.mount_ZimaOSkCxb9M/zima-linux-client
+ *
+ * Note on how that was measured: `/proc/<pid>/environ` of the running app is NOT a
+ * witness — Chromium overwrites that block, and reading it returned nothing but NULs.
+ * The environment had to be asked from inside the process.
+ */
+export const resolveRelaunchTarget = (
+  env: NodeJS.ProcessEnv,
+  execPath: string,
+  fileExists: (path: string) => boolean = existsSync,
+): RelaunchTarget => {
+  const appImage = env['APPIMAGE']?.trim()
+  if (appImage !== undefined && appImage.startsWith('/') && fileExists(appImage)) {
+    return { kind: 'appimage', execPath: appImage }
+  }
+
+  /*
+   * `APPDIR` marks an unpacked AppDir. If our binary lives inside it and no usable
+   * `APPIMAGE` was found, then every path we have dies with this process. Saying "cannot"
+   * is the honest answer; a relaunch here is the silent failure described above.
+   */
+  const appDir = env['APPDIR']?.trim()
+  if (appDir !== undefined && appDir !== '' && execPath.startsWith(`${appDir}/`)) {
+    return {
+      kind: 'no-stable-path',
+      why:
+        appImage === undefined || appImage === ''
+          ? `running from an AppDir (${appDir}) and APPIMAGE is not set`
+          : `running from an AppDir (${appDir}) and APPIMAGE (${appImage}) does not exist`,
+    }
+  }
+
+  return { kind: 'self', execPath }
 }
 
 /**

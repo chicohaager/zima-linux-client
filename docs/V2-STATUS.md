@@ -9,9 +9,10 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 
 ```
 npm run verify   ✓  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓  139 Tests in 11 Dateien
+npx vitest run   ✓  160 Tests in 14 Dateien
 i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 169 verfolgte Dateien
+privacy gate        clean, 175 verfolgte Dateien
+Pakete              deb · AppImage · tar.gz gebaut und gestartet (siehe Phase 8)
 ```
 
 Die Testzahlen weiter unten (21, 63) sind **Messwerte ihrer jeweiligen Phase** und bleiben so
@@ -820,8 +821,9 @@ Es fehlen weiterhin:
 
 * **Playwright-E2E.** Der Rundgang (`ZIMA_VERIFY_SCENARIO=tour`) leistet heute die Arbeit,
   läuft aber nur gegen ein Gerät im LAN und nicht in CI.
-* **Paketbau und Distro-Start-Matrix** (Phase 8), einschließlich der arm64-Frage beim
-  mitgelieferten ZeroTier-Binary.
+* **Distro-Start-Matrix** (Phase 8) und die arm64-Frage beim mitgelieferten ZeroTier-Binary.
+  Der Paketbau selbst ist inzwischen für deb, AppImage und tar.gz belegt — siehe
+  [Phase 8](#phase-8--ausliefern-die-ersten-pakete-und-was-sie-über-den-laufenden-code-verraten-haben).
 * **Anmeldung über eine Tailscale-Adresse**, durchgeklickt von Anfang bis Ende.
 * **Muttersprachliche Prüfung der Übersetzungen.** Alle 28 Kataloge sind seit 2026-07-31
   vollständig (280/280), aber 25 davon habe **ich** übersetzt — sie stehen weiterhin als
@@ -985,6 +987,151 @@ steht es als gespeicherte Fähigkeit eines echten Geräts da.
 § 14 Punkt 6 — welche Endpunkte ein Nicht-Admin überhaupt benutzen darf. Der Admin-Pfad allein
 beantwortet das nicht. Und der Gerätewechsel zwischen den beiden gespeicherten Geräten ist
 angelegt, aber noch nicht durchgeklickt.
+
+## Phase 8 — Ausliefern: die ersten Pakete, und was sie über den laufenden Code verraten haben
+
+Gebaut am 2026-07-31 auf Ubuntu 24.04 (x64). Drei Formate entstehen hier ohne Zusatzwerkzeug,
+drei brauchen ein Programm, das auf dieser Maschine fehlt — und sagen das mit Namen:
+
+| Ziel | Ergebnis | Größe |
+| --- | --- | --- |
+| **deb** | gebaut, Nutzlast gestartet | 101,3 MiB (`Installed-Size: 347142` ≈ 339 MiB) |
+| **AppImage** | gebaut, gestartet | 130,0 MiB |
+| **tar.gz** | gebaut, entpackt, gestartet | 123,1 MiB |
+| rpm | `Need executable 'rpmbuild'` → `apt install rpm` | — |
+| pacman | `bsdtar` fehlt (Exit 127) → `apt install libarchive-tools` | — |
+| flatpak | `flatpak-builder` ist nicht installiert | — |
+
+Beide Rüstzeug-Lücken brauchen `sudo` und sind deshalb **offen**, nicht erledigt.
+
+### 🔴 Der Fehler, den erst das Paket gezeigt hat: die App startet nie, wo sie installiert wird
+
+Der Reihe nach gemessen, jedes Mal am gepackten Artefakt mit `ZIMA_VERIFY_STARTUP`:
+
+```
+AppImage, wie ein Nutzer sie doppelklickt   kein Report, kein Prozess, kein Fenster
+AppImage mit --ozone-platform=x11 in argv   ok=true, 51 CSS-Regeln, Layout sidebar
+```
+
+Dazwischen liegt der X11-Rückfall aus Phase 1. Er rettet die App auf dieser Grafik — und in
+zwei ausgelieferten Formaten **verhinderte er den Start vollständig**. Das Protokoll endete bei
+`platform.relaunch-on-x11`, danach kam nichts mehr: kein zweites `app.ready`, kein Prozess, und
+weil der Rückfallpfad vor dem Sentinel zurückkehrt, nicht einmal eine Spur. Ein Doppelklick, bei
+dem nichts passiert — die stummste Fehlerart, die dieses Projekt kennt.
+
+**Zwei unabhängige Ursachen, beide gemessen, jede für sich tödlich:**
+
+1. **In der AppImage zeigt `process.execPath` in die eigene Einhängung.**
+   Von *innen* abgefragt (`ELECTRON_RUN_AS_NODE=1 ./ZimaOS*.AppImage -e '…'`):
+
+   ```
+   APPIMAGE  /home/…/dist/ZimaOS Client-2.0.0-alpha.1.AppImage
+   APPDIR    /tmp/.mount_ZimaOSkCxb9M
+   execPath  /tmp/.mount_ZimaOSkCxb9M/zima-linux-client
+   ```
+
+   Die Einhängung stirbt mit dem Prozess. `app.relaunch()` einen **stabilen** Pfad zu geben
+   (`execPath: <die .AppImage-Datei>`) hat **nicht** gereicht — derselbe Lauf, dieselbe Stille,
+   nur mit `via: "appimage"` im Log. Electrons Relaunch geht durch einen Helfer, der selbst aus
+   dem eingehängten Binary startet; das Ziel, das man ihm nennt, ist dann schon egal.
+
+2. **`app.relaunch()` verträgt kein Leerzeichen im Pfad.** Dieselbe Nutzlast, zwei Verzeichnisse:
+
+   ```
+   …/ZimaOS Client/zima-linux-client   kein zweites app.ready, nichts überlebt
+   …/nospace/zima-linux-client         app.ready, ok=true
+   ```
+
+   Das ist kein Randfall: **`/opt/ZimaOS Client/` ist das Installationsverzeichnis** von deb, rpm
+   und pacman (`sanitizedProductName`, am gebauten Paket abgelesen). Auf jeder Maschine, die
+   diesen Rückfall braucht, hätte das installierte Paket **gar nichts** gestartet.
+
+   Dass mir das so lange entgangen ist, hat einen Namen: mein „läuft doch"-Beleg kam aus
+   `dist/linux-unpacked` — einem Pfad **ohne** Leerzeichen. Ein Vorbild belegt seinen eigenen
+   Aufbau, nicht den ausgelieferten.
+
+**Behoben** in `src/main/app/resilientPlatform.ts`: der Ersatzprozess wird selbst gestartet
+(`spawn`, detached, Argumente als Array — nichts wird neu geparst), und `resolveRelaunchTarget()`
+entscheidet vorher, **von wo**: die `.AppImage`-Datei aus `APPIMAGE`, sonst das eigene Binary. Gibt
+es keinen Pfad, der diesen Prozess überlebt (entpacktes AppDir ohne `APPIMAGE`), wird **nicht**
+gestartet, sondern `platform.relaunch-impossible` protokolliert und der Befehl genannt — ein
+Fehlschlag mit Grund statt eines Doppelklicks ins Leere.
+
+**Belege nach der Änderung** (je drei Kaltstarts, frisches `--user-data-dir`):
+
+```
+AppImage, ohne Flag         3× ok=true   via=appimage → app.ready forcedX11=true → startup.verified
+deb-Nutzlast in "…/ZimaOS Client/"  3× ok=true   via=self
+tar.gz, entpackt            ok=true   via=self
+```
+
+Sechs Tests decken `resolveRelaunchTarget` ab; **Positivkontrolle gefahren** — das alte Verhalten
+wieder eingesetzt (immer `execPath`): **5 von 6 rot**, darunter ausdrücklich die Zusicherung „gibt
+niemals einen Pfad aus der Einhängung zurück". Ein Test, der nur prüft, *dass* ein Pfad kommt, wäre
+auf der kaputten Fassung grün geblieben.
+
+### Drei Befunde aus der Paketprüfung selbst
+
+* **Die amd64-Pakete trugen ein arm64-Binary mit.** `extraResources` kopierte `bin/zerotier`
+  vollständig, also beide Architekturen — 14,9 MB, die auf einem x64-Rechner nie laufen können.
+  Jetzt `bin/zerotier/${arch}` → `zerotier/${arch}`; die Laufzeitpfade
+  (`resources/zerotier/<process.arch>/…`) bleiben unverändert, das `.deb` schrumpft von 106,1 MiB
+  auf 101,3 MiB. Am Paketinhalt nachgesehen: nur noch `x64/` drin.
+* **Das Fenster gehörte zu keinem Starter.** `StartupWMClass=ZimaOS Client` stand im `.desktop`,
+  gemessen am laufenden Fenster war die Klasse aber `zima-linux-client`:
+
+  ```
+  $ xprop -id <window> WM_CLASS
+  WM_CLASS(STRING) = "zima-linux-client", "zima-linux-client"
+  ```
+
+  Damit ordnet keine Desktop-Umgebung das laufende Fenster dem Starter zu (generisches Symbol im
+  Dock, kein „angeheftet"). `desktopName` in package.json plus `linux.syncDesktopName` bringt beide
+  auf denselben Wert; im neu gebauten Paket steht jetzt `StartupWMClass=zima-linux-client`.
+* **Ein Makro im Post-Install-Skript stimmte nur zufällig.** Dort stand `/opt/${productFilename}`,
+  während electron-builder nach `/opt/${sanitizedProductName}` installiert
+  (`FpmTarget.js:215`). Beide ergeben heute „ZimaOS Client" — aber nur, solange
+  `linux.executableName` ungesetzt ist (`appInfo.js:57`). Wer diese Option einmal setzt, verschiebt
+  den Pfad, und die Rechteerteilung liefe ins Leere, während das Paket weiter Erfolg meldet.
+  Korrigiert auf `sanitizedProductName`.
+  *(Nebenbei gelernt: `${…}` wird in diesem Skript **auch in Kommentaren** ersetzt — ein erklärender
+  Kommentar mit `${installPrefix}` hat den Paketbau mit „Macro installPrefix is not defined"
+  abgebrochen.)*
+
+### 🔴 Und das Skript, das die Rechte erteilt, lag gar nicht im Repository
+
+`build/` steht in `.gitignore` — unter der Überschrift „Build outputs", geerbt aus der 0.9-Linie.
+Bei electron-builder ist `build/` aber ein **Eingabe**-Verzeichnis (`buildResources`). Folge:
+`build/linux-after-install.sh` existierte nur auf dieser einen Maschine, während dieses Dokument
+es als „gebaut" führte. Ein frischer Klon hätte Pakete **ohne** die Rechteerteilung erzeugt — und
+`git status` hätte nie etwas gemeldet, weil die Datei sauber ignoriert wurde.
+
+Aufgefallen ist es nur, weil die Datei nach einer Änderung **nicht** in `git status` auftauchte.
+Dieselbe Familie wie die zu breite Ausnahme im Privacy-Gate: eine Ignorier-Regel deckte genau das
+ab, was sie hätte zeigen müssen. Jetzt ist `build/` verfolgt (177 statt 175 Dateien im
+Privacy-Gate, weiterhin clean), und in `.gitignore` steht, warum es dort **nicht** hingehört.
+
+> ⚠️ **Gleiche Klasse, nicht behoben:** `package-lock.json` steht ebenfalls in `.gitignore`. Für
+> eine Anwendung, die als Paket ausgeliefert wird, heißt das: kein reproduzierbarer Build — zwei
+> Klone können unterschiedliche Abhängigkeitsversionen bekommen. Das ist eine Entscheidung, keine
+> Panne, deshalb hier nur benannt und nicht eigenmächtig geändert.
+
+### Was an Phase 8 ausdrücklich offen ist
+
+* **Kein installiertes Paket geprüft.** `sudo` steht mir hier nicht zur Verfügung; gestartet wurde
+  die **entpackte** Nutzlast des `.deb` unter genau dem Pfad, den die Installation anlegt
+  (`…/ZimaOS Client/`). Damit ist die Nutzlast belegt — **nicht** das Post-Install-Skript und damit
+  auch nicht die Erteilung von `CAP_NET_ADMIN` an das mitgelieferte `zerotier-one`. Das ist der
+  eine Beleg, der Phase 3b endgültig schließt, und er fehlt weiterhin.
+* **rpm, pacman, flatpak** sind ungebaut (fehlende Werkzeuge, siehe Tabelle).
+* **arm64** ist nicht gebaut und schon gar nicht gestartet — das mitgelieferte arm64-ZeroTier ist
+  bisher nur eine Datei im Repository, keine belegte Funktion.
+* **Distro-Start-Matrix** (Plan § 11.5) steht aus: gemessen wurde auf **einer** Maschine
+  (Ubuntu 24.04, GNOME-Wayland, vmwgfx). Dass die Pakete auf Fedora, Arch oder openSUSE starten,
+  ist damit **nicht** belegt.
+* **README und liesmich beschreiben weiterhin den 0.9-Client** (macOS-Abschnitt, alte Screenshots,
+  alte Projektstruktur). Angeglichen wurden nur die Paketier-Befehle, weil die nachweislich falsch
+  waren (`npm run package:mac` existiert in diesem Zweig nicht). Der Rest gehört zum Release.
 
 ## Alt-Stand
 

@@ -5,8 +5,14 @@ yarn.lock
 
 # Build outputs
 dist/
-build/
 out/
+
+# NOT ignored: build/ — despite the name it holds packaging INPUTS, not outputs
+# (electron-builder's buildResources directory). It was listed here, inherited from the
+# 0.9 line, and the consequence was that `build/linux-after-install.sh` — the script that
+# grants CAP_NET_ADMIN to the bundled zerotier-one — existed only on one machine while
+# the status document called it "gebaut". A fresh clone would have produced packages
+# without it. Nothing writes into build/; electron-builder writes to dist/.
 
 # Electron
 release/
