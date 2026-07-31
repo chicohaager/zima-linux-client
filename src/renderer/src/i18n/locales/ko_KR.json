@@ -19,11 +19,17 @@
     "connection": {
       "lan": "로컬 네트워크",
       "direct": "직접 IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "감지된 기능",
-    "routes": "게이트웨이 경로 {{count}}개"
+    "routes": "게이트웨이 경로 {{count}}개",
+    "remoteIdTitle": "원격 ID로 연결",
+    "remoteIdHint": "기기에 표시된 원격 ID를 입력하세요. 연결은 자동으로 준비됩니다 — 그다음 평소처럼 로그인하세요.",
+    "remoteIdLabel": "원격 ID(16자)",
+    "remoteIdConnecting": "연결 중…",
+    "connect": "연결"
   },
   "capability": {
     "photoLibrary": "사진 검색 및 패싯",
@@ -47,19 +53,99 @@
     "title": "사진",
     "libraryMissing": "사진 검색에는 Photos 모듈이 필요합니다",
     "libraryMissingHint": "이 장치에는 Photos 모듈이 등록되지 않아 의미 검색과 패싯을 사용할 수 없습니다. 둘러보기와 백업은 그래도 작동합니다.",
-    "backupForegroundOnly": "백업은 이 창이 열려 있는 동안에만 실행됩니다."
+    "backupForegroundOnly": "백업은 이 창이 열려 있는 동안에만 실행됩니다.",
+    "video": "동영상",
+    "loading": "불러오는 중…",
+    "noneHere": "이 폴더에는 사진이나 동영상이 없습니다.",
+    "noHits": "결과가 없습니다.",
+    "search": "검색",
+    "searching": "검색 중…",
+    "searchPlaceholder": "사진에 무엇이 있어야 하는지 설명하세요",
+    "clearSearch": "지우기",
+    "searchSummary": "{{ms}} ms에 {{count}}건",
+    "modeLibrary": "라이브러리",
+    "modeFolder": "폴더",
+    "switchToFolder": "폴더 탐색",
+    "switchToLibrary": "라이브러리로 돌아가기",
+    "countSummary": "{{total}}개 중 {{shown}}개 표시",
+    "indexed": "{{total}}개 중 {{processed}}개 색인됨",
+    "pending": "{{count}}개 남음",
+    "indexStatus": {
+      "idle": "완료",
+      "working": "진행 중"
+    },
+    "semanticIncomplete": "의미 색인이 {{percent}} % 입니다. 완료될 때까지 텍스트 검색은 파일 이름의 온전한 단어만 찾습니다.",
+    "semanticUnavailable": "이 기기에서는 사진 검색을 사용할 수 없습니다",
+    "semanticUnavailableHint": "기기에 비전 모델이 설치되어 있지 않아 검색은 «결과 없음»이 아니라 아무것도 반환하지 않습니다. 탐색과 백업에는 영향이 없습니다.",
+    "semanticState": "기기 상태: {{state}} · 없음: {{missing}}"
   },
   "files": {
     "title": "파일",
     "search": "검색",
     "starred": "즐겨찾기",
-    "storage": "저장소"
+    "storage": "저장소",
+    "up": "한 단계 위로",
+    "select": "{{name}} 선택",
+    "media": "미디어",
+    "loading": "불러오는 중…",
+    "loadingVolumes": "기기에 볼륨을 요청하는 중…",
+    "noVolumes": "기기가 볼륨을 하나도 보고하지 않아 탐색할 것이 없습니다.",
+    "emptyFolder": "이 폴더는 비어 있습니다.",
+    "searching": "검색 중…",
+    "searchPlaceholder": "이 폴더와 하위에서 파일 이름 검색",
+    "clearSearch": "지우기",
+    "searchSummary": "{{scanned}}개 항목을 살펴본 뒤 {{hits}}건. 이 검색은 클라이언트에서 실행됩니다 — ZimaOS 1.7에는 서버 측 파일 검색이 없습니다.",
+    "searchTruncated": "검색 한도에서 일찍 멈췄으므로 아래에 결과가 더 있을 수 있습니다.",
+    "noHits": "일치하는 파일 이름이 없습니다.",
+    "newFolder": "새 폴더",
+    "newFolderPrompt": "새 폴더의 이름",
+    "upload": "업로드",
+    "download": "다운로드",
+    "copy": "복사",
+    "move": "이동",
+    "pasteCopy": "{{count}}개를 여기에 붙여넣기",
+    "pasteMove": "{{count}}개를 여기로 이동",
+    "toTrash": "휴지통으로 이동",
+    "refresh": "새로 고침",
+    "showTrash": "휴지통 보기",
+    "hideTrash": "휴지통 숨기기",
+    "trash": "휴지통",
+    "trashEmpty": "휴지통이 비어 있습니다.",
+    "trashCount": "휴지통에 {{count}}개 항목",
+    "restore": "{{count}}개 복원",
+    "deletedAt": "삭제됨 {{when}}",
+    "tasks": "진행 중인 작업",
+    "tasksHint": "복사와 이동은 기기에서 실행되므로 이 창이 바빠도 계속됩니다.",
+    "countSummary": "{{total}}개 항목 중 {{shown}}개 표시",
+    "sortedBy": "{{field}} 기준 정렬",
+    "changeSort": "변경",
+    "ascending": "오름차순",
+    "descending": "내림차순",
+    "sort": {
+      "name": "이름",
+      "size": "크기",
+      "modified": "날짜"
+    }
   },
   "apps": {
     "title": "앱",
     "running": "실행 중",
     "stopped": "중지됨",
-    "cachedAt": "기준: {{time}}"
+    "cachedAt": "기준: {{time}}",
+    "loading": "불러오는 중…",
+    "none": "이 기기에는 설치된 앱이 없습니다.",
+    "cached": "저장된 목록",
+    "retry": "다시 시도",
+    "port": "포트 {{port}}",
+    "status": {
+      "running": "실행 중",
+      "stopped": "중지됨"
+    },
+    "openHere": "여기서 열기",
+    "openBrowser": "브라우저에서 열기",
+    "noWebUi": "이 앱은 웹 인터페이스를 게시하지 않습니다.",
+    "start": "시작",
+    "stop": "중지"
   },
   "security": {
     "keyringTitle": "비밀번호를 안전하게 저장할 수 없습니다",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "이 주소에서 응답한 ZimaOS 장치가 없습니다.",
     "sessionExpired": "세션이 만료되었습니다. 다시 로그인하세요.",
     "signInRequired": "로그인해 주세요.",
-    "strategyUnavailable": "이 연결 경로는 이 빌드에서 아직 사용할 수 없습니다."
+    "strategyUnavailable": "이 연결 경로는 이 빌드에서 아직 사용할 수 없습니다.",
+    "notFound": "기기가 이 경로는 존재하지 않는다고 합니다.",
+    "endpointUnknown": "이 기기는 클라이언트가 요청한 인터페이스를 제공하지 않습니다.",
+    "invalidRequest": "요청이 전송되기 전에 거부되었습니다 — 이 클라이언트의 결함입니다.",
+    "invalidFolderName": "폴더 이름에는 슬래시를 넣을 수 없습니다.",
+    "uploadRejected": "기기가 업로드를 거부했습니다.",
+    "uploadNotAFile": "일반 파일만 업로드할 수 있습니다.",
+    "downloadRejected": "기기가 다운로드를 거부했습니다.",
+    "photosModuleMissing": "이 기기에는 사진 모듈이 없어 검색과 패싯을 사용할 수 없습니다.",
+    "appNotFound": "이 앱은 더 이상 기기 목록에 없습니다.",
+    "appHasNoWebUi": "이 앱은 웹 인터페이스를 게시하지 않습니다.",
+    "powerDeviceMismatch": "화면이 활성 기기가 아닌 다른 기기를 가리키고 있습니다. 새로 고친 뒤 다시 시도하세요.",
+    "zerotierNoToken": "로컬 ZeroTier 토큰을 읽을 수 없습니다.",
+    "zerotierApi": "로컬 ZeroTier 서비스가 오류로 응답했습니다.",
+    "zerotierMissing": "zerotier-one을 찾을 수 없습니다 — 설치된 것도 동봉된 것도 없습니다.",
+    "zerotierNoStart": "로컬 ZeroTier 서비스가 시작되지 않았습니다.",
+    "unexpected-status": "기기가 예상치 못한 상태로 응답했습니다.",
+    "zerotierNoCapability": "로컬 ZeroTier 서비스에 가상 네트워크 장치를 만들 권한이 없습니다. 권한을 주는 정확한 명령은 아래에 있습니다.",
+    "remoteIdUnknown": "이 기기에 저장된 원격 ID가 없습니다. «원격 ID로 연결»을 통해 한 번 로그인하세요."
   },
   "common": {
     "retry": "다시 시도",
@@ -135,5 +239,96 @@
     "language": "언어",
     "unreviewed": "미검수",
     "reviewed": "검수됨"
+  },
+  "backup": {
+    "title": "사진 백업",
+    "foregroundOnly": "이 창이 열려 있는 동안만",
+    "explainer": "로컬 폴더를 고르면 그 안의 사진과 동영상이 {{destination}}(으)로 업로드됩니다. 백그라운드 동기화는 없습니다 — 창을 닫으면 전송이 멈추고 다음번에 멈춘 곳부터 이어집니다.",
+    "pickFolders": "폴더 선택",
+    "start": "폴더 {{count}}개 백업",
+    "cancel": "취소",
+    "counts": "{{total}}개 중 {{uploaded}}개 · {{skipped}}개 건너뜀 · {{failed}}개 실패",
+    "notes": "메모가 있는 파일 {{count}}개",
+    "phase": {
+      "idle": "시작 안 함",
+      "scanning": "사진을 찾는 중…",
+      "uploading": "업로드 중…",
+      "done": "완료, 빠진 것 없음",
+      "cancelled": "취소됨 — 이미 업로드된 파일은 남습니다",
+      "failed": "실패와 함께 완료"
+    },
+    "outcome": {
+      "skipped-duplicate": "이미 있음",
+      "skipped-unsupported": "이미지가 아님",
+      "failed": "실패"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "이름 없는 기기",
+    "cpu": "{{model}}, {{cores}}코어",
+    "cpuLoad": "CPU 부하",
+    "cpuTemperature": "CPU 온도",
+    "watt": "{{watt}} W",
+    "memory": "메모리",
+    "systemDisk": "시스템 디스크 여유 공간",
+    "freeOf": "/ {{total}}",
+    "storage": "저장 공간",
+    "usedPercent": "{{percent}} % 사용 중",
+    "unhealthy": "상태 점검 실패"
+  },
+  "power": {
+    "title": "전원",
+    "restart": "다시 시작",
+    "off": "전원 끄기",
+    "confirmRestart": "정말 {{name}}을(를) 다시 시작할까요?",
+    "confirmOff": "정말 {{name}}의 전원을 끌까요?",
+    "yes": "예, 실행",
+    "no": "취소",
+    "restarting": "다시 시작을 요청했습니다. 기기는 한동안 접속할 수 없습니다.",
+    "shuttingDown": "종료를 요청했습니다. 다시 켤 때까지 기기는 응답하지 않습니다.",
+    "noConfirmation": "어떤 확인도 받지 못했습니다:"
+  },
+  "zerotier": {
+    "title": "원격 ID(ZeroTier)",
+    "running": "데몬 실행 중",
+    "notRunning": "데몬 중지됨",
+    "daemon": {
+      "system": "시스템 설치본",
+      "bundled": "이 앱에 동봉됨",
+      "managed": "이 앱 전용 사본",
+      "absent": "실행 파일을 찾지 못함"
+    },
+    "nodeId": "이 컴퓨터: {{id}}",
+    "networkId": "네트워크 ID(16진수 16자)",
+    "join": "참여",
+    "leave": "나가기",
+    "hint": "공개 네트워크는 이 컴퓨터를 즉시 받아들입니다. 비공개 네트워크는 먼저 승인해야 합니다 — 어느 쪽인지는 각 네트워크 옆의 표시에 나옵니다.",
+    "hintAccessDenied": "이 네트워크가 컴퓨터를 거부했습니다(ACCESS_DENIED). 비공개 네트워크이며 소유자가 네트워크 컨트롤러에서 이 노드를 승인해야 합니다.",
+    "provision": "설치 준비",
+    "provisioning": "준비 중…",
+    "provisionHint": "이 앱은 zerotier-one의 자체 사본을 설치합니다. 네트워크 장치를 만들려면 권한 하나가 더 필요하며, 명령 한 줄로 직접 부여합니다. 시스템의 ZeroTier는 건드리지 않습니다.",
+    "commandHint": "터미널에서 이것을 한 번 실행한 다음 여기서 다시 연결하세요:",
+    "copy": "명령 복사",
+    "copied": "복사됨",
+    "recheck": "다시 연결",
+    "capable": "권한이 부여되어 있습니다. 데몬이 네트워크 장치를 만들 수 있습니다."
+  },
+  "legacy": {
+    "title": "이전 클라이언트에서 넘겨받기",
+    "explainer": "0.9 설치본의 주소를 넘겨받을 수 있습니다. 비밀번호는 옮겨지지 않습니다 — 한 번 로그인하면 되고, 예전 설정은 절대 수정되지 않습니다.",
+    "summary": "연결 {{connections}}개, 백업 작업 {{jobs}}개, 마지막 호스트 {{host}}",
+    "adopt": "주소 넘겨받기",
+    "result": "{{imported}}개 넘겨받음, {{skipped}}개는 이미 알고 있음"
+  },
+  "logs": {
+    "title": "로그 파일",
+    "open": "폴더 열기"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "감지만 하고 관리하지 않습니다. 이 클라이언트는 이미 실행 중인 터널을 사용하며 DNS나 경로 설정을 바꾸지 않습니다.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "사용",
+    "noPeers": "이 tailnet에 온라인인 다른 컴퓨터가 없습니다."
   }
 }

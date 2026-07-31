@@ -19,11 +19,17 @@
     "connection": {
       "lan": "LAN",
       "direct": "Direct IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Detected features",
-    "routes": "{{count}} gateway routes"
+    "routes": "{{count}} gateway routes",
+    "remoteIdTitle": "Connect via Remote ID",
+    "remoteIdHint": "Enter the Remote ID shown on the device. The connection is set up for you — then sign in as usual.",
+    "remoteIdLabel": "Remote ID (16 characters)",
+    "remoteIdConnecting": "Connecting…",
+    "connect": "Connect"
   },
   "capability": {
     "photoLibrary": "Photo search & facets",
@@ -47,19 +53,99 @@
     "title": "Photos",
     "libraryMissing": "Photo search needs the Photos module",
     "libraryMissingHint": "This device has no Photos module registered, so semantic search and facets are unavailable. Browsing and backup work regardless.",
-    "backupForegroundOnly": "Backup runs only while this window is open."
+    "backupForegroundOnly": "Backup runs only while this window is open.",
+    "video": "Video",
+    "loading": "Loading…",
+    "noneHere": "No pictures or videos in this folder.",
+    "noHits": "Nothing matched.",
+    "search": "Search",
+    "searching": "Searching…",
+    "searchPlaceholder": "Describe what should be in the picture",
+    "clearSearch": "Clear",
+    "searchSummary": "{{count}} hit(s) in {{ms}} ms",
+    "modeLibrary": "Library",
+    "modeFolder": "Folder",
+    "switchToFolder": "Browse a folder",
+    "switchToLibrary": "Back to the library",
+    "countSummary": "{{shown}} of {{total}} shown",
+    "indexed": "{{processed}} of {{total}} indexed",
+    "pending": "{{count}} pending",
+    "indexStatus": {
+      "idle": "finished",
+      "working": "working"
+    },
+    "semanticIncomplete": "The semantic index is at {{percent}} %. Until it is complete, text search only matches whole words in file names.",
+    "semanticUnavailable": "Photo search is not available on this device",
+    "semanticUnavailableHint": "The device has no vision model installed, so a search would return nothing at all rather than no matches. Browsing and backup are unaffected.",
+    "semanticState": "Device state: {{state}} · missing: {{missing}}"
   },
   "files": {
     "title": "Files",
     "search": "Search",
     "starred": "Starred",
-    "storage": "Storage"
+    "storage": "Storage",
+    "up": "Up one level",
+    "select": "Select {{name}}",
+    "media": "media",
+    "loading": "Loading…",
+    "loadingVolumes": "Asking the device for its volumes…",
+    "noVolumes": "The device did not report a single volume, so there is nothing to browse.",
+    "emptyFolder": "This folder is empty.",
+    "searching": "Searching…",
+    "searchPlaceholder": "Search file names in this folder and below",
+    "clearSearch": "Clear",
+    "searchSummary": "{{hits}} hit(s) after looking at {{scanned}} entries. This search runs in the client — ZimaOS 1.7 has no server-side file search.",
+    "searchTruncated": "Stopped early at the search limit, so there may be more matches further down.",
+    "noHits": "No file name matched.",
+    "newFolder": "New folder",
+    "newFolderPrompt": "Name of the new folder",
+    "upload": "Upload",
+    "download": "Download",
+    "copy": "Copy",
+    "move": "Move",
+    "pasteCopy": "Paste {{count}} copy here",
+    "pasteMove": "Move {{count}} here",
+    "toTrash": "Move to wastebasket",
+    "refresh": "Refresh",
+    "showTrash": "Show wastebasket",
+    "hideTrash": "Hide wastebasket",
+    "trash": "Wastebasket",
+    "trashEmpty": "The wastebasket is empty.",
+    "trashCount": "{{count}} entry/entries in the wastebasket",
+    "restore": "Restore {{count}}",
+    "deletedAt": "deleted {{when}}",
+    "tasks": "Running operations",
+    "tasksHint": "Copying and moving run on the device, so they continue even when this window is busy.",
+    "countSummary": "{{shown}} of {{total}} entries shown",
+    "sortedBy": "sorted by {{field}}",
+    "changeSort": "change",
+    "ascending": "ascending",
+    "descending": "descending",
+    "sort": {
+      "name": "name",
+      "size": "size",
+      "modified": "date"
+    }
   },
   "apps": {
     "title": "Apps",
     "running": "Running",
     "stopped": "Stopped",
-    "cachedAt": "As of {{time}}"
+    "cachedAt": "As of {{time}}",
+    "loading": "Loading…",
+    "none": "No apps are installed on this device.",
+    "cached": "Saved list",
+    "retry": "Try again",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "running",
+      "stopped": "stopped"
+    },
+    "openHere": "Open here",
+    "openBrowser": "Open in browser",
+    "noWebUi": "This app publishes no web interface.",
+    "start": "Start",
+    "stop": "Stop"
   },
   "security": {
     "keyringTitle": "Passwords cannot be stored securely",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "No ZimaOS device answered at this address.",
     "sessionExpired": "The session has expired — please sign in again.",
     "signInRequired": "Please sign in.",
-    "strategyUnavailable": "This connection route is not available in this build yet."
+    "strategyUnavailable": "This connection route is not available in this build yet.",
+    "notFound": "The device says this path does not exist.",
+    "endpointUnknown": "This device does not offer the interface the client asked for.",
+    "invalidRequest": "The request was rejected before it was sent — that is a defect in this client.",
+    "invalidFolderName": "A folder name cannot contain a slash.",
+    "uploadRejected": "The device refused the upload.",
+    "uploadNotAFile": "Only regular files can be uploaded.",
+    "downloadRejected": "The device refused the download.",
+    "photosModuleMissing": "This device has no photos module, so search and facets are unavailable.",
+    "appNotFound": "This app is no longer in the device's list.",
+    "appHasNoWebUi": "This app publishes no web interface.",
+    "powerDeviceMismatch": "The screen refers to a different device than the active one. Reload and try again.",
+    "zerotierNoToken": "The local ZeroTier token could not be read.",
+    "zerotierApi": "The local ZeroTier service answered with an error.",
+    "zerotierMissing": "No zerotier-one was found — neither installed nor shipped.",
+    "zerotierNoStart": "The local ZeroTier service did not start.",
+    "unexpected-status": "The device answered with an unexpected status.",
+    "zerotierNoCapability": "The local ZeroTier service is not allowed to create a virtual network device. The exact command to grant that is below.",
+    "remoteIdUnknown": "No Remote ID is stored for this device. Sign in once via \"Connect via Remote ID\"."
   },
   "common": {
     "retry": "Retry",
@@ -135,5 +239,96 @@
     "language": "Language",
     "unreviewed": "unreviewed",
     "reviewed": "reviewed"
+  },
+  "backup": {
+    "title": "Photo backup",
+    "foregroundOnly": "only while this window is open",
+    "explainer": "Pick local folders; pictures and videos in them are uploaded to {{destination}}. There is no background sync, so the transfer stops when you close the window and continues where it left off next time.",
+    "pickFolders": "Choose folders",
+    "start": "Back up {{count}} folder(s)",
+    "cancel": "Cancel",
+    "counts": "{{uploaded}} of {{total}} · {{skipped}} skipped · {{failed}} failed",
+    "notes": "{{count}} file(s) with a note",
+    "phase": {
+      "idle": "Not started",
+      "scanning": "Looking for pictures…",
+      "uploading": "Uploading…",
+      "done": "Finished, nothing left out",
+      "cancelled": "Cancelled — already uploaded files stay",
+      "failed": "Finished with failures"
+    },
+    "outcome": {
+      "skipped-duplicate": "already there",
+      "skipped-unsupported": "not a picture",
+      "failed": "failed"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Unnamed device",
+    "cpu": "{{model}}, {{cores}} cores",
+    "cpuLoad": "CPU load",
+    "cpuTemperature": "CPU temperature",
+    "watt": "{{watt}} W",
+    "memory": "Memory",
+    "systemDisk": "System disc free",
+    "freeOf": "of {{total}}",
+    "storage": "Storage",
+    "usedPercent": "{{percent}} % used",
+    "unhealthy": "health check failed"
+  },
+  "power": {
+    "title": "Power",
+    "restart": "Restart",
+    "off": "Power off",
+    "confirmRestart": "Really restart {{name}}?",
+    "confirmOff": "Really power off {{name}}?",
+    "yes": "Yes, do it",
+    "no": "Cancel",
+    "restarting": "The restart was requested. The device will be unreachable for a while.",
+    "shuttingDown": "The shutdown was requested. The device will not answer again until it is switched on.",
+    "noConfirmation": "No confirmation was received:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "daemon running",
+    "notRunning": "daemon not running",
+    "daemon": {
+      "system": "system installation",
+      "bundled": "shipped with this app",
+      "managed": "this app's own copy",
+      "absent": "no binary found"
+    },
+    "nodeId": "This machine: {{id}}",
+    "networkId": "Network ID (16 hex characters)",
+    "join": "Join",
+    "leave": "Leave",
+    "hint": "A public network admits this machine straight away. A private one has to authorise it first — the badge next to each network says which it is.",
+    "hintAccessDenied": "This network refused the machine (ACCESS_DENIED): it is private, and its owner has to authorise this node in the network controller.",
+    "provision": "Prepare set-up",
+    "provisioning": "Preparing…",
+    "provisionHint": "This app installs its own copy of zerotier-one. To let it create a network device it still needs one permission, which you grant yourself with a single command. The system's own ZeroTier is left untouched.",
+    "commandHint": "Run this once in a terminal, then connect again here:",
+    "copy": "Copy command",
+    "copied": "Copied",
+    "recheck": "Connect again",
+    "capable": "The permission is in place. The daemon may create a network device."
+  },
+  "legacy": {
+    "title": "Take over from the old client",
+    "explainer": "Addresses from a 0.9 installation can be adopted. Passwords are not carried over — you sign in once, and the old configuration is never modified.",
+    "summary": "{{connections}} connection(s), {{jobs}} backup job(s), last host {{host}}",
+    "adopt": "Adopt addresses",
+    "result": "{{imported}} adopted, {{skipped}} already known"
+  },
+  "logs": {
+    "title": "Log file",
+    "open": "Open folder"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Detected, not managed. This client uses a tunnel that is already running and changes no DNS or route settings.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Use",
+    "noPeers": "No other machine on this tailnet is online."
   }
 }

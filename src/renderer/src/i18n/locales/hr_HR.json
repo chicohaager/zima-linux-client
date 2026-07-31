@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Lokalna mreža",
       "direct": "Direktni IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Otkrivene funkcije",
-    "routes": "{{count}} ruta pristupnika"
+    "routes": "{{count}} ruta pristupnika",
+    "remoteIdTitle": "Poveži se putem Remote ID-a",
+    "remoteIdHint": "Unesite Remote ID prikazan na uređaju. Veza se priprema sama — zatim se prijavite kao i inače.",
+    "remoteIdLabel": "Remote ID (16 znakova)",
+    "remoteIdConnecting": "Povezivanje…",
+    "connect": "Poveži se"
   },
   "capability": {
     "photoLibrary": "Pretraga fotografija i filtri",
@@ -47,19 +53,99 @@
     "title": "Fotografije",
     "libraryMissing": "Pretraga fotografija zahtijeva modul Photos",
     "libraryMissingHint": "Na ovom uređaju modul Photos nije registriran, pa semantička pretraga i filtri nisu dostupni. Pregled i sigurnosna kopija ipak rade.",
-    "backupForegroundOnly": "Sigurnosna kopija radi samo dok je ovaj prozor otvoren."
+    "backupForegroundOnly": "Sigurnosna kopija radi samo dok je ovaj prozor otvoren.",
+    "video": "Videozapis",
+    "loading": "Učitavanje…",
+    "noneHere": "U ovoj mapi nema slika ni videozapisa.",
+    "noHits": "Nema pogodaka.",
+    "search": "Traži",
+    "searching": "Traženje…",
+    "searchPlaceholder": "Opišite što bi trebalo biti na slici",
+    "clearSearch": "Očisti",
+    "searchSummary": "{{count}} pogodaka u {{ms}} ms",
+    "modeLibrary": "Zbirka",
+    "modeFolder": "Mapa",
+    "switchToFolder": "Pregledaj mapu",
+    "switchToLibrary": "Natrag u zbirku",
+    "countSummary": "prikazano {{shown}} od {{total}}",
+    "indexed": "{{processed}} od {{total}} indeksirano",
+    "pending": "{{count}} na čekanju",
+    "indexStatus": {
+      "idle": "gotovo",
+      "working": "u tijeku"
+    },
+    "semanticIncomplete": "Semantički indeks je na {{percent}} %. Dok ne bude gotov, tekstualno pretraživanje pronalazi samo cijele riječi u nazivima datoteka.",
+    "semanticUnavailable": "Pretraživanje slika nije dostupno na ovom uređaju",
+    "semanticUnavailableHint": "Uređaj nema instaliran model za slike, pa pretraga ne bi vratila baš ništa umjesto «nema pogodaka». Pregledavanje i sigurnosna kopija nisu pogođeni.",
+    "semanticState": "Stanje uređaja: {{state}} · nedostaje: {{missing}}"
   },
   "files": {
     "title": "Datoteke",
     "search": "Traži",
     "starred": "Favoriti",
-    "storage": "Pohrana"
+    "storage": "Pohrana",
+    "up": "Jednu razinu gore",
+    "select": "Odaberi {{name}}",
+    "media": "mediji",
+    "loading": "Učitavanje…",
+    "loadingVolumes": "Uređaj se pita za njegove volumene…",
+    "noVolumes": "Uređaj nije prijavio nijedan volumen, pa nema što pregledavati.",
+    "emptyFolder": "Ova je mapa prazna.",
+    "searching": "Traženje…",
+    "searchPlaceholder": "Traži nazive datoteka u ovoj mapi i ispod",
+    "clearSearch": "Očisti",
+    "searchSummary": "{{hits}} pogodaka nakon pregleda {{scanned}} stavki. Ova pretraga radi u klijentu — ZimaOS 1.7 nema pretraživanje datoteka na poslužitelju.",
+    "searchTruncated": "Zaustavljeno rano na granici pretrage, pa niže može biti još pogodaka.",
+    "noHits": "Nijedan naziv datoteke ne odgovara.",
+    "newFolder": "Nova mapa",
+    "newFolderPrompt": "Naziv nove mape",
+    "upload": "Prenesi",
+    "download": "Preuzmi",
+    "copy": "Kopiraj",
+    "move": "Premjesti",
+    "pasteCopy": "Zalijepi {{count}} kopiju ovdje",
+    "pasteMove": "Premjesti {{count}} ovdje",
+    "toTrash": "Premjesti u smeće",
+    "refresh": "Osvježi",
+    "showTrash": "Prikaži smeće",
+    "hideTrash": "Sakrij smeće",
+    "trash": "Smeće",
+    "trashEmpty": "Smeće je prazno.",
+    "trashCount": "{{count}} stavki u smeću",
+    "restore": "Vrati {{count}}",
+    "deletedAt": "izbrisano {{when}}",
+    "tasks": "Radnje u tijeku",
+    "tasksHint": "Kopiranje i premještanje rade na uređaju, pa se nastavljaju i kad je ovaj prozor zauzet.",
+    "countSummary": "prikazano {{shown}} od {{total}} stavki",
+    "sortedBy": "poredano po {{field}}",
+    "changeSort": "promijeni",
+    "ascending": "uzlazno",
+    "descending": "silazno",
+    "sort": {
+      "name": "naziv",
+      "size": "veličina",
+      "modified": "datum"
+    }
   },
   "apps": {
     "title": "Aplikacije",
     "running": "Radi",
     "stopped": "Zaustavljeno",
-    "cachedAt": "Stanje: {{time}}"
+    "cachedAt": "Stanje: {{time}}",
+    "loading": "Učitavanje…",
+    "none": "Na ovom uređaju nije instalirana nijedna aplikacija.",
+    "cached": "Spremljeni popis",
+    "retry": "Pokušaj ponovno",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "radi",
+      "stopped": "zaustavljena"
+    },
+    "openHere": "Otvori ovdje",
+    "openBrowser": "Otvori u pregledniku",
+    "noWebUi": "Ova aplikacija ne objavljuje web sučelje.",
+    "start": "Pokreni",
+    "stop": "Zaustavi"
   },
   "security": {
     "keyringTitle": "Zaporke nije moguće sigurno pohraniti",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Na ovoj adresi nije odgovorio nijedan ZimaOS uređaj.",
     "sessionExpired": "Sesija je istekla — prijavite se ponovno.",
     "signInRequired": "Prijavite se.",
-    "strategyUnavailable": "Ovaj način povezivanja u ovoj verziji još nije dostupan."
+    "strategyUnavailable": "Ovaj način povezivanja u ovoj verziji još nije dostupan.",
+    "notFound": "Uređaj kaže da ovaj put ne postoji.",
+    "endpointUnknown": "Ovaj uređaj ne nudi sučelje koje je klijent zatražio.",
+    "invalidRequest": "Zahtjev je odbijen prije slanja — to je greška ovog klijenta.",
+    "invalidFolderName": "Naziv mape ne smije sadržavati kosu crtu.",
+    "uploadRejected": "Uređaj je odbio prijenos.",
+    "uploadNotAFile": "Prenijeti se mogu samo obične datoteke.",
+    "downloadRejected": "Uređaj je odbio preuzimanje.",
+    "photosModuleMissing": "Ovaj uređaj nema modul za slike, pa pretraga i fasete nisu dostupne.",
+    "appNotFound": "Ove aplikacije više nema na popisu uređaja.",
+    "appHasNoWebUi": "Ova aplikacija ne objavljuje web sučelje.",
+    "powerDeviceMismatch": "Zaslon se odnosi na drugi uređaj od aktivnog. Ponovno učitajte i pokušajte opet.",
+    "zerotierNoToken": "Lokalni ZeroTier token nije se mogao pročitati.",
+    "zerotierApi": "Lokalna ZeroTier usluga odgovorila je greškom.",
+    "zerotierMissing": "Nije pronađen nijedan zerotier-one — ni instaliran ni priložen.",
+    "zerotierNoStart": "Lokalna ZeroTier usluga nije se pokrenula.",
+    "unexpected-status": "Uređaj je odgovorio neočekivanim statusom.",
+    "zerotierNoCapability": "Lokalna ZeroTier usluga ne smije stvoriti virtualni mrežni uređaj. Točna naredba koja to dopušta nalazi se ispod.",
+    "remoteIdUnknown": "Za ovaj uređaj nije spremljen nijedan Remote ID. Prijavite se jednom putem «Poveži se putem Remote ID-a»."
   },
   "common": {
     "retry": "Pokušaj ponovno",
@@ -135,5 +239,96 @@
     "language": "Jezik",
     "unreviewed": "neprovjereno",
     "reviewed": "provjereno"
+  },
+  "backup": {
+    "title": "Sigurnosna kopija slika",
+    "foregroundOnly": "samo dok je ovaj prozor otvoren",
+    "explainer": "Odaberite lokalne mape; slike i videozapisi u njima prenose se na {{destination}}. Nema sinkronizacije u pozadini — zatvaranjem prozora prijenos staje i sljedeći put nastavlja gdje je stao.",
+    "pickFolders": "Odaberi mape",
+    "start": "Napravi kopiju {{count}} mapa",
+    "cancel": "Odustani",
+    "counts": "{{uploaded}} od {{total}} · {{skipped}} preskočeno · {{failed}} neuspjelo",
+    "notes": "{{count}} datoteka s napomenom",
+    "phase": {
+      "idle": "Nije pokrenuto",
+      "scanning": "Traženje slika…",
+      "uploading": "Prijenos…",
+      "done": "Gotovo, ništa nije izostavljeno",
+      "cancelled": "Otkazano — već prenesene datoteke ostaju",
+      "failed": "Završeno s greškama"
+    },
+    "outcome": {
+      "skipped-duplicate": "već postoji",
+      "skipped-unsupported": "nije slika",
+      "failed": "neuspjelo"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Uređaj bez naziva",
+    "cpu": "{{model}}, jezgri: {{cores}}",
+    "cpuLoad": "Opterećenje CPU-a",
+    "cpuTemperature": "Temperatura CPU-a",
+    "watt": "{{watt}} W",
+    "memory": "Memorija",
+    "systemDisk": "Slobodno na sistemskom disku",
+    "freeOf": "od {{total}}",
+    "storage": "Pohrana",
+    "usedPercent": "{{percent}} % iskorišteno",
+    "unhealthy": "provjera stanja nije uspjela"
+  },
+  "power": {
+    "title": "Napajanje",
+    "restart": "Ponovno pokreni",
+    "off": "Isključi",
+    "confirmRestart": "Stvarno ponovno pokrenuti {{name}}?",
+    "confirmOff": "Stvarno isključiti {{name}}?",
+    "yes": "Da, učini to",
+    "no": "Odustani",
+    "restarting": "Ponovno pokretanje je zatraženo. Uređaj neko vrijeme neće biti dostupan.",
+    "shuttingDown": "Isključivanje je zatraženo. Uređaj se neće javiti dok se ne uključi.",
+    "noConfirmation": "Nije primljena nikakva potvrda:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "demon radi",
+    "notRunning": "demon ne radi",
+    "daemon": {
+      "system": "sustavska instalacija",
+      "bundled": "isporučeno s ovom aplikacijom",
+      "managed": "vlastita kopija ove aplikacije",
+      "absent": "nije pronađena izvršna datoteka"
+    },
+    "nodeId": "Ovo računalo: {{id}}",
+    "networkId": "ID mreže (16 heksadecimalnih znakova)",
+    "join": "Pridruži se",
+    "leave": "Napusti",
+    "hint": "Javna mreža prima ovo računalo odmah. Privatna ga mora najprije odobriti — koja je od dvije, piše na oznaci pokraj svake mreže.",
+    "hintAccessDenied": "Ova je mreža odbila računalo (ACCESS_DENIED): privatna je i njezin vlasnik mora odobriti ovaj čvor u mrežnom kontroleru.",
+    "provision": "Pripremi postavljanje",
+    "provisioning": "Priprema…",
+    "provisionHint": "Ova aplikacija instalira vlastitu kopiju zerotier-one. Da bi smjela stvoriti mrežni uređaj, nedostaje joj još jedno dopuštenje, koje sami dajete jednom naredbom. Sustavski ZeroTier ostaje netaknut.",
+    "commandHint": "Pokrenite ovo jednom u terminalu, pa se ovdje ponovno povežite:",
+    "copy": "Kopiraj naredbu",
+    "copied": "Kopirano",
+    "recheck": "Poveži se ponovno",
+    "capable": "Dopuštenje je na mjestu. Demon smije stvoriti mrežni uređaj."
+  },
+  "legacy": {
+    "title": "Preuzmi iz starog klijenta",
+    "explainer": "Adrese iz instalacije 0.9 mogu se preuzeti. Lozinke se ne prenose — prijavite se jednom, a stara se konfiguracija nikad ne mijenja.",
+    "summary": "{{connections}} veza, {{jobs}} poslova kopiranja, zadnji host {{host}}",
+    "adopt": "Preuzmi adrese",
+    "result": "{{imported}} preuzeto, {{skipped}} već poznato"
+  },
+  "logs": {
+    "title": "Datoteka zapisa",
+    "open": "Otvori mapu"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Prepoznato, ne upravlja se. Ovaj klijent koristi tunel koji već radi i ne mijenja postavke DNS-a ni ruta.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Koristi",
+    "noPeers": "Nijedno drugo računalo u ovom tailnetu nije na mreži."
   }
 }

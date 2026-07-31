@@ -19,11 +19,17 @@
     "connection": {
       "lan": "本地网络",
       "direct": "直连 IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} 毫秒",
     "capabilities": "检测到的功能",
-    "routes": "{{count}} 条网关路由"
+    "routes": "{{count}} 条网关路由",
+    "remoteIdTitle": "通过远程 ID 连接",
+    "remoteIdHint": "输入设备上显示的远程 ID。连接会自动建立 — 然后照常登录即可。",
+    "remoteIdLabel": "远程 ID（16 个字符）",
+    "remoteIdConnecting": "正在连接…",
+    "connect": "连接"
   },
   "capability": {
     "photoLibrary": "照片搜索与分面",
@@ -47,19 +53,99 @@
     "title": "照片",
     "libraryMissing": "照片搜索需要 Photos 模块",
     "libraryMissingHint": "此设备未注册 Photos 模块，因此语义搜索和分面不可用。浏览和备份仍然可以使用。",
-    "backupForegroundOnly": "备份仅在此窗口打开时运行。"
+    "backupForegroundOnly": "备份仅在此窗口打开时运行。",
+    "video": "视频",
+    "loading": "加载中…",
+    "noneHere": "此文件夹中没有照片或视频。",
+    "noHits": "没有匹配项。",
+    "search": "搜索",
+    "searching": "搜索中…",
+    "searchPlaceholder": "描述图片中应有的内容",
+    "clearSearch": "清除",
+    "searchSummary": "{{ms}} 毫秒内 {{count}} 条结果",
+    "modeLibrary": "图库",
+    "modeFolder": "文件夹",
+    "switchToFolder": "浏览文件夹",
+    "switchToLibrary": "返回图库",
+    "countSummary": "已显示 {{shown}}/{{total}}",
+    "indexed": "已索引 {{processed}}/{{total}}",
+    "pending": "还剩 {{count}} 个",
+    "indexStatus": {
+      "idle": "已完成",
+      "working": "进行中"
+    },
+    "semanticIncomplete": "语义索引已完成 {{percent}} %。在完成之前，文本搜索只能匹配文件名中的完整单词。",
+    "semanticUnavailable": "此设备上无法使用照片搜索",
+    "semanticUnavailableHint": "设备未安装视觉模型，因此搜索会什么也不返回，而不是「没有匹配项」。浏览和备份不受影响。",
+    "semanticState": "设备状态：{{state}} · 缺少：{{missing}}"
   },
   "files": {
     "title": "文件",
     "search": "搜索",
     "starred": "收藏",
-    "storage": "存储"
+    "storage": "存储",
+    "up": "上一级",
+    "select": "选择 {{name}}",
+    "media": "媒体",
+    "loading": "加载中…",
+    "loadingVolumes": "正在向设备查询卷…",
+    "noVolumes": "设备没有报告任何卷，因此没有可浏览的内容。",
+    "emptyFolder": "此文件夹为空。",
+    "searching": "搜索中…",
+    "searchPlaceholder": "在此文件夹及其下搜索文件名",
+    "clearSearch": "清除",
+    "searchSummary": "查看 {{scanned}} 个条目后得到 {{hits}} 条结果。此搜索在客户端运行 — ZimaOS 1.7 没有服务器端文件搜索。",
+    "searchTruncated": "已在搜索上限处提前停止，下面可能还有更多匹配项。",
+    "noHits": "没有匹配的文件名。",
+    "newFolder": "新建文件夹",
+    "newFolderPrompt": "新文件夹的名称",
+    "upload": "上传",
+    "download": "下载",
+    "copy": "复制",
+    "move": "移动",
+    "pasteCopy": "在此粘贴 {{count}} 项",
+    "pasteMove": "将 {{count}} 项移到此处",
+    "toTrash": "移到回收站",
+    "refresh": "刷新",
+    "showTrash": "显示回收站",
+    "hideTrash": "隐藏回收站",
+    "trash": "回收站",
+    "trashEmpty": "回收站是空的。",
+    "trashCount": "回收站中有 {{count}} 个条目",
+    "restore": "还原 {{count}} 项",
+    "deletedAt": "删除于 {{when}}",
+    "tasks": "正在进行的操作",
+    "tasksHint": "复制和移动在设备上运行，因此即使此窗口正忙也会继续。",
+    "countSummary": "已显示 {{shown}}/{{total}} 个条目",
+    "sortedBy": "按{{field}}排序",
+    "changeSort": "更改",
+    "ascending": "升序",
+    "descending": "降序",
+    "sort": {
+      "name": "名称",
+      "size": "大小",
+      "modified": "日期"
+    }
   },
   "apps": {
     "title": "应用",
     "running": "运行中",
     "stopped": "已停止",
-    "cachedAt": "截至 {{time}}"
+    "cachedAt": "截至 {{time}}",
+    "loading": "加载中…",
+    "none": "此设备上未安装任何应用。",
+    "cached": "已保存的列表",
+    "retry": "重试",
+    "port": "端口 {{port}}",
+    "status": {
+      "running": "运行中",
+      "stopped": "已停止"
+    },
+    "openHere": "在此打开",
+    "openBrowser": "在浏览器中打开",
+    "noWebUi": "此应用没有发布网页界面。",
+    "start": "启动",
+    "stop": "停止"
   },
   "security": {
     "keyringTitle": "无法安全保存密码",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "此地址上没有 ZimaOS 设备响应。",
     "sessionExpired": "会话已过期——请重新登录。",
     "signInRequired": "请登录。",
-    "strategyUnavailable": "此连接方式在当前版本中尚不可用。"
+    "strategyUnavailable": "此连接方式在当前版本中尚不可用。",
+    "notFound": "设备表示此路径不存在。",
+    "endpointUnknown": "此设备不提供客户端请求的接口。",
+    "invalidRequest": "请求在发送前就被拒绝了 — 这是此客户端的缺陷。",
+    "invalidFolderName": "文件夹名称不能包含斜杠。",
+    "uploadRejected": "设备拒绝了上传。",
+    "uploadNotAFile": "只能上传普通文件。",
+    "downloadRejected": "设备拒绝了下载。",
+    "photosModuleMissing": "此设备没有照片模块，因此搜索和分面不可用。",
+    "appNotFound": "此应用已不在设备的列表中。",
+    "appHasNoWebUi": "此应用没有发布网页界面。",
+    "powerDeviceMismatch": "该界面指向的设备与当前活动设备不同。请重新加载后再试。",
+    "zerotierNoToken": "无法读取本地 ZeroTier 令牌。",
+    "zerotierApi": "本地 ZeroTier 服务返回了错误。",
+    "zerotierMissing": "未找到 zerotier-one — 既没有安装的，也没有随附的。",
+    "zerotierNoStart": "本地 ZeroTier 服务未启动。",
+    "unexpected-status": "设备返回了意外的状态。",
+    "zerotierNoCapability": "本地 ZeroTier 服务无权创建虚拟网络设备。授予该权限的确切命令见下方。",
+    "remoteIdUnknown": "此设备没有保存远程 ID。请先通过「通过远程 ID 连接」登录一次。"
   },
   "common": {
     "retry": "重试",
@@ -135,5 +239,96 @@
     "language": "语言",
     "unreviewed": "未校对",
     "reviewed": "已校对"
+  },
+  "backup": {
+    "title": "照片备份",
+    "foregroundOnly": "仅在此窗口打开时",
+    "explainer": "选择本地文件夹；其中的照片和视频会上传到 {{destination}}。没有后台同步 — 关闭窗口时传输会停止，下次从中断处继续。",
+    "pickFolders": "选择文件夹",
+    "start": "备份 {{count}} 个文件夹",
+    "cancel": "取消",
+    "counts": "{{uploaded}}/{{total}} · 跳过 {{skipped}} · 失败 {{failed}}",
+    "notes": "{{count}} 个文件带有备注",
+    "phase": {
+      "idle": "尚未开始",
+      "scanning": "正在查找照片…",
+      "uploading": "正在上传…",
+      "done": "已完成，没有遗漏",
+      "cancelled": "已取消 — 已上传的文件会保留",
+      "failed": "完成，但有失败"
+    },
+    "outcome": {
+      "skipped-duplicate": "已存在",
+      "skipped-unsupported": "不是图片",
+      "failed": "失败"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "未命名设备",
+    "cpu": "{{model}}，{{cores}} 核",
+    "cpuLoad": "CPU 负载",
+    "cpuTemperature": "CPU 温度",
+    "watt": "{{watt}} W",
+    "memory": "内存",
+    "systemDisk": "系统盘可用空间",
+    "freeOf": "/ {{total}}",
+    "storage": "存储",
+    "usedPercent": "已用 {{percent}} %",
+    "unhealthy": "健康检查未通过"
+  },
+  "power": {
+    "title": "电源",
+    "restart": "重启",
+    "off": "关机",
+    "confirmRestart": "确定要重启 {{name}} 吗？",
+    "confirmOff": "确定要关闭 {{name}} 吗？",
+    "yes": "是，执行",
+    "no": "取消",
+    "restarting": "已请求重启。设备会有一段时间无法连接。",
+    "shuttingDown": "已请求关机。设备在重新开机之前不会再响应。",
+    "noConfirmation": "没有收到任何确认："
+  },
+  "zerotier": {
+    "title": "远程 ID（ZeroTier）",
+    "running": "守护进程运行中",
+    "notRunning": "守护进程未运行",
+    "daemon": {
+      "system": "系统安装",
+      "bundled": "随此应用提供",
+      "managed": "此应用自己的副本",
+      "absent": "未找到可执行文件"
+    },
+    "nodeId": "本机：{{id}}",
+    "networkId": "网络 ID（16 位十六进制字符）",
+    "join": "加入",
+    "leave": "离开",
+    "hint": "公开网络会立即接纳本机。私有网络必须先授权 — 具体是哪一种，网络旁的标记会说明。",
+    "hintAccessDenied": "此网络拒绝了本机（ACCESS_DENIED）：它是私有网络，所有者需要在网络控制器中授权此节点。",
+    "provision": "准备安装",
+    "provisioning": "正在准备…",
+    "provisionHint": "此应用会安装自己的 zerotier-one 副本。要让它创建网络设备还差一项权限，由您用一条命令自行授予。系统自带的 ZeroTier 不会被改动。",
+    "commandHint": "在终端中执行一次，然后在此重新连接：",
+    "copy": "复制命令",
+    "copied": "已复制",
+    "recheck": "重新连接",
+    "capable": "权限已就位。守护进程可以创建网络设备。"
+  },
+  "legacy": {
+    "title": "从旧客户端接管",
+    "explainer": "可以接管 0.9 安装中的地址。密码不会带过来 — 您只需登录一次，旧配置永远不会被修改。",
+    "summary": "{{connections}} 个连接，{{jobs}} 个备份任务，最后一个主机 {{host}}",
+    "adopt": "接管地址",
+    "result": "已接管 {{imported}} 个，{{skipped}} 个已知"
+  },
+  "logs": {
+    "title": "日志文件",
+    "open": "打开文件夹"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "仅检测，不进行管理。此客户端使用已在运行的隧道，不会更改任何 DNS 或路由设置。",
+    "tailnet": "Tailnet：{{name}}",
+    "use": "使用",
+    "noPeers": "此 tailnet 中没有其他在线的机器。"
   }
 }

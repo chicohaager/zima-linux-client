@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Lokalnett",
       "direct": "Direkte IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Oppdagede funksjoner",
-    "routes": "{{count}} gateway-ruter"
+    "routes": "{{count}} gateway-ruter",
+    "remoteIdTitle": "Koble til via Remote ID",
+    "remoteIdHint": "Skriv inn Remote ID-en som vises på enheten. Forbindelsen settes opp for deg — deretter logger du inn som vanlig.",
+    "remoteIdLabel": "Remote ID (16 tegn)",
+    "remoteIdConnecting": "Kobler til…",
+    "connect": "Koble til"
   },
   "capability": {
     "photoLibrary": "Bildesøk og fasetter",
@@ -47,19 +53,99 @@
     "title": "Bilder",
     "libraryMissing": "Bildesøk krever Photos-modulen",
     "libraryMissingHint": "Denne enheten har ingen registrert Photos-modul, så semantisk søk og fasetter er utilgjengelige. Blaing og sikkerhetskopi fungerer likevel.",
-    "backupForegroundOnly": "Sikkerhetskopien kjører bare så lenge dette vinduet er åpent."
+    "backupForegroundOnly": "Sikkerhetskopien kjører bare så lenge dette vinduet er åpent.",
+    "video": "Video",
+    "loading": "Laster…",
+    "noneHere": "Ingen bilder eller videoer i denne mappen.",
+    "noHits": "Ingen treff.",
+    "search": "Søk",
+    "searching": "Søker…",
+    "searchPlaceholder": "Beskriv hva som skal være på bildet",
+    "clearSearch": "Tøm",
+    "searchSummary": "{{count}} treff på {{ms}} ms",
+    "modeLibrary": "Bibliotek",
+    "modeFolder": "Mappe",
+    "switchToFolder": "Bla i en mappe",
+    "switchToLibrary": "Tilbake til biblioteket",
+    "countSummary": "{{shown}} av {{total}} vist",
+    "indexed": "{{processed}} av {{total}} indeksert",
+    "pending": "{{count}} gjenstår",
+    "indexStatus": {
+      "idle": "ferdig",
+      "working": "pågår"
+    },
+    "semanticIncomplete": "Den semantiske indeksen er på {{percent}} %. Til den er ferdig, finner tekstsøket bare hele ord i filnavn.",
+    "semanticUnavailable": "Bildesøk er ikke tilgjengelig på denne enheten",
+    "semanticUnavailableHint": "Enheten har ingen synsmodell installert, så et søk ville ikke gitt noe som helst i stedet for «ingen treff». Bla og sikkerhetskopiering påvirkes ikke.",
+    "semanticState": "Enhetens tilstand: {{state}} · mangler: {{missing}}"
   },
   "files": {
     "title": "Filer",
     "search": "Søk",
     "starred": "Favoritter",
-    "storage": "Lagring"
+    "storage": "Lagring",
+    "up": "Ett nivå opp",
+    "select": "Velg {{name}}",
+    "media": "medier",
+    "loading": "Laster…",
+    "loadingVolumes": "Spør enheten om volumene dens…",
+    "noVolumes": "Enheten meldte ikke et eneste volum, så det er ingenting å bla i.",
+    "emptyFolder": "Denne mappen er tom.",
+    "searching": "Søker…",
+    "searchPlaceholder": "Søk etter filnavn i denne mappen og nedenfor",
+    "clearSearch": "Tøm",
+    "searchSummary": "{{hits}} treff etter å ha gått gjennom {{scanned}} oppføringer. Dette søket kjører i klienten — ZimaOS 1.7 har ikke filsøk på serveren.",
+    "searchTruncated": "Stoppet tidlig ved søkegrensen, så det kan være flere treff lenger ned.",
+    "noHits": "Ingen filnavn passet.",
+    "newFolder": "Ny mappe",
+    "newFolderPrompt": "Navn på den nye mappen",
+    "upload": "Last opp",
+    "download": "Last ned",
+    "copy": "Kopier",
+    "move": "Flytt",
+    "pasteCopy": "Lim inn {{count}} kopi her",
+    "pasteMove": "Flytt {{count}} hit",
+    "toTrash": "Flytt til papirkurven",
+    "refresh": "Oppdater",
+    "showTrash": "Vis papirkurven",
+    "hideTrash": "Skjul papirkurven",
+    "trash": "Papirkurv",
+    "trashEmpty": "Papirkurven er tom.",
+    "trashCount": "{{count}} oppføring(er) i papirkurven",
+    "restore": "Gjenopprett {{count}}",
+    "deletedAt": "slettet {{when}}",
+    "tasks": "Pågående operasjoner",
+    "tasksHint": "Kopiering og flytting kjører på enheten, så de fortsetter også når dette vinduet er opptatt.",
+    "countSummary": "{{shown}} av {{total}} oppføringer vist",
+    "sortedBy": "sortert etter {{field}}",
+    "changeSort": "endre",
+    "ascending": "stigende",
+    "descending": "synkende",
+    "sort": {
+      "name": "navn",
+      "size": "størrelse",
+      "modified": "dato"
+    }
   },
   "apps": {
     "title": "Apper",
     "running": "Kjører",
     "stopped": "Stoppet",
-    "cachedAt": "Status: {{time}}"
+    "cachedAt": "Status: {{time}}",
+    "loading": "Laster…",
+    "none": "Ingen apper er installert på denne enheten.",
+    "cached": "Lagret liste",
+    "retry": "Prøv igjen",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "kjører",
+      "stopped": "stoppet"
+    },
+    "openHere": "Åpne her",
+    "openBrowser": "Åpne i nettleser",
+    "noWebUi": "Denne appen publiserer ikke noe nettgrensesnitt.",
+    "start": "Start",
+    "stop": "Stopp"
   },
   "security": {
     "keyringTitle": "Passord kan ikke lagres sikkert",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Ingen ZimaOS-enhet svarte på denne adressen.",
     "sessionExpired": "Økten er utløpt — logg inn igjen.",
     "signInRequired": "Logg inn.",
-    "strategyUnavailable": "Denne tilkoblingsveien er ennå ikke tilgjengelig i denne utgaven."
+    "strategyUnavailable": "Denne tilkoblingsveien er ennå ikke tilgjengelig i denne utgaven.",
+    "notFound": "Enheten sier at denne stien ikke finnes.",
+    "endpointUnknown": "Denne enheten tilbyr ikke grensesnittet klienten ba om.",
+    "invalidRequest": "Forespørselen ble avvist før den ble sendt — det er en feil i denne klienten.",
+    "invalidFolderName": "Et mappenavn kan ikke inneholde skråstrek.",
+    "uploadRejected": "Enheten avviste opplastingen.",
+    "uploadNotAFile": "Bare vanlige filer kan lastes opp.",
+    "downloadRejected": "Enheten avviste nedlastingen.",
+    "photosModuleMissing": "Denne enheten har ingen bildemodul, så søk og fasetter er ikke tilgjengelige.",
+    "appNotFound": "Denne appen står ikke lenger i enhetens liste.",
+    "appHasNoWebUi": "Denne appen publiserer ikke noe nettgrensesnitt.",
+    "powerDeviceMismatch": "Skjermen viser til en annen enhet enn den aktive. Last inn på nytt og prøv igjen.",
+    "zerotierNoToken": "Det lokale ZeroTier-tokenet kunne ikke leses.",
+    "zerotierApi": "Den lokale ZeroTier-tjenesten svarte med en feil.",
+    "zerotierMissing": "Fant ingen zerotier-one — verken installert eller levert med.",
+    "zerotierNoStart": "Den lokale ZeroTier-tjenesten startet ikke.",
+    "unexpected-status": "Enheten svarte med en uventet status.",
+    "zerotierNoCapability": "Den lokale ZeroTier-tjenesten får ikke opprette en virtuell nettverksenhet. Den nøyaktige kommandoen for å gi den lov står nedenfor.",
+    "remoteIdUnknown": "Ingen Remote ID er lagret for denne enheten. Logg inn én gang via «Koble til via Remote ID»."
   },
   "common": {
     "retry": "Prøv igjen",
@@ -135,5 +239,96 @@
     "language": "Språk",
     "unreviewed": "ikke gjennomgått",
     "reviewed": "gjennomgått"
+  },
+  "backup": {
+    "title": "Bildesikkerhetskopi",
+    "foregroundOnly": "bare mens dette vinduet er åpent",
+    "explainer": "Velg lokale mapper; bilder og videoer i dem lastes opp til {{destination}}. Det finnes ingen synkronisering i bakgrunnen — når vinduet lukkes, stopper overføringen og fortsetter neste gang der den slapp.",
+    "pickFolders": "Velg mapper",
+    "start": "Sikkerhetskopier {{count}} mappe(r)",
+    "cancel": "Avbryt",
+    "counts": "{{uploaded}} av {{total}} · {{skipped}} hoppet over · {{failed}} mislyktes",
+    "notes": "{{count}} fil(er) med en merknad",
+    "phase": {
+      "idle": "Ikke startet",
+      "scanning": "Leter etter bilder…",
+      "uploading": "Laster opp…",
+      "done": "Ferdig, ingenting ble utelatt",
+      "cancelled": "Avbrutt — allerede opplastede filer blir liggende",
+      "failed": "Ferdig med feil"
+    },
+    "outcome": {
+      "skipped-duplicate": "finnes allerede",
+      "skipped-unsupported": "ikke et bilde",
+      "failed": "mislyktes"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Enhet uten navn",
+    "cpu": "{{model}}, {{cores}} kjerner",
+    "cpuLoad": "CPU-last",
+    "cpuTemperature": "CPU-temperatur",
+    "watt": "{{watt}} W",
+    "memory": "Minne",
+    "systemDisk": "Ledig systemdisk",
+    "freeOf": "av {{total}}",
+    "storage": "Lagring",
+    "usedPercent": "{{percent}} % brukt",
+    "unhealthy": "helsesjekken mislyktes"
+  },
+  "power": {
+    "title": "Strøm",
+    "restart": "Start på nytt",
+    "off": "Slå av",
+    "confirmRestart": "Vil du virkelig starte {{name}} på nytt?",
+    "confirmOff": "Vil du virkelig slå av {{name}}?",
+    "yes": "Ja, gjør det",
+    "no": "Avbryt",
+    "restarting": "Omstarten er bedt om. Enheten er utilgjengelig en stund.",
+    "shuttingDown": "Avslåingen er bedt om. Enheten svarer ikke igjen før den slås på.",
+    "noConfirmation": "Ingen bekreftelse kom:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "nissen kjører",
+    "notRunning": "nissen kjører ikke",
+    "daemon": {
+      "system": "systeminstallasjon",
+      "bundled": "levert med denne appen",
+      "managed": "appens egen kopi",
+      "absent": "fant ingen binærfil"
+    },
+    "nodeId": "Denne maskinen: {{id}}",
+    "networkId": "Nettverks-ID (16 hex-tegn)",
+    "join": "Bli med",
+    "leave": "Forlat",
+    "hint": "Et offentlig nettverk slipper denne maskinen inn med en gang. Et privat må godkjenne den først — hvilket av de to det er, står som merke ved siden av hvert nettverk.",
+    "hintAccessDenied": "Dette nettverket avviste maskinen (ACCESS_DENIED): det er privat, og eieren må godkjenne denne noden i nettverkskontrolleren.",
+    "provision": "Forbered oppsett",
+    "provisioning": "Forbereder…",
+    "provisionHint": "Denne appen installerer sin egen kopi av zerotier-one. For å få lage en nettverksenhet mangler den fortsatt én tillatelse, som du selv gir med én enkelt kommando. Systemets eget ZeroTier røres ikke.",
+    "commandHint": "Kjør dette én gang i en terminal, og koble så til igjen her:",
+    "copy": "Kopier kommandoen",
+    "copied": "Kopiert",
+    "recheck": "Koble til igjen",
+    "capable": "Tillatelsen er på plass. Nissen kan lage en nettverksenhet."
+  },
+  "legacy": {
+    "title": "Overta fra den gamle klienten",
+    "explainer": "Adresser fra en 0.9-installasjon kan overtas. Passord følger ikke med — du logger inn én gang, og det gamle oppsettet endres aldri.",
+    "summary": "{{connections}} forbindelse(r), {{jobs}} sikkerhetskopijobb(er), siste vert {{host}}",
+    "adopt": "Overta adresser",
+    "result": "{{imported}} overtatt, {{skipped}} allerede kjent"
+  },
+  "logs": {
+    "title": "Loggfil",
+    "open": "Åpne mappen"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Oppdaget, ikke administrert. Denne klienten bruker en tunnel som allerede kjører, og endrer ingen DNS- eller ruteinnstillinger.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Bruk",
+    "noPeers": "Ingen annen maskin på dette tailnetet er tilkoblet."
   }
 }

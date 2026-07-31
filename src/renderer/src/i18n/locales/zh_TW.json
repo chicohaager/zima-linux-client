@@ -19,11 +19,17 @@
     "connection": {
       "lan": "本機網路",
       "direct": "直接 IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} 毫秒",
     "capabilities": "偵測到的功能",
-    "routes": "{{count}} 條閘道路由"
+    "routes": "{{count}} 條閘道路由",
+    "remoteIdTitle": "透過遠端 ID 連線",
+    "remoteIdHint": "輸入裝置上顯示的遠端 ID。連線會自動建立 — 接著照常登入即可。",
+    "remoteIdLabel": "遠端 ID（16 個字元）",
+    "remoteIdConnecting": "連線中…",
+    "connect": "連線"
   },
   "capability": {
     "photoLibrary": "照片搜尋與分面",
@@ -47,19 +53,99 @@
     "title": "照片",
     "libraryMissing": "照片搜尋需要 Photos 模組",
     "libraryMissingHint": "此裝置未註冊 Photos 模組，因此語意搜尋與分面無法使用。瀏覽與備份仍然可用。",
-    "backupForegroundOnly": "備份僅在此視窗開啟時執行。"
+    "backupForegroundOnly": "備份僅在此視窗開啟時執行。",
+    "video": "影片",
+    "loading": "載入中…",
+    "noneHere": "此資料夾中沒有相片或影片。",
+    "noHits": "沒有符合項目。",
+    "search": "搜尋",
+    "searching": "搜尋中…",
+    "searchPlaceholder": "描述圖片中應有的內容",
+    "clearSearch": "清除",
+    "searchSummary": "{{ms}} 毫秒內 {{count}} 筆結果",
+    "modeLibrary": "圖庫",
+    "modeFolder": "資料夾",
+    "switchToFolder": "瀏覽資料夾",
+    "switchToLibrary": "回到圖庫",
+    "countSummary": "已顯示 {{shown}}/{{total}}",
+    "indexed": "已索引 {{processed}}/{{total}}",
+    "pending": "還剩 {{count}} 個",
+    "indexStatus": {
+      "idle": "已完成",
+      "working": "進行中"
+    },
+    "semanticIncomplete": "語意索引已完成 {{percent}} %。在完成之前，文字搜尋只能比對檔名中的完整單字。",
+    "semanticUnavailable": "此裝置上無法使用相片搜尋",
+    "semanticUnavailableHint": "裝置未安裝視覺模型，因此搜尋會什麼都不回傳，而不是「沒有符合項目」。瀏覽與備份不受影響。",
+    "semanticState": "裝置狀態：{{state}} · 缺少：{{missing}}"
   },
   "files": {
     "title": "檔案",
     "search": "搜尋",
     "starred": "收藏",
-    "storage": "儲存空間"
+    "storage": "儲存空間",
+    "up": "上一層",
+    "select": "選取 {{name}}",
+    "media": "媒體",
+    "loading": "載入中…",
+    "loadingVolumes": "正在向裝置查詢磁碟區…",
+    "noVolumes": "裝置未回報任何磁碟區，因此沒有可瀏覽的內容。",
+    "emptyFolder": "此資料夾是空的。",
+    "searching": "搜尋中…",
+    "searchPlaceholder": "在此資料夾及其下搜尋檔名",
+    "clearSearch": "清除",
+    "searchSummary": "檢視 {{scanned}} 個項目後得到 {{hits}} 筆結果。此搜尋在用戶端執行 — ZimaOS 1.7 沒有伺服器端檔案搜尋。",
+    "searchTruncated": "已在搜尋上限處提前停止，下面可能還有更多符合項目。",
+    "noHits": "沒有符合的檔名。",
+    "newFolder": "新增資料夾",
+    "newFolderPrompt": "新資料夾的名稱",
+    "upload": "上傳",
+    "download": "下載",
+    "copy": "複製",
+    "move": "移動",
+    "pasteCopy": "在此貼上 {{count}} 項",
+    "pasteMove": "將 {{count}} 項移到此處",
+    "toTrash": "移到回收筒",
+    "refresh": "重新整理",
+    "showTrash": "顯示回收筒",
+    "hideTrash": "隱藏回收筒",
+    "trash": "回收筒",
+    "trashEmpty": "回收筒是空的。",
+    "trashCount": "回收筒中有 {{count}} 個項目",
+    "restore": "還原 {{count}} 項",
+    "deletedAt": "刪除於 {{when}}",
+    "tasks": "進行中的作業",
+    "tasksHint": "複製與移動在裝置上執行，因此即使此視窗忙碌也會繼續。",
+    "countSummary": "已顯示 {{shown}}/{{total}} 個項目",
+    "sortedBy": "依{{field}}排序",
+    "changeSort": "變更",
+    "ascending": "遞增",
+    "descending": "遞減",
+    "sort": {
+      "name": "名稱",
+      "size": "大小",
+      "modified": "日期"
+    }
   },
   "apps": {
     "title": "應用程式",
     "running": "執行中",
     "stopped": "已停止",
-    "cachedAt": "截至 {{time}}"
+    "cachedAt": "截至 {{time}}",
+    "loading": "載入中…",
+    "none": "此裝置上未安裝任何應用程式。",
+    "cached": "已儲存的清單",
+    "retry": "重試",
+    "port": "連接埠 {{port}}",
+    "status": {
+      "running": "執行中",
+      "stopped": "已停止"
+    },
+    "openHere": "在此開啟",
+    "openBrowser": "在瀏覽器中開啟",
+    "noWebUi": "此應用程式沒有發布網頁介面。",
+    "start": "啟動",
+    "stop": "停止"
   },
   "security": {
     "keyringTitle": "無法安全儲存密碼",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "此位址上沒有 ZimaOS 裝置回應。",
     "sessionExpired": "工作階段已過期——請重新登入。",
     "signInRequired": "請登入。",
-    "strategyUnavailable": "此連線方式在目前版本中尚未提供。"
+    "strategyUnavailable": "此連線方式在目前版本中尚未提供。",
+    "notFound": "裝置表示此路徑不存在。",
+    "endpointUnknown": "此裝置未提供用戶端所要求的介面。",
+    "invalidRequest": "要求在送出前就被拒絕了 — 這是此用戶端的缺陷。",
+    "invalidFolderName": "資料夾名稱不能包含斜線。",
+    "uploadRejected": "裝置拒絕了上傳。",
+    "uploadNotAFile": "只能上傳一般檔案。",
+    "downloadRejected": "裝置拒絕了下載。",
+    "photosModuleMissing": "此裝置沒有相片模組，因此搜尋與面向篩選無法使用。",
+    "appNotFound": "此應用程式已不在裝置的清單中。",
+    "appHasNoWebUi": "此應用程式沒有發布網頁介面。",
+    "powerDeviceMismatch": "此畫面指向的裝置與目前使用中的不同。請重新載入後再試。",
+    "zerotierNoToken": "無法讀取本機 ZeroTier 權杖。",
+    "zerotierApi": "本機 ZeroTier 服務回傳了錯誤。",
+    "zerotierMissing": "找不到 zerotier-one — 既沒有安裝的，也沒有隨附的。",
+    "zerotierNoStart": "本機 ZeroTier 服務未啟動。",
+    "unexpected-status": "裝置回傳了非預期的狀態。",
+    "zerotierNoCapability": "本機 ZeroTier 服務無權建立虛擬網路裝置。授予該權限的確切指令列於下方。",
+    "remoteIdUnknown": "此裝置沒有儲存遠端 ID。請先透過「透過遠端 ID 連線」登入一次。"
   },
   "common": {
     "retry": "重試",
@@ -135,5 +239,96 @@
     "language": "語言",
     "unreviewed": "未校閱",
     "reviewed": "已校閱"
+  },
+  "backup": {
+    "title": "相片備份",
+    "foregroundOnly": "僅在此視窗開啟時",
+    "explainer": "選擇本機資料夾；其中的相片和影片會上傳到 {{destination}}。沒有背景同步 — 關閉視窗時傳輸會停止，下次從中斷處繼續。",
+    "pickFolders": "選擇資料夾",
+    "start": "備份 {{count}} 個資料夾",
+    "cancel": "取消",
+    "counts": "{{uploaded}}/{{total}} · 略過 {{skipped}} · 失敗 {{failed}}",
+    "notes": "{{count}} 個檔案有備註",
+    "phase": {
+      "idle": "尚未開始",
+      "scanning": "正在尋找相片…",
+      "uploading": "上傳中…",
+      "done": "已完成，沒有遺漏",
+      "cancelled": "已取消 — 已上傳的檔案會保留",
+      "failed": "完成，但有失敗"
+    },
+    "outcome": {
+      "skipped-duplicate": "已存在",
+      "skipped-unsupported": "不是圖片",
+      "failed": "失敗"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "未命名裝置",
+    "cpu": "{{model}}，{{cores}} 核心",
+    "cpuLoad": "CPU 負載",
+    "cpuTemperature": "CPU 溫度",
+    "watt": "{{watt}} W",
+    "memory": "記憶體",
+    "systemDisk": "系統磁碟可用空間",
+    "freeOf": "/ {{total}}",
+    "storage": "儲存空間",
+    "usedPercent": "已用 {{percent}} %",
+    "unhealthy": "健康檢查未通過"
+  },
+  "power": {
+    "title": "電源",
+    "restart": "重新啟動",
+    "off": "關機",
+    "confirmRestart": "確定要重新啟動 {{name}} 嗎？",
+    "confirmOff": "確定要關閉 {{name}} 嗎？",
+    "yes": "是，執行",
+    "no": "取消",
+    "restarting": "已要求重新啟動。裝置有一段時間無法連線。",
+    "shuttingDown": "已要求關機。裝置在重新開機之前不會再回應。",
+    "noConfirmation": "沒有收到任何確認："
+  },
+  "zerotier": {
+    "title": "遠端 ID（ZeroTier）",
+    "running": "常駐程式執行中",
+    "notRunning": "常駐程式未執行",
+    "daemon": {
+      "system": "系統安裝",
+      "bundled": "隨此應用程式提供",
+      "managed": "此應用程式自己的副本",
+      "absent": "找不到可執行檔"
+    },
+    "nodeId": "本機：{{id}}",
+    "networkId": "網路 ID（16 位十六進位字元）",
+    "join": "加入",
+    "leave": "離開",
+    "hint": "公開網路會立即接納本機。私人網路必須先授權 — 是哪一種，網路旁的標記會說明。",
+    "hintAccessDenied": "此網路拒絕了本機（ACCESS_DENIED）：它是私人網路，擁有者必須在網路控制器中授權此節點。",
+    "provision": "準備安裝",
+    "provisioning": "準備中…",
+    "provisionHint": "此應用程式會安裝自己的 zerotier-one 副本。要讓它建立網路裝置還差一項權限，由您以一道指令自行授予。系統本身的 ZeroTier 不會被更動。",
+    "commandHint": "在終端機中執行一次，然後在此重新連線：",
+    "copy": "複製指令",
+    "copied": "已複製",
+    "recheck": "重新連線",
+    "capable": "權限已就緒。常駐程式可以建立網路裝置。"
+  },
+  "legacy": {
+    "title": "從舊用戶端接手",
+    "explainer": "可以接手 0.9 安裝中的位址。密碼不會帶過來 — 您只需登入一次，舊設定永遠不會被修改。",
+    "summary": "{{connections}} 個連線，{{jobs}} 個備份工作，最後一個主機 {{host}}",
+    "adopt": "接手位址",
+    "result": "已接手 {{imported}} 個，{{skipped}} 個已知"
+  },
+  "logs": {
+    "title": "記錄檔",
+    "open": "開啟資料夾"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "僅偵測，不進行管理。此用戶端使用已在執行的通道，不會變更任何 DNS 或路由設定。",
+    "tailnet": "Tailnet：{{name}}",
+    "use": "使用",
+    "noPeers": "此 tailnet 中沒有其他上線的機器。"
   }
 }

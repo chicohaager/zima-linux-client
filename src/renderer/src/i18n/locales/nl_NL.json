@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Lokaal netwerk",
       "direct": "Direct IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Gevonden functies",
-    "routes": "{{count}} gateway-routes"
+    "routes": "{{count}} gateway-routes",
+    "remoteIdTitle": "Verbinden via Remote ID",
+    "remoteIdHint": "Voer de Remote ID in die op het apparaat staat. De verbinding wordt voor je opgezet — daarna meld je je gewoon aan.",
+    "remoteIdLabel": "Remote ID (16 tekens)",
+    "remoteIdConnecting": "Verbinden…",
+    "connect": "Verbinden"
   },
   "capability": {
     "photoLibrary": "Fotozoeken en facetten",
@@ -47,19 +53,99 @@
     "title": "Foto’s",
     "libraryMissing": "Fotozoeken heeft de Photos-module nodig",
     "libraryMissingHint": "Op dit apparaat is geen Photos-module geregistreerd, dus semantisch zoeken en facetten zijn niet beschikbaar. Doorbladeren en back-up werken wel.",
-    "backupForegroundOnly": "De back-up loopt alleen zolang dit venster open staat."
+    "backupForegroundOnly": "De back-up loopt alleen zolang dit venster open staat.",
+    "video": "Video",
+    "loading": "Laden…",
+    "noneHere": "Geen foto's of video's in deze map.",
+    "noHits": "Niets gevonden.",
+    "search": "Zoeken",
+    "searching": "Bezig met zoeken…",
+    "searchPlaceholder": "Beschrijf wat er op de foto moet staan",
+    "clearSearch": "Wissen",
+    "searchSummary": "{{count}} treffer(s) in {{ms}} ms",
+    "modeLibrary": "Bibliotheek",
+    "modeFolder": "Map",
+    "switchToFolder": "Een map doorbladeren",
+    "switchToLibrary": "Terug naar de bibliotheek",
+    "countSummary": "{{shown}} van {{total}} getoond",
+    "indexed": "{{processed}} van {{total}} geïndexeerd",
+    "pending": "nog {{count}} te gaan",
+    "indexStatus": {
+      "idle": "klaar",
+      "working": "bezig"
+    },
+    "semanticIncomplete": "De semantische index staat op {{percent}} %. Tot hij klaar is, vindt het zoeken alleen hele woorden in bestandsnamen.",
+    "semanticUnavailable": "Fotozoeken is niet beschikbaar op dit apparaat",
+    "semanticUnavailableHint": "Op het apparaat is geen beeldmodel geïnstalleerd; een zoekopdracht zou daarom helemaal niets opleveren in plaats van geen treffers. Bladeren en back-up werken gewoon.",
+    "semanticState": "Apparaatstatus: {{state}} · ontbreekt: {{missing}}"
   },
   "files": {
     "title": "Bestanden",
     "search": "Zoeken",
     "starred": "Favorieten",
-    "storage": "Opslag"
+    "storage": "Opslag",
+    "up": "Eén niveau omhoog",
+    "select": "{{name}} selecteren",
+    "media": "media",
+    "loading": "Laden…",
+    "loadingVolumes": "Het apparaat wordt naar zijn volumes gevraagd…",
+    "noVolumes": "Het apparaat heeft geen enkel volume gemeld, dus valt er niets te doorbladeren.",
+    "emptyFolder": "Deze map is leeg.",
+    "searching": "Bezig met zoeken…",
+    "searchPlaceholder": "Zoek bestandsnamen in deze map en daaronder",
+    "clearSearch": "Wissen",
+    "searchSummary": "{{hits}} treffer(s) na {{scanned}} bekeken items. Deze zoekopdracht draait in de client — ZimaOS 1.7 heeft geen bestandszoekfunctie op de server.",
+    "searchTruncated": "Vroegtijdig gestopt bij de zoeklimiet; verderop kunnen dus meer treffers staan.",
+    "noHits": "Geen bestandsnaam kwam overeen.",
+    "newFolder": "Nieuwe map",
+    "newFolderPrompt": "Naam van de nieuwe map",
+    "upload": "Uploaden",
+    "download": "Downloaden",
+    "copy": "Kopiëren",
+    "move": "Verplaatsen",
+    "pasteCopy": "{{count}} kopie hier plakken",
+    "pasteMove": "{{count}} hierheen verplaatsen",
+    "toTrash": "Naar prullenbak",
+    "refresh": "Vernieuwen",
+    "showTrash": "Prullenbak tonen",
+    "hideTrash": "Prullenbak verbergen",
+    "trash": "Prullenbak",
+    "trashEmpty": "De prullenbak is leeg.",
+    "trashCount": "{{count}} item(s) in de prullenbak",
+    "restore": "{{count}} terugzetten",
+    "deletedAt": "verwijderd {{when}}",
+    "tasks": "Lopende bewerkingen",
+    "tasksHint": "Kopiëren en verplaatsen gebeuren op het apparaat en gaan dus door, ook als dit venster bezig is.",
+    "countSummary": "{{shown}} van {{total}} items getoond",
+    "sortedBy": "gesorteerd op {{field}}",
+    "changeSort": "wijzigen",
+    "ascending": "oplopend",
+    "descending": "aflopend",
+    "sort": {
+      "name": "naam",
+      "size": "grootte",
+      "modified": "datum"
+    }
   },
   "apps": {
     "title": "Apps",
     "running": "Actief",
     "stopped": "Gestopt",
-    "cachedAt": "Stand: {{time}}"
+    "cachedAt": "Stand: {{time}}",
+    "loading": "Laden…",
+    "none": "Op dit apparaat zijn geen apps geïnstalleerd.",
+    "cached": "Opgeslagen lijst",
+    "retry": "Opnieuw proberen",
+    "port": "Poort {{port}}",
+    "status": {
+      "running": "actief",
+      "stopped": "gestopt"
+    },
+    "openHere": "Hier openen",
+    "openBrowser": "In browser openen",
+    "noWebUi": "Deze app publiceert geen webinterface.",
+    "start": "Starten",
+    "stop": "Stoppen"
   },
   "security": {
     "keyringTitle": "Wachtwoorden kunnen niet veilig worden opgeslagen",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Op dit adres heeft geen ZimaOS-apparaat geantwoord.",
     "sessionExpired": "De sessie is verlopen — meld je opnieuw aan.",
     "signInRequired": "Meld je aan.",
-    "strategyUnavailable": "Deze verbindingsroute is in deze versie nog niet beschikbaar."
+    "strategyUnavailable": "Deze verbindingsroute is in deze versie nog niet beschikbaar.",
+    "notFound": "Het apparaat zegt dat dit pad niet bestaat.",
+    "endpointUnknown": "Dit apparaat biedt de interface niet aan waar de client om vroeg.",
+    "invalidRequest": "De aanvraag is afgewezen voordat hij verstuurd werd — dat is een fout in deze client.",
+    "invalidFolderName": "Een mapnaam mag geen schuine streep bevatten.",
+    "uploadRejected": "Het apparaat heeft de upload geweigerd.",
+    "uploadNotAFile": "Alleen gewone bestanden kunnen worden geüpload.",
+    "downloadRejected": "Het apparaat heeft de download geweigerd.",
+    "photosModuleMissing": "Dit apparaat heeft geen fotomodule; zoeken en facetten zijn daarom niet beschikbaar.",
+    "appNotFound": "Deze app staat niet meer in de lijst van het apparaat.",
+    "appHasNoWebUi": "Deze app publiceert geen webinterface.",
+    "powerDeviceMismatch": "Het scherm verwijst naar een ander apparaat dan het actieve. Herlaad en probeer opnieuw.",
+    "zerotierNoToken": "Het lokale ZeroTier-token kon niet worden gelezen.",
+    "zerotierApi": "De lokale ZeroTier-dienst antwoordde met een fout.",
+    "zerotierMissing": "Er is geen zerotier-one gevonden — niet geïnstalleerd en niet meegeleverd.",
+    "zerotierNoStart": "De lokale ZeroTier-dienst is niet gestart.",
+    "unexpected-status": "Het apparaat antwoordde met een onverwachte status.",
+    "zerotierNoCapability": "De lokale ZeroTier-dienst mag geen virtueel netwerkapparaat aanmaken. Het precieze commando om dat toe te staan staat hieronder.",
+    "remoteIdUnknown": "Voor dit apparaat is geen Remote ID opgeslagen. Meld je één keer aan via \"Verbinden via Remote ID\"."
   },
   "common": {
     "retry": "Opnieuw",
@@ -135,5 +239,96 @@
     "language": "Taal",
     "unreviewed": "niet nagekeken",
     "reviewed": "nagekeken"
+  },
+  "backup": {
+    "title": "Foto-back-up",
+    "foregroundOnly": "alleen zolang dit venster open is",
+    "explainer": "Kies lokale mappen; foto's en video's daarin worden geüpload naar {{destination}}. Er is geen synchronisatie op de achtergrond — bij het sluiten van het venster stopt de overdracht en gaat de volgende keer verder waar hij was.",
+    "pickFolders": "Mappen kiezen",
+    "start": "{{count}} map(pen) back-uppen",
+    "cancel": "Annuleren",
+    "counts": "{{uploaded}} van {{total}} · {{skipped}} overgeslagen · {{failed}} mislukt",
+    "notes": "{{count}} bestand(en) met een opmerking",
+    "phase": {
+      "idle": "Niet gestart",
+      "scanning": "Zoeken naar foto's…",
+      "uploading": "Uploaden…",
+      "done": "Klaar, niets overgeslagen",
+      "cancelled": "Geannuleerd — al geüploade bestanden blijven staan",
+      "failed": "Klaar, met fouten"
+    },
+    "outcome": {
+      "skipped-duplicate": "al aanwezig",
+      "skipped-unsupported": "geen afbeelding",
+      "failed": "mislukt"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Naamloos apparaat",
+    "cpu": "{{model}}, {{cores}} kernen",
+    "cpuLoad": "CPU-belasting",
+    "cpuTemperature": "CPU-temperatuur",
+    "watt": "{{watt}} W",
+    "memory": "Geheugen",
+    "systemDisk": "Systeemschijf vrij",
+    "freeOf": "van {{total}}",
+    "storage": "Opslag",
+    "usedPercent": "{{percent}} % gebruikt",
+    "unhealthy": "gezondheidscontrole mislukt"
+  },
+  "power": {
+    "title": "Voeding",
+    "restart": "Opnieuw starten",
+    "off": "Uitschakelen",
+    "confirmRestart": "{{name}} echt opnieuw starten?",
+    "confirmOff": "{{name}} echt uitschakelen?",
+    "yes": "Ja, doen",
+    "no": "Annuleren",
+    "restarting": "De herstart is aangevraagd. Het apparaat is een tijdje niet bereikbaar.",
+    "shuttingDown": "Het uitschakelen is aangevraagd. Het apparaat antwoordt pas weer als het wordt ingeschakeld.",
+    "noConfirmation": "Er kwam geen bevestiging:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "daemon actief",
+    "notRunning": "daemon niet actief",
+    "daemon": {
+      "system": "systeeminstallatie",
+      "bundled": "meegeleverd met deze app",
+      "managed": "eigen kopie van deze app",
+      "absent": "geen binary gevonden"
+    },
+    "nodeId": "Deze machine: {{id}}",
+    "networkId": "Netwerk-ID (16 hextekens)",
+    "join": "Deelnemen",
+    "leave": "Verlaten",
+    "hint": "Een openbaar netwerk laat deze machine meteen toe. Een privénetwerk moet haar eerst goedkeuren — welk van beide het is, staat als label naast het netwerk.",
+    "hintAccessDenied": "Dit netwerk heeft de machine geweigerd (ACCESS_DENIED): het is privé, en de eigenaar moet deze node in de netwerkcontroller goedkeuren.",
+    "provision": "Installatie voorbereiden",
+    "provisioning": "Voorbereiden…",
+    "provisionHint": "Deze app installeert een eigen kopie van zerotier-one. Om een netwerkapparaat te mogen aanmaken heeft die nog één machtiging nodig, die je zelf met één commando geeft. De ZeroTier van het systeem blijft ongemoeid.",
+    "commandHint": "Voer dit één keer uit in een terminal en verbind hier opnieuw:",
+    "copy": "Commando kopiëren",
+    "copied": "Gekopieerd",
+    "recheck": "Opnieuw verbinden",
+    "capable": "De machtiging is aanwezig. De daemon mag een netwerkapparaat aanmaken."
+  },
+  "legacy": {
+    "title": "Overnemen van de oude client",
+    "explainer": "Adressen uit een 0.9-installatie kunnen worden overgenomen. Wachtwoorden gaan niet mee — je meldt je één keer aan, en de oude configuratie blijft ongewijzigd.",
+    "summary": "{{connections}} verbinding(en), {{jobs}} back-uptaak/-taken, laatste host {{host}}",
+    "adopt": "Adressen overnemen",
+    "result": "{{imported}} overgenomen, {{skipped}} al bekend"
+  },
+  "logs": {
+    "title": "Logbestand",
+    "open": "Map openen"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Herkend, niet beheerd. Deze client gebruikt een tunnel die al draait en wijzigt geen DNS- of route-instellingen.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Gebruiken",
+    "noPeers": "Geen andere machine op dit tailnet is online."
   }
 }

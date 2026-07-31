@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Réseau local",
       "direct": "IP directe",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Fonctions détectées",
-    "routes": "{{count}} routes de passerelle"
+    "routes": "{{count}} routes de passerelle",
+    "remoteIdTitle": "Se connecter par Remote ID",
+    "remoteIdHint": "Saisir la Remote ID affichée sur l’appareil. La connexion est mise en place pour vous — ensuite, connectez-vous comme d’habitude.",
+    "remoteIdLabel": "Remote ID (16 caractères)",
+    "remoteIdConnecting": "Connexion…",
+    "connect": "Se connecter"
   },
   "capability": {
     "photoLibrary": "Recherche de photos et facettes",
@@ -47,19 +53,99 @@
     "title": "Photos",
     "libraryMissing": "La recherche de photos nécessite le module Photos",
     "libraryMissingHint": "Aucun module Photos n’est enregistré sur cet appareil ; la recherche sémantique et les facettes sont donc indisponibles. La navigation et la sauvegarde fonctionnent malgré tout.",
-    "backupForegroundOnly": "La sauvegarde ne fonctionne que si cette fenêtre reste ouverte."
+    "backupForegroundOnly": "La sauvegarde ne fonctionne que si cette fenêtre reste ouverte.",
+    "video": "Vidéo",
+    "loading": "Chargement…",
+    "noneHere": "Aucune photo ni vidéo dans ce dossier.",
+    "noHits": "Aucun résultat.",
+    "search": "Rechercher",
+    "searching": "Recherche…",
+    "searchPlaceholder": "Décrivez ce que doit contenir l’image",
+    "clearSearch": "Effacer",
+    "searchSummary": "{{count}} résultat(s) en {{ms}} ms",
+    "modeLibrary": "Bibliothèque",
+    "modeFolder": "Dossier",
+    "switchToFolder": "Parcourir un dossier",
+    "switchToLibrary": "Retour à la bibliothèque",
+    "countSummary": "{{shown}} sur {{total}} affichés",
+    "indexed": "{{processed}} sur {{total}} indexés",
+    "pending": "{{count}} en attente",
+    "indexStatus": {
+      "idle": "terminé",
+      "working": "en cours"
+    },
+    "semanticIncomplete": "L’index sémantique est à {{percent}} %. Tant qu’il n’est pas terminé, la recherche textuelle ne trouve que des mots entiers dans les noms de fichiers.",
+    "semanticUnavailable": "La recherche de photos n’est pas disponible sur cet appareil",
+    "semanticUnavailableHint": "Aucun modèle de vision n’est installé sur l’appareil ; une recherche ne renverrait donc rien du tout, et non pas « aucun résultat ». La consultation et la sauvegarde ne sont pas concernées.",
+    "semanticState": "État de l’appareil : {{state}} · manquant : {{missing}}"
   },
   "files": {
     "title": "Fichiers",
     "search": "Rechercher",
     "starred": "Favoris",
-    "storage": "Stockage"
+    "storage": "Stockage",
+    "up": "Remonter d’un niveau",
+    "select": "Sélectionner {{name}}",
+    "media": "média",
+    "loading": "Chargement…",
+    "loadingVolumes": "Interrogation de l’appareil sur ses volumes…",
+    "noVolumes": "L’appareil n’a signalé aucun volume ; il n’y a donc rien à parcourir.",
+    "emptyFolder": "Ce dossier est vide.",
+    "searching": "Recherche…",
+    "searchPlaceholder": "Rechercher des noms de fichiers dans ce dossier et en dessous",
+    "clearSearch": "Effacer",
+    "searchSummary": "{{hits}} résultat(s) après examen de {{scanned}} entrées. Cette recherche s’exécute dans le client — ZimaOS 1.7 n’a pas de recherche de fichiers côté serveur.",
+    "searchTruncated": "Arrêt anticipé à la limite de recherche ; d’autres résultats peuvent donc se trouver plus bas.",
+    "noHits": "Aucun nom de fichier ne correspond.",
+    "newFolder": "Nouveau dossier",
+    "newFolderPrompt": "Nom du nouveau dossier",
+    "upload": "Envoyer",
+    "download": "Télécharger",
+    "copy": "Copier",
+    "move": "Déplacer",
+    "pasteCopy": "Coller {{count}} copie ici",
+    "pasteMove": "Déplacer {{count}} ici",
+    "toTrash": "Mettre à la corbeille",
+    "refresh": "Actualiser",
+    "showTrash": "Afficher la corbeille",
+    "hideTrash": "Masquer la corbeille",
+    "trash": "Corbeille",
+    "trashEmpty": "La corbeille est vide.",
+    "trashCount": "{{count}} entrée(s) dans la corbeille",
+    "restore": "Restaurer {{count}}",
+    "deletedAt": "supprimé {{when}}",
+    "tasks": "Opérations en cours",
+    "tasksHint": "La copie et le déplacement s’exécutent sur l’appareil ; ils continuent donc même quand cette fenêtre est occupée.",
+    "countSummary": "{{shown}} entrées sur {{total}} affichées",
+    "sortedBy": "trié par {{field}}",
+    "changeSort": "modifier",
+    "ascending": "croissant",
+    "descending": "décroissant",
+    "sort": {
+      "name": "nom",
+      "size": "taille",
+      "modified": "date"
+    }
   },
   "apps": {
     "title": "Applications",
     "running": "En cours",
     "stopped": "Arrêtée",
-    "cachedAt": "État : {{time}}"
+    "cachedAt": "État : {{time}}",
+    "loading": "Chargement…",
+    "none": "Aucune application n’est installée sur cet appareil.",
+    "cached": "Liste enregistrée",
+    "retry": "Réessayer",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "en marche",
+      "stopped": "arrêtée"
+    },
+    "openHere": "Ouvrir ici",
+    "openBrowser": "Ouvrir dans le navigateur",
+    "noWebUi": "Cette application ne publie aucune interface web.",
+    "start": "Démarrer",
+    "stop": "Arrêter"
   },
   "security": {
     "keyringTitle": "Les mots de passe ne peuvent pas être stockés en sécurité",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Aucun appareil ZimaOS n’a répondu à cette adresse.",
     "sessionExpired": "La session a expiré — veuillez vous reconnecter.",
     "signInRequired": "Veuillez vous connecter.",
-    "strategyUnavailable": "Cette voie de connexion n’est pas encore disponible dans cette version."
+    "strategyUnavailable": "Cette voie de connexion n’est pas encore disponible dans cette version.",
+    "notFound": "L’appareil indique que ce chemin n’existe pas.",
+    "endpointUnknown": "Cet appareil ne propose pas l’interface demandée par le client.",
+    "invalidRequest": "La requête a été rejetée avant d’être envoyée — c’est un défaut de ce client.",
+    "invalidFolderName": "Un nom de dossier ne peut pas contenir de barre oblique.",
+    "uploadRejected": "L’appareil a refusé l’envoi.",
+    "uploadNotAFile": "Seuls des fichiers ordinaires peuvent être envoyés.",
+    "downloadRejected": "L’appareil a refusé le téléchargement.",
+    "photosModuleMissing": "Cet appareil n’a pas de module photos ; la recherche et les facettes sont donc indisponibles.",
+    "appNotFound": "Cette application ne figure plus dans la liste de l’appareil.",
+    "appHasNoWebUi": "Cette application ne publie aucune interface web.",
+    "powerDeviceMismatch": "L’écran se réfère à un autre appareil que celui qui est actif. Rechargez et réessayez.",
+    "zerotierNoToken": "Le jeton ZeroTier local n’a pas pu être lu.",
+    "zerotierApi": "Le service ZeroTier local a répondu par une erreur.",
+    "zerotierMissing": "Aucun zerotier-one trouvé — ni installé, ni fourni.",
+    "zerotierNoStart": "Le service ZeroTier local n’a pas démarré.",
+    "unexpected-status": "L’appareil a répondu avec un statut inattendu.",
+    "zerotierNoCapability": "Le service ZeroTier local n’a pas le droit de créer un périphérique réseau virtuel. La commande exacte pour l’accorder figure ci-dessous.",
+    "remoteIdUnknown": "Aucune Remote ID n’est enregistrée pour cet appareil. Connectez-vous une fois via « Se connecter par Remote ID »."
   },
   "common": {
     "retry": "Réessayer",
@@ -135,5 +239,96 @@
     "language": "Langue",
     "unreviewed": "non relu",
     "reviewed": "relu"
+  },
+  "backup": {
+    "title": "Sauvegarde des photos",
+    "foregroundOnly": "uniquement tant que cette fenêtre est ouverte",
+    "explainer": "Choisissez des dossiers locaux ; les photos et vidéos qu’ils contiennent sont envoyées vers {{destination}}. Il n’y a pas de synchronisation en arrière-plan — le transfert s’arrête à la fermeture de la fenêtre et reprend la fois suivante là où il s’était arrêté.",
+    "pickFolders": "Choisir des dossiers",
+    "start": "Sauvegarder {{count}} dossier(s)",
+    "cancel": "Annuler",
+    "counts": "{{uploaded}} sur {{total}} · {{skipped}} ignorés · {{failed}} en échec",
+    "notes": "{{count}} fichier(s) avec une remarque",
+    "phase": {
+      "idle": "Non démarrée",
+      "scanning": "Recherche des photos…",
+      "uploading": "Envoi…",
+      "done": "Terminée, rien n’a été laissé de côté",
+      "cancelled": "Annulée — les fichiers déjà envoyés restent",
+      "failed": "Terminée avec des échecs"
+    },
+    "outcome": {
+      "skipped-duplicate": "déjà présent",
+      "skipped-unsupported": "pas une image",
+      "failed": "échec"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Appareil sans nom",
+    "cpu": "{{model}}, {{cores}} cœurs",
+    "cpuLoad": "Charge CPU",
+    "cpuTemperature": "Température CPU",
+    "watt": "{{watt}} W",
+    "memory": "Mémoire",
+    "systemDisk": "Disque système libre",
+    "freeOf": "sur {{total}}",
+    "storage": "Stockage",
+    "usedPercent": "{{percent}} % utilisés",
+    "unhealthy": "contrôle de santé échoué"
+  },
+  "power": {
+    "title": "Alimentation",
+    "restart": "Redémarrer",
+    "off": "Éteindre",
+    "confirmRestart": "Vraiment redémarrer {{name}} ?",
+    "confirmOff": "Vraiment éteindre {{name}} ?",
+    "yes": "Oui, faire",
+    "no": "Annuler",
+    "restarting": "Le redémarrage a été demandé. L’appareil sera injoignable pendant un moment.",
+    "shuttingDown": "L’extinction a été demandée. L’appareil ne répondra plus tant qu’il n’est pas rallumé.",
+    "noConfirmation": "Aucune confirmation n’a été reçue :"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "démon en marche",
+    "notRunning": "démon à l’arrêt",
+    "daemon": {
+      "system": "installation système",
+      "bundled": "fourni avec cette application",
+      "managed": "copie propre à cette application",
+      "absent": "aucun binaire trouvé"
+    },
+    "nodeId": "Cette machine : {{id}}",
+    "networkId": "ID de réseau (16 caractères hexadécimaux)",
+    "join": "Rejoindre",
+    "leave": "Quitter",
+    "hint": "Un réseau public admet cette machine immédiatement. Un réseau privé doit d’abord l’autoriser — l’étiquette à côté de chaque réseau indique lequel des deux il est.",
+    "hintAccessDenied": "Ce réseau a refusé la machine (ACCESS_DENIED) : il est privé, et son propriétaire doit autoriser ce nœud dans le contrôleur de réseau.",
+    "provision": "Préparer l’installation",
+    "provisioning": "Préparation…",
+    "provisionHint": "Cette application installe sa propre copie de zerotier-one. Pour qu’elle puisse créer un périphérique réseau, il lui manque encore une autorisation, que vous accordez vous-même avec une seule commande. Le ZeroTier du système n’est pas touché.",
+    "commandHint": "Exécutez ceci une fois dans un terminal, puis reconnectez-vous ici :",
+    "copy": "Copier la commande",
+    "copied": "Copié",
+    "recheck": "Se reconnecter",
+    "capable": "L’autorisation est en place. Le démon peut créer un périphérique réseau."
+  },
+  "legacy": {
+    "title": "Reprendre depuis l’ancien client",
+    "explainer": "Les adresses d’une installation 0.9 peuvent être reprises. Les mots de passe ne sont pas repris — vous vous connectez une fois, et l’ancienne configuration n’est jamais modifiée.",
+    "summary": "{{connections}} connexion(s), {{jobs}} tâche(s) de sauvegarde, dernier hôte {{host}}",
+    "adopt": "Reprendre les adresses",
+    "result": "{{imported}} reprises, {{skipped}} déjà connues"
+  },
+  "logs": {
+    "title": "Fichier journal",
+    "open": "Ouvrir le dossier"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Détecté, non géré. Ce client utilise un tunnel déjà en marche et ne modifie aucun réglage DNS ni de routage.",
+    "tailnet": "Tailnet : {{name}}",
+    "use": "Utiliser",
+    "noPeers": "Aucune autre machine de ce tailnet n’est en ligne."
   }
 }

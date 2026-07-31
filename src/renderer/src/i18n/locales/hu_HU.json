@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Helyi hálózat",
       "direct": "Közvetlen IP",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Észlelt funkciók",
-    "routes": "{{count}} átjáró-útvonal"
+    "routes": "{{count}} átjáró-útvonal",
+    "remoteIdTitle": "Csatlakozás Remote ID-vel",
+    "remoteIdHint": "Adja meg az eszközön látható Remote ID-t. A kapcsolatot a program készíti elő — utána a szokásos módon jelentkezzen be.",
+    "remoteIdLabel": "Remote ID (16 karakter)",
+    "remoteIdConnecting": "Csatlakozás…",
+    "connect": "Csatlakozás"
   },
   "capability": {
     "photoLibrary": "Fotókeresés és szűrők",
@@ -47,19 +53,99 @@
     "title": "Fotók",
     "libraryMissing": "A fotókereséshez a Photos modul kell",
     "libraryMissingHint": "Ezen az eszközön nincs regisztrálva a Photos modul, ezért a szemantikus keresés és a szűrők nem érhetők el. A böngészés és a mentés ettől függetlenül működik.",
-    "backupForegroundOnly": "A mentés csak addig fut, amíg ez az ablak nyitva van."
+    "backupForegroundOnly": "A mentés csak addig fut, amíg ez az ablak nyitva van.",
+    "video": "Videó",
+    "loading": "Betöltés…",
+    "noneHere": "Ebben a mappában nincs kép vagy videó.",
+    "noHits": "Nincs találat.",
+    "search": "Keresés",
+    "searching": "Keresés folyamatban…",
+    "searchPlaceholder": "Írja le, mi legyen a képen",
+    "clearSearch": "Törlés",
+    "searchSummary": "{{count}} találat {{ms}} ms alatt",
+    "modeLibrary": "Könyvtár",
+    "modeFolder": "Mappa",
+    "switchToFolder": "Mappa böngészése",
+    "switchToLibrary": "Vissza a könyvtárba",
+    "countSummary": "{{shown}} / {{total}} látható",
+    "indexed": "{{processed}} / {{total}} indexelve",
+    "pending": "{{count}} van hátra",
+    "indexStatus": {
+      "idle": "kész",
+      "working": "folyamatban"
+    },
+    "semanticIncomplete": "A szemantikus index {{percent}} %-on áll. Amíg nem készül el, a szöveges keresés csak teljes szavakat talál meg a fájlnevekben.",
+    "semanticUnavailable": "A fotókeresés ezen az eszközön nem érhető el",
+    "semanticUnavailableHint": "Az eszközre nincs képmodell telepítve, ezért a keresés egyáltalán semmit nem adna vissza a «nincs találat» helyett. A böngészést és a mentést ez nem érinti.",
+    "semanticState": "Eszköz állapota: {{state}} · hiányzik: {{missing}}"
   },
   "files": {
     "title": "Fájlok",
     "search": "Keresés",
     "starred": "Kedvencek",
-    "storage": "Tároló"
+    "storage": "Tároló",
+    "up": "Egy szinttel feljebb",
+    "select": "{{name}} kijelölése",
+    "media": "média",
+    "loading": "Betöltés…",
+    "loadingVolumes": "Az eszköz köteteinek lekérdezése…",
+    "noVolumes": "Az eszköz egyetlen kötetet sem jelentett, így nincs mit böngészni.",
+    "emptyFolder": "Ez a mappa üres.",
+    "searching": "Keresés folyamatban…",
+    "searchPlaceholder": "Fájlnevek keresése ebben a mappában és alatta",
+    "clearSearch": "Törlés",
+    "searchSummary": "{{hits}} találat {{scanned}} bejegyzés átnézése után. Ez a keresés a kliensben fut — a ZimaOS 1.7 nem tud kiszolgálóoldali fájlkeresést.",
+    "searchTruncated": "A keresési korlátnál korán leállt, így lejjebb még lehetnek találatok.",
+    "noHits": "Egyetlen fájlnév sem illeszkedik.",
+    "newFolder": "Új mappa",
+    "newFolderPrompt": "Az új mappa neve",
+    "upload": "Feltöltés",
+    "download": "Letöltés",
+    "copy": "Másolás",
+    "move": "Áthelyezés",
+    "pasteCopy": "{{count}} másolat beillesztése ide",
+    "pasteMove": "{{count}} áthelyezése ide",
+    "toTrash": "Áthelyezés a kukába",
+    "refresh": "Frissítés",
+    "showTrash": "Kuka megjelenítése",
+    "hideTrash": "Kuka elrejtése",
+    "trash": "Kuka",
+    "trashEmpty": "A kuka üres.",
+    "trashCount": "{{count}} bejegyzés a kukában",
+    "restore": "{{count}} visszaállítása",
+    "deletedAt": "törölve {{when}}",
+    "tasks": "Futó műveletek",
+    "tasksHint": "A másolás és az áthelyezés az eszközön fut, ezért akkor is folytatódik, ha ez az ablak el van foglalva.",
+    "countSummary": "{{shown}} / {{total}} bejegyzés látható",
+    "sortedBy": "rendezve: {{field}}",
+    "changeSort": "módosítás",
+    "ascending": "növekvő",
+    "descending": "csökkenő",
+    "sort": {
+      "name": "név",
+      "size": "méret",
+      "modified": "dátum"
+    }
   },
   "apps": {
     "title": "Alkalmazások",
     "running": "Fut",
     "stopped": "Leállítva",
-    "cachedAt": "Állapot: {{time}}"
+    "cachedAt": "Állapot: {{time}}",
+    "loading": "Betöltés…",
+    "none": "Ezen az eszközön nincs telepített alkalmazás.",
+    "cached": "Mentett lista",
+    "retry": "Újra",
+    "port": "Port: {{port}}",
+    "status": {
+      "running": "fut",
+      "stopped": "leállítva"
+    },
+    "openHere": "Megnyitás itt",
+    "openBrowser": "Megnyitás böngészőben",
+    "noWebUi": "Ez az alkalmazás nem tesz közzé webes felületet.",
+    "start": "Indítás",
+    "stop": "Leállítás"
   },
   "security": {
     "keyringTitle": "A jelszavak nem tárolhatók biztonságosan",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Ezen a címen egyetlen ZimaOS-eszköz sem válaszolt.",
     "sessionExpired": "A munkamenet lejárt — jelentkezz be újra.",
     "signInRequired": "Kérlek, jelentkezz be.",
-    "strategyUnavailable": "Ez a kapcsolódási mód ebben a kiadásban még nem elérhető."
+    "strategyUnavailable": "Ez a kapcsolódási mód ebben a kiadásban még nem elérhető.",
+    "notFound": "Az eszköz szerint ez az útvonal nem létezik.",
+    "endpointUnknown": "Ez az eszköz nem kínálja azt a felületet, amit a kliens kért.",
+    "invalidRequest": "A kérést még elküldés előtt elutasítottuk — ez ennek a kliensnek a hibája.",
+    "invalidFolderName": "A mappanév nem tartalmazhat perjelet.",
+    "uploadRejected": "Az eszköz elutasította a feltöltést.",
+    "uploadNotAFile": "Csak közönséges fájlok tölthetők fel.",
+    "downloadRejected": "Az eszköz elutasította a letöltést.",
+    "photosModuleMissing": "Ezen az eszközön nincs fotómodul, ezért a keresés és a szűrők nem érhetők el.",
+    "appNotFound": "Ez az alkalmazás már nem szerepel az eszköz listáján.",
+    "appHasNoWebUi": "Ez az alkalmazás nem tesz közzé webes felületet.",
+    "powerDeviceMismatch": "A képernyő nem az aktív eszközre hivatkozik. Töltse újra, és próbálja meg ismét.",
+    "zerotierNoToken": "A helyi ZeroTier tokent nem sikerült beolvasni.",
+    "zerotierApi": "A helyi ZeroTier szolgáltatás hibával válaszolt.",
+    "zerotierMissing": "Nem található zerotier-one — sem telepítve, sem mellékelve.",
+    "zerotierNoStart": "A helyi ZeroTier szolgáltatás nem indult el.",
+    "unexpected-status": "Az eszköz váratlan állapottal válaszolt.",
+    "zerotierNoCapability": "A helyi ZeroTier szolgáltatás nem hozhat létre virtuális hálózati eszközt. A pontos parancs, amivel ez engedélyezhető, alább látható.",
+    "remoteIdUnknown": "Ehhez az eszközhöz nincs Remote ID mentve. Jelentkezzen be egyszer a «Csatlakozás Remote ID-vel» ponton keresztül."
   },
   "common": {
     "retry": "Újra",
@@ -135,5 +239,96 @@
     "language": "Nyelv",
     "unreviewed": "nem ellenőrzött",
     "reviewed": "ellenőrzött"
+  },
+  "backup": {
+    "title": "Fotómentés",
+    "foregroundOnly": "csak amíg ez az ablak nyitva van",
+    "explainer": "Válasszon helyi mappákat; a bennük lévő képek és videók feltöltődnek ide: {{destination}}. Háttérszinkronizálás nincs — az ablak bezárásakor az átvitel megáll, és legközelebb ott folytatódik, ahol abbamaradt.",
+    "pickFolders": "Mappák kiválasztása",
+    "start": "{{count}} mappa mentése",
+    "cancel": "Mégse",
+    "counts": "{{uploaded}} / {{total}} · {{skipped}} kihagyva · {{failed}} sikertelen",
+    "notes": "{{count}} fájl megjegyzéssel",
+    "phase": {
+      "idle": "Nem indult el",
+      "scanning": "Képek keresése…",
+      "uploading": "Feltöltés…",
+      "done": "Kész, semmi sem maradt ki",
+      "cancelled": "Megszakítva — a már feltöltött fájlok megmaradnak",
+      "failed": "Befejeződött, hibákkal"
+    },
+    "outcome": {
+      "skipped-duplicate": "már megvan",
+      "skipped-unsupported": "nem kép",
+      "failed": "sikertelen"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Névtelen eszköz",
+    "cpu": "{{model}}, {{cores}} mag",
+    "cpuLoad": "CPU-terhelés",
+    "cpuTemperature": "CPU-hőmérséklet",
+    "watt": "{{watt}} W",
+    "memory": "Memória",
+    "systemDisk": "Szabad hely a rendszerlemezen",
+    "freeOf": "ebből: {{total}}",
+    "storage": "Tárhely",
+    "usedPercent": "{{percent}} % használatban",
+    "unhealthy": "az állapotellenőrzés sikertelen"
+  },
+  "power": {
+    "title": "Energia",
+    "restart": "Újraindítás",
+    "off": "Kikapcsolás",
+    "confirmRestart": "Valóban újraindítja: {{name}}?",
+    "confirmOff": "Valóban kikapcsolja: {{name}}?",
+    "yes": "Igen, csináld",
+    "no": "Mégse",
+    "restarting": "Az újraindítás elindult. Az eszköz egy ideig nem lesz elérhető.",
+    "shuttingDown": "A leállítás elindult. Az eszköz csak bekapcsolás után válaszol újra.",
+    "noConfirmation": "Nem érkezett visszaigazolás:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "a démon fut",
+    "notRunning": "a démon nem fut",
+    "daemon": {
+      "system": "rendszertelepítés",
+      "bundled": "az alkalmazással szállítva",
+      "managed": "az alkalmazás saját példánya",
+      "absent": "nem található futtatható állomány"
+    },
+    "nodeId": "Ez a gép: {{id}}",
+    "networkId": "Hálózati azonosító (16 hexadecimális karakter)",
+    "join": "Csatlakozás",
+    "leave": "Kilépés",
+    "hint": "Egy nyilvános hálózat azonnal beengedi ezt a gépet. Egy magánhálózatnak előbb engedélyeznie kell — hogy melyik a kettő közül, a hálózat melletti címke mondja meg.",
+    "hintAccessDenied": "Ez a hálózat elutasította a gépet (ACCESS_DENIED): magánhálózat, és a tulajdonosának engedélyeznie kell ezt a csomópontot a hálózati vezérlőben.",
+    "provision": "Telepítés előkészítése",
+    "provisioning": "Előkészítés…",
+    "provisionHint": "Ez az alkalmazás saját példányt telepít a zerotier-one-ból. Ahhoz, hogy hálózati eszközt hozhasson létre, még egy jogosultság hiányzik, amit egyetlen paranccsal maga ad meg. A rendszer saját ZeroTier-e érintetlen marad.",
+    "commandHint": "Futtassa ezt egyszer egy terminálban, majd csatlakozzon itt újra:",
+    "copy": "Parancs másolása",
+    "copied": "Másolva",
+    "recheck": "Csatlakozás újra",
+    "capable": "A jogosultság megvan. A démon létrehozhat hálózati eszközt."
+  },
+  "legacy": {
+    "title": "Átvétel a régi kliensből",
+    "explainer": "Egy 0.9-es telepítés címei átvehetők. A jelszavak nem kerülnek át — egyszer bejelentkezik, a régi beállítás pedig soha nem módosul.",
+    "summary": "{{connections}} kapcsolat, {{jobs}} mentési feladat, utolsó gép: {{host}}",
+    "adopt": "Címek átvétele",
+    "result": "{{imported}} átvéve, {{skipped}} már ismert"
+  },
+  "logs": {
+    "title": "Naplófájl",
+    "open": "Mappa megnyitása"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Felismerve, nem kezelve. Ez a kliens egy már futó alagutat használ, és nem módosít DNS- vagy útvonalbeállításokat.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Használat",
+    "noPeers": "Ezen a tailneten nincs más gép online."
   }
 }

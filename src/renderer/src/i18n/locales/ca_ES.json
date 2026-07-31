@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Xarxa local",
       "direct": "IP directa",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Funcions detectades",
-    "routes": "{{count}} rutes de la passarel·la"
+    "routes": "{{count}} rutes de la passarel·la",
+    "remoteIdTitle": "Connecta mitjançant Remote ID",
+    "remoteIdHint": "Introdueix la Remote ID que es mostra al dispositiu. La connexió es prepara sola; després inicia la sessió com sempre.",
+    "remoteIdLabel": "Remote ID (16 caràcters)",
+    "remoteIdConnecting": "S’està connectant…",
+    "connect": "Connecta"
   },
   "capability": {
     "photoLibrary": "Cerca de fotos i facetes",
@@ -47,19 +53,99 @@
     "title": "Fotos",
     "libraryMissing": "La cerca de fotos necessita el mòdul Photos",
     "libraryMissingHint": "Aquest dispositiu no té registrat el mòdul Photos, per tant la cerca semàntica i les facetes no estan disponibles. Explorar i la còpia funcionen igualment.",
-    "backupForegroundOnly": "La còpia només s’executa mentre aquesta finestra estigui oberta."
+    "backupForegroundOnly": "La còpia només s’executa mentre aquesta finestra estigui oberta.",
+    "video": "Vídeo",
+    "loading": "S’està carregant…",
+    "noneHere": "No hi ha fotos ni vídeos en aquesta carpeta.",
+    "noHits": "Cap resultat.",
+    "search": "Cerca",
+    "searching": "S’està cercant…",
+    "searchPlaceholder": "Descriu què ha d’aparèixer a la imatge",
+    "clearSearch": "Neteja",
+    "searchSummary": "{{count}} resultat(s) en {{ms}} ms",
+    "modeLibrary": "Biblioteca",
+    "modeFolder": "Carpeta",
+    "switchToFolder": "Explora una carpeta",
+    "switchToLibrary": "Torna a la biblioteca",
+    "countSummary": "{{shown}} de {{total}} mostrats",
+    "indexed": "{{processed}} de {{total}} indexats",
+    "pending": "{{count}} pendents",
+    "indexStatus": {
+      "idle": "acabat",
+      "working": "en curs"
+    },
+    "semanticIncomplete": "L’índex semàntic és al {{percent}} %. Fins que no estigui complet, la cerca de text només troba paraules senceres als noms dels fitxers.",
+    "semanticUnavailable": "La cerca de fotos no està disponible en aquest dispositiu",
+    "semanticUnavailableHint": "El dispositiu no té cap model de visió instal·lat, de manera que una cerca no retornaria absolutament res en comptes de «cap resultat». Explorar i fer còpia de seguretat no en queden afectats.",
+    "semanticState": "Estat del dispositiu: {{state}} · falta: {{missing}}"
   },
   "files": {
     "title": "Fitxers",
     "search": "Cerca",
     "starred": "Preferits",
-    "storage": "Emmagatzematge"
+    "storage": "Emmagatzematge",
+    "up": "Puja un nivell",
+    "select": "Selecciona {{name}}",
+    "media": "mitjans",
+    "loading": "S’està carregant…",
+    "loadingVolumes": "S’estan demanant els volums al dispositiu…",
+    "noVolumes": "El dispositiu no ha comunicat ni un sol volum, així que no hi ha res per explorar.",
+    "emptyFolder": "Aquesta carpeta és buida.",
+    "searching": "S’està cercant…",
+    "searchPlaceholder": "Cerca noms de fitxer en aquesta carpeta i per sota",
+    "clearSearch": "Neteja",
+    "searchSummary": "{{hits}} resultat(s) després de revisar {{scanned}} entrades. Aquesta cerca s’executa al client: el ZimaOS 1.7 no té cerca de fitxers al servidor.",
+    "searchTruncated": "S’ha aturat aviat en arribar al límit de cerca, de manera que més avall hi pot haver més coincidències.",
+    "noHits": "Cap nom de fitxer no hi coincideix.",
+    "newFolder": "Carpeta nova",
+    "newFolderPrompt": "Nom de la carpeta nova",
+    "upload": "Puja",
+    "download": "Baixa",
+    "copy": "Copia",
+    "move": "Mou",
+    "pasteCopy": "Enganxa {{count}} còpia aquí",
+    "pasteMove": "Mou {{count}} aquí",
+    "toTrash": "Mou a la paperera",
+    "refresh": "Actualitza",
+    "showTrash": "Mostra la paperera",
+    "hideTrash": "Amaga la paperera",
+    "trash": "Paperera",
+    "trashEmpty": "La paperera és buida.",
+    "trashCount": "{{count}} entrada(es) a la paperera",
+    "restore": "Restaura {{count}}",
+    "deletedAt": "suprimit {{when}}",
+    "tasks": "Operacions en curs",
+    "tasksHint": "Copiar i moure s’executen al dispositiu, per això continuen encara que aquesta finestra estigui ocupada.",
+    "countSummary": "{{shown}} de {{total}} entrades mostrades",
+    "sortedBy": "ordenat per {{field}}",
+    "changeSort": "canvia",
+    "ascending": "ascendent",
+    "descending": "descendent",
+    "sort": {
+      "name": "nom",
+      "size": "mida",
+      "modified": "data"
+    }
   },
   "apps": {
     "title": "Aplicacions",
     "running": "En execució",
     "stopped": "Aturada",
-    "cachedAt": "Estat: {{time}}"
+    "cachedAt": "Estat: {{time}}",
+    "loading": "S’està carregant…",
+    "none": "En aquest dispositiu no hi ha cap aplicació instal·lada.",
+    "cached": "Llista desada",
+    "retry": "Torna-ho a provar",
+    "port": "Port {{port}}",
+    "status": {
+      "running": "en execució",
+      "stopped": "aturada"
+    },
+    "openHere": "Obre aquí",
+    "openBrowser": "Obre al navegador",
+    "noWebUi": "Aquesta aplicació no publica cap interfície web.",
+    "start": "Inicia",
+    "stop": "Atura"
   },
   "security": {
     "keyringTitle": "Les contrasenyes no es poden desar amb seguretat",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Cap dispositiu ZimaOS ha respost en aquesta adreça.",
     "sessionExpired": "La sessió ha caducat: torna a iniciar-la.",
     "signInRequired": "Inicia la sessió.",
-    "strategyUnavailable": "Aquesta via de connexió encara no està disponible en aquesta versió."
+    "strategyUnavailable": "Aquesta via de connexió encara no està disponible en aquesta versió.",
+    "notFound": "El dispositiu diu que aquest camí no existeix.",
+    "endpointUnknown": "Aquest dispositiu no ofereix la interfície que ha demanat el client.",
+    "invalidRequest": "La petició s’ha rebutjat abans d’enviar-se: és un defecte d’aquest client.",
+    "invalidFolderName": "El nom d’una carpeta no pot contenir cap barra.",
+    "uploadRejected": "El dispositiu ha rebutjat la pujada.",
+    "uploadNotAFile": "Només es poden pujar fitxers normals.",
+    "downloadRejected": "El dispositiu ha rebutjat la baixada.",
+    "photosModuleMissing": "Aquest dispositiu no té mòdul de fotos, de manera que la cerca i les facetes no estan disponibles.",
+    "appNotFound": "Aquesta aplicació ja no és a la llista del dispositiu.",
+    "appHasNoWebUi": "Aquesta aplicació no publica cap interfície web.",
+    "powerDeviceMismatch": "La pantalla es refereix a un dispositiu diferent de l’actiu. Torna a carregar i prova-ho de nou.",
+    "zerotierNoToken": "No s’ha pogut llegir el testimoni local de ZeroTier.",
+    "zerotierApi": "El servei local de ZeroTier ha respost amb un error.",
+    "zerotierMissing": "No s’ha trobat cap zerotier-one: ni instal·lat ni inclòs.",
+    "zerotierNoStart": "El servei local de ZeroTier no s’ha iniciat.",
+    "unexpected-status": "El dispositiu ha respost amb un estat inesperat.",
+    "zerotierNoCapability": "El servei local de ZeroTier no té permís per crear un dispositiu de xarxa virtual. L’ordre exacta per concedir-lo és a sota.",
+    "remoteIdUnknown": "Per a aquest dispositiu no hi ha cap Remote ID desada. Inicia la sessió un cop mitjançant «Connecta mitjançant Remote ID»."
   },
   "common": {
     "retry": "Torna-ho a provar",
@@ -135,5 +239,96 @@
     "language": "Idioma",
     "unreviewed": "sense revisar",
     "reviewed": "revisat"
+  },
+  "backup": {
+    "title": "Còpia de seguretat de fotos",
+    "foregroundOnly": "només mentre aquesta finestra sigui oberta",
+    "explainer": "Tria carpetes locals; les fotos i els vídeos que contenen es pugen a {{destination}}. No hi ha sincronització en segon pla: en tancar la finestra la transferència s’atura i la propera vegada continua on era.",
+    "pickFolders": "Tria carpetes",
+    "start": "Fes còpia de {{count}} carpeta(es)",
+    "cancel": "Cancel·la",
+    "counts": "{{uploaded}} de {{total}} · {{skipped}} omesos · {{failed}} fallits",
+    "notes": "{{count}} fitxer(s) amb una nota",
+    "phase": {
+      "idle": "No començada",
+      "scanning": "S’estan cercant fotos…",
+      "uploading": "S’està pujant…",
+      "done": "Acabada, no s’ha deixat res",
+      "cancelled": "Cancel·lada: els fitxers ja pujats es queden",
+      "failed": "Acabada amb errors"
+    },
+    "outcome": {
+      "skipped-duplicate": "ja hi és",
+      "skipped-unsupported": "no és una imatge",
+      "failed": "ha fallat"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Dispositiu sense nom",
+    "cpu": "{{model}}, {{cores}} nuclis",
+    "cpuLoad": "Càrrega de CPU",
+    "cpuTemperature": "Temperatura de CPU",
+    "watt": "{{watt}} W",
+    "memory": "Memòria",
+    "systemDisk": "Disc del sistema lliure",
+    "freeOf": "de {{total}}",
+    "storage": "Emmagatzematge",
+    "usedPercent": "{{percent}} % utilitzat",
+    "unhealthy": "la comprovació d’estat ha fallat"
+  },
+  "power": {
+    "title": "Energia",
+    "restart": "Reinicia",
+    "off": "Apaga",
+    "confirmRestart": "Segur que vols reiniciar {{name}}?",
+    "confirmOff": "Segur que vols apagar {{name}}?",
+    "yes": "Sí, fes-ho",
+    "no": "Cancel·la",
+    "restarting": "S’ha demanat el reinici. El dispositiu no serà accessible durant una estona.",
+    "shuttingDown": "S’ha demanat l’aturada. El dispositiu no tornarà a respondre fins que s’engegui.",
+    "noConfirmation": "No s’ha rebut cap confirmació:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "dimoni en execució",
+    "notRunning": "dimoni aturat",
+    "daemon": {
+      "system": "instal·lació del sistema",
+      "bundled": "inclòs amb aquesta aplicació",
+      "managed": "còpia pròpia d’aquesta aplicació",
+      "absent": "no s’ha trobat cap binari"
+    },
+    "nodeId": "Aquesta màquina: {{id}}",
+    "networkId": "ID de xarxa (16 caràcters hexadecimals)",
+    "join": "Uneix-t’hi",
+    "leave": "Surt",
+    "hint": "Una xarxa pública admet aquesta màquina de seguida. Una de privada l’ha d’autoritzar primer: quina de les dues és, ho diu l’etiqueta al costat de cada xarxa.",
+    "hintAccessDenied": "Aquesta xarxa ha rebutjat la màquina (ACCESS_DENIED): és privada, i el seu propietari ha d’autoritzar aquest node al controlador de xarxa.",
+    "provision": "Prepara la instal·lació",
+    "provisioning": "S’està preparant…",
+    "provisionHint": "Aquesta aplicació instal·la la seva pròpia còpia de zerotier-one. Perquè pugui crear un dispositiu de xarxa encara li falta un permís, que concedeixes tu mateix amb una sola ordre. El ZeroTier del sistema queda intacte.",
+    "commandHint": "Executa això un cop en un terminal i torna a connectar aquí:",
+    "copy": "Copia l’ordre",
+    "copied": "Copiada",
+    "recheck": "Torna a connectar",
+    "capable": "El permís hi és. El dimoni pot crear un dispositiu de xarxa."
+  },
+  "legacy": {
+    "title": "Reprèn del client antic",
+    "explainer": "Es poden adoptar les adreces d’una instal·lació 0.9. Les contrasenyes no s’emporten: inicies la sessió un cop, i la configuració antiga no es modifica mai.",
+    "summary": "{{connections}} connexió(ns), {{jobs}} tasca(ques) de còpia, darrer amfitrió {{host}}",
+    "adopt": "Adopta les adreces",
+    "result": "{{imported}} adoptades, {{skipped}} ja conegudes"
+  },
+  "logs": {
+    "title": "Fitxer de registre",
+    "open": "Obre la carpeta"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Detectat, no gestionat. Aquest client fa servir un túnel que ja funciona i no canvia cap paràmetre de DNS ni d’encaminament.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Utilitza",
+    "noPeers": "Cap altra màquina d’aquest tailnet no és en línia."
   }
 }

@@ -19,11 +19,17 @@
     "connection": {
       "lan": "Rede local",
       "direct": "IP direto",
-      "remote-id": "Remote ID"
+      "remote-id": "Remote ID",
+      "tailscale": "Tailscale"
     },
     "latency": "{{ms}} ms",
     "capabilities": "Funções detetadas",
-    "routes": "{{count}} rotas da gateway"
+    "routes": "{{count}} rotas da gateway",
+    "remoteIdTitle": "Ligar através de Remote ID",
+    "remoteIdHint": "Introduza a Remote ID apresentada no dispositivo. A ligação é preparada por si — depois inicie sessão como habitualmente.",
+    "remoteIdLabel": "Remote ID (16 caracteres)",
+    "remoteIdConnecting": "A ligar…",
+    "connect": "Ligar"
   },
   "capability": {
     "photoLibrary": "Pesquisa de fotos e facetas",
@@ -47,19 +53,99 @@
     "title": "Fotos",
     "libraryMissing": "A pesquisa de fotos necessita do módulo Photos",
     "libraryMissingHint": "Este dispositivo não tem o módulo Photos registado, pelo que a pesquisa semântica e as facetas não estão disponíveis. Explorar e a cópia funcionam de qualquer forma.",
-    "backupForegroundOnly": "A cópia só é executada enquanto esta janela estiver aberta."
+    "backupForegroundOnly": "A cópia só é executada enquanto esta janela estiver aberta.",
+    "video": "Vídeo",
+    "loading": "A carregar…",
+    "noneHere": "Não há fotografias nem vídeos nesta pasta.",
+    "noHits": "Sem resultados.",
+    "search": "Procurar",
+    "searching": "A procurar…",
+    "searchPlaceholder": "Descreva o que deve aparecer na imagem",
+    "clearSearch": "Limpar",
+    "searchSummary": "{{count}} resultado(s) em {{ms}} ms",
+    "modeLibrary": "Biblioteca",
+    "modeFolder": "Pasta",
+    "switchToFolder": "Percorrer uma pasta",
+    "switchToLibrary": "Voltar à biblioteca",
+    "countSummary": "{{shown}} de {{total}} apresentados",
+    "indexed": "{{processed}} de {{total}} indexados",
+    "pending": "{{count}} pendentes",
+    "indexStatus": {
+      "idle": "terminado",
+      "working": "em curso"
+    },
+    "semanticIncomplete": "O índice semântico está nos {{percent}} %. Até estar completo, a pesquisa de texto só encontra palavras inteiras nos nomes dos ficheiros.",
+    "semanticUnavailable": "A pesquisa de fotografias não está disponível neste dispositivo",
+    "semanticUnavailableHint": "O dispositivo não tem nenhum modelo de visão instalado, por isso uma pesquisa não devolveria absolutamente nada em vez de «sem resultados». Percorrer e fazer cópia de segurança não são afetados.",
+    "semanticState": "Estado do dispositivo: {{state}} · em falta: {{missing}}"
   },
   "files": {
     "title": "Ficheiros",
     "search": "Pesquisar",
     "starred": "Favoritos",
-    "storage": "Armazenamento"
+    "storage": "Armazenamento",
+    "up": "Subir um nível",
+    "select": "Selecionar {{name}}",
+    "media": "média",
+    "loading": "A carregar…",
+    "loadingVolumes": "A perguntar ao dispositivo pelos seus volumes…",
+    "noVolumes": "O dispositivo não comunicou um único volume, por isso não há nada para percorrer.",
+    "emptyFolder": "Esta pasta está vazia.",
+    "searching": "A procurar…",
+    "searchPlaceholder": "Procurar nomes de ficheiros nesta pasta e abaixo",
+    "clearSearch": "Limpar",
+    "searchSummary": "{{hits}} resultado(s) depois de examinar {{scanned}} entradas. Esta pesquisa corre no cliente — o ZimaOS 1.7 não tem pesquisa de ficheiros do lado do servidor.",
+    "searchTruncated": "Parou cedo no limite de pesquisa, por isso pode haver mais resultados mais abaixo.",
+    "noHits": "Nenhum nome de ficheiro corresponde.",
+    "newFolder": "Nova pasta",
+    "newFolderPrompt": "Nome da nova pasta",
+    "upload": "Carregar",
+    "download": "Transferir",
+    "copy": "Copiar",
+    "move": "Mover",
+    "pasteCopy": "Colar {{count}} cópia aqui",
+    "pasteMove": "Mover {{count}} para aqui",
+    "toTrash": "Mover para a reciclagem",
+    "refresh": "Atualizar",
+    "showTrash": "Mostrar a reciclagem",
+    "hideTrash": "Ocultar a reciclagem",
+    "trash": "Reciclagem",
+    "trashEmpty": "A reciclagem está vazia.",
+    "trashCount": "{{count}} entrada(s) na reciclagem",
+    "restore": "Restaurar {{count}}",
+    "deletedAt": "eliminado {{when}}",
+    "tasks": "Operações em curso",
+    "tasksHint": "Copiar e mover são executados no dispositivo, por isso continuam mesmo quando esta janela está ocupada.",
+    "countSummary": "{{shown}} de {{total}} entradas apresentadas",
+    "sortedBy": "ordenado por {{field}}",
+    "changeSort": "alterar",
+    "ascending": "ascendente",
+    "descending": "descendente",
+    "sort": {
+      "name": "nome",
+      "size": "tamanho",
+      "modified": "data"
+    }
   },
   "apps": {
     "title": "Aplicações",
     "running": "Em execução",
     "stopped": "Parada",
-    "cachedAt": "Estado: {{time}}"
+    "cachedAt": "Estado: {{time}}",
+    "loading": "A carregar…",
+    "none": "Não há aplicações instaladas neste dispositivo.",
+    "cached": "Lista guardada",
+    "retry": "Tentar de novo",
+    "port": "Porta {{port}}",
+    "status": {
+      "running": "em execução",
+      "stopped": "parada"
+    },
+    "openHere": "Abrir aqui",
+    "openBrowser": "Abrir no navegador",
+    "noWebUi": "Esta aplicação não publica qualquer interface web.",
+    "start": "Iniciar",
+    "stop": "Parar"
   },
   "security": {
     "keyringTitle": "As palavras-passe não podem ser guardadas em segurança",
@@ -89,7 +175,25 @@
     "notAZimaDevice": "Nenhum dispositivo ZimaOS respondeu neste endereço.",
     "sessionExpired": "A sessão expirou — inicie sessão novamente.",
     "signInRequired": "Inicie sessão.",
-    "strategyUnavailable": "Esta via de ligação ainda não está disponível nesta versão."
+    "strategyUnavailable": "Esta via de ligação ainda não está disponível nesta versão.",
+    "notFound": "O dispositivo diz que este caminho não existe.",
+    "endpointUnknown": "Este dispositivo não oferece a interface que o cliente pediu.",
+    "invalidRequest": "O pedido foi recusado antes de ser enviado — isso é um defeito deste cliente.",
+    "invalidFolderName": "O nome de uma pasta não pode conter uma barra.",
+    "uploadRejected": "O dispositivo recusou o carregamento.",
+    "uploadNotAFile": "Só é possível carregar ficheiros normais.",
+    "downloadRejected": "O dispositivo recusou a transferência.",
+    "photosModuleMissing": "Este dispositivo não tem módulo de fotografias, por isso a pesquisa e as facetas não estão disponíveis.",
+    "appNotFound": "Esta aplicação já não consta da lista do dispositivo.",
+    "appHasNoWebUi": "Esta aplicação não publica qualquer interface web.",
+    "powerDeviceMismatch": "O ecrã refere-se a um dispositivo diferente do ativo. Recarregue e tente de novo.",
+    "zerotierNoToken": "Não foi possível ler o token local do ZeroTier.",
+    "zerotierApi": "O serviço local do ZeroTier respondeu com um erro.",
+    "zerotierMissing": "Não foi encontrado nenhum zerotier-one — nem instalado nem incluído.",
+    "zerotierNoStart": "O serviço local do ZeroTier não arrancou.",
+    "unexpected-status": "O dispositivo respondeu com um estado inesperado.",
+    "zerotierNoCapability": "O serviço local do ZeroTier não pode criar um dispositivo de rede virtual. O comando exato para o permitir está abaixo.",
+    "remoteIdUnknown": "Não há nenhuma Remote ID guardada para este dispositivo. Inicie sessão uma vez através de «Ligar através de Remote ID»."
   },
   "common": {
     "retry": "Tentar novamente",
@@ -135,5 +239,96 @@
     "language": "Idioma",
     "unreviewed": "não revisto",
     "reviewed": "revisto"
+  },
+  "backup": {
+    "title": "Cópia de segurança de fotografias",
+    "foregroundOnly": "apenas enquanto esta janela estiver aberta",
+    "explainer": "Escolha pastas locais; as fotografias e os vídeos nelas contidos são carregados para {{destination}}. Não há sincronização em segundo plano — ao fechar a janela a transferência para e da próxima vez continua onde ficou.",
+    "pickFolders": "Escolher pastas",
+    "start": "Guardar {{count}} pasta(s)",
+    "cancel": "Cancelar",
+    "counts": "{{uploaded}} de {{total}} · {{skipped}} ignorados · {{failed}} falhados",
+    "notes": "{{count}} ficheiro(s) com uma observação",
+    "phase": {
+      "idle": "Não iniciada",
+      "scanning": "À procura de fotografias…",
+      "uploading": "A carregar…",
+      "done": "Terminada, nada ficou de fora",
+      "cancelled": "Cancelada — os ficheiros já carregados ficam",
+      "failed": "Terminada com falhas"
+    },
+    "outcome": {
+      "skipped-duplicate": "já existe",
+      "skipped-unsupported": "não é uma imagem",
+      "failed": "falhou"
+    }
+  },
+  "dashboard": {
+    "unnamedDevice": "Dispositivo sem nome",
+    "cpu": "{{model}}, {{cores}} núcleos",
+    "cpuLoad": "Carga do CPU",
+    "cpuTemperature": "Temperatura do CPU",
+    "watt": "{{watt}} W",
+    "memory": "Memória",
+    "systemDisk": "Disco de sistema livre",
+    "freeOf": "de {{total}}",
+    "storage": "Armazenamento",
+    "usedPercent": "{{percent}} % usado",
+    "unhealthy": "verificação de estado falhou"
+  },
+  "power": {
+    "title": "Energia",
+    "restart": "Reiniciar",
+    "off": "Desligar",
+    "confirmRestart": "Reiniciar mesmo {{name}}?",
+    "confirmOff": "Desligar mesmo {{name}}?",
+    "yes": "Sim, avançar",
+    "no": "Cancelar",
+    "restarting": "O reinício foi pedido. O dispositivo ficará inacessível durante algum tempo.",
+    "shuttingDown": "O encerramento foi pedido. O dispositivo só volta a responder quando for ligado.",
+    "noConfirmation": "Não foi recebida qualquer confirmação:"
+  },
+  "zerotier": {
+    "title": "Remote ID (ZeroTier)",
+    "running": "serviço em execução",
+    "notRunning": "serviço parado",
+    "daemon": {
+      "system": "instalação do sistema",
+      "bundled": "incluído nesta aplicação",
+      "managed": "cópia própria desta aplicação",
+      "absent": "nenhum binário encontrado"
+    },
+    "nodeId": "Esta máquina: {{id}}",
+    "networkId": "ID de rede (16 caracteres hexadecimais)",
+    "join": "Aderir",
+    "leave": "Sair",
+    "hint": "Uma rede pública admite esta máquina de imediato. Uma privada tem de a autorizar primeiro — qual das duas é, diz o rótulo ao lado de cada rede.",
+    "hintAccessDenied": "Esta rede recusou a máquina (ACCESS_DENIED): é privada, e o seu proprietário tem de autorizar este nó no controlador de rede.",
+    "provision": "Preparar a instalação",
+    "provisioning": "A preparar…",
+    "provisionHint": "Esta aplicação instala a sua própria cópia do zerotier-one. Para poder criar um dispositivo de rede falta-lhe ainda uma permissão, que concede você mesmo com um único comando. O ZeroTier do sistema fica intacto.",
+    "commandHint": "Execute isto uma vez num terminal e volte a ligar aqui:",
+    "copy": "Copiar comando",
+    "copied": "Copiado",
+    "recheck": "Ligar de novo",
+    "capable": "A permissão está concedida. O serviço pode criar um dispositivo de rede."
+  },
+  "legacy": {
+    "title": "Retomar do cliente antigo",
+    "explainer": "Os endereços de uma instalação 0.9 podem ser adotados. As palavras-passe não são transferidas — inicia sessão uma vez, e a configuração antiga nunca é alterada.",
+    "summary": "{{connections}} ligação(ões), {{jobs}} tarefa(s) de cópia, último anfitrião {{host}}",
+    "adopt": "Adotar endereços",
+    "result": "{{imported}} adotados, {{skipped}} já conhecidos"
+  },
+  "logs": {
+    "title": "Ficheiro de registo",
+    "open": "Abrir pasta"
+  },
+  "tailscale": {
+    "title": "Tailscale",
+    "detectedOnly": "Detetado, não gerido. Este cliente usa um túnel que já está a funcionar e não altera definições de DNS nem de encaminhamento.",
+    "tailnet": "Tailnet: {{name}}",
+    "use": "Usar",
+    "noPeers": "Nenhuma outra máquina deste tailnet está online."
   }
 }
