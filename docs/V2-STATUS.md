@@ -995,11 +995,34 @@ drei brauchen ein Programm, das auf dieser Maschine fehlt — und sagen das mit 
 | **deb** | gebaut, Nutzlast gestartet | 101,3 MiB (`Installed-Size: 347142` ≈ 339 MiB) |
 | **AppImage** | gebaut, gestartet | 130,0 MiB |
 | **tar.gz** | gebaut, entpackt, gestartet | 123,1 MiB |
-| rpm | `Need executable 'rpmbuild'` → `apt install rpm` | — |
-| pacman | `bsdtar` fehlt (Exit 127) → `apt install libarchive-tools` | — |
-| flatpak | `flatpak-builder` ist nicht installiert | — |
+| **rpm** | *(zuerst: `Need executable 'rpmbuild'`)* — Werkzeug nachinstalliert, **gebaut, Nutzlast gestartet** | 89,4 MiB |
+| **pacman** | *(zuerst: `bsdtar` fehlt, Exit 127)* — Werkzeug nachinstalliert, **gebaut, Nutzlast gestartet** | 91,7 MiB |
+| flatpak | `flatpak-builder` liegt inzwischen vor, aber **keine Runtime installiert** (`flatpak list --runtime` ist leer) — ungebaut | — |
 
-Beide Rüstzeug-Lücken brauchen `sudo` und sind deshalb **offen**, nicht erledigt.
+Nachgetragen am 2026-07-31 abends: `rpmbuild` und `bsdtar` sind auf dieser Maschine vorhanden,
+damit fielen zwei der drei Lücken. Jeder Startbeleg wurde an der **entpackten Paketnutzlast**
+geführt, aus einem Verzeichnis, dessen letzter Teil genau `ZimaOS Client` heißt:
+
+```
+rpm     ok=true  css=51  nav=4  locale=de-DE  1180 px  consoleErrors=[]  failures=[]
+pacman  ok=true  css=51  nav=4  locale=de-DE  1180 px  consoleErrors=[]  failures=[]
+```
+
+Inhaltlich geprüft, nicht angenommen: beide tragen nur `resources/zerotier/x64/` (der arm64-Ballast
+ist auch hier weg), beide installieren nach `/opt/ZimaOS Client/`, das `.desktop` trägt in beiden
+`StartupWMClass=zima-linux-client`, und das Post-Install-Skript liegt in beiden mit demselben
+`BIN`-Pfad und demselben `setcap`-Aufruf.
+
+**Nicht gemessen:** eine Installation des `.rpm` bzw. `.pacman` auf einer echten RPM-/Arch-Distribution.
+Belegt ist der Paketinhalt und der Start der Nutzlast, nicht der Installationsvorgang dort.
+
+> ⚠️ **Ungleichheit, bewusst nicht geraten:** das `.deb` deklariert `Depends: libcap2-bin`, das
+> `.rpm` deklariert **nichts**, was `setcap` mitbringt. Welches Paket das auf Fedora bzw. openSUSE
+> ist, habe ich nicht gemessen, und ein falscher `Requires` würde die Installation ganz verhindern
+> statt nur zu warnen. Das Skript fängt den Fall laut ab (`setcap not found … the Remote ID route
+> will not work`, danach `exit 0`). **Prüfhandlung für die erste RPM-Maschine:**
+> `rpm -q --whatprovides /usr/sbin/setcap` — der Name daraus kann dann als `rpm.depends` eingetragen
+> werden.
 
 ### 🔴 Der Fehler, den erst das Paket gezeigt hat: die App startet nie, wo sie installiert wird
 
@@ -1288,7 +1311,8 @@ im Netz tut.
 
 ### Was an Phase 8 ausdrücklich offen ist
 
-* **rpm, pacman, flatpak** sind ungebaut (fehlende Werkzeuge, siehe Tabelle).
+* ~~**rpm, pacman**~~ **gebaut und gestartet** (2026-07-31 abends, siehe Tabelle). **flatpak** bleibt
+  ungebaut: `flatpak-builder` liegt vor, aber es ist keine Runtime installiert.
 * **arm64** ist nicht gebaut und schon gar nicht gestartet — das mitgelieferte arm64-ZeroTier ist
   bisher nur eine Datei im Repository, keine belegte Funktion.
 * **Distro-Start-Matrix** (Plan § 11.5) steht aus: gemessen wurde auf **einer** Maschine
@@ -1379,6 +1403,78 @@ zählt: eine Rotation **während** des Laufs erzeugt eine Datei, die kein Start-
 > Hauptprozess-Code. Gegenprobe gefahren, bevor ich etwas „repariert" habe: die unveränderte
 > `HEAD`-Fassung derselben Datei scheitert identisch (`exit=1`). Ein Falsch-Positiv des
 > Prüfwerkzeugs, kein Fehler im Code.
+
+## 🔴 Mein Post-Install-Skript hat das Standardskript nicht ergänzt, sondern ersetzt
+
+Aufgefallen bei einer Nebensache: im `postinst` des fertigen `.deb` stand **nur** unsere
+ZeroTier-Rechteerteilung — keine Zeile von dem, was electron-builder sonst dort hinschreibt.
+
+**Ursache, am Werkzeug abgelesen** (`app-builder-lib` 26.15.3, `targets/FpmTarget.js:68`):
+
+```js
+afterInstall: await writeConfigFile(…, getResource(this.options.afterInstall, "after-install.tpl"), …)
+```
+
+`getResource` liefert die eigene Datei **statt** der Vorlage. Ein `afterInstall` ergänzt nicht, es
+verdrängt — und nichts im Bauvorgang sagt das. Am **installierten** Paket dieser Maschine
+nachgesehen:
+
+```
+/usr/bin/zima-linux-client          fehlt   (die Vorlage legt ihn per update-alternatives an)
+/etc/apparmor.d/zima-linux-client   fehlt   (Profil für Ubuntu 24+ nie installiert)
+chrome-sandbox                      0755    (nie auf 4755 gehoben)
+```
+
+**Warum die letzte Zeile keine Kosmetik ist.** Steht der Namespace-Sandkasten nicht zur Verfügung,
+fällt Chromium auf den SUID-Helfer zurück — und **bricht ab**, statt ungeschützt zu laufen.
+Erzwungen am installierten Programm mit `--disable-namespace-sandbox`:
+
+```
+FATAL sandbox/linux/suid/client/setuid_sandbox_host.cc:166
+  "The SUID sandbox helper binary was found, but is not configured correctly. Rather than run
+   without sandboxing I'm aborting now. … chrome-sandbox is owned by root and has mode 4755."
+→ kein Fenster, kein Report, Exit 133
+```
+
+**Warum es hier nie auffiel:** auf dieser Maschine funktionieren unprivilegierte User-Namespaces
+(`unshare --user true` gelingt als normaler Nutzer, trotz
+`kernel.apparmor_restrict_unprivileged_userns = 1`). Der Rückfallweg lief also nie an. Auf einer
+Maschine, auf der sie abgeschaltet sind, ist das **jeder** Start — genau der Fall, der bei einem
+fremden Tester eintritt und bei mir nicht. Dieselbe Familie wie „das Entwicklungs-Layout ist nicht
+das ausgelieferte", eine Stufe weiter: **meine Maschine ist nicht die des Testers.**
+
+**Behoben:** `build/linux-after-install.sh` enthält jetzt die Standardvorlage **wörtlich** und
+danach unseren Block. Kein `set -e` mehr — die Vorlage läuft bewusst ohne, ein stolpernder
+`apparmor_parser` darf keine Paketinstallation abbrechen; jeder Fehler wird stattdessen gemeldet,
+und das Skript endet auf `exit 0`.
+
+**Der Wächter vergleicht gegen das Original, nicht gegen eine abgeschriebene Liste.** Vier Tests
+lesen `node_modules/app-builder-lib/templates/linux/after-install.tpl` zur Laufzeit und verlangen,
+dass **jede** Anweisung daraus auch in unserem Skript steht — ändert electron-builder seine
+Vorlage, wird das rot, statt dass wir stillschweigend weniger tun als das Standardpaket. Dazu eine
+Absicherung gegen den leeren Fall: fehlt die Vorlage oder hat sie weniger als 15 Anweisungen,
+scheitert der Test, statt inhaltslos grün zu sein.
+
+**Positivkontrolle:** `chmod 4755` → `chmod 0755` gesetzt (und nachgesehen, dass die Änderung
+ankam) → **3 von 4 Tests rot**, darunter wörtlich `stock template lines absent from
+build/linux-after-install.sh`. Zurückgesetzt → wieder grün.
+
+Im neu gebauten `.deb` **und** `.rpm` nachgelesen — nicht erschlossen:
+
+```
+update-alternatives --install '/usr/bin/zima-linux-client' … '/opt/ZimaOS Client/zima-linux-client'
+chmod 4755 '/opt/ZimaOS Client/chrome-sandbox'      (im userns-losen Zweig)
+APPARMOR_PROFILE_TARGET='/etc/apparmor.d/zima-linux-client'
+setcap cap_net_admin,cap_net_raw,cap_net_bind_service+eip "$BIN"
+```
+
+**Was ausdrücklich NICHT gemessen ist:** die Wirkung *nach* einer Installation. Auf dieser Maschine
+gibt es kein `sudo` ohne Passwort, das reparierte Paket ist also nicht installiert worden. Belegt
+ist der Inhalt des Skripts im Paket, nicht das Ergebnis seines Laufs. **Prüfhandlung nach dem
+ersten `sudo dpkg -i`:** `ls -l /usr/bin/zima-linux-client /etc/apparmor.d/zima-linux-client` und
+`ls -l "/opt/ZimaOS Client/chrome-sandbox"`. Und: die Vorlage entscheidet über `4755` anhand des
+**Installationsrechners** — auf einem mit funktionierenden Namespaces bleibt es auch künftig bei
+`0755`. Das ist das Verhalten von electron-builder, kein Rest dieses Fehlers.
 
 ## Alt-Stand
 
