@@ -83,6 +83,22 @@ const isPrivateIpv6 = (host: string): boolean => {
 }
 
 /**
+ * Is this host literal in a loopback, private or link-local range?
+ *
+ * Exported so `apps.ts` can ask the same question with the same answer — the ranges are
+ * defined once. Same honest limit as the whole module: this reads the literal in the URL and
+ * performs no DNS lookup.
+ */
+export const isPrivateHostLiteral = (host: string): boolean => {
+  const normalised = host.toLowerCase()
+  if (normalised === 'localhost' || normalised.endsWith('.localhost')) return true
+  const octets = ipv4Octets(normalised)
+  if (octets !== null) return isPrivateIpv4(octets)
+  if (normalised.includes(':')) return isPrivateIpv6(normalised)
+  return false
+}
+
+/**
  * May this icon URL be fetched at all?
  *
  * @param raw       the URL as it stands in the app metadata
