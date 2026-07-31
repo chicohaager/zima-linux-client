@@ -28,19 +28,19 @@ import { registerNetworkHandlers } from './networkHandlers'
 
 export const registerIpc = (): void => {
   handle(CHANNELS.discoveryScan, async (input) => {
-    const { timeoutMs } = input as { timeoutMs: number }
+    const { timeoutMs } = input
     const devices = await discover(timeoutMs)
     logger.info('discovery.scan', { found: devices.length, timeoutMs })
     return ok(devices)
   })
 
   handle(CHANNELS.transportProbe, async (input) => {
-    const { host, port } = input as { host: string; port: number }
+    const { host, port } = input
     return ok(await probe(host, port))
   })
 
   handle(CHANNELS.deviceCapabilities, async (input) => {
-    const { host, port } = input as { host: string; port: number }
+    const { host, port } = input
     const routes = await fetchRoutes(host, port)
     if (isErr(routes)) return toWire(routes)
 
@@ -65,29 +65,21 @@ export const registerIpc = (): void => {
   })
 
   handle(CHANNELS.secretsConsent, async (input) => {
-    const { granted } = input as { granted: boolean }
+    const { granted } = input
     setPlaintextConsent(granted)
     return ok(readStatus())
   })
 
   handle(CHANNELS.sessionSignIn, async (input) =>
     toWire(
-      await session.signIn(
-        input as {
-          host: string
-          port: number
-          kind: 'lan' | 'direct' | 'remote-id'
-          username: string
-          password: string
-          displayName?: string
-          networkId?: string
-        },
-      ),
+      // No cast: the schema is the type. This one listed seven fields by hand — the exact
+      // shape that goes stale the day the sign-in request gains an eighth.
+      await session.signIn(input),
     ),
   )
 
   handle(CHANNELS.sessionResume, async (input) =>
-    toWire(await session.resume((input as { deviceId: string }).deviceId)),
+    toWire(await session.resume(input.deviceId)),
   )
 
   handle(CHANNELS.sessionCurrent, async () => toWire(session.current()))
@@ -102,19 +94,16 @@ export const registerIpc = (): void => {
   )
 
   handle(CHANNELS.devicesSetActive, async (input) =>
-    toWire(registry.setActive((input as { deviceId: string }).deviceId)),
+    toWire(registry.setActive(input.deviceId)),
   )
 
   handle(CHANNELS.devicesSetPriorities, async (input) => {
-    const { deviceId, orderedAddressKeys } = input as {
-      deviceId: string
-      orderedAddressKeys: string[]
-    }
+    const { deviceId, orderedAddressKeys } = input
     return toWire(registry.setAddressPriorities(deviceId, orderedAddressKeys))
   })
 
   handle(CHANNELS.devicesForget, async (input) => {
-    const { deviceId } = input as { deviceId: string }
+    const { deviceId } = input
     const result = session.forgetDevice(deviceId)
     if (isErr(result)) return toWire(result)
     // The cached app list goes with the device. Leaving it behind would show the apps of a

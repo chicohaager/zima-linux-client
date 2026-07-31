@@ -16,17 +16,17 @@ import { focusedWindow, handle, wireError, withDevice } from './wire'
 
 export const registerFilesHandlers = (): void => {
   handle(CHANNELS.filesList, async (input) => {
-    const params = input as { path: string; index: number; size: number; sort: files.SortField; direction: files.SortDirection }
+    const params = input
     return withDevice((ctx) => files.listDirectory(ctx, params))
   })
 
   handle(CHANNELS.filesSearch, async (input) => {
-    const { root, needle, maxEntries } = input as { root: string; needle: string; maxEntries: number }
+    const { root, needle, maxEntries } = input
     return withDevice((ctx) => files.searchDirectory(ctx, { root, needle, maxEntries }))
   })
 
   handle(CHANNELS.filesCreateFolder, async (input) => {
-    const { parent, name } = input as { parent: string; name: string }
+    const { parent, name } = input
     // Path assembly happens here and nowhere else. A name containing a slash would create a
     // nested path the user did not ask for, so it is rejected rather than silently accepted.
     if (name.includes('/') || name === '.' || name === '..') {
@@ -42,26 +42,21 @@ export const registerFilesHandlers = (): void => {
   })
 
   handle(CHANNELS.filesTransfer, async (input) => {
-    const params = input as {
-      kind: 'copy' | 'move'
-      sources: string[]
-      destination: string
-      onConflict: 'skip' | 'rename' | 'overwrite'
-    }
+    const params = input
     return withDevice((ctx) => files.startTransferTask(ctx, params))
   })
 
   handle(CHANNELS.filesTasks, async () => withDevice((ctx) => files.listTasks(ctx)))
 
   handle(CHANNELS.filesTrashMove, async (input) => {
-    const { paths } = input as { paths: string[] }
+    const { paths } = input
     return withDevice((ctx) => files.moveToTrash(ctx, paths))
   })
 
   handle(CHANNELS.filesTrashList, async () => withDevice((ctx) => files.listTrash(ctx)))
 
   handle(CHANNELS.filesTrashRestore, async (input) => {
-    const { paths } = input as { paths: string[] }
+    const { paths } = input
     return withDevice(async (ctx) => {
       const restored = await files.restoreFromTrash(ctx, paths)
       return isErr(restored) ? restored : ok({ restored: paths.length })
@@ -71,12 +66,12 @@ export const registerFilesHandlers = (): void => {
   handle(CHANNELS.filesPins, async () => withDevice((ctx) => files.listPins(ctx)))
 
   handle(CHANNELS.filesDownload, async (input) => {
-    const { path } = input as { path: string }
+    const { path } = input
     return withDevice((ctx) => downloadToDisk(ctx, { devicePath: path, window: focusedWindow() }))
   })
 
   handle(CHANNELS.filesUpload, async (input) => {
-    const { destination } = input as { destination: string }
+    const { destination } = input
     return withDevice((ctx) =>
       pickAndUpload(ctx, {
         destination,

@@ -94,7 +94,7 @@ export const registerAppsHandlers = (): void => {
   })
 
   handle(CHANNELS.appsSetRunning, async (input) => {
-    const { id, running } = input as { id: string; running: boolean }
+    const { id, running } = input
     return withDevice(async (ctx) => {
       const changed = await appsApi.setAppRunning(ctx, { id, running })
       return isErr(changed) ? changed : ok({ id, running })
@@ -102,7 +102,7 @@ export const registerAppsHandlers = (): void => {
   })
 
   handle(CHANNELS.appsOpenWebUi, async (input) => {
-    const { id, external } = input as { id: string; external: boolean }
+    const { id, external } = input
     const host = session.activeHost()
     if (host === null) {
       return wireError(appError('unauthorized', 'no active device', 'error.signInRequired'))
