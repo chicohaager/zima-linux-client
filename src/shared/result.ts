@@ -38,6 +38,14 @@ export type AppErrorKind =
   /** Refused to store a secret because the OS has no keyring and consent is missing. */
   | 'plaintext-risk'
   | 'forbidden-path'
+  /** The device says this path does not exist — a normal outcome, e.g. a deleted folder. */
+  | 'not-found'
+  /**
+   * The device answered "no matching operation was found": WE asked for an endpoint it
+   * does not implement. Separated from `not-found` because this one is our defect, not the
+   * user's situation, and it must be visible instead of reading as "nothing there".
+   */
+  | 'endpoint-unknown'
   | 'capability-missing'
   | 'cancelled'
   | 'internal'

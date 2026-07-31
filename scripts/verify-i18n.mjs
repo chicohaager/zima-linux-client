@@ -94,9 +94,15 @@ for (const locale of declared.filter((l) => present.has(l))) {
   )
 }
 
+// The headline must not be greener than the rows underneath it. It used to read
+// "28 locales, 253 keys each" — true of two files on the day the other 26 sat at 111 keys,
+// because coverage is reported rather than demanded. Reporting is the right call for
+// translation work in progress; claiming completeness while reporting it is not.
+const complete = rows.filter((row) => row.includes('100%')).length
 console.log(
   failures.length === 0
-    ? `i18n gate: clean — ${declared.length} locales, ${reference.size} keys each`
+    ? `i18n gate: clean — ${declared.length} locales, ${reference.size} keys in ${REFERENCE}; ` +
+        `${complete} locale(s) at 100%, ${declared.length - complete} partial (see below)`
     : `i18n gate: ${failures.length} failure(s)`,
 )
 for (const line of failures) console.log(`  FAIL  ${line}`)

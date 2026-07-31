@@ -75,6 +75,43 @@ export const envelopeToError = (
   )
 }
 
+/**
+ * The only keys an envelope is allowed to carry. Anything else means the object IS the
+ * payload — see `isWrapped`.
+ */
+const ENVELOPE_KEYS: ReadonlySet<string> = new Set(['success', 'message', 'data'])
+
+/**
+ * True when the body is a wrapper around `data` rather than the payload itself.
+ *
+ * 🔴 Measured 2026-07-30 against a live v1.7.0 host, because assuming this cost three
+ * broken screens. ZimaOS uses THREE answer families, and only the first carries `success`:
+ *
+ *   `{success,message,data}`  /v1/sys/utilization, /v1/users/current, /v1/sys/hardware
+ *   `{data,message}`          /v2_1/files/tasks, /v2/app_management/web/appgrid
+ *   `{data}`                  /v2_1/files/trash, /v2_1/files/trash/stats,
+ *                             /v2_1/files/file/search, /v2/app_management/installed/list
+ *   bare payload              /v2_1/files/file, /v2/photos/*, /v2/zimaos/device/info,
+ *                             /v2_1/files/pin (a raw array), /v2/local_storage/storages
+ *
+ * `isEnvelope` above tests for `success` because the application CODE lives there — that
+ * is the error path and it is v1-only. Unwrapping is a different question, and tying it to
+ * `success` meant every v2 listing arrived at its parser still wrapped: "expected array,
+ * received object" on Apps, Trash and the task list, while the wire probes reported a
+ * clean 200 with a correct shape. Same failure as the refresh-token parser: an unmeasured
+ * sibling inherited a measured one's assumption.
+ *
+ * The test is deliberately NARROW — `data` present AND every key drawn from
+ * `ENVELOPE_KEYS`. A mere `'data' in body` would swallow any payload that happens to own
+ * a `data` field. Verified against all 21 measured 200-answers: no bare payload has a
+ * top-level `data`, and no envelope carries a key outside this set.
+ */
+const isWrapped = (body: unknown): body is { readonly data: unknown } =>
+  typeof body === 'object' &&
+  body !== null &&
+  !Array.isArray(body) &&
+  'data' in body &&
+  Object.keys(body).every((key) => ENVELOPE_KEYS.has(key))
+
 /** Unwraps `data` when an envelope is present, otherwise returns the body unchanged. */
-export const unwrap = (body: unknown): unknown =>
-  isEnvelope(body) ? body.data : body
+export const unwrap = (body: unknown): unknown => (isWrapped(body) ? body.data : body)

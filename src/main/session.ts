@@ -1,10 +1,11 @@
 import type { Capabilities, Device, DeviceAddress } from '@shared/domain'
 import { appError, err, isErr, ok, type Result } from '@shared/result'
 import { TokenHolder, login as apiLogin, refresh as apiRefresh, type Tokens } from '@main/zima/auth'
-import { fetchRoutes, request } from '@main/zima/client'
+import { fetchRoutes, request, type DeviceContext } from '@main/zima/client'
 import { deriveCapabilities, parseRoutes, probeZerotier } from '@main/zima/capabilities'
 import { BASE, ZT } from '@main/zima/endpoints'
 import * as registry from '@main/devices/registry'
+import { joinNetwork as zerotierJoin } from '@main/zerotier/daemon'
 import * as credentials from '@main/secrets/credentials'
 import { logger } from '@main/logging/logger'
 
@@ -113,8 +114,23 @@ export const signIn = async (params: {
   readonly username: string
   readonly password: string
   readonly displayName?: string
+  /** The Remote ID the user typed — the ZeroTier network this host lives in. */
+  readonly networkId?: string
 }): Promise<Result<SessionSummary>> => {
   const { host, port, kind, username, password } = params
+
+  /*
+   * A saved remote-id device is signed into the same way as any other, and the tunnel it
+   * lives in may well be gone — the daemon is stopped when the window closes. Reopened here
+   * as well as in `resume`, because this is the other door into the same room: without it
+   * the very first request (`/v1/gateway/routes`) sits in its timeout and comes back as
+   * "no answer at all — possibly a firewall", which sends the user to inspect a firewall
+   * that never saw the packet.
+   */
+  if (kind === 'remote-id' && params.networkId !== undefined) {
+    const road = await zerotierJoin(params.networkId)
+    if (isErr(road)) return road
+  }
 
   const routes = await fetchRoutes(host, port)
   if (isErr(routes)) return routes
@@ -130,7 +146,18 @@ export const signIn = async (params: {
   if (isErr(tokens)) return tokens
 
   const id = deviceIdFor(params.displayName ?? null, host)
-  const address: DeviceAddress = { kind, host, port, priority: 0 }
+  // The network id is remembered WITH the address, because a remote-id host only exists
+  // inside that network — see DeviceAddress.networkId. Spread rather than an `undefined`
+  // value: exactOptionalPropertyTypes distinguishes absent from present-but-undefined.
+  const address: DeviceAddress = {
+    kind,
+    host,
+    port,
+    priority: 0,
+    ...(kind === 'remote-id' && params.networkId !== undefined
+      ? { networkId: params.networkId }
+      : {}),
+  }
   const stored = registry.upsert({
     id,
     displayName: params.displayName ?? host,
@@ -168,6 +195,66 @@ export const signIn = async (params: {
   return summarise(active)
 }
 
+/**
+ * Rebuilds the ZeroTier tunnel a stored `remote-id` address depends on.
+ *
+ * 🔴 Measured 2026-07-30, and it is the reason the app sat on "loading" for a long time
+ * after a restart:
+ *
+ *   our ZeroTier unit after a restart    inactive
+ *   POST /v1/users/refresh via 10.x.y.1  no answer, aborted after 10 s
+ *   the same request over the LAN        401 in 3 ms
+ *   ping 10.x.y.1                        3 packets, 100 % loss
+ *
+ * The daemon is stopped when the window closes — deliberately; this client has no
+ * background mode, and leaving a network daemon running after the user closed the app
+ * would be one. But nothing brought it back, so the resumed session pointed at an address
+ * that had no road to it, and every request paid its full timeout before failing.
+ *
+ * ⚠️ I nearly reported this as "GET works over the tunnel, POST hangs" — the two
+ * measurements came from before and after the restart, i.e. from two different worlds. The
+ * tunnel state has to be established in the SAME breath as the request that is being
+ * judged, otherwise the comparison is between two unrelated moments.
+ *
+ * A non-remote-id address returns immediately: LAN, direct and tailscale addresses are
+ * reachable without anything of ours running.
+ */
+const reopenRemoteRoad = async (
+  device: Device,
+  address: DeviceAddress,
+): Promise<Result<void>> => {
+  if (address.kind !== 'remote-id') return ok(undefined)
+
+  // The address's own record first; the device's measured ZeroTier state as the fallback
+  // for entries written before the address carried it.
+  // `zerotier` is 'unknown' before it has ever been probed — a string, not a state object.
+  // Narrowed explicitly, because that placeholder is exactly the case where guessing a
+  // network id would be worst.
+  const zt = device.capabilities?.zerotier
+  const measured = typeof zt === 'object' && zt !== null ? zt : null
+  const networkId =
+    address.networkId ??
+    (measured !== null && (measured.kind === 'online' || measured.kind === 'offline')
+      ? measured.networkId
+      : undefined)
+
+  if (networkId === undefined) {
+    return err(
+      appError(
+        'capability-missing',
+        `this device was reached over a Remote ID, but no network id was stored — sign in again with the Remote ID`,
+        'error.remoteIdUnknown',
+        { host: address.host },
+      ),
+    )
+  }
+
+  logger.info('session.reopening-remote-road', { host: address.host })
+  const joined = await zerotierJoin(networkId)
+  if (isErr(joined)) return joined
+  return ok(undefined)
+}
+
 /** Restores a session from the stored refresh token — no password needed. */
 export const resume = async (deviceId: string): Promise<Result<SessionSummary>> => {
   const device = registry.get(deviceId)
@@ -185,6 +272,10 @@ export const resume = async (deviceId: string): Promise<Result<SessionSummary>> 
   if (address === undefined) {
     return err(appError('internal', 'device has no addresses', 'error.internal', { deviceId }))
   }
+
+  // The road has to exist before anything drives on it.
+  const road = await reopenRemoteRoad(device, address)
+  if (isErr(road)) return road
 
   const holder = new TokenHolder(address.host, address.port)
   // Adopt a tokens object that only has the refresh half, then force a renewal. This is
@@ -230,6 +321,28 @@ export const accessToken = async (): Promise<Result<string>> => {
   }
   return active.tokens.accessToken()
 }
+
+/**
+ * Address plus a fresh token for the active device — what every service call needs.
+ *
+ * Built here rather than assembled by each caller, so a request can never mix the host of
+ * one device with the token of another. That combination answers 401 and looks like an
+ * expired session, which sends the user to re-enter a password that was never the problem.
+ */
+export const deviceContext = async (): Promise<Result<DeviceContext>> => {
+  if (active === null) {
+    return err(appError('unauthorized', 'no active session', 'error.signInRequired'))
+  }
+  const token = await active.tokens.accessToken()
+  if (isErr(token)) return token
+  return ok({ host: active.address.host, port: active.address.port, token: token.value })
+}
+
+/** Capabilities of the active device, for handlers that must refuse before they call. */
+export const activeCapabilities = (): Capabilities | null => active?.device.capabilities ?? null
+
+/** Host of the active device — used to build an app's web-UI address. */
+export const activeHost = (): string | null => active?.address.host ?? null
 
 export const signOut = (): void => {
   if (active !== null) {

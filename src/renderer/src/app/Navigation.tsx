@@ -88,7 +88,9 @@ export const SidebarNavigation = ({ section, onSectionChange }: Props): React.JS
 
   return (
     <nav
-      aria-label={t('nav.device')}
+      // The landmark is the navigation, not one of its destinations. This said
+      // `t('nav.device')`, so a screen reader announced the whole sidebar as "Gerät".
+      aria-label="ZimaOS"
       className="flex w-56 shrink-0 flex-col gap-1 p-4"
       style={{ borderRight: '1px solid var(--border-subtle)' }}
     >
@@ -107,6 +109,11 @@ export const SidebarNavigation = ({ section, onSectionChange }: Props): React.JS
             type="button"
             onClick={() => onSectionChange(key)}
             aria-current={active ? 'page' : undefined}
+            // Named explicitly rather than left to the computed name. The device entry's
+            // icon is the letter "Z", so its text content reads "ZGerät" — fine for a
+            // screen reader (the icon is aria-hidden), wrong for anything matching on
+            // rendered text, which is how the tour scenario finds its buttons.
+            aria-label={t(`nav.${key}`)}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors"
             style={{
               background: active ? 'var(--accent-soft)' : 'transparent',

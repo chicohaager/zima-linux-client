@@ -58,7 +58,198 @@ export interface Capabilities {
   readonly routes: readonly string[]
 }
 
-export type ConnectionKind = 'lan' | 'direct' | 'remote-id'
+/**
+ * `tailscale` is a route the client detects and uses, never one it operates — see
+ * `main/tailscale/detect.ts`. It is separate from `direct` so the UI can say where an
+ * address came from, and separate from `remote-id` because that one means ZeroTier.
+ */
+export type ConnectionKind = 'lan' | 'direct' | 'remote-id' | 'tailscale'
+
+/**
+ * One entry of a directory listing.
+ *
+ * Field names are ours; the mapping from the device's own names is done once, in
+ * `main/zima/files.ts`, against the measured answer
+ * (`{name,path,is_dir,size,modified,extensions{…}}`). `modifiedMs` is milliseconds
+ * because the device sends seconds and a raw copy would date every file to 1970.
+ */
+export interface ZimaFile {
+  readonly name: string
+  readonly path: string
+  readonly isDir: boolean
+  readonly size: number
+  readonly modifiedMs: number
+}
+
+/** One page of a directory. `total` is what the device reports, not what we received. */
+export interface DirectoryPage {
+  readonly path: string
+  readonly entries: readonly ZimaFile[]
+  readonly total: number
+  readonly index: number
+  readonly size: number
+}
+
+/** A storage volume as the device describes it. */
+export interface StorageVolume {
+  readonly name: string
+  readonly path: string
+  readonly type: string
+  readonly sizeBytes: number
+  readonly usedBytes: number
+  readonly healthy: boolean
+}
+
+/**
+ * A server-side file operation. ZimaOS runs copy/move/decompress asynchronously and
+ * exposes them as tasks, so the UI can show real progress instead of a spinner with no end.
+ */
+export interface FileTask {
+  readonly id: number
+  readonly type: string
+  readonly status: string
+  readonly errorMessage: string | null
+  readonly createdUtc: number
+  readonly finishedUtc: number
+}
+
+/**
+ * The two power actions the device offers.
+ *
+ * Mirrors `SYSTEM_STATES` in `main/zima/endpoints.ts` — the shipped web UI calls
+ * `setSystemState` with exactly these two values and nothing else.
+ */
+export type SystemStateAction = 'restart' | 'off'
+
+/** How a copy or move resolves a name collision. Values measured off the API validator. */
+export const CONFLICT_POLICIES = ['skip', 'rename', 'overwrite'] as const
+export type ConflictPolicy = (typeof CONFLICT_POLICIES)[number]
+
+export interface TrashEntry {
+  readonly name: string
+  readonly path: string
+  readonly rawPath: string
+  readonly size: number
+  readonly isDir: boolean
+  readonly deletedAtMs: number
+}
+
+/** Live load figures for the device screen. */
+export interface Utilization {
+  readonly cpuPercent: number
+  readonly cpuModel: string
+  readonly cpuCores: number
+  readonly cpuTemperature: number | null
+  /**
+   * Derived from two readings of the device's energy counter — null until a second one
+   * exists. Never the raw counter: that is `cpuEnergyMicrojoules`.
+   */
+  readonly cpuPowerWatt: number | null
+  /** Cumulative CPU energy in microjoules, verbatim. Only meaningful as a difference. */
+  readonly cpuEnergyMicrojoules: number | null
+  /** Unix seconds the counter was read at, as the device reports it. */
+  readonly cpuPowerTimestamp: number | null
+  readonly memoryTotal: number
+  readonly memoryUsed: number
+  readonly memoryPercent: number
+  readonly systemDiskSize: number
+  readonly systemDiskUsed: number
+  readonly systemDiskHealthy: boolean
+}
+
+export interface DeviceInfo {
+  readonly name: string
+  readonly model: string
+  readonly osVersion: string
+  readonly arch: string
+  readonly cpuModel: string
+  readonly cpuCores: number
+  readonly memoryTotal: number
+}
+
+/**
+ * An installed app.
+ *
+ * `title` is a locale map on the device (`{en_us, de_de, custom}`), so the client can show
+ * the app's own German name instead of falling back to English.
+ */
+export interface AppTile {
+  readonly id: string
+  readonly name: string
+  readonly title: Readonly<Record<string, string>>
+  readonly iconUrl: string
+  readonly status: string
+  readonly installStatus: string
+  readonly port: number | null
+  readonly scheme: string
+  readonly index: string
+  readonly appType: string
+}
+
+/** One photo or video in the gallery. */
+export interface PhotoAsset {
+  readonly fileId: string
+  readonly path: string
+  readonly width: number
+  readonly height: number
+  readonly captureTsMs: number
+  readonly mediaType: string
+  readonly isFavorite: boolean
+}
+
+export interface PhotoPage {
+  readonly assets: readonly PhotoAsset[]
+  readonly total: number
+  /** Opaque cursor for the next page. Null when the device sent none. */
+  readonly nextCursor: string | null
+}
+
+/**
+ * How far the photos module has got with indexing.
+ *
+ * Shown in the UI on purpose: without the semantic index, text search is token-exact
+ * (measured), so "0 hits" would look like a broken search rather than an unfinished index.
+ */
+export interface PhotoIndexProgress {
+  readonly status: string
+  readonly totalImages: number
+  readonly totalVideos: number
+  readonly processedImages: number
+  readonly processedVideos: number
+  readonly pendingImages: number
+  readonly pendingVideos: number
+  readonly stages: readonly {
+    readonly kind: string
+    readonly label: string
+    readonly percentage: number
+    readonly status: string
+  }[]
+  /**
+   * Whether semantic search can answer at all.
+   *
+   * Measured 2026-07-30: `/v2/photos/progress` carries a `vlm` block with `ready`,
+   * `enabled` and a `missing` list. On a host where the vision model is not installed,
+   * `POST /v2/photos/search` still answers **200 with `{hits:[], total:0}` in 2 ms** — a
+   * successful request over an empty index. Without this field the interface can only say
+   * "nothing found", which is a claim about the pictures rather than about the feature.
+   */
+  readonly semanticSearch: {
+    readonly ready: boolean
+    readonly enabled: boolean
+    /** Verbatim names of what the device says is missing, e.g. model, mmproj, runtime. */
+    readonly missing: readonly string[]
+    /** The device's own word for the state, kept unmapped. */
+    readonly status: string
+  }
+}
+
+export interface PhotoHit {
+  readonly fileId: string
+  readonly path: string
+  readonly name: string
+  readonly type: string
+  readonly score: number
+}
 
 /** Outcome of an actual request against a candidate address — never inferred. */
 export interface ProbeResult {
@@ -90,6 +281,18 @@ export interface DeviceAddress {
   readonly port: number
   /** Lower number wins when several addresses answer. User-sortable. */
   readonly priority: number
+  /**
+   * For `remote-id` addresses: the ZeroTier network this host only exists inside.
+   *
+   * 🔴 A remote-id address is not reachable by itself. This client stops its ZeroTier
+   * daemon when the window closes — deliberately, there is no background mode — so on the
+   * next start the stored `10.x.y.1` points into a tunnel that no longer exists. Without
+   * the network id there is nothing to rebuild it from, and every request runs into its
+   * full timeout behind a "loading" label. Measured 2026-07-30: a resumed session spent
+   * 10 s on `/v1/users/refresh` and then failed, while the same request over the LAN
+   * answered in 3 ms.
+   */
+  readonly networkId?: string | undefined
 }
 
 export interface Device {

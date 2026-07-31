@@ -78,11 +78,60 @@ describe('envelopeToError', () => {
   })
 })
 
+/**
+ * Unwrapping, per answer family.
+ *
+ * Written after all three v2 listings reached their parsers still wrapped ("expected
+ * array, received object" on Apps, Trash and the task list) while the wire probes showed
+ * a clean 200. Unwrapping had been tied to `success`, which only the v1 family carries.
+ *
+ * Each family gets its OWN case with the shape measured at ITS endpoint — a single
+ * fixture that all of them happen to satisfy is what let this through the first time.
+ * The bare-payload cases are the positive control: they must come back untouched, or the
+ * unwrapper has become wide enough to eat real payloads.
+ */
 describe('unwrap', () => {
-  it('returns data for an envelope and the body itself otherwise', () => {
-    expect(unwrap(STATUS_OK)).toEqual(STATUS_OK.data)
-    const routes = [{ path: '/v1/users' }]
-    expect(unwrap(routes)).toBe(routes)
+  it.each([
+    ['v1 {success,message,data}', { success: 200, message: 'ok', data: { gpuCount: 1 } }, { gpuCount: 1 }],
+    // /v2_1/files/tasks, /v2/app_management/web/appgrid — envelope without `success`
+    ['v2 {data,message}', { data: [{ id: 7 }], message: 'ok' }, [{ id: 7 }]],
+    // /v2_1/files/trash, /v2/app_management/installed/list — `data` alone
+    ['v2 {data}', { data: [{ name: 'a' }] }, [{ name: 'a' }]],
+    ['an empty envelope payload', { data: null }, null],
+  ])('unwraps %s', (_label, body, expected) => {
+    expect(unwrap(body)).toEqual(expected)
+  })
+
+  it.each([
+    // Bare payloads measured at real endpoints. Each owns keys outside the envelope set,
+    // so none of them may be unwrapped.
+    ['a directory page (/v2_1/files/file)', { all: 34, content: [], depth: 1, index: 1, size: 200, total: 34 }],
+    ['a gallery page (/v2/photos/gallery/stream)', { items: [], next_cursor: null, total: 1098 }],
+    ['a photo search (/v2/photos/search)', { hits: [], took_ms: 3, total: 0 }],
+    ['device info (/v2/zimaos/device/info)', { arch: 'amd64', device_model: 'Default string' }],
+    ['zerotier info (/v2/zimaos/zt/info)', { id: 'abc', ip: '10.0.0.1', name: 'n', status: 'ONLINE' }],
+    ['storage stats (/v2/local_storage/storage/stats)', { sys_disk: {}, sys_usb: {} }],
+  ])('leaves %s untouched', (_label, body) => {
+    expect(unwrap(body)).toBe(body)
+  })
+
+  it.each([
+    ['a raw array (/v2_1/files/pin)', [{ name: 'Downloads', path: '/media' }]],
+    ['a raw array (/v2/local_storage/storages)', [{ path: '/media/ZimaOS-HD' }]],
+  ])('leaves %s untouched', (_label, body) => {
+    expect(unwrap(body)).toBe(body)
+  })
+
+  /**
+   * The narrowness of the test, stated as a test.
+   *
+   * A payload may legitimately own a `data` field. `'data' in body` would unwrap it and
+   * hand the parser the inside of someone else's object — an allowance as wide as the
+   * rule it is meant to serve.
+   */
+  it('does not unwrap a payload that merely has a data field', () => {
+    const body = { data: [1, 2], total: 2 }
+    expect(unwrap(body)).toBe(body)
   })
 })
 

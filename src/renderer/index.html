@@ -4,12 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!--
-      No 'unsafe-eval'. connect-src stays 'self' because every device request goes
-      through the main process, so the renderer never talks to the network directly.
+      No 'unsafe-eval'. connect-src stays 'self' because every device request goes through
+      the main process, so the renderer never talks to the network directly.
+
+      img-src also allows zima-media: — the custom scheme the main process serves thumbnails
+      on. That is deliberately NOT a hole: the renderer can only name a path, and the main
+      process is the one that attaches the device token and decides what to fetch. Widening
+      img-src to http: instead would have put the token in the renderer.
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: zima-media:; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <title>ZimaOS Client</title>
   </head>

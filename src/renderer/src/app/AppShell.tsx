@@ -37,7 +37,8 @@ export const AppShell = ({
             className="flex items-center justify-end gap-2 px-6 py-3"
             style={{ borderBottom: '1px solid var(--border-subtle)' }}
           >
-            <LanguageMenu />
+            {/* Top bar: the list has room below it, never above. */}
+            <LanguageMenu placement="below" />
             <ThemeMenu theme={theme} />
           </header>
           <main className="flex-1 overflow-y-auto px-6 py-6">
@@ -59,7 +60,8 @@ export const AppShell = ({
         className="pointer-events-none fixed inset-x-0 bottom-0 flex flex-col items-center gap-2 pb-5"
       >
         <div className="pointer-events-auto flex items-center gap-2">
-          <LanguageMenu />
+          {/* Anchored at the bottom edge, so the list must grow upwards. */}
+          <LanguageMenu placement="above" />
           <ThemeMenu theme={theme} />
         </div>
         <BottomPillNavigation section={section} onSectionChange={onSectionChange} />

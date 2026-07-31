@@ -31,6 +31,48 @@ const api = {
   setActiveDevice: invoke(CHANNELS.devicesSetActive),
   setAddressPriorities: invoke(CHANNELS.devicesSetPriorities),
   forgetDevice: invoke(CHANNELS.devicesForget),
+  powerDevice: invoke(CHANNELS.devicesPower),
+
+  listFiles: invoke(CHANNELS.filesList),
+  searchFiles: invoke(CHANNELS.filesSearch),
+  createFolder: invoke(CHANNELS.filesCreateFolder),
+  transferFiles: invoke(CHANNELS.filesTransfer),
+  fileTasks: invoke(CHANNELS.filesTasks),
+  moveToTrash: invoke(CHANNELS.filesTrashMove),
+  listTrash: invoke(CHANNELS.filesTrashList),
+  restoreFromTrash: invoke(CHANNELS.filesTrashRestore),
+  listPins: invoke(CHANNELS.filesPins),
+  downloadFile: invoke(CHANNELS.filesDownload),
+  uploadFiles: invoke(CHANNELS.filesUpload),
+
+  photoGallery: invoke(CHANNELS.photosGallery),
+  photoFolderGrid: invoke(CHANNELS.photosFolderGrid),
+  photoIndexProgress: invoke(CHANNELS.photosProgress),
+  photoSearch: invoke(CHANNELS.photosSearch),
+  pickBackupFolders: invoke(CHANNELS.photosPickFolders),
+  startPhotoBackup: invoke(CHANNELS.photosBackupStart),
+  photoBackupStatus: invoke(CHANNELS.photosBackupStatus),
+  cancelPhotoBackup: invoke(CHANNELS.photosBackupCancel),
+
+  listApps: invoke(CHANNELS.appsList),
+  setAppRunning: invoke(CHANNELS.appsSetRunning),
+  openAppWebUi: invoke(CHANNELS.appsOpenWebUi),
+
+  utilization: invoke(CHANNELS.systemUtilization),
+  deviceInfo: invoke(CHANNELS.systemDeviceInfo),
+  storageVolumes: invoke(CHANNELS.systemVolumes),
+
+  zerotierState: invoke(CHANNELS.zerotierState),
+  zerotierJoin: invoke(CHANNELS.zerotierJoin),
+  zerotierLeave: invoke(CHANNELS.zerotierLeave),
+  zerotierProvision: invoke(CHANNELS.zerotierProvision),
+  tailscaleState: invoke(CHANNELS.tailscaleState),
+  connectRemoteId: invoke(CHANNELS.connectRemoteId),
+
+  scanLegacyProfiles: invoke(CHANNELS.legacyScan),
+  importLegacyProfile: invoke(CHANNELS.legacyImport),
+
+  openLogFolder: invoke(CHANNELS.logsOpenFolder),
 } as const
 
 export type ZimaApi = typeof api

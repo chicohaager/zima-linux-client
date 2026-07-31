@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { ConnectionKind } from '@shared/domain'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, SectionTitle } from '../../shared/ui/Card'
@@ -8,7 +9,7 @@ interface Props {
   /** Prefilled when the user picked a discovered device. */
   readonly initialHost?: string
   readonly initialPort?: number
-  readonly kind?: 'lan' | 'direct'
+  readonly kind?: ConnectionKind
   readonly displayName?: string | undefined
   readonly onCancel?: (() => void) | undefined
   /**
@@ -20,6 +21,13 @@ interface Props {
    * Reported 2026-07-30 from the running app.
    */
   readonly onSignedIn?: (() => void) | undefined
+  /**
+   * The Remote ID this host was reached through, for `kind: 'remote-id'`.
+   *
+   * Carried all the way into storage on purpose: without it the saved address is a number
+   * inside a tunnel that no longer exists after the app is closed.
+   */
+  readonly networkId?: string | undefined
 }
 
 /**
@@ -37,6 +45,7 @@ export const SignInForm = ({
   displayName,
   onCancel,
   onSignedIn,
+  networkId,
 }: Props): React.JSX.Element => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -53,6 +62,7 @@ export const SignInForm = ({
         username,
         password,
         ...(displayName === undefined ? {} : { displayName }),
+        ...(networkId === undefined ? {} : { networkId }),
       })
       if (!response.ok) throw response.error
       return response.value
