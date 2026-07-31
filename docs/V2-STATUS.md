@@ -9,9 +9,9 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 
 ```
 npm run verify   ✓  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓  160 Tests in 14 Dateien
+npx vitest run   ✓  184 Tests in 19 Dateien
 i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 175 verfolgte Dateien
+privacy gate        clean, 182 verfolgte Dateien
 Pakete              deb · AppImage · tar.gz gebaut und gestartet (siehe Phase 8)
 ```
 
@@ -806,11 +806,8 @@ sucht. Jetzt fällt der Pfad auf `ZIMA_VERIFY_STARTUP` zurück und **scheitert l
 das fehlt. Positivkontrolle gefahren — Rundgang ohne `:pfad`: 0 PNG im Repo, 5 neben dem
 Report, `ok=true`.
 
-> **Nebenbefund, nicht behoben:** die Testsuite schreibt in die **echte** Logdatei des Nutzers —
-> in `main.log` stehen Zeilen mit `VitestExecutor` im Stack. Ein Testlauf sollte das
-> Benutzerverzeichnis nicht anfassen; wer das Log liest, hält Testverkehr sonst für
-> Programmverkehr (mich hat eine `401`-Zeile aus einem Test kurz auf die falsche Fährte
-> geführt).
+> **Nebenbefund, inzwischen behoben:** die Testsuite schrieb in die **echte** Logdatei des
+> Nutzers. Siehe [den eigenen Abschnitt weiter unten](#der-testlauf-schrieb-ins-log-des-nutzers--123-zeilen-pro-lauf).
 
 ## Was ausdrücklich noch nicht existiert
 
@@ -1300,6 +1297,88 @@ im Netz tut.
 * **README und liesmich beschreiben weiterhin den 0.9-Client** (macOS-Abschnitt, alte Screenshots,
   alte Projektstruktur). Angeglichen wurden nur die Paketier-Befehle, weil die nachweislich falsch
   waren (`npm run package:mac` existiert in diesem Zweig nicht). Der Rest gehört zum Release.
+
+## Der Testlauf schrieb ins Log des Nutzers — 123 Zeilen pro Lauf
+
+Stand als „Nebenbefund, nicht behoben" in diesem Dokument. Zuerst gemessen statt geglaubt,
+an der echten Datei, um einen Testlauf herum:
+
+```
+vor  npx vitest run    7007 Zeilen in ~/.config/zima-linux-client/logs/main.log
+nach npx vitest run    7130 Zeilen        → 123 Zeilen aus dem Testlauf
+```
+
+Zwei Sorten, und die zweite ist die gefährliche:
+
+* Stapelspuren `log.initialize({ preload }) already called` — jede Testdatei rief beim Import
+  `log.initialize()` erneut auf.
+* **Echter Programmtext aus einem Fixture:**
+  `zima.request {"host":"device.local","path":"/v1/users/login","method":"POST","status":400}`.
+  Nichts an dieser Zeile sagt, dass sie aus einem Test stammt. Genau so eine Zeile hatte mich
+  schon einmal auf die falsche Fährte geführt.
+
+Ein Log, das Testverkehr trägt, kann die Frage „was hat die Anwendung getan" nicht mehr
+beantworten — und dieses Projekt stützt fast jede Aussage auf dieses Log.
+
+### Die Sperre ist baulich, kein `if (process.env.VITEST)`
+
+`logger.ts` setzt beim Import `log.transports.file.level = false` (die Vorgabe von
+electron-log ist `'silly'`, also „alles auf die Platte"). Geschrieben wird erst, wenn
+`enableFileLogging()` gerufen wird — und das tut **nur** der Hauptprozess, als erste Zeile
+seines Rumpfes. Eine Umgebungsvariable abzufragen hieße raten, in welcher Welt man steckt;
+so müsste ein Test das Schreiben **absichtlich** einschalten, um ins Benutzerverzeichnis zu
+kommen.
+
+Der Aufruf steht **vor** `decidePlatform()`, weil die X11-Entscheidung selbst Beweismaterial
+ist. Das Rechte-Nachziehen alter Logdateien (`tightenLogFiles`) ist in denselben Aufruf
+gewandert: es muss ohnehin laufen, bevor die erste Zeile dieses Laufs danebenliegt.
+
+### Belege
+
+Am gebauten Artefakt, Kaltstart mit frischem Profil und einer absichtlich world-readable
+hinterlegten Altdatei — ohne X11-Flag, der Relaunch findet also statt:
+
+```
+[info] logging.tightened {"count":1}                     ← Sweep wirkt von der neuen Stelle
+[warn] platform.risky-drm-driver {"driver":"vmwgfx",…}
+[warn] platform.relaunch-on-x11 {…"via":"self"…}         ← die Entscheidung steht im File
+[info] app.ready {…"forcedX11":true…}                    ← der Nachfolger schreibt weiter
+[info] startup.verified {"ok":true,"cssRuleCount":51,…}
+
+ls -l  main.log 600 · zima-client-2026-01-01.log 664 → 600
+Report ok=true  css=51  nav=4  locale=de-DE  failures=[]
+```
+
+Und die Datei, um die es ging:
+
+```
+npm run verify (voller Durchlauf)   main.log 7133 → 7133 Zeilen
+```
+
+### Drei Positivkontrollen, drei gezielte Rotfärbungen
+
+Drei Tests, und jeder wurde einzeln zum Anschlagen gebracht, indem die Stelle, die er deckt,
+wieder kaputtgemacht wurde:
+
+| Entfernt | Rot wird | Meldung |
+| --- | --- | --- |
+| `level = false` beim Import | „writes nothing to disk until it is switched on" | `expected [ 'console', 'file' ] to not include 'file'` — und `main.log` wuchs wieder |
+| `level = 'info'` in `enableFileLogging` | „writes 0600 once enabled" | `expected '' to contain 'app.ready …'` |
+| `writeOptions` (der 0600-Modus) | „gets 0600 from the write itself" | `expected '664' to be '600'` |
+
+Die dritte Zeile ist nachgetragen, und zwar wegen eines Fehlversuchs: die erste Fassung des
+0600-Tests blieb **grün**, als ich `writeOptions` entfernte. Gemessen statt weitergegangen —
+`enableFileLogging()` legt die Datei über `logger.filePath()` an, und der Sweep direkt danach
+chmod't alles, was `*.log` heißt. Die beiden Hälften überlappen sich also auf genau der
+Hauptlogdatei, und eine von ihnen lief ungeprüft mit. Der dritte Test benutzt deshalb einen
+Namen, den der Sweep nicht fasst — das ist kein Kunstgriff, sondern der Fall, der im Betrieb
+zählt: eine Rotation **während** des Laufs erzeugt eine Datei, die kein Start-Sweep je sieht.
+
+> **Nebenbefund am Werkzeug:** Der `ValidateAfterEdit`-Hook meldete für beide Dateien
+> `bun build failed … cannot require "child_process"`. Er baut mit **Browser**-Target gegen
+> Hauptprozess-Code. Gegenprobe gefahren, bevor ich etwas „repariert" habe: die unveränderte
+> `HEAD`-Fassung derselben Datei scheitert identisch (`exit=1`). Ein Falsch-Positiv des
+> Prüfwerkzeugs, kein Fehler im Code.
 
 ## Alt-Stand
 

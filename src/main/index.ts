@@ -2,7 +2,7 @@ import { join } from 'node:path'
 import { app, BrowserWindow, shell } from 'electron'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { registerIpc } from '@main/ipc/register'
-import { logger, tightenExistingLogs } from '@main/logging/logger'
+import { enableFileLogging, logger } from '@main/logging/logger'
 import {
   armVerificationWatchdog,
   isEnabled as verifyStartupEnabled,
@@ -99,6 +99,12 @@ const createWindow = (): BrowserWindow => {
   return window
 }
 
+// Before any other line of this process runs: turn on file logging, and tighten what
+// earlier builds left world-readable. Importing the logger does not write to disk, so this
+// call is what separates "the app ran" from "a test imported something" in the log file.
+// Placed ahead of decidePlatform() because the X11 relaunch decision is itself evidence.
+enableFileLogging()
+
 // One instance only: a second launch focuses the existing window rather than
 // starting a second upload queue against the same device.
 if (!app.requestSingleInstanceLock()) {
@@ -129,10 +135,6 @@ if (!app.requestSingleInstanceLock()) {
 
   void (platform.relaunching ? Promise.resolve() : app.whenReady()).then(() => {
     if (platform.relaunching) return
-    // Before anything else writes: earlier builds left their logs world-readable, and they
-    // name hosts and LAN addresses. Placed ahead of the live-verification branch so a
-    // headless run tightens them too.
-    tightenExistingLogs()
     electronApp.setAppUserModelId('com.zimaos.client')
     app.on('browser-window-created', (_event, window) => optimizer.watchWindowShortcuts(window))
 
