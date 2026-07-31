@@ -790,6 +790,21 @@ Sitzung in einer nicht-deutschen Sprache; der steht aus.
 > deshalb „noch keine Geräte gespeichert" und das sah nach Datenverlust aus. Wer das echte
 > Profil messen will, muss `--user-data-dir` mitgeben.
 
+### 🔴 Und ein Fehler, den ich dabei selbst gebaut habe
+
+`ZIMA_VERIFY_SCENARIO=tour` **ohne** `:pfad` ließ das Argument leer, `dirname('')` ergibt `.`,
+und der Rundgang schrieb seine vier Screenshots ins **aktuelle Verzeichnis** — also in die
+Wurzel des Repositorys. Von dort hat mein `git add -A` sie mitgenommen: Bilder eines echten
+Tailnets samt Peer-Adressen in einem Commit. Bemerkt beim Durchsehen der Commit-Statistik,
+zurückgenommen per `--amend` (nichts war gepusht, und `git rev-list --all --objects` findet die
+Blobs nicht mehr); `tour-*.png` und die Report-Dateien stehen jetzt in `.gitignore`.
+
+Der Rückfall auf das Arbeitsverzeichnis ist genau die Sorte Default, die einen Fehler
+**unsichtbar** macht statt harmlos: ein vergessenes Argument wird zu Dateien, wo niemand sie
+sucht. Jetzt fällt der Pfad auf `ZIMA_VERIFY_STARTUP` zurück und **scheitert laut**, wenn auch
+das fehlt. Positivkontrolle gefahren — Rundgang ohne `:pfad`: 0 PNG im Repo, 5 neben dem
+Report, `ok=true`.
+
 > **Nebenbefund, nicht behoben:** die Testsuite schreibt in die **echte** Logdatei des Nutzers —
 > in `main.log` stehen Zeilen mit `VitestExecutor` im Stack. Ein Testlauf sollte das
 > Benutzerverzeichnis nicht anfassen; wer das Log liest, hält Testverkehr sonst für
