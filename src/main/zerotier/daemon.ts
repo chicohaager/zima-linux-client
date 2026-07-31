@@ -393,12 +393,24 @@ export const ensureRunning = async (): Promise<Result<ZerotierRuntime>> => {
   /*
    * 🔴 Launched OUTSIDE this process tree when at all possible.
    *
-   * Measured 2026-07-30: the Electron main process runs with `NoNewPrivs: 1`, which the
+   * Measured 2026-07-30: the Electron main process ran with `NoNewPrivs: 1`, which the
    * kernel inherits into every child and which makes it **ignore file capabilities on
    * exec**. Our daemon, spawned here as a child, was running with `CapEff: 0` — so the
    * whole "give our own binary CAP_NET_ADMIN" plan could never have worked from this side,
    * however correctly the capability was set. The 0.9 client escapes it by having
    * `systemd --user` start its daemon, and that is what this does.
+   *
+   * 🔴 That flag is a property of the CALLER, not of this application — scope added after
+   * measuring the installed .deb on 2026-07-31, where it went the other way. Started from
+   * the desktop entry (`gio launch`, systemd scope `app-zima-linux-client-<pid>.scope`) and
+   * from a plain shell, the main process had `NoNewPrivs: 0`, and the bundled binary run
+   * with this exact argv came up with `CapEff: 0000000000003400` —
+   * cap_net_bind_service, cap_net_admin, cap_net_raw. The same call under
+   * `setpriv --no-new-privs` gave `CapEff: 0`. So "spawned as a child cannot work" is true
+   * of the process tree that was measured that day (started from an editor terminal), not
+   * of every install. Escaping to `systemd --user` stays the first choice because it does
+   * not depend on who launched us — but the fallback below is not dead code, and on a host
+   * like this one it works.
    *
    * See supervisor.ts for the positive control, which had to be run from a caller that
    * already had the flag set — from a clean shell it proves nothing about our case.
