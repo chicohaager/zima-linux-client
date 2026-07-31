@@ -260,9 +260,27 @@ export const runScenario = async (
       return signInIpcDump(window, argument)
     case 'remote-id':
       return remoteIdScenario(window, argument)
-    case 'tour':
+    case 'tour': {
       // The argument is the report path, so the tour can put its screenshots beside it.
-      return runTour(window, argument)
+      //
+      // 🔴 Without this fallback an empty argument became `dirname('')` === '.', and the
+      // tour wrote four PNGs into the current directory — measured 2026-07-31: they landed
+      // in the repository root and were committed, showing a real tailnet with peer
+      // addresses. A default that quietly picks the working directory turns a forgotten
+      // argument into files where nobody looks for them.
+      const path = argument.length > 0 ? argument : (process.env['ZIMA_VERIFY_STARTUP'] ?? '')
+      if (path.length === 0) {
+        return {
+          name,
+          ok: false,
+          observed: {},
+          failures: [
+            'tour: no report path — pass ZIMA_VERIFY_SCENARIO=tour:<path> or set ZIMA_VERIFY_STARTUP',
+          ],
+        }
+      }
+      return runTour(window, path)
+    }
     default:
       // An unknown scenario name is a failure, not a silent pass. A verifier that
       // reports success for a scenario it never ran is worse than no verifier.
