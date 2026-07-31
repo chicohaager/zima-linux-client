@@ -6,14 +6,8 @@ import * as registry from '@main/devices/registry'
 import * as session from '@main/session'
 import { baseUrl } from '@main/zima/client'
 import { uploadFile } from '@main/transfer/upload'
-import {
-  cleanupFileProbes,
-  cleanupProbes,
-  PROBE_ROOT,
-  READ_PROBES,
-  writeProbes,
-  type Probe,
-} from './liveProbes'
+import { PROBE_ROOT, READ_PROBES, type Probe } from './liveProbes'
+import { cleanupFileProbes, cleanupProbes, writeProbes } from './liveWriteProbes'
 import { runParserProbes, type ParserMeasurement } from './parserProbes'
 import { renderShape, shapeOf } from './responseShape'
 
