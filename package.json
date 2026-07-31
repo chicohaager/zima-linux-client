@@ -4,8 +4,10 @@
   "description": "Desktop client for ZimaOS on Linux — files, photos, apps and device management",
   "main": "out/main/index.js",
   "author": {
-    "name": "Holger Kühn"
+    "name": "Holger Kühn",
+    "email": "zima-client@virtual-services.info"
   },
+  "desktopName": "zima-linux-client.desktop",
   "homepage": "https://github.com/chicohaager/zima-linux-client",
   "license": "MIT",
   "type": "module",
@@ -26,6 +28,10 @@
     "verify:privacy": "node scripts/verify-privacy.mjs",
     "package:linux": "npm run build && electron-builder --linux",
     "package:appimage": "npm run build && electron-builder --linux AppImage",
+    "package:deb": "npm run build && electron-builder --linux deb",
+    "package:tar": "npm run build && electron-builder --linux tar.gz",
+    "package:rpm": "npm run build && electron-builder --linux rpm",
+    "package:pacman": "npm run build && electron-builder --linux pacman",
     "package:flatpak": "npm run build && electron-builder --linux flatpak",
     "verify:build": "node scripts/verify-build.mjs",
     "verify": "npm run type-check && npm run lint && npm test && npm run build && npm run verify:build && npm run verify:i18n && npm run verify:privacy",
@@ -85,8 +91,8 @@
     "extraResources": [
       "icon.png",
       {
-        "from": "bin/zerotier",
-        "to": "zerotier"
+        "from": "bin/zerotier/${arch}",
+        "to": "zerotier/${arch}"
       }
     ],
     "linux": {
@@ -100,6 +106,7 @@
       ],
       "category": "Network",
       "icon": "icon.png",
+      "syncDesktopName": true,
       "synopsis": "Desktop client for ZimaOS",
       "description": "Files, photos, apps and device management for ZimaOS devices — over LAN, direct IP or Remote ID."
     },

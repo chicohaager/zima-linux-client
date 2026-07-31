@@ -83,10 +83,18 @@ npm run dev
 # Build for production
 npm run build
 
-# Package for your platform
-npm run package:linux  # Linux (AppImage + DEB)
-npm run package:mac    # macOS
+# Package
+npm run package:deb       # .deb          — no extra tooling needed
+npm run package:tar       # .tar.gz       — no extra tooling needed
+npm run package:appimage  # .AppImage     — no extra tooling needed
+npm run package:rpm       # .rpm          — needs rpmbuild   (apt install rpm)
+npm run package:pacman    # .pacman       — needs bsdtar     (apt install libarchive-tools)
+npm run package:flatpak   # .flatpak      — needs flatpak-builder
+npm run package:linux     # every target above at once — fails unless all of the above are installed
 ```
+
+The three "no extra tooling" targets were built and started on Ubuntu 24.04 on 2026-07-31;
+the other three abort with a named missing program, not silently.
 
 ### Requirements
 
@@ -238,10 +246,18 @@ npm run dev
 # Für Produktion erstellen
 npm run build
 
-# Für Ihre Plattform paketieren
-npm run package:linux  # Linux (AppImage + DEB)
-npm run package:mac    # macOS
+# Paketieren
+npm run package:deb       # .deb          — ohne Zusatzwerkzeug
+npm run package:tar       # .tar.gz       — ohne Zusatzwerkzeug
+npm run package:appimage  # .AppImage     — ohne Zusatzwerkzeug
+npm run package:rpm       # .rpm          — braucht rpmbuild  (apt install rpm)
+npm run package:pacman    # .pacman       — braucht bsdtar    (apt install libarchive-tools)
+npm run package:flatpak   # .flatpak      — braucht flatpak-builder
+npm run package:linux     # alle Ziele auf einmal — schlägt fehl, solange eines der Werkzeuge fehlt
 ```
+
+Die drei Ziele ohne Zusatzwerkzeug sind am 2026-07-31 auf Ubuntu 24.04 gebaut **und gestartet**
+worden; die anderen drei brechen mit dem Namen des fehlenden Programms ab, nicht stillschweigend.
 
 ### Anforderungen
 
