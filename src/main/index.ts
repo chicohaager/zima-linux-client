@@ -3,7 +3,11 @@ import { app, BrowserWindow, shell } from 'electron'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { registerIpc } from '@main/ipc/register'
 import { logger, tightenExistingLogs } from '@main/logging/logger'
-import { isEnabled as verifyStartupEnabled, runStartupVerification } from '@main/app/startupVerification'
+import {
+  armVerificationWatchdog,
+  isEnabled as verifyStartupEnabled,
+  runStartupVerification,
+} from '@main/app/startupVerification'
 import { isEnabled as verifyLiveEnabled, runLiveVerification } from '@main/app/liveVerification'
 import { decidePlatform, markStartupSurvived } from '@main/app/resilientPlatform'
 import { registerMediaProtocol, registerMediaScheme } from '@main/media/protocol'
@@ -65,6 +69,10 @@ const createWindow = (): BrowserWindow => {
   // Wired here rather than in a test harness so the exact same binary a user installs
   // is the one that gets verified on each distro.
   if (verifyStartupEnabled()) {
+    // Armed BEFORE the load event, because "did-finish-load never fires" is one of the
+    // ways this can stall — and a verifier that stalls reports nothing at all, which
+    // reads exactly like "the package does not start".
+    armVerificationWatchdog()
     window.webContents.once('did-finish-load', () => {
       setTimeout(() => void runStartupVerification(window), 1_200)
     })

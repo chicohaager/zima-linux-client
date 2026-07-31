@@ -221,6 +221,18 @@ export const decidePlatform = (): PlatformDecision => {
      * stdio is dropped on purpose: the child's durable record is its own main.log — the
      * same file this line went into — and the pipes of this process are about to close.
      */
+    /*
+     * The lock goes back before the replacement asks for it. `index.ts` takes the
+     * single-instance lock at module scope, i.e. BEFORE this decision is made — so the
+     * process that is about to die still holds it while its successor starts up. A
+     * successor that finds the lock taken calls `app.quit()` and vanishes without a
+     * window, which from the outside is indistinguishable from a crash. The window is
+     * short (this process exits a millisecond later) and Chromium recovers from a stale
+     * lock, but a race that can only be observed as "started nothing" is not one to leave
+     * standing. `app.relaunch()` did not have it: its helper waits for the parent to exit.
+     */
+    app.releaseSingleInstanceLock()
+
     const child = spawn(target.execPath, args, { detached: true, stdio: 'ignore' })
     child.unref()
 

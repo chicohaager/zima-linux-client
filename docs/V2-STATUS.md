@@ -1116,6 +1116,144 @@ Privacy-Gate, weiterhin clean), und in `.gitignore` steht, warum es dort **nicht
 > Klone können unterschiedliche Abhängigkeitsversionen bekommen. Das ist eine Entscheidung, keine
 > Panne, deshalb hier nur benannt und nicht eigenmächtig geändert.
 
+### 🔴 Danach hat das Messgerät selbst geschwiegen — und die Stille sah aus wie ein kaputtes Paket
+
+Kaltstarts der gepackten Nutzlast schrieben **keinen Report**. Genau die Ausgabe, die im Abschnitt
+oben „die App startet nicht" bedeutet hat — und diesmal war sie falsch: der Prozess lief, das
+Fenster stand vollständig da. Stehengeblieben war das **Prüfwerkzeug**, das ohne jede Zeitgrenze
+auf einen Schritt wartete, der nicht zurückkam.
+
+**Erste Konsequenz — ein Lauf endet immer mit einem Urteil.** `armVerificationWatchdog()` wird
+gescharft, **bevor** das Ladeereignis kommt (auch „`did-finish-load` kommt nie" ist eine der
+Formen). Nach `ZIMA_VERIFY_TIMEOUT_MS` (Vorgabe 90 s) wird der Report **trotzdem** geschrieben:
+`ok: false` und der Name des Schrittes, in dem der Lauf steckt. Ein falsches Urteil kann man
+bestreiten; Stille schickt einen ins falsche Bauteil.
+
+**Und dann hat der Wächter genau das getan.** Reproduziert am 2026-07-31 an der entpackten
+`.deb`-Nutzlast, gestartet aus einem Verzeichnis, dessen letzter Teil genau `ZimaOS Client/`
+heißt — der Name, den die Installation anlegt — mit frischem `--user-data-dir`:
+
+```
+[11:37:56.591] [warn]  platform.relaunch-on-x11 {"reason":"known-problematic drm driver: vmwgfx",…}
+[11:37:56.920] [info]  app.ready {"electron":"43.2.0","forcedX11":true,…}
+[11:39:26.989] [error] startup.verification-timeout {"step":"capturing the screenshot","limitMs":90000}
+```
+
+**`webContents.capturePage()` war nicht zurückgekommen.** Alles davor hatte funktioniert, und das
+ist nicht erschlossen, sondern abgelesen: die Sentinel-Datei `startup-in-progress` war **weg** —
+sie wird nur in `ready-to-show` gelöscht, das Fenster hat also gezeichnet — und der Schrittname
+stand bereits hinter dem Probelauf, der Report konnte also gemessen werden. **Warum** die Aufnahme
+hängt, ist **nicht** gemessen: einmal in zwölf Kaltstarts derselben Nutzlast. Eine naheliegende
+Erklärung wurde geprüft und **fällt aus** — mit und ohne `--no-sandbox` je drei Läufe, alle grün.
+
+**Zweite Konsequenz — der Screenshot ist Beleg, nicht Urteil.** Die Aufnahme bekommt eine eigene
+Frist (`ZIMA_VERIFY_CAPTURE_MS`, sonst ein Sechstel des Gesamtbudgets, höchstens 15 s). Hängt sie,
+soll das **das Bild** kosten und nicht den Lauf: alles, was vorher gemessen wurde, steht im Report,
+und `failures` sagt, was fehlt.
+
+> ⚠️ **Dieser Absatz beschreibt die Absicht, nicht das gemessene Verhalten.** Beim echten Hänger auf
+> der AppImage ist diese Frist **nicht** gefeuert; der Lauf endete am Wächter, mit Nullen. Was die
+> Messwerte tatsächlich rettet, steht zwei Abschnitte weiter unten (`record()`).
+
+**Positivkontrolle am ausgelieferten Artefakt**, dieselbe `.deb`-Nutzlast, zwei Läufe:
+
+| Lauf | Ergebnis |
+| --- | --- |
+| normal | `ok=true`, 51 CSS-Regeln, PNG geschrieben (96 545 Bytes) |
+| `ZIMA_VERIFY_CAPTURE_MS=1` | `ok=false`, **51 CSS-Regeln, 4 Navigationsknöpfe, `de-DE`, 1180 px** — kein PNG, `failures: ["screenshot capture did not return within 1 ms — everything else in this report was measured before it"]` |
+
+Die zweite Zeile ist der eigentliche Beleg: die Messwerte sind **da**. Ein Report voller Nullen
+wäre der des Wächters gewesen, also der alte Totalausfall unter neuem Namen.
+
+**Positivkontrolle im Test:** die alte, unbegrenzte Fassung (`await capturePage()`) wieder
+eingesetzt → der neue Test wird rot, und zwar mit *`no report after 3 s`* — wortwörtlich das
+Symptom aus der Produktion.
+
+#### 🔴 Und dann hat die Absicherung selbst die Messung zerstört
+
+Der erste Kaltstart der frisch gebauten **AppImage** lief in genau dieselbe Stelle — und der
+Report war trotzdem der des Wächters, mit lauter Nullen:
+
+```
+[11:52:51.079] [info]  app.ready {…"forcedX11":true}
+[11:53:36.357] [error] startup.verification-timeout {"step":"capturing the screenshot","limitMs":45000}
+```
+
+Die Frist für die Aufnahme lag bei 7,5 s und hat **nicht** gegriffen; der Wächter schlug erst nach
+45 s an. Beide sind `setTimeout` auf derselben Schleife, also war die Schleife dazwischen
+blockiert: der Hauptthread stand rund 43 Sekunden **in** der Aufnahme. Als er weiterlief, waren
+beide Zeitgeber fällig, Node führte den früheren zuerst aus — und dieser Weg begann seinen Report
+**asynchron** zu schreiben, während der Wächter mit `writeFileSync` schrieb und `app.exit` rief.
+Das gemessene Urteil hat das Rennen gegen sein eigenes Sicherheitsnetz verloren.
+
+**Behoben:** Report und Screenshot werden **synchron** geschrieben. Ein synchroner Schreibvorgang
+kann von keinem Zeitgeber unterbrochen werden; wer zuerst dort ankommt, schreibt fertig, und der
+Wächter wird unmittelbar danach abgeschaltet.
+
+**Positivkontrolle:** der Test hält den Augenblick des `app.exit` fest — was in *dieser* Sekunde
+auf der Platte lag — statt am Ende nachzusehen, wenn alle Zusagen längst eingelöst sind. Mit der
+alten asynchronen Fassung wird er rot (`cssRuleCount: 0` statt 51), mit der neuen grün. Damit
+waren es **fünf** Tests auf dem Wächter, 165 gesamt — der sechste kam eine halbe Stunde später
+dazu, siehe unten.
+
+> Die erste Fassung dieses Tests war grün — **auch mit dem alten Verhalten**. Sie wartete das Ende
+> des Laufs ab und sah dann eine heile Datei; genau die Annahme („der Prozess wartet höflich"), die
+> den Fehler überhaupt erst verdeckt hat. Ein Test, der beide Fassungen besteht, prüft nichts.
+
+#### 🔴 Und die Frist für die Aufnahme hat in genau dem Lauf nicht gegriffen, für den sie gebaut war
+
+Zwei Kaltstarts derselben frisch gebauten AppImage, drei Minuten auseinander:
+
+| Uhrzeit | Ergebnis |
+| --- | --- |
+| 12:14 | Aufnahme hängt → Wächter-Report nach 90 s, **lauter Nullen** |
+| 12:17 | `ok=true`, 51 CSS-Regeln, 4 Navigationsknöpfe, `de-DE`, 1180 px, PNG 89 031 Bytes |
+
+Der zweite Lauf belegt, dass die AppImage startet und sauber verifiziert. Der erste widerlegt einen
+Satz, der weiter oben in diesem Dokument stand: „Hängt sie, kostet das **das Bild** und nicht den
+Lauf." Die Frist von 15 s hätte 75 Sekunden vor dem Wächter greifen müssen — sie hat es nicht.
+`currentStep` stand auf `capturing the screenshot`, die Frist war also **scharf**. Warum ihr
+Zeitgeber trotzdem nicht fällig wurde, ist **nicht gemessen** und wird hier nicht erklärt.
+
+**Warum die alte Positivkontrolle das nicht sehen konnte.** `ZIMA_VERIFY_CAPTURE_MS=1` belegt, dass
+der Rückfall*weg* funktioniert — bei 1 ms feuert die Frist, **bevor** die Aufnahme überhaupt
+loslegt. Ein blockierter Hauptthread wurde damit nie nachgestellt. Die Prüfung war grün und prüfte
+eine andere Eigenschaft als die behauptete.
+
+**Behoben, ohne die Ursache zu behaupten:** der Lauf übergibt seine Messwerte an den Wächter
+(`record()`), sobald die Untersuchung des Renderers durch ist — also **bevor** irgendetwas kommt,
+das hängen kann. Wer danach gewinnt, ist gleichgültig: der Report trägt, was gemessen wurde. Ein
+Wächter-Report aus Nullen war nicht nur wertlos, er war **falsch** — `cssRuleCount: 0` liest sich
+als „das Stylesheet hat nie geladen" und beschuldigt ein Bauteil, das gearbeitet hat.
+
+**Positivkontrolle im Test:** `record()` stillgelegt → der neue Test wird rot mit
+`expected +0 to be 51`, wortwörtlich das Symptom aus dem 12:14-Lauf; die anderen fünf bleiben grün,
+der Test deckt also genau diese Eigenschaft und nichts sonst.
+
+**Positivkontrolle am ausgelieferten Artefakt** — der Wächter absichtlich gewinnen lassen, indem
+die Gesamtfrist mitten in ein Szenario gelegt wird (also nach der Übergabe; Zieladresse `192.0.2.1`
+aus dem Dokumentationsbereich RFC 5737, es wird kein echtes Gerät angefasst):
+
+```
+ZIMA_VERIFY_SCENARIO=signin-wrong-password:192.0.2.1 ZIMA_VERIFY_TIMEOUT_MS=3500
+[error] startup.verification-timeout {"step":"running scenario signin-wrong-password","limitMs":3500,"cssRuleCount":51}
+```
+
+Der geschriebene Report ist der des Wächters — `ok:false`, `failures: ["verification timed out
+after 3500 ms while: running scenario signin-wrong-password"]` — und trägt trotzdem
+`cssRuleCount: 51`, `navButtons: 4`, `locale: de-DE`, `viewportWidth: 1180`. Die Protokollzeile
+nennt die Zahl jetzt selbst mit, damit auf einen Blick zu sehen ist, ob ein Wächter-Report Messwerte
+trägt oder wirklich leer ist.
+
+**Sechs Tests** decken den Wächter ab, **166 gesamt**, `npm run verify` grün.
+
+**Nebenbefund, gleicher Weg:** `index.ts` nimmt die Einzelinstanz-Sperre auf Modulebene, also
+**bevor** über den X11-Rückfall entschieden wird. Der sterbende Elternprozess hielt sie damit noch,
+während sein Nachfolger startete — und ein Nachfolger ohne Sperre ruft `app.quit()` und verschwindet
+ohne Fenster. Das Fenster ist klein und war hier nicht die Ursache, aber ein Rennen, dessen einzige
+sichtbare Form „es startet nichts" ist, bleibt nicht stehen: die Sperre wird jetzt vor dem `spawn`
+zurückgegeben.
+
 ### Was an Phase 8 ausdrücklich offen ist
 
 * **Kein installiertes Paket geprüft.** `sudo` steht mir hier nicht zur Verfügung; gestartet wurde
