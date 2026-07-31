@@ -131,7 +131,7 @@
     "title": "Alkalmazások",
     "running": "Fut",
     "stopped": "Leállítva",
-    "cachedAt": "Állapot: {{time}}",
+    "cachedAt": "állapot {{time}} — még nincs válasz a lekérdezésre, a próbálkozás folytatódik",
     "loading": "Betöltés…",
     "none": "Ezen az eszközön nincs telepített alkalmazás.",
     "cached": "Mentett lista",

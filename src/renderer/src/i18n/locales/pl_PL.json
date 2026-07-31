@@ -131,7 +131,7 @@
     "title": "Aplikacje",
     "running": "Działa",
     "stopped": "Zatrzymana",
-    "cachedAt": "Stan: {{time}}",
+    "cachedAt": "stan na {{time}} — brak odpowiedzi na zapytanie, trwają kolejne próby",
     "loading": "Wczytywanie…",
     "none": "Na tym urządzeniu nie ma zainstalowanych aplikacji.",
     "cached": "Zapisana lista",

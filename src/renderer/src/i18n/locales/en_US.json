@@ -131,7 +131,7 @@
     "title": "Apps",
     "running": "Running",
     "stopped": "Stopped",
-    "cachedAt": "as of {{time}} — the device did not answer just now",
+    "cachedAt": "as of {{time}} — no answer to the request yet, still trying",
     "loading": "Loading…",
     "none": "No apps are installed on this device.",
     "cached": "Saved list",

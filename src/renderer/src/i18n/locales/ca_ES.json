@@ -131,7 +131,7 @@
     "title": "Aplicacions",
     "running": "En execució",
     "stopped": "Aturada",
-    "cachedAt": "Estat: {{time}}",
+    "cachedAt": "estat de les {{time}} — encara sense resposta a la consulta, s'hi continua provant",
     "loading": "S’està carregant…",
     "none": "En aquest dispositiu no hi ha cap aplicació instal·lada.",
     "cached": "Llista desada",

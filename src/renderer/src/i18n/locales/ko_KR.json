@@ -131,7 +131,7 @@
     "title": "앱",
     "running": "실행 중",
     "stopped": "중지됨",
-    "cachedAt": "기준: {{time}}",
+    "cachedAt": "{{time}} 기준 — 요청에 아직 응답이 없습니다. 계속 시도 중입니다",
     "loading": "불러오는 중…",
     "none": "이 기기에는 설치된 앱이 없습니다.",
     "cached": "저장된 목록",

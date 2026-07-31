@@ -1496,6 +1496,64 @@ durch. Steht so in `docs/TESTER.md`, weil jeder Ubuntu-24.04-Tester sie sehen wi
 
 **Weiterhin NICHT gemessen:** dasselbe auf einer RPM- oder Arch-Distribution.
 
+## 🔴 „Das Gerät hat nicht geantwortet" — während das Gerät in 3 ms antwortete
+
+Gemeldet aus dem laufenden Fenster: *„Apps: Gespeicherte Liste · Stand 15:43 — das Gerät hat
+gerade nicht geantwortet"*, um 20:06 Uhr.
+
+Das Protokoll nennt den Vorgang genau:
+
+```
+20:06:02 … 20:06:44   apps.served-from-cache {"kind":"still-refreshing"}   (20×, alle 2,2 s)
+20:06:09/18/27/36/45  zima.request-failed {"path":"/v2/app_management/installed/list",
+                                           "ms":8001,"reason":"This operation was aborted"}
+```
+
+**Gegenprobe von diesem Rechner, zur selben Zeit, an dieselbe Adresse:**
+
+```
+GET /v1/sys/version                    HTTP 401   0,007 s
+GET /v1/users/login                    HTTP 401   0,005 s
+GET /v2/app_management/installed/list  HTTP 401   0,003 s
+```
+
+Das Gerät war also **erreichbar und schnell**. Die Oberfläche behauptete etwas über das Gerät, was
+zeitgleich widerlegbar war — dieselbe Familie wie „ein generischer Fehler beschuldigt das fernste
+Bauteil", nur diesmal in einem Satz, den ich selbst geschrieben habe.
+
+**Das Verhalten war richtig, die Aussage falsch.** Die Schleife hat um 20:06:45 aufgehört: der
+nächste Versuch kam durch, die Liste wurde aktuell, seither keine Zeile mehr. Nach 43 Sekunden
+Stocken hat das Gerät geantwortet — dieselbe sporadische Verzögerung des *authentifizierten*
+`installed/list`, die schon am Nachmittag gemessen und deren Ursache **nicht** identifiziert wurde.
+Genau deshalb bleibt die Wiederholung ohne Obergrenze: eine Aufgabe-Schwelle hätte hier einen
+Fehler angezeigt, wo die Anwendung sich gerade erholte. Am Verhalten wurde nichts geändert.
+
+**Geändert wurde der Satz** — von einer Behauptung über das Gerät zu einer Aussage über die
+eigene Anfrage: „Stand 15:43 — noch keine Antwort auf die Abfrage, wird weiter versucht."
+
+### 🔴 Und dabei fiel auf: 26 von 28 Sprachen trugen die Hälfte des Satzes nie
+
+`apps.cachedAt` lautete außerhalb von `de_DE` und `en_US` schlicht `Stand: {{time}}` — ohne
+jeden Grund für das Datum. Das i18n-Gate meldet für **alle 28** Kataloge 100 % (280/280), weil es
+**Schlüssel** zählt. Vollständigkeit ist nicht Gleichwertigkeit; eine Übersetzung kann komplett
+sein und **weniger sagen** als die Quelle.
+
+Zwei mechanische Prüfungen dagegen wurden gebaut und **beide wieder verworfen**, weil sie die
+falsche Eigenschaft messen:
+
+| Versuch | Ergebnis |
+| --- | --- |
+| „Quelle hat einen Gedankenstrich-Nebensatz → Übersetzung auch" | **39 Fehlalarme** — viele Sprachen setzen dort einen Doppelpunkt und tragen den Satz vollständig |
+| „Übersetzung < 45 % der Quelllänge (CJK < 30 %)" | **62 Fehlalarme** — chinesische Übersetzungen sind legitim 20–30 % so lang |
+
+Beide messen Zeichensetzung bzw. Länge statt Bedeutung. Ein lautes Gate, das man zu ignorieren
+lernt, ist schlechter als keins — dieselbe Begründung steht schon im Kopf von `verify-i18n.mjs`
+für einen früheren verworfenen Versuch. **Also kein neues Gate.** Die 28 Kataloge sind von Hand
+angeglichen; die Lücke bleibt benannt und gehört zur ohnehin offenen muttersprachlichen Prüfung.
+Eine *saubere* mechanische Lösung wäre eine Frische-Markierung nach gettext-Art (Quelltext-Hash je
+Schlüssel und Katalog) — sie misst „die Quelle hat sich seit der Übersetzung geändert" und nicht
+den Text selbst; nicht gebaut.
+
 ## Alt-Stand
 
 Der 0.9.23-Code liegt unverändert unter `legacy-0.9/` (per `git mv`, Historie erhalten) und ist

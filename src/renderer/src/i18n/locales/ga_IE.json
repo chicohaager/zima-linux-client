@@ -131,7 +131,7 @@
     "title": "Aipeanna",
     "running": "Ag rith",
     "stopped": "Stoptha",
-    "cachedAt": "Staid: {{time}}",
+    "cachedAt": "amhail {{time}} — gan freagra ar an iarratas fós, ag triail arís",
     "loading": "Á lódáil…",
     "none": "Níl aon aip suiteáilte ar an ngléas seo.",
     "cached": "Liosta sábháilte",

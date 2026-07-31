@@ -131,7 +131,7 @@
     "title": "Aplikace",
     "running": "Běží",
     "stopped": "Zastaveno",
-    "cachedAt": "Stav: {{time}}",
+    "cachedAt": "stav {{time}} — na dotaz zatím není odpověď, zkouší se dál",
     "loading": "Načítání…",
     "none": "Na tomto zařízení nejsou nainstalované žádné aplikace.",
     "cached": "Uložený seznam",

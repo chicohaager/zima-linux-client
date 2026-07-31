@@ -131,7 +131,7 @@
     "title": "Uygulamalar",
     "running": "Çalışıyor",
     "stopped": "Durduruldu",
-    "cachedAt": "Durum: {{time}}",
+    "cachedAt": "{{time}} itibarıyla — isteğe henüz yanıt yok, denemeye devam ediliyor",
     "loading": "Yükleniyor…",
     "none": "Bu cihazda kurulu uygulama yok.",
     "cached": "Kaydedilmiş liste",

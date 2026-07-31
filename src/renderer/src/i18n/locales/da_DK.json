@@ -131,7 +131,7 @@
     "title": "Apps",
     "running": "Kører",
     "stopped": "Stoppet",
-    "cachedAt": "Status: {{time}}",
+    "cachedAt": "pr. {{time}} — endnu intet svar på forespørgslen, forsøger stadig",
     "loading": "Indlæser…",
     "none": "Der er ingen apps installeret på denne enhed.",
     "cached": "Gemt liste",
