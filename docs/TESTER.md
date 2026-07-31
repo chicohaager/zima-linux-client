@@ -40,6 +40,25 @@ sudo apt install ./zima-linux-client_2.0.0-alpha.1_amd64.deb
 
 `apt` zieht dabei `libcap2-bin` mit — das braucht das Paket, siehe Punkt 4.
 
+**Diese Meldung dabei ist harmlos:**
+
+```
+N: Der Download wird als root und nicht Sandbox-geschützt durchgeführt, da auf die Datei
+   »…_amd64.deb« durch den Benutzer »_apt« nicht zugegriffen werden kann.
+   - pkgAcquire::Run (13: Keine Berechtigung)
+```
+
+`apt` liest lokale Dateien normalerweise als Benutzer `_apt`. Auf Ubuntu 24.04 steht dein
+Home-Verzeichnis auf `750`, da kommt `_apt` nicht durch — also macht `apt` es selbst als root und
+sagt das an. **Die Installation läuft ganz normal durch**; nachgemessen am 2026-07-31 auf
+Ubuntu 24.04: nach genau dieser Meldung stand `ii zima-linux-client 2.0.0~alpha.1` im
+Paketverzeichnis, und alles aus Punkt 4 war eingerichtet. Wer die Meldung nicht sehen will, legt
+das Paket vorher woanders hin:
+
+```bash
+cp zima-linux-client_2.0.0-alpha.1_amd64.deb /tmp/ && sudo apt install /tmp/zima-linux-client_2.0.0-alpha.1_amd64.deb
+```
+
 **Fedora:**
 
 ```bash
@@ -74,9 +93,11 @@ willst, dieses Verzeichnis von Hand löschen.
 zima-linux-client
 ```
 
-🔎 **Bitte einmal ausdrücklich prüfen:** ob der Terminal-Befehl existiert. Das Paket legt den
-Verweis `/usr/bin/zima-linux-client` an, aber das ist auf einer installierten Maschine **noch nicht
-nachgemessen** worden — genau deshalb steht es hier.
+Der Verweis `/usr/bin/zima-linux-client` wird bei der Installation angelegt und wurde am
+2026-07-31 auf Ubuntu 24.04 nachgemessen: er zeigt über `/etc/alternatives/` auf
+`/opt/ZimaOS Client/zima-linux-client`, und der Start über den bloßen Namen bringt das Fenster
+hoch. Auf einer anderen Distribution ist das **nicht** nachgemessen — falls der Befehl bei dir
+nicht existiert, ist das ein Befund.
 
 **Wenn gar kein Fenster kommt**, ist die Ausgabe im Terminal das Wichtigste. Zwei Meldungen sind
 bekannt und interessant:

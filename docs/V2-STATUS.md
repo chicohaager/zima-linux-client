@@ -1468,13 +1468,33 @@ APPARMOR_PROFILE_TARGET='/etc/apparmor.d/zima-linux-client'
 setcap cap_net_admin,cap_net_raw,cap_net_bind_service+eip "$BIN"
 ```
 
-**Was ausdrücklich NICHT gemessen ist:** die Wirkung *nach* einer Installation. Auf dieser Maschine
-gibt es kein `sudo` ohne Passwort, das reparierte Paket ist also nicht installiert worden. Belegt
-ist der Inhalt des Skripts im Paket, nicht das Ergebnis seines Laufs. **Prüfhandlung nach dem
-ersten `sudo dpkg -i`:** `ls -l /usr/bin/zima-linux-client /etc/apparmor.d/zima-linux-client` und
-`ls -l "/opt/ZimaOS Client/chrome-sandbox"`. Und: die Vorlage entscheidet über `4755` anhand des
-**Installationsrechners** — auf einem mit funktionierenden Namespaces bleibt es auch künftig bei
-`0755`. Das ist das Verhalten von electron-builder, kein Rest dieses Fehlers.
+### 🟢 Nachgetragen am selben Abend: das reparierte Paket ist installiert und gemessen
+
+Das Paket wurde mit `sudo apt install ./…_amd64.deb` installiert (auf dieser Maschine gibt es kein
+`sudo` ohne Passwort, ich konnte es nicht selbst). Danach nachgesehen — und zwar **welche** Fassung
+dort liegt, nicht nur *dass* etwas liegt:
+
+```
+/opt/ZimaOS Client/resources/app.asar   65fc8a7f…3087   ← identisch mit dem neuen .deb
+/usr/bin/zima-linux-client → /etc/alternatives/… → /opt/ZimaOS Client/zima-linux-client
+/etc/apparmor.d/zima-linux-client       261 Bytes, root
+/opt/ZimaOS Client/chrome-sandbox       0755
+getcap …/zerotier/x64/zerotier-one      cap_net_bind_service,cap_net_admin,cap_net_raw=eip
+Start über den bloßen Namen             ok=true  css=51  nav=4  de-DE  failures=[]
+```
+
+Damit sind alle drei Verluste zurück. `chrome-sandbox` bleibt bei `0755` — die Vorlage entscheidet
+über `4755` anhand des **Installationsrechners**, und hier funktionieren unprivilegierte
+Namespaces. Das ist das Verhalten von electron-builder, kein Rest dieses Fehlers.
+
+**Nebenbefund aus demselben Lauf, harmlos aber erklärungsbedürftig:** apt meldet
+`N: Der Download wird als root und nicht Sandbox-geschützt durchgeführt, da auf die Datei … durch
+den Benutzer »_apt« nicht zugegriffen werden kann. - pkgAcquire::Run (13: Keine Berechtigung)`.
+Gemessen: `/home/<benutzer>` steht auf `750`, `_apt` kommt also nicht bis zur Datei; apt lädt sie
+dann selbst als root. Es ist eine **Notiz**, kein Abbruch — die Installation lief nachweislich
+durch. Steht so in `docs/TESTER.md`, weil jeder Ubuntu-24.04-Tester sie sehen wird.
+
+**Weiterhin NICHT gemessen:** dasselbe auf einer RPM- oder Arch-Distribution.
 
 ## Alt-Stand
 
