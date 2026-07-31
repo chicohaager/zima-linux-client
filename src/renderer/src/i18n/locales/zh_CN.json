@@ -131,7 +131,7 @@
     "title": "应用",
     "running": "运行中",
     "stopped": "已停止",
-    "cachedAt": "截至 {{time}}",
+    "cachedAt": "截至 {{time}} — 请求尚无响应，正在继续重试",
     "loading": "加载中…",
     "none": "此设备上未安装任何应用。",
     "cached": "已保存的列表",

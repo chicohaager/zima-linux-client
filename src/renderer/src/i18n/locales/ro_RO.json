@@ -131,7 +131,7 @@
     "title": "Aplicații",
     "running": "În execuție",
     "stopped": "Oprită",
-    "cachedAt": "Stare: {{time}}",
+    "cachedAt": "la {{time}} — încă niciun răspuns la cerere, se încearcă în continuare",
     "loading": "Se încarcă…",
     "none": "Pe acest dispozitiv nu este instalată nicio aplicație.",
     "cached": "Listă salvată",

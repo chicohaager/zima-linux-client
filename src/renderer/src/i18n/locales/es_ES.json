@@ -131,7 +131,7 @@
     "title": "Aplicaciones",
     "running": "En ejecución",
     "stopped": "Detenida",
-    "cachedAt": "Estado: {{time}}",
+    "cachedAt": "estado de las {{time}} — aún sin respuesta a la consulta, se sigue intentando",
     "loading": "Cargando…",
     "none": "No hay aplicaciones instaladas en este dispositivo.",
     "cached": "Lista guardada",

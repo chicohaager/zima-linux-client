@@ -131,7 +131,7 @@
     "title": "Apper",
     "running": "Kjører",
     "stopped": "Stoppet",
-    "cachedAt": "Status: {{time}}",
+    "cachedAt": "per {{time}} — ennå ingen svar på forespørselen, prøver videre",
     "loading": "Laster…",
     "none": "Ingen apper er installert på denne enheten.",
     "cached": "Lagret liste",

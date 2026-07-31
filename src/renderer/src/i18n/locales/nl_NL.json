@@ -131,7 +131,7 @@
     "title": "Apps",
     "running": "Actief",
     "stopped": "Gestopt",
-    "cachedAt": "Stand: {{time}}",
+    "cachedAt": "stand {{time}} — nog geen antwoord op de aanvraag, er wordt doorgeprobeerd",
     "loading": "Laden…",
     "none": "Op dit apparaat zijn geen apps geïnstalleerd.",
     "cached": "Opgeslagen lijst",

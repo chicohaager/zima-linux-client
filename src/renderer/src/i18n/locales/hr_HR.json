@@ -131,7 +131,7 @@
     "title": "Aplikacije",
     "running": "Radi",
     "stopped": "Zaustavljeno",
-    "cachedAt": "Stanje: {{time}}",
+    "cachedAt": "stanje u {{time}} — još nema odgovora na upit, pokušava se dalje",
     "loading": "Učitavanje…",
     "none": "Na ovom uređaju nije instalirana nijedna aplikacija.",
     "cached": "Spremljeni popis",

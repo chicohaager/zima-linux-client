@@ -131,7 +131,7 @@
     "title": "Appar",
     "running": "Körs",
     "stopped": "Stoppad",
-    "cachedAt": "Status: {{time}}",
+    "cachedAt": "per {{time}} — ännu inget svar på förfrågan, försöker vidare",
     "loading": "Läser in…",
     "none": "Inga appar är installerade på den här enheten.",
     "cached": "Sparad lista",

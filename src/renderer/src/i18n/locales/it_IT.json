@@ -131,7 +131,7 @@
     "title": "App",
     "running": "In esecuzione",
     "stopped": "Arrestata",
-    "cachedAt": "Aggiornato: {{time}}",
+    "cachedAt": "aggiornato alle {{time}} — nessuna risposta alla richiesta, tentativi in corso",
     "loading": "Caricamento…",
     "none": "Su questo dispositivo non è installata alcuna app.",
     "cached": "Elenco salvato",

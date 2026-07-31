@@ -131,7 +131,7 @@
     "title": "應用程式",
     "running": "執行中",
     "stopped": "已停止",
-    "cachedAt": "截至 {{time}}",
+    "cachedAt": "截至 {{time}} — 請求尚無回應，正在繼續重試",
     "loading": "載入中…",
     "none": "此裝置上未安裝任何應用程式。",
     "cached": "已儲存的清單",

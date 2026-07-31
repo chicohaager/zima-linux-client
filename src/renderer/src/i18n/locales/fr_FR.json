@@ -131,7 +131,7 @@
     "title": "Applications",
     "running": "En cours",
     "stopped": "Arrêtée",
-    "cachedAt": "État : {{time}}",
+    "cachedAt": "état de {{time}} — pas encore de réponse à la requête, nouvelle tentative en cours",
     "loading": "Chargement…",
     "none": "Aucune application n’est installée sur cet appareil.",
     "cached": "Liste enregistrée",

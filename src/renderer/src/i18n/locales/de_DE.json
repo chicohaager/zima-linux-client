@@ -131,7 +131,7 @@
     "title": "Apps",
     "running": "Läuft",
     "stopped": "Gestoppt",
-    "cachedAt": "Stand {{time}} — das Gerät hat gerade nicht geantwortet",
+    "cachedAt": "Stand {{time}} — noch keine Antwort auf die Abfrage, wird weiter versucht",
     "loading": "Wird geladen…",
     "none": "Auf diesem Gerät sind keine Apps installiert.",
     "cached": "Gespeicherte Liste",
