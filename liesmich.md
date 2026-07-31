@@ -49,9 +49,11 @@ chmod +x ZimaOS\ Client-*.AppImage
 
 **Debian/Ubuntu (.deb):**
 ```bash
-sudo dpkg -i zima-linux-client_*_amd64.deb
-sudo apt-get install -f  # Abhängigkeiten installieren falls nötig
+sudo apt install ./zima-linux-client_*_amd64.deb
 ```
+
+Bequemer und mit Nachmessung: `scripts/install.sh` (siehe `docs/TESTER.md`) sucht das passende
+Paket, vergleicht die Prüfsumme, installiert es und prüft danach, ob die Anwendung starten kann.
 
 ### macOS
 
@@ -97,7 +99,9 @@ worden; die anderen drei brechen mit dem Namen des fehlenden Programms ab, nicht
 ## Anforderungen
 
 - **Linux**: libfuse2, smbclient
-- **ZeroTier**: Wird automatisch bei der Paketinstallation installiert
+- **ZeroTier**: bringt das Paket **selbst mit** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`)
+  und erteilt ihm beim Installieren `CAP_NET_ADMIN`. Es wird **nichts** nachinstalliert, und ein
+  bereits vorhandenes ZeroTier des Systems bleibt unangetastet.
 
 ## Verwendung
 

@@ -51,9 +51,12 @@ chmod +x ZimaOS\ Client-*.AppImage
 
 **Debian/Ubuntu (.deb):**
 ```bash
-sudo dpkg -i zima-linux-client_*_amd64.deb
-sudo apt-get install -f  # Install dependencies if needed
+sudo apt install ./zima-linux-client_*_amd64.deb
 ```
+
+More convenient, and it measures the result: `scripts/install.sh` (see `docs/TESTER.md`) finds
+the package matching the distribution, verifies the checksum, installs it and then checks
+whether the application can actually start.
 
 #### macOS
 
@@ -99,7 +102,9 @@ the other three abort with a named missing program, not silently.
 ### Requirements
 
 - **Linux**: libfuse2, smbclient
-- **ZeroTier**: Automatically installed during package installation
+- **ZeroTier**: the package **ships its own** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`)
+  and grants it `CAP_NET_ADMIN` on install. Nothing is pulled in, and an existing system-wide
+  ZeroTier is left untouched.
 
 ### Usage
 
