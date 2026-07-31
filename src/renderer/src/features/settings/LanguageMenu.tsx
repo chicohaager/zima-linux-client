@@ -9,8 +9,20 @@ import { changeLocale } from '../../i18n'
  *
  * Languages are listed by their endonym, and an unreviewed translation is marked as such
  * next to it. Hiding that would present machine output as finished work.
+ *
+ * 🔴 `placement` is required, not defaulted. The list used to open upwards unconditionally,
+ * which is right below the pill at the bottom of a narrow window and wrong in the sidebar
+ * layout's top bar — there it opened off the top edge and only a few millimetres of it were
+ * on screen, so the language could not be changed at all. Reported from the running app on
+ * 2026-07-30. A default would have let the next caller inherit the same bug silently; this
+ * way a new call site does not compile until it says where it sits.
  */
-export const LanguageMenu = (): React.JSX.Element => {
+export const LanguageMenu = ({
+  placement,
+}: {
+  /** `above` for controls anchored at the bottom edge, `below` for a top bar. */
+  readonly placement: 'above' | 'below'
+}): React.JSX.Element => {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const current = localeInfo(i18n.language)
@@ -35,7 +47,14 @@ export const LanguageMenu = (): React.JSX.Element => {
 
       {open && (
         <ul
-          className="absolute right-0 bottom-full z-20 mb-2 max-h-80 w-60 overflow-y-auto rounded-2xl p-1.5"
+          className={
+            'absolute right-0 z-20 w-60 overflow-y-auto rounded-2xl p-1.5 ' +
+            // Capped against the viewport as well as at 20rem: 28 entries are taller than a
+            // short window, and a list that runs past the edge is unusable in the same way
+            // the wrong direction was.
+            'max-h-[min(20rem,60vh)] ' +
+            (placement === 'above' ? 'bottom-full mb-2' : 'top-full mt-2')
+          }
           style={{ background: 'var(--surface-card)', boxShadow: 'var(--shadow-float)' }}
         >
           {LOCALES.map((locale) => {

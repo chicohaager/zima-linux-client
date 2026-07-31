@@ -14,6 +14,7 @@
   },
   "scripts": {
     "dev": "electron-vite dev",
+    "dev:x11": "electron-vite dev -- --ozone-platform=x11",
     "build": "npm run type-check && electron-vite build",
     "start": "electron-vite preview",
     "type-check": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
@@ -82,7 +83,11 @@
       "package.json"
     ],
     "extraResources": [
-      "icon.png"
+      "icon.png",
+      {
+        "from": "bin/zerotier",
+        "to": "zerotier"
+      }
     ],
     "linux": {
       "target": [
@@ -100,12 +105,20 @@
     },
     "deb": {
       "maintainer": "Holger Kühn <zima-client@virtual-services.info>",
-      "priority": "optional"
+      "priority": "optional",
+      "depends": [
+        "libcap2-bin"
+      ],
+      "afterInstall": "build/linux-after-install.sh"
     },
     "rpm": {
       "fpm": [
         "--license=MIT"
-      ]
+      ],
+      "afterInstall": "build/linux-after-install.sh"
+    },
+    "pacman": {
+      "afterInstall": "build/linux-after-install.sh"
     }
   }
 }

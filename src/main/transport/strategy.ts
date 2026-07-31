@@ -1,6 +1,8 @@
 import type { ConnectionKind, DeviceAddress, DiscoveredDevice, ProbeResult } from '@shared/domain'
 import { appError, err, isErr, ok, type Result } from '@shared/result'
 import { discover } from '@main/discovery/mdns'
+import * as zerotier from '@main/zerotier/daemon'
+import { candidateAddresses, readRuntime as readTailscale } from '@main/tailscale/detect'
 import { MDNS_PORT } from '@main/zima/endpoints'
 import { probe } from './probe'
 import { byPriority } from '@main/devices/ordering'
@@ -58,18 +60,133 @@ export const directStrategy = (host: string, port = MDNS_PORT): Result<StrategyO
 }
 
 /**
- * Remote ID over ZeroTier.
+ * Peers on an already-running Tailscale tunnel.
  *
- * NOT wired up yet. It needs the bundled zerotier-one lifecycle, which is phase 3b of docs/V2-PLAN.md.
- * It returns an explicit `unavailableReason` rather than an empty candidate list,
- * because an empty list would render as "no device found" — a different statement from
- * "this route does not exist yet in this build".
+ * Detection only: nothing is started, no DNS is touched, no route is claimed. The reason
+ * is a reported user complaint about the official client — it takes ZeroTier over for its
+ * remote access, which displaces the user's own DNS, so their AdGuard filtering stops
+ * working and they have to pick one or the other. Using a tunnel that is already up costs
+ * the user nothing they had before.
+ *
+ * Peers are candidates, not devices. `probe` decides, exactly as it does for LAN and
+ * direct addresses — measured 2026-07-30 on a real tailnet: of four online peers, three
+ * answered as ZimaOS (including one named "ZimaBoard", which a hostname filter would have
+ * dropped) and `homeassistant` was refused.
  */
-export const remoteIdStrategy = (remoteId: string): StrategyOutcome => ({
-  kind: 'remote-id',
-  candidates: [],
-  unavailableReason: `remote-id not implemented in this build (requested: ${remoteId.slice(0, 16)})`,
-})
+export const tailscaleStrategy = async (port = MDNS_PORT): Promise<StrategyOutcome> => {
+  const runtime = await readTailscale()
+  if (isErr(runtime)) {
+    return { kind: 'tailscale', candidates: [], unavailableReason: runtime.error.message }
+  }
+  if (!runtime.value.installed) {
+    // Not installed is a state, not a fault. Named anyway, so the UI can say why the route
+    // is missing instead of showing an empty list that reads as "no device found".
+    return { kind: 'tailscale', candidates: [], unavailableReason: 'tailscale is not installed' }
+  }
+  if (runtime.value.problem !== null) {
+    return { kind: 'tailscale', candidates: [], unavailableReason: runtime.value.problem }
+  }
+
+  const addresses = candidateAddresses(runtime.value)
+  return {
+    kind: 'tailscale',
+    candidates: addresses.map((host, index) => ({
+      kind: 'tailscale' as const,
+      host,
+      port,
+      priority: index,
+    })),
+    // An empty list with a Running backend means the tailnet has no other online peer —
+    // a fact about the tailnet, not a failure of this strategy.
+    unavailableReason:
+      addresses.length === 0
+        ? `tailscale is ${runtime.value.backendState ?? 'in an unknown state'} with no online peers`
+        : null,
+  }
+}
+
+/**
+ * Remote ID over ZeroTier — the third way in, alongside the LAN scan and a typed address.
+ *
+ * The user's mental model, and the one the 0.9 client implemented: **type the Remote ID,
+ * then sign in.** Joining a ZeroTier network is machinery, not a step the user performs —
+ * an earlier version of this client exposed network join/leave as its own panel, which is
+ * the wrong shape entirely.
+ *
+ * Measured 2026-07-30 on a real ZimaOS host:
+ *
+ *   the Remote ID IS the device's ZeroTier network id   `<remote-id>`
+ *   the device reports its own address in that network  `ip: <x.y.0.1>`
+ *   the network route is                                `<x.y>.0.0/16`
+ *
+ * So the device takes the first host address of its own network — which is also what the
+ * 0.9 client derived, independently. Both agree, and the address is still only a candidate:
+ * it goes through the same probe as every other route, because the device cannot be asked
+ * where it is until it can be reached.
+ */
+export const remoteIdStrategy = async (
+  remoteId: string,
+  port = MDNS_PORT,
+): Promise<StrategyOutcome> => {
+  const networkId = remoteId.trim().toLowerCase()
+  // 16 hex characters — the ZeroTier network id format. Validated before anything is
+  // started, so a typo does not spawn a daemon and join nothing.
+  if (!/^[0-9a-f]{16}$/.test(networkId)) {
+    return {
+      kind: 'remote-id',
+      candidates: [],
+      unavailableReason: `"${remoteId.trim().slice(0, 24)}" is not a 16-character Remote ID`,
+    }
+  }
+
+  const joined = await zerotier.joinNetwork(networkId)
+  if (isErr(joined)) {
+    return { kind: 'remote-id', candidates: [], unavailableReason: joined.error.message }
+  }
+
+  const network = joined.value.networks.find((entry) => entry.networkId === networkId)
+  if (network === undefined) {
+    // The symptom is "accepted but absent". The cause is usually a daemon without
+    // CAP_NET_ADMIN, which is checkable — so say that instead of restating the symptom.
+    const blocked = await zerotier.joinBlockedReason()
+    return {
+      kind: 'remote-id',
+      candidates: [],
+      unavailableReason:
+        blocked ??
+        // `problem` carries why the network list could not be read at all. Dropping it left
+        // "the daemon does not list it" standing in for an unreadable API — the symptom
+        // wearing the cause's clothes.
+        (joined.value.problem === null
+          ? `joined ${networkId} but the daemon does not list it`
+          : `joined ${networkId} but its state is unreadable: ${joined.value.problem}`),
+    }
+  }
+  // ACCESS_DENIED is the one state worth naming on its own: it means a PRIVATE network
+  // whose owner has not authorised this machine, and no amount of probing will help.
+  if (network.status === 'ACCESS_DENIED') {
+    return {
+      kind: 'remote-id',
+      candidates: [],
+      unavailableReason: `network ${networkId} refused this machine (ACCESS_DENIED)`,
+    }
+  }
+
+  const hosts = zerotier.deviceCandidates(network)
+  return {
+    kind: 'remote-id',
+    candidates: hosts.map((host, index) => ({
+      kind: 'remote-id' as const,
+      host,
+      port,
+      priority: index,
+    })),
+    unavailableReason:
+      hosts.length === 0
+        ? `network ${networkId} is ${network.status} and announces no route to derive an address from`
+        : null,
+  }
+}
 
 /**
  * Probes every candidate concurrently and returns them ranked by measured latency, with

@@ -6,6 +6,9 @@ import { logger } from '@main/logging/logger'
 import { isEnabled as verifyStartupEnabled, runStartupVerification } from '@main/app/startupVerification'
 import { isEnabled as verifyLiveEnabled, runLiveVerification } from '@main/app/liveVerification'
 import { decidePlatform, markStartupSurvived } from '@main/app/resilientPlatform'
+import { registerMediaProtocol, registerMediaScheme } from '@main/media/protocol'
+import { stopForWindowClose } from '@main/transfer/backupQueue'
+import { stopDaemon } from '@main/zerotier/daemon'
 
 /**
  * Main process entry point.
@@ -101,6 +104,10 @@ if (!app.requestSingleInstanceLock()) {
     }
   })
 
+  // Privileged scheme registration has to happen before the app is ready, and before any
+  // window exists — afterwards Chromium has already fixed its scheme table.
+  registerMediaScheme()
+
   // First thing that happens: if the previous launch never painted, this call
   // relaunches the process with the X11 flag in argv and we must not continue.
   //
@@ -126,6 +133,7 @@ if (!app.requestSingleInstanceLock()) {
     }
 
     registerIpc()
+    registerMediaProtocol()
     logger.info('app.ready', {
       version: app.getVersion(),
       electron: process.versions.electron,
@@ -144,8 +152,18 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   app.on('window-all-closed', () => {
-    // No background work by design: photo backup runs only while the window is open,
-    // so closing the window really does mean nothing is left running.
+    // No background work by design: photo backup runs only while the window is open, so
+    // closing the window really does mean nothing is left running. Enforced, not just
+    // documented — the queue is cancelled and the ZeroTier daemon we started is stopped.
+    stopForWindowClose()
+    stopDaemon()
     if (process.platform !== 'darwin') app.quit()
+  })
+
+  // Covers the paths that do not go through window-all-closed: a quit from the menu, a
+  // SIGTERM, a session logout. Without it a supervised daemon could outlive the app.
+  app.on('will-quit', () => {
+    stopForWindowClose()
+    stopDaemon()
   })
 }

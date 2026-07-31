@@ -5,7 +5,16 @@ import { logger } from '@main/logging/logger'
 import * as registry from '@main/devices/registry'
 import * as session from '@main/session'
 import { baseUrl } from '@main/zima/client'
-import { cleanupProbes, PROBE_ROOT, READ_PROBES, writeProbes, type Probe } from './liveProbes'
+import { uploadFile } from '@main/transfer/upload'
+import {
+  cleanupFileProbes,
+  cleanupProbes,
+  PROBE_ROOT,
+  READ_PROBES,
+  writeProbes,
+  type Probe,
+} from './liveProbes'
+import { runParserProbes, type ParserMeasurement } from './parserProbes'
 import { renderShape, shapeOf } from './responseShape'
 
 /**
@@ -56,6 +65,8 @@ export interface LiveReport {
   readonly photosModule: boolean
   readonly writeProbesRun: boolean
   readonly measurements: readonly ProbeMeasurement[]
+  /** The real readers run against the same device — fitness, not just reachability. */
+  readonly readers: readonly ParserMeasurement[]
   readonly failures: readonly string[]
   /** Probes whose status differed from the documented expectation — stale comments. */
   readonly surprises: readonly string[]
@@ -189,14 +200,18 @@ export const runLiveVerification = async (): Promise<void> => {
 
   const wantWrite = (process.env['ZIMA_VERIFY_WRITE'] ?? '') === '1'
   const scratch = `${PROBE_ROOT}/zima-client-verify-${stamp}`
-  const stale = (process.env['ZIMA_VERIFY_CLEANUP'] ?? '')
-    .split(',')
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0)
+  const splitPaths = (value: string): readonly string[] =>
+    value
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0)
+  const stale = splitPaths(process.env['ZIMA_VERIFY_CLEANUP'] ?? '')
+  const staleFiles = splitPaths(process.env['ZIMA_VERIFY_CLEANUP_FILES'] ?? '')
   const table: readonly Probe[] = [
     ...READ_PROBES,
     ...(wantWrite ? writeProbes(scratch, 'measurement.txt') : []),
     ...cleanupProbes(stale),
+    ...cleanupFileProbes(staleFiles),
   ]
 
   process.stdout.write(`\nverify:live  device=${chosen.id}  host=${chosen.host}\n`)
@@ -243,6 +258,49 @@ export const runLiveVerification = async (): Promise<void> => {
     )
   }
 
+  // The upload is measured through the REAL upload function, not a hand-rolled request.
+  // Its multipart field names are the one part of the protocol the shipped SDK does not
+  // reveal (it only shows the chunk-check query parameters), so this is where that
+  // assumption gets tested. `<localfile>:<device directory>`.
+  const uploadSpec = process.env['ZIMA_VERIFY_UPLOAD'] ?? ''
+  if (uploadSpec.includes(':')) {
+    const separator = uploadSpec.lastIndexOf(':')
+    const localPath = uploadSpec.slice(0, separator)
+    const destination = uploadSpec.slice(separator + 1)
+    const started = Date.now()
+    const uploaded = await uploadFile({ host: chosen.host, port: chosen.port, token: token.value }, {
+      localPath,
+      destination,
+    })
+    if (isErr(uploaded)) {
+      failures.push(`upload ${localPath} -> ${destination}: ${uploaded.error.kind} ${uploaded.error.message}`)
+      process.stdout.write(`  FAIL  UPLOAD ${localPath} -> ${destination}\n        ${uploaded.error.message}\n`)
+    } else {
+      process.stdout.write(
+        `   ok   UPLOAD ${localPath} -> ${destination}  ${uploaded.value.bytes}B ` +
+          `chunks sent=${uploaded.value.chunksSent} skipped=${uploaded.value.chunksSkipped} ` +
+          `${Date.now() - started}ms\n`,
+      )
+    }
+  }
+
+  // The wire probes above measured what the device SAYS. These measure whether our own
+  // readers can use it — reachability is not fitness. See parserProbes.ts for the run that
+  // made this section necessary.
+  process.stdout.write('\n  readers against the real device:\n')
+  const parserMeasurements = await runParserProbes(
+    { host: chosen.host, port: chosen.port, token: token.value },
+    { photosModule },
+    (line) => process.stdout.write(`${line}\n`),
+  )
+  for (const measured of parserMeasurements) {
+    if (!measured.ok) {
+      // Unlike a 400 from the device, this IS a failure of the client: the screen that
+      // calls this reader shows an error to the user.
+      failures.push(`reader ${measured.reader}: ${measured.detail}`)
+    }
+  }
+
   const report: LiveReport = {
     // The run is green when every probe was *answered*. A 400 or 500 is a measurement,
     // not a failure of the tool — that distinction is the whole point of this report.
@@ -254,6 +312,7 @@ export const runLiveVerification = async (): Promise<void> => {
     photosModule,
     writeProbesRun: wantWrite,
     measurements,
+    readers: parserMeasurements,
     failures,
     surprises,
   }

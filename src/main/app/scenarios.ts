@@ -1,4 +1,7 @@
+import { writeFile } from 'node:fs/promises'
+import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
+import { runTour } from './tourScenario'
 
 /**
  * Scripted UI scenarios for the startup verifier.
@@ -133,6 +136,109 @@ const signInIpcDump = async (window: BrowserWindow, host: string): Promise<Scena
   }
 }
 
+/**
+ * Clicks the Remote-ID route the way a user does — button, field, submit — and reports what
+ * the screen said.
+ *
+ * The ID is passed in at run time (`ZIMA_VERIFY_SCENARIO=remote-id:<id>`) and never stored:
+ * it identifies someone's device and has no business in a repository.
+ *
+ * This exists because the alternative was to test the daemon's argument form by hand and
+ * then claim the route works — measuring the part I could reach instead of the part being
+ * claimed. The ZeroTier daemon had been exiting instantly on a malformed `-p 9997`, and no
+ * amount of checking that `-p9997` runs in a shell would have proven that THIS code passes
+ * it correctly.
+ */
+const remoteIdScenario = async (
+  window: BrowserWindow,
+  remoteId: string,
+): Promise<ScenarioResult> => {
+  const failures: string[] = []
+  const observed: Record<string, string> = {}
+  const run = async (script: string): Promise<unknown> =>
+    window.webContents.executeJavaScript(script, true)
+
+  await new Promise((resolve) => setTimeout(resolve, 3_000))
+
+  const clicked = String(
+    await run(`(() => {
+      const wanted = ${JSON.stringify('Über Remote-ID verbinden')}
+      const button = Array.from(document.querySelectorAll('button'))
+        .find((b) => (b.textContent || '').trim() === wanted)
+      if (!button) return 'missing-button'
+      button.click()
+      return 'ok'
+    })()`),
+  )
+  observed['openPanel'] = clicked
+  if (clicked !== 'ok') {
+    return { name: 'remote-id', ok: false, observed, failures: ['the Remote-ID button was not found'] }
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 600))
+
+  // Typed through the native value setter so React's onChange actually fires — assigning
+  // `.value` directly updates the DOM and leaves React's state untouched, which would
+  // submit an empty form and look like a validation bug.
+  const filled = String(
+    await run(`(() => {
+      const input = document.querySelector('input[name="remoteId"]')
+      if (!input) return 'missing-input'
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+      setter.call(input, ${JSON.stringify(remoteId)})
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      return 'ok'
+    })()`),
+  )
+  observed['fillField'] = filled
+  if (filled !== 'ok') {
+    return { name: 'remote-id', ok: false, observed, failures: ['the Remote-ID field was not found'] }
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 400))
+  const submitted = String(
+    await run(`(() => {
+      const form = document.querySelector('input[name="remoteId"]').closest('form')
+      if (!form) return 'missing-form'
+      form.requestSubmit()
+      return 'ok'
+    })()`),
+  )
+  observed['submit'] = submitted
+
+  // Joining a network and probing takes real time on a real tunnel.
+  await new Promise((resolve) => setTimeout(resolve, 25_000))
+
+  const after = (await run(`(() => ({
+    text: document.body.innerText || '',
+    hasPasswordField: document.querySelector('input[type="password"]') !== null,
+    signedIn: document.body.innerText.includes('Abmelden') ||
+              document.body.innerText.includes('Sign out'),
+  }))()`)) as { text: string; hasPasswordField: boolean; signedIn: boolean }
+
+  observed['screen'] = after.text.slice(0, 1500)
+  observed['reachedSignIn'] = String(after.hasPasswordField)
+  observed['signedIn'] = String(after.signedIn)
+
+  /*
+   * Either outcome proves the route: everything before it — daemon with a working network
+   * device, join, address derivation, probe — had to succeed for the client to get this far.
+   *
+   * 🔴 The second case was added after this check failed on a run where the route WORKED:
+   * a stored session resumed straight through to the signed-in screen, so no password field
+   * ever appeared and the scenario called the success a failure. A gate that goes red on a
+   * good outcome gets ignored, which costs more than the check is worth.
+   */
+  if (!after.hasPasswordField && !after.signedIn) {
+    failures.push('neither the sign-in form nor a signed-in session was reached; see observed.screen')
+  }
+
+  const shot = await window.webContents.capturePage()
+  await writeFile(join(dirname(process.env['ZIMA_VERIFY_STARTUP'] ?? 'report.json'), 'remote-id.png'), shot.toPNG())
+
+  return { name: 'remote-id', ok: failures.length === 0, observed, failures }
+}
+
 export const parseScenario = (): { name: string; argument: string } | null => {
   const raw = process.env['ZIMA_VERIFY_SCENARIO']
   if (raw === undefined || raw.length === 0) return null
@@ -152,6 +258,11 @@ export const runScenario = async (
       return signInWrongPassword(window, argument)
     case 'signin-ipc-dump':
       return signInIpcDump(window, argument)
+    case 'remote-id':
+      return remoteIdScenario(window, argument)
+    case 'tour':
+      // The argument is the report path, so the tour can put its screenshots beside it.
+      return runTour(window, argument)
     default:
       // An unknown scenario name is a failure, not a silent pass. A verifier that
       // reports success for a scenario it never ran is worse than no verifier.

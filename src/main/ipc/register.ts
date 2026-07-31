@@ -1,6 +1,6 @@
-import { app, ipcMain } from 'electron'
-import { CHANNELS, channelSchemas, type ChannelName } from '@shared/contract'
-import { appError, isErr, type AppError, type Result } from '@shared/result'
+import { app } from 'electron'
+import { CHANNELS } from '@shared/contract'
+import { appError, isErr, ok } from '@shared/result'
 import { discover } from '@main/discovery/mdns'
 import { probe } from '@main/transport/probe'
 import { fetchRoutes } from '@main/zima/client'
@@ -9,64 +9,34 @@ import { readStatus } from '@main/secrets/store'
 import { setPlaintextConsent } from '@main/secrets/credentials'
 import * as session from '@main/session'
 import * as registry from '@main/devices/registry'
+import * as appsCache from '@main/cache/appsCache'
 import { logger } from '@main/logging/logger'
+import { handle, toWire, wireError } from './wire'
+import { registerFilesHandlers } from './filesHandlers'
+import { registerPhotosHandlers } from './photosHandlers'
+import { registerAppsHandlers } from './appsHandlers'
+import { registerSystemHandlers } from './systemHandlers'
+import { registerNetworkHandlers } from './networkHandlers'
 
 /**
- * The IPC boundary. Thin on purpose: validate, delegate, serialise.
+ * Registration of every IPC channel.
  *
- * Every handler returns the envelope from the contract, so a failure crossing the
- * boundary keeps its kind, its i18n key and its context. Nothing is turned into an
- * empty array on the way out.
+ * The core channels (discovery, session, devices, secrets) are handled here; each feature
+ * area brings its own module. `handle` and `toWire` come from `./wire`, so validation and the
+ * envelope are identical everywhere — a handler cannot opt out of them.
  */
-
-const toWire = <T>(result: Result<T>): { ok: true; value: T } | { ok: false; error: AppError } =>
-  isErr(result)
-    ? { ok: false, error: { ...result.error, cause: undefined } as AppError }
-    : { ok: true, value: result.value }
-
-/** Wraps a handler so a validation failure or a throw is reported, never swallowed. */
-const handle = <C extends ChannelName>(
-  channel: C,
-  run: (input: unknown) => Promise<{ ok: boolean } & Record<string, unknown>>,
-): void => {
-  ipcMain.handle(channel, async (_event, rawInput: unknown) => {
-    const parsed = channelSchemas[channel].request.safeParse(rawInput ?? {})
-    if (!parsed.success) {
-      logger.error('ipc.invalid-request', { channel, issues: parsed.error.issues })
-      return toWire(
-        {
-          ok: false,
-          error: appError('internal', `invalid request for ${channel}`, 'error.internal', {
-            channel,
-          }),
-        } as Result<never>,
-      )
-    }
-    try {
-      return await run(parsed.data)
-    } catch (cause) {
-      logger.error('ipc.handler-threw', { channel, cause: String(cause) })
-      return toWire({
-        ok: false,
-        error: appError('internal', `handler failed for ${channel}`, 'error.internal', {
-          channel,
-        }),
-      } as Result<never>)
-    }
-  })
-}
 
 export const registerIpc = (): void => {
   handle(CHANNELS.discoveryScan, async (input) => {
     const { timeoutMs } = input as { timeoutMs: number }
     const devices = await discover(timeoutMs)
     logger.info('discovery.scan', { found: devices.length, timeoutMs })
-    return { ok: true, value: devices }
+    return ok(devices)
   })
 
   handle(CHANNELS.transportProbe, async (input) => {
     const { host, port } = input as { host: string; port: number }
-    return { ok: true, value: await probe(host, port) }
+    return ok(await probe(host, port))
   })
 
   handle(CHANNELS.deviceCapabilities, async (input) => {
@@ -78,17 +48,12 @@ export const registerIpc = (): void => {
     if (paths === null) {
       // An unreadable route table is an error. Returning an empty capability set
       // would silently disable every feature and read as "this device can do nothing".
-      return toWire({
-        ok: false,
-        error: appError(
-          'malformed-response',
-          'gateway route table not understood',
-          'error.malformedResponse',
-          { host },
-        ),
-      } as Result<never>)
+      return wireError(
+        appError('malformed-response', 'gateway route table not understood',
+          'error.malformedResponse', { host }),
+      )
     }
-    return { ok: true, value: deriveCapabilities(paths) }
+    return ok(deriveCapabilities(paths))
   })
 
   handle(CHANNELS.secretsStatus, async () => {
@@ -96,13 +61,13 @@ export const registerIpc = (): void => {
     if (status.plaintextRisk) {
       logger.warn('secrets.plaintext-risk', { backend: status.backend })
     }
-    return { ok: true, value: status }
+    return ok(status)
   })
 
   handle(CHANNELS.secretsConsent, async (input) => {
     const { granted } = input as { granted: boolean }
     setPlaintextConsent(granted)
-    return { ok: true, value: readStatus() }
+    return ok(readStatus())
   })
 
   handle(CHANNELS.sessionSignIn, async (input) =>
@@ -115,6 +80,7 @@ export const registerIpc = (): void => {
           username: string
           password: string
           displayName?: string
+          networkId?: string
         },
       ),
     ),
@@ -128,13 +94,12 @@ export const registerIpc = (): void => {
 
   handle(CHANNELS.sessionSignOut, async () => {
     session.signOut()
-    return { ok: true, value: { signedOut: true as const } }
+    return ok({ signedOut: true as const })
   })
 
-  handle(CHANNELS.devicesList, async () => ({
-    ok: true,
-    value: { devices: registry.list(), activeDeviceId: registry.activeDeviceId() },
-  }))
+  handle(CHANNELS.devicesList, async () =>
+    ok({ devices: registry.list(), activeDeviceId: registry.activeDeviceId() }),
+  )
 
   handle(CHANNELS.devicesSetActive, async (input) =>
     toWire(registry.setActive((input as { deviceId: string }).deviceId)),
@@ -151,16 +116,25 @@ export const registerIpc = (): void => {
   handle(CHANNELS.devicesForget, async (input) => {
     const { deviceId } = input as { deviceId: string }
     const result = session.forgetDevice(deviceId)
-    return isErr(result) ? toWire(result) : { ok: true, value: { forgotten: true as const } }
+    if (isErr(result)) return toWire(result)
+    // The cached app list goes with the device. Leaving it behind would show the apps of a
+    // device the user just removed, which reads as "it is still connected".
+    appsCache.forget(deviceId)
+    return ok({ forgotten: true as const })
   })
 
-  handle(CHANNELS.appInfo, async () => ({
-    ok: true,
-    value: {
+  handle(CHANNELS.appInfo, async () =>
+    ok({
       version: app.getVersion(),
       electron: process.versions.electron ?? 'unknown',
       platform: `${process.platform}-${process.arch}`,
       locale: app.getLocale(),
-    },
-  }))
+    }),
+  )
+
+  registerFilesHandlers()
+  registerPhotosHandlers()
+  registerAppsHandlers()
+  registerSystemHandlers()
+  registerNetworkHandlers()
 }

@@ -38,9 +38,32 @@ const RULES = [
   },
   {
     name: 'private domain',
-    pattern: /@virtual-services\.info/g,
+    /**
+     * The bare domain, not only the e-mail form.
+     *
+     * This pattern was `/@virtual-services\.info/` — anchored on the `@`. On 2026-07-30 the
+     * tailnet NAME (the same domain without an address in front of it) went into a tracked
+     * document and the gate reported "clean", because the one character it insisted on was
+     * not there. A rule that only recognises private data in one syntactic dress does not
+     * cover the data, it covers the dress.
+     */
+    pattern: /\bvirtual-services\.info\b/g,
     // The maintainer contact is deliberately public in packaging metadata.
     allowFiles: ['package.json', 'resources/copyright'],
+  },
+  {
+    name: 'tailscale CGNAT address',
+    /**
+     * 100.64.0.0/10 — a real tailnet's addressing is network topology, the same class of
+     * data as a LAN address, and it identifies the machines of one person's tailnet.
+     */
+    pattern: /\b100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}\b/g,
+    /**
+     * Narrower than the rule by four million addresses: only the sequential stand-ins the
+     * test fixture uses. Enumerated rather than expressed as a range, so extending it is a
+     * visible edit and not a widening that goes unnoticed.
+     */
+    allow: [/^100\.64\.0\.[1-9]$/],
   },
 ]
 

@@ -86,6 +86,16 @@ export interface PlatformDecision {
 export const decidePlatform = (): PlatformDecision => {
   const sessionType = process.env['XDG_SESSION_TYPE'] ?? 'unknown'
   const electronVersion = process.versions.electron ?? 'unknown'
+  /**
+   * Only argv counts.
+   *
+   * 🔴 `ELECTRON_OZONE_PLATFORM_HINT=x11` was tried here and **measured not to work** on
+   * Electron 43.2.0: with the hint set and the relaunch suppressed, the process still died
+   * with SIGSEGV. Treating it as "already on X11" would therefore be worse than useless —
+   * it would suppress the one thing that does help. Same result as
+   * `app.commandLine.appendSwitch`, and for the same reason: Ozone has chosen its platform
+   * before any of this is readable.
+   */
   const alreadyOnX11 = process.argv.includes(X11_FLAG)
   const onWayland = sessionType === 'wayland'
 
@@ -115,6 +125,38 @@ export const decidePlatform = (): PlatformDecision => {
   }
 
   if (knownBad || previousLaunchDied || riskyDriver !== null) {
+    /*
+     * 🔴 Never relaunch under `electron-vite dev`.
+     *
+     * `app.relaunch()` starts a DETACHED process and exits this one. electron-vite is the
+     * parent: it sees Electron terminate, shuts the Vite dev server down, and what is left
+     * is an orphaned window whose renderer source no longer exists. Measured 2026-07-30 —
+     * `npm run dev` produced a live window, no dev server on 5173, no electron-vite
+     * process, and a main process whose parent had become systemd.
+     *
+     * So in dev the fallback is stated rather than performed: the developer gets the exact
+     * command, and their tooling stays in one piece. `ELECTRON_RENDERER_URL` is set by
+     * electron-vite itself and is already what index.ts uses to find the dev server.
+     */
+    if (process.env['ELECTRON_RENDERER_URL'] !== undefined) {
+      logger.warn('platform.dev-no-relaunch', {
+        sessionType,
+        driver: riskyDriver,
+        advice: 'start with: npm run dev:x11',
+      })
+      process.stderr.write(
+        '\n  Wayland is unreliable on this machine (driver: ' +
+          String(riskyDriver ?? 'previously failed') +
+          ').\n  Relaunching would kill the dev server, so it is NOT done here.\n' +
+          '  Start with:  npm run dev:x11\n' +
+          '  (= `electron-vite dev -- --ozone-platform=x11`; the flag has to reach argv.\n' +
+          '   ELECTRON_OZONE_PLATFORM_HINT was measured NOT to work, and setting\n' +
+          '   ELECTRON_CLI_ARGS by hand does not either — the CLI overwrites it.)\n\n',
+      )
+      armSentinel()
+      return { forcedX11: false, sessionType, relaunching: false }
+    }
+
     const reason = knownBad
       ? 'wayland previously failed on this machine'
       : previousLaunchDied

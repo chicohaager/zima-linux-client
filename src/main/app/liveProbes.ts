@@ -361,3 +361,19 @@ export const cleanupProbes = (paths: readonly string[]): readonly Probe[] =>
     expect: 200,
     asks: 'removes a scratch folder from an earlier interrupted run',
   }))
+
+/**
+ * Moves leftover FILES to the trash — used to tidy up after an upload measurement.
+ *
+ * Deliberately the trash and not the irreversible delete: a cleanup step that can destroy
+ * data has no business running inside a measurement tool.
+ */
+export const cleanupFileProbes = (paths: readonly string[]): readonly Probe[] =>
+  paths.map((path, index) => ({
+    id: `cleanup.file-${index}`,
+    method: 'DELETE' as const,
+    path: files(FILES.moveToTrash),
+    body: [path],
+    expect: 200,
+    asks: 'moves a leftover measurement file to the trash',
+  }))

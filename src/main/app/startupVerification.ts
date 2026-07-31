@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import type { BrowserWindow } from 'electron'
 import { app } from 'electron'
 import { logger } from '@main/logging/logger'
+import { RAW_KEY_SCAN } from './catalogueKeys'
 import { parseScenario, runScenario, type ScenarioResult } from './scenarios'
 
 /**
@@ -37,6 +38,14 @@ export interface StartupReport {
   readonly visibleText: string
   /** Present only when ZIMA_VERIFY_SCENARIO asked for a scripted interaction. */
   readonly scenario: ScenarioResult | null
+  /**
+   * Renderer console output, errors and warnings only.
+   *
+   * Added after a run where the window was blank and the report could only say
+   * `visibleText: ''`. The reason was one line in the renderer's console — invisible to
+   * every check we had. A verifier that cannot see the console is guessing.
+   */
+  readonly consoleErrors: readonly string[]
   readonly failures: readonly string[]
 }
 
@@ -79,11 +88,10 @@ const PROBE = `(() => {
   }
 
   const text = document.body.innerText || ''
-  // A raw key looks like "nav.files" — visible proof that a translation never landed.
-  const rawI18nKeys = Array.from(new Set(
-    (text.match(/\\b[a-z][a-zA-Z]+\\.[a-z][a-zA-Z.]+\\b/g) || [])
-      .filter((m) => !m.includes('.md') && !m.endsWith('.ts') && !m.endsWith('.json'))
-  ))
+  // A raw key is one the catalogue defines and that reached the screen untranslated.
+  // Asked against the real key list rather than a dotted-word pattern — see
+  // catalogueKeys.ts for the run where the pattern accused two real files.
+  const rawI18nKeys = ${RAW_KEY_SCAN}
   return { cssRuleCount, resolvedAccent, navButtons, rawI18nKeys, appliedStyles, visibleText: text.slice(0, 400) }
 })()`
 
@@ -101,6 +109,14 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
   if (reportPath === undefined) return
 
   const failures: string[] = []
+  // Attached before anything else runs so a failure during the very first render is caught.
+  const consoleErrors: string[] = []
+  window.webContents.on('console-message', (event) => {
+    if (event.level === 'error' || event.level === 'warning') {
+      consoleErrors.push(`${event.level}: ${event.message}`.slice(0, 400))
+    }
+  })
+
   let probe = {
     cssRuleCount: 0,
     resolvedAccent: '',
@@ -163,6 +179,11 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
   if (probe.rawI18nKeys.length > 0) {
     failures.push(`raw i18n keys visible: ${probe.rawI18nKeys.join(', ')}`)
   }
+  // An error in the renderer's console is a failure even when the screen looks fine: it is
+  // how a swallowed exception announces itself, and nothing else in this report would see it.
+  if (consoleErrors.length > 0) {
+    failures.push(`renderer console errors: ${consoleErrors.slice(0, 3).join(' | ')}`)
+  }
 
   // Scripted interaction runs after the static checks, so a scenario failure cannot be
   // confused with a broken startup.
@@ -206,6 +227,7 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
     rawI18nKeys: probe.rawI18nKeys,
     visibleText: probe.visibleText,
     scenario,
+    consoleErrors: consoleErrors.slice(0, 20),
     failures,
   }
 

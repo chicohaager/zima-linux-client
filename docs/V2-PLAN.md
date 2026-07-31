@@ -326,6 +326,21 @@ Drei Wege, gemeinsame Schnittstelle, **priorisiert und gemessen**:
 2. **Direct IP** — Host (+ optional Port), Validierung, sofortige Probe.
 3. **Remote ID** — ZeroTier-Netz beitreten, danach die ZT-Adresse des Geräts ansprechen.
    Serverseitig lesbar über `/v1/zt/info` und `/v1/zt/status`.
+4. **Tailscale** — ergänzt am 2026-07-30. Ein **bereits laufender** Tunnel wird erkannt und
+   mitbenutzt; seine Peers sind Kandidaten wie jede andere Adresse. `tailscale status --json`
+   ist ohne root lesbar (Socket `0666`, gemessen), also braucht es weder einen gebündelten
+   Daemon noch erhöhte Rechte.
+
+   **Ausdrücklich kein Betrieb: kein Join, kein Leave, keine DNS- oder Routen-Änderung.**
+   Der Grund kommt aus einem Nutzerbericht zum offiziellen Client: der übernimmt ZeroTier für
+   seinen Fernzugriff und verdrängt dabei das eingerichtete DNS — die AdGuard-Filterung des
+   Nutzers hört auf zu wirken, und er muss zwischen Fernzugriff und eigenem Resolver wählen.
+   Ein Client, der den Tunnel an sich reißt, trifft diese Wahl für ihn. Wer einen Tunnel
+   schon betreibt, soll ihn behalten dürfen.
+
+   Ein Peer**name** („ZimaOS") ist dabei kein Beleg für ein ZimaOS-Gerät — das entscheidet die
+   Probe unten. Am echten Tailnet gemessen: von vier erreichbaren Peers antworteten drei als
+   ZimaOS, darunter einer namens `ZimaBoard`; `homeassistant` wurde mit `refused` aussortiert.
 
 **Probe-Semantik (Projektregel „Erreichbarkeit messen, nicht ableiten"):** Ein Kandidat gilt erst
 als erreichbar, wenn eine HTTP-Antwort **von der Seite kommt, über die die Aussage gilt**.
@@ -608,6 +623,7 @@ riskanten Unbekannten früh fallen.
 | **2 — Verbinden** | Auth + Refresh, Capabilities, Transport-Strategien mit Probe-Semantik, Geräte-Registry, `safeStorage` samt Backend-Warnung | E2E: Login und Gerätewechsel in `de_DE`; Screenshot der Warnung bei `basic_text` |
 | **3 — Design-System** | Tokens aus ZimaOS, Komponenten, adaptives Layout, Dark Mode, i18n-Gerüst mit 28 Locales | Screenshots hell/dunkel, schmal/breit; Playwright: kein roher i18n-Key |
 | **3b — Remote ID** | ZeroTier-Bündelung und Daemon-Lebenszyklus, damit der dritte Verbindungsweg echt wird | Beitritt zu einem Netz, danach Login über die ZT-Adresse, Screenshot des Verbindungswegs |
+| **3c — Tailscale** | Erkennung eines laufenden Tunnels, Peers als Kandidaten, read-only Kanal — kein Join/Leave, kein DNS-Eingriff (§ 6.2 Punkt 4) | `smoke-tailscale.ts` probt die Peers am echten Tailnet; Panel im Fenster in `de_DE` belegt; Login über eine ZT-freie Tailscale-Adresse |
 | **4 — File Hub** | Navigation, Suche, Preview, Aktionen als Tasks, Papierkorb, Teilen, Upload/Download-Queue | E2E-Flow Suche→Preview→Kopieren mit Task-Fortschritt; Fehlerfall `400 invalid path` sichtbar |
 | **5 — Photos** | Galerie, Facetten, Suche, Detail-Viewer, Vordergrund-Backup mit Resume und Protokoll | E2E-Backup 3 Dateien inkl. Abbruch; Verhalten ohne `/v2/photos` als Screenshot |
 | **6 — Apps & System** | App-Liste, Web-App-Fenster, Offline-Cache mit Altersangabe, Restart/Shutdown/Remove, Dashboard-Kennzahlen | E2E: App öffnen; Cache-Anzeige nach Netztrennung; Power-Aktionen am Testgerät protokolliert |

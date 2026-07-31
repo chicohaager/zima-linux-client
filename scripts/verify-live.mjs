@@ -16,7 +16,7 @@
  * from the device is data, not a failure of this tool.
  */
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 
 const args = process.argv.slice(2)
@@ -41,10 +41,25 @@ if (device !== undefined) env.ZIMA_VERIFY_DEVICE = device
 if (flag('write')) env.ZIMA_VERIFY_WRITE = '1'
 const cleanup = value('cleanup')
 if (cleanup !== undefined) env.ZIMA_VERIFY_CLEANUP = cleanup
+// `--upload <localfile>:<device directory>` exercises the real upload path. The multipart
+// field names are the only part of the upload protocol that cannot be read off the shipped
+// SDK, so they are proved by an actual transfer rather than by a comment.
+const upload = value('upload')
+if (upload !== undefined) env.ZIMA_VERIFY_UPLOAD = upload
+const cleanupFiles = value('cleanup-files')
+if (cleanupFiles !== undefined) env.ZIMA_VERIFY_CLEANUP_FILES = cleanupFiles
 
 // The app takes a single-instance lock. If it is already running, the second process quits
 // before it can measure anything — and a missing report would otherwise read as "nothing
 // to report" instead of "it never ran".
+//
+// 🔴 Checking only for the file's EXISTENCE was not enough. On 2026-07-30 a run was blocked
+// by the lock, wrote nothing, and this script reported "verify:live ok — 28 probes" from a
+// report four hours old. A stale artefact at the expected path is the classic proxy signal:
+// it looks exactly like a fresh result. So the old one is removed first, and its absence
+// afterwards means the run did not happen.
+if (existsSync(reportPath)) rmSync(reportPath)
+
 const electron = join('node_modules', 'electron', 'cli.js')
 const run = spawnSync(process.execPath, [electron, '.'], { env, stdio: 'inherit' })
 
