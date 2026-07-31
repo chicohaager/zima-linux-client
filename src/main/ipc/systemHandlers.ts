@@ -21,7 +21,7 @@ export const registerSystemHandlers = (): void => {
   handle(CHANNELS.systemVolumes, async () => withDevice((ctx) => systemApi.listVolumes(ctx)))
 
   handle(CHANNELS.devicesPower, async (input) => {
-    const { deviceId, action } = input as { deviceId: string; action: 'restart' | 'off' }
+    const { deviceId, action } = input
 
     // The action always targets the ACTIVE device, and the renderer's device id must match
     // it. Without that check, a stale screen could restart a device the user switched away

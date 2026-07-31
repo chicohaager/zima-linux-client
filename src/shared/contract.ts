@@ -31,5 +31,26 @@ export const channelSchemas = {
 >
 
 export type ChannelSchemas = typeof channelSchemas
+
+/**
+ * What the RENDERER sends — the schema's **input** type.
+ *
+ * Optional wherever the schema has a `.default()`: the point of a default is that the caller
+ * may leave the field out.
+ */
 export type RequestOf<C extends ChannelName> = z.input<ChannelSchemas[C]['request']>
+
+/**
+ * What the HANDLER receives — the schema's **output** type.
+ *
+ * 🔴 Not the same type, and the difference is exactly the defaults. `filesList` declares
+ * `index: z.number().default(1)`: on the way in the field may be absent, by the time the
+ * handler sees `parsed.data` zod has filled it, so it is present. Typing a handler with the
+ * input type claims a value can be `undefined` that never is — and the compiler then demands
+ * pointless guards, or (worse) the guard gets written and hides that the default stopped
+ * working. Measured 2026-07-31: typing `handle()` with `RequestOf` produced five errors, all
+ * of them this mix-up and none of them a real defect.
+ */
+export type HandlerInput<C extends ChannelName> = z.output<ChannelSchemas[C]['request']>
+
 export type ResponseOf<C extends ChannelName> = z.output<ChannelSchemas[C]['response']>

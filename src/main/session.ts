@@ -113,9 +113,17 @@ export const signIn = async (params: {
   readonly kind: DeviceAddress['kind']
   readonly username: string
   readonly password: string
-  readonly displayName?: string
+  /*
+   * `| undefined` explicitly, because this is fed straight from the validated IPC request and
+   * `exactOptionalPropertyTypes` distinguishes "absent" from "present and undefined". zod
+   * produces the latter for `.optional()`, so a signature that only allows "absent" cannot
+   * accept its own contract's output — and the previous hand-written cast at the call site
+   * papered over exactly that. The same cast also still listed three connection kinds after
+   * `tailscale` became a fourth: a copied type that had quietly stopped matching.
+   */
+  readonly displayName?: string | undefined
   /** The Remote ID the user typed — the ZeroTier network this host lives in. */
-  readonly networkId?: string
+  readonly networkId?: string | undefined
 }): Promise<Result<SessionSummary>> => {
   const { host, port, kind, username, password } = params
 

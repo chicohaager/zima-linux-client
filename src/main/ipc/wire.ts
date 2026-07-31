@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain } from 'electron'
-import { channelSchemas, type ChannelName } from '@shared/contract'
+import { channelSchemas, type ChannelName, type HandlerInput } from '@shared/contract'
 import { appError, isErr, type AppError, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import * as session from '@main/session'
@@ -47,10 +47,22 @@ export const toWire = <T>(result: Result<T>): Wire<T> =>
 
 export const wireError = (error: AppError): Wire<never> => ({ ok: false, error })
 
-/** Registers one handler, with validation and a catch that reports instead of swallowing. */
+/**
+ * Registers one handler, with validation and a catch that reports instead of swallowing.
+ *
+ * 🔴 The handler receives the input **typed by the channel's schema**, not as `unknown`.
+ *
+ * It used to hand over `unknown`, and all 28 handlers opened with a hand-written
+ * `input as { path: string; … }`. Those casts are assertions with nothing behind them: the
+ * schema is the truth, the cast is a copy of it, and a copy is exactly what stops agreeing
+ * when one side changes. Adding a field to a schema left the cast silently short; renaming one
+ * left the handler reading `undefined` from a field the validator had just approved under its
+ * new name — with no error anywhere, because zod validated the real shape and TypeScript
+ * believed the cast. Deriving the type instead makes that a compile error.
+ */
 export const handle = <C extends ChannelName>(
   channel: C,
-  run: (input: unknown) => Promise<Wire<unknown>>,
+  run: (input: HandlerInput<C>) => Promise<Wire<unknown>>,
 ): void => {
   ipcMain.handle(channel, async (_event, rawInput: unknown) => {
     const parsed = channelSchemas[channel].request.safeParse(rawInput ?? {})
@@ -66,7 +78,7 @@ export const handle = <C extends ChannelName>(
       )
     }
     try {
-      return await run(parsed.data)
+      return await run(parsed.data as HandlerInput<C>)
     } catch (cause) {
       logger.error('ipc.handler-threw', { channel, cause: String(cause) })
       return wireError(

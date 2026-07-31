@@ -20,14 +20,14 @@ export const registerNetworkHandlers = (): void => {
   handle(CHANNELS.zerotierState, async () => ok(await zerotier.readRuntime()))
 
   handle(CHANNELS.zerotierJoin, async (input) => {
-    const { networkId } = input as { networkId: string }
+    const { networkId } = input
     // Lower-cased because the daemon's own listing returns lower-case ids, and a mixed-case
     // id would produce a second entry for a network the user already joined.
     return toWire(await zerotier.joinNetwork(networkId.toLowerCase()))
   })
 
   handle(CHANNELS.zerotierLeave, async (input) => {
-    const { networkId } = input as { networkId: string }
+    const { networkId } = input
     return toWire(await zerotier.leaveNetwork(networkId.toLowerCase()))
   })
 
@@ -46,7 +46,7 @@ export const registerNetworkHandlers = (): void => {
    * read as "no device there".
    */
   handle(CHANNELS.connectRemoteId, async (input) => {
-    const { remoteId } = input as { remoteId: string }
+    const { remoteId } = input
     const outcome = await remoteIdStrategy(remoteId)
     if (outcome.unavailableReason !== null) {
       return wireError(
@@ -80,7 +80,7 @@ export const registerNetworkHandlers = (): void => {
   handle(CHANNELS.legacyScan, async () => ok(scanLegacyProfiles()))
 
   handle(CHANNELS.legacyImport, async (input) => {
-    const { directory } = input as { directory: string }
+    const { directory } = input
     // The directory must be one the scan actually found. Accepting an arbitrary path from the
     // renderer would let it ask the main process to read anywhere on disk.
     const known = scanLegacyProfiles().some((profile) => profile.directory === directory)

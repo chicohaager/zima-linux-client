@@ -36,7 +36,7 @@ export const registerPhotosHandlers = (): void => {
   handle(CHANNELS.photosGallery, async (input) => {
     const missing = requirePhotosModule()
     if (missing !== null) return missing
-    const { limit, cursor } = input as { limit: number; cursor: string | null }
+    const { limit, cursor } = input
     return withDevice((ctx) => photosApi.galleryPage(ctx, { limit, cursor }))
   })
 
@@ -49,7 +49,7 @@ export const registerPhotosHandlers = (): void => {
   handle(CHANNELS.photosSearch, async (input) => {
     const missing = requirePhotosModule()
     if (missing !== null) return missing
-    const { query } = input as { query: string }
+    const { query } = input
     return withDevice((ctx) => photosApi.search(ctx, query))
   })
 
@@ -60,7 +60,7 @@ export const registerPhotosHandlers = (): void => {
    * sending the user to the Files tab to change album.
    */
   handle(CHANNELS.photosFolderGrid, async (input) => {
-    const { path, index, size } = input as { path: string; index: number; size: number }
+    const { path, index, size } = input
     return withDevice(async (ctx) => {
       const page = await listDirectory(ctx, { path, index, size, sort: 'modified', direction: 'desc' })
       if (isErr(page)) return page
@@ -84,7 +84,7 @@ export const registerPhotosHandlers = (): void => {
   })
 
   handle(CHANNELS.photosBackupStart, async (input) => {
-    const { sources, destination } = input as { sources: string[]; destination: string }
+    const { sources, destination } = input
     return withDevice((ctx) => backup.start(ctx, { sources, destination }))
   })
 
