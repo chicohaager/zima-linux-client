@@ -27,6 +27,21 @@ export const AppsScreen = (): React.JSX.Element => {
   const apps = useQuery({
     queryKey: ['apps', 'list'],
     queryFn: async () => unwrap(await window.zima.listApps({})),
+    /*
+     * Ask again while the tiles on screen are dated — and only then.
+     *
+     * The main process now answers within 700 ms from its cache instead of waiting out a
+     * slow refresh (see `appsHandlers.ts` for the measurement that led there). That fills
+     * the screen instantly, but it also means the answer can be older than the device: the
+     * refresh it started keeps running and updates the cache when it lands. Without this,
+     * "as of 09:14" would sit there until the user navigated away and back.
+     *
+     * `cachedAtMs === null` means the answer WAS fresh, and then this stops: a healthy
+     * device is polled exactly once. The main process shares one in-flight refresh between
+     * callers, so this cannot pile requests onto a device that is already slow.
+     */
+    refetchInterval: (query) =>
+      query.state.data?.cachedAtMs === null || query.state.data === undefined ? false : 1_500,
   })
 
   const setRunning = useMutation({

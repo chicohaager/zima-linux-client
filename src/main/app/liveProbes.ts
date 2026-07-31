@@ -170,6 +170,36 @@ const APPS_PROBES: readonly Probe[] = [
     path: `${BASE.appManagement}${APPS.appGrid}`,
     asks: 'the tile grid the web UI home screen uses',
   },
+  /*
+   * 🔴 The three candidates for "Apps says loading for eight seconds", measured side by
+   * side so the choice is a measurement and not a preference.
+   *
+   * Reported by the user 2026-07-31 and named by the client's own request log:
+   *   installed/list  3141 ms, and once `request-failed … ms:8002 … aborted`
+   * The device answers unauthenticated endpoints in 3–7 ms over the same tunnel, so the
+   * cost is in what this call makes the device DO, not in the road.
+   *
+   * ZIMAOS-KNOWLEDGE §35.5 measured the semantics: no `mode` is the mixed default and
+   * carries `containers[]` — container runtime state for every installed app. `mode=async`
+   * answers 202 with the static data only. `/web/appgrid` is what the device's own web UI
+   * uses for its tiles and knows nothing about containers at all.
+   *
+   * Whether that difference is worth seconds is exactly what these probes decide.
+   */
+  {
+    id: 'apps.installed-list-async',
+    method: 'GET',
+    path: `${BASE.appManagement}${APPS.installedList}`,
+    query: { mode: 'async' },
+    asks: 'static app data without the container runtime sync — how much of the wait is that sync?',
+  },
+  {
+    id: 'apps.installed-list-sync',
+    method: 'GET',
+    path: `${BASE.appManagement}${APPS.installedList}`,
+    query: { mode: 'sync' },
+    asks: 'the explicit runtime sync, for the other end of the comparison',
+  },
 ]
 
 const PHOTOS_PROBES: readonly Probe[] = [
