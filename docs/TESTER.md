@@ -22,8 +22,8 @@ arm64-Paket ist nicht gebaut und wäre ungetestet.
 Beide Pakete sind **nicht signiert**. Prüfsummen dieses Standes (Bau vom 2026-07-31):
 
 ```
-4d3e822f4c80e6a846335a98e4afb3bd77f6ad2ea7f21ba2bf771bf6f9c29cd1  …_amd64.deb
-8383fe403277de884c634877242f4ca96737363e8b5aaa0152e4e5c40b6c313e  …x86_64.rpm
+de3bcff4d873c70b14c605abf656b9b460cee9f91877c824e425db61760c12ab  …_amd64.deb
+6cc6d1f4800ddc00918daa15a10b3242034bf9da9621219484e8303a782d1803  …x86_64.rpm
 
 sha256sum <datei>       # zum Vergleichen
 ```
