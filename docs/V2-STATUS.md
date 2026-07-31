@@ -9,7 +9,7 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 
 ```
 npm run verify   ✓  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓  132 Tests in 9 Dateien
+npx vitest run   ✓  135 Tests in 10 Dateien
 i18n gate           clean — 280 Schlüssel in en_US; 2 Sprachen bei 100 %, 26 bei 111/280
 privacy gate        clean, 115 verfolgte Dateien
 ```
@@ -775,11 +775,32 @@ folgende stammt aus einer Sitzung, die ein Mensch an der gestarteten App durchge
   Klartext-JWT (`eyJ`) ist **nirgends** in der Datei zu finden. Damit ist „verschlüsselt" an der
   Sache gemessen und nicht am Rückgabewert des Verschlüsselers
 
-### Offener Punkt, der dabei aufgefallen ist
+### Der Punkt, der dabei auffiel — und warum die naheliegende Fassung nichts geändert hätte
 
-`devices.json` hat Modus **664** — lesbar für jeden lokalen Benutzer. Es enthält keine
-Geheimnisse, aber Gerätenamen und LAN-Adressen, also Netz-Topologie. Sollte auf 600 wie die
-Credentials. Noch **nicht** geändert.
+`devices.json` hatte Modus **664**, lesbar für jeden lokalen Benutzer. Keine Geheimnisse, aber
+Gerätenamen und LAN-Adressen, also Netz-Topologie. Jetzt **0600**, wie die Credentials.
+
+Die offensichtliche Lösung wäre `writeFileSync(…, { mode: 0o600 })` gewesen — und die wirkt
+**nur beim Anlegen**. Auf jeder Maschine, die schon einen älteren Build laufen hatte, existiert
+die Datei, behält ihren alten Modus, und die Option meldet Erfolg, ohne etwas zu ändern: der
+Rückgabewert des Setzers ist kein Zeuge. Deshalb steht `chmodSync` dahinter, in `registry.ts`
+**und** in `credentials.ts`.
+
+Geprüft mit drei Tests gegen das **echte** Registry-Modul (Electrons `app.getPath` gemockt, kein
+Nachbau der Schreiblogik), darunter der Fall, der hier tatsächlich vorlag: eine bestehende Datei
+mit 0664. **Positivkontrolle gefahren** — `chmodSync` wieder entfernt:
+
+```
+✓ creates the registry at 0600
+× tightens a registry an older build left world-readable   expected '664' to be '600'
+✓ keeps the stored device readable after the tightening
+```
+
+Genau der eine Test wird rot, und zwar mit `664` — die Zahl, die vorher auf der Platte stand.
+
+> ⚠️ **Noch offen, gleiche Klasse:** die Logdateien unter `logs/` stehen auf **664** und
+> enthalten LAN-Adressen (`main.log`: 23 Treffer). Der Dateimodus liegt bei electron-log, nicht
+> bei uns — noch nicht angefasst.
 
 ## Zwei echte Fehler, die erst der Neustart am laufenden Programm gezeigt hat
 
