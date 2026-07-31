@@ -20,6 +20,16 @@ const RULES = [
     pattern: /\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})\b/g,
     // Documentation examples and the ZeroTier range are fine; a real home address is not.
     allow: [/^192\.168\.1\.100$/, /^192\.168\.1\.1$/, /^192\.168\.0\.\d+$/, /^10\.147\.\d+\.\d+$/, /^192\.168\.50\.50$/, /^10\.0\.0\.1$/, /^192\.168\.1\.256$/],
+    /*
+     * One file, by path, because its SUBJECT is these addresses: `urlPolicy.test.ts` asserts
+     * that RFC1918 targets are refused, and it cannot do that without naming one of each
+     * range. Scoped to the path rather than widened by value — a value-level allowance for
+     * `10.*` would switch the rule off everywhere, which is how this gate was already broken
+     * once (`/^holgi$/i` in the identity rule, an exception exactly as wide as its pattern).
+     * The literals in there are canonical range representatives, not addresses from anyone's
+     * network.
+     */
+    allowFiles: ['src/main/media/__tests__/urlPolicy.test.ts'],
   },
   {
     name: 'maintainer identity',

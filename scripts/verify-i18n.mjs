@@ -11,6 +11,7 @@
  * work in progress. What IS demanded: no unknown keys, no locale file missing entirely,
  * and no placeholder mismatch — a lost `{{count}}` renders as literal text to the user.
  */
+import { execSync } from 'node:child_process'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -94,6 +95,42 @@ for (const locale of declared.filter((l) => present.has(l))) {
   )
 }
 
+/*
+ * The other direction: does the catalogue cover the CODE?
+ *
+ * Everything above compares locales with each other. All 28 can agree perfectly and a screen
+ * still show `files.newFolderPrompt` as raw text, because the key the code asks for was never
+ * in `en_US` either — the gate would report "clean" for a catalogue that is complete and
+ * wrong. That is the same failure `dynamicKeys.test.ts` was written for after
+ * `device.connection.tailscale` reached a user's screen; this covers the static half, which
+ * no test looks at.
+ *
+ * Deliberately restricted to LITERAL keys — `t('a.b')` and the i18n key argument of
+ * `appError`. A first attempt matched every dotted string in the source and produced 21
+ * "findings", all of them log event names (`zerotier.joined`, `backup.started`): it measured
+ * the SHAPE of a string instead of its USE, which is how a check ends up with a false-positive
+ * rate that makes people ignore it. Composed keys stay the business of dynamicKeys.test.ts,
+ * which enumerates them from the contract.
+ */
+const sourceFiles = execSync('git ls-files src', { encoding: 'utf8' })
+  .split('\n')
+  .filter((file) => /\.tsx?$/.test(file) && !file.includes('__tests__'))
+
+let literalKeys = 0
+for (const file of sourceFiles) {
+  const source = readFileSync(file, 'utf8')
+  const referenced = [
+    ...[...source.matchAll(/\bt\(\s*'([^'`]+)'/g)].map((m) => m[1]),
+    ...[...source.matchAll(/'(error\.[A-Za-z0-9_.-]+)'/g)].map((m) => m[1]),
+  ]
+  for (const key of referenced) {
+    literalKeys += 1
+    if (!reference.has(key)) {
+      failures.push(`${file}: uses i18n key "${key}", which ${REFERENCE} does not define`)
+    }
+  }
+}
+
 // The headline must not be greener than the rows underneath it. It used to read
 // "28 locales, 253 keys each" — true of two files on the day the other 26 sat at 111 keys,
 // because coverage is reported rather than demanded. Reporting is the right call for
@@ -101,7 +138,7 @@ for (const locale of declared.filter((l) => present.has(l))) {
 const complete = rows.filter((row) => row.includes('100%')).length
 console.log(
   failures.length === 0
-    ? `i18n gate: clean — ${declared.length} locales, ${reference.size} keys in ${REFERENCE}; ` +
+    ? `i18n gate: clean — ${declared.length} locales, ${reference.size} keys in ${REFERENCE}, ${literalKeys} literal uses in code; ` +
         `${complete} locale(s) at 100%, ${declared.length - complete} partial (see below)`
     : `i18n gate: ${failures.length} failure(s)`,
 )

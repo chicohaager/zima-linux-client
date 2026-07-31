@@ -4,6 +4,7 @@ import { logger } from '@main/logging/logger'
 import { fetchBinary } from '@main/zima/client'
 import { BASE, FILES, PHOTOS } from '@main/zima/endpoints'
 import * as session from '@main/session'
+import { iconFetchAllowed, redirectAllowed } from './urlPolicy'
 
 /**
  * `zima-media://` — how the renderer shows device images without ever holding a token.
@@ -117,16 +118,20 @@ const handle = async (request: Request): Promise<Response> => {
      * The remaining trade-off is honest and belongs to the user: fetching an icon reveals
      * this machine's IP to whoever hosts it, exactly as the device's own web UI does.
      */
-    let icon: URL
-    try {
-      icon = new URL(target)
-    } catch {
-      return notFound('app icon is not a URL')
+    const verdict = iconFetchAllowed(target, ctx.value.host)
+    if (!verdict.allowed) {
+      /*
+       * 🔴 Added 2026-07-31 during the pre-package review. Until then any http(s) URL was
+       * fetched, and the URL comes from a store entry anyone can write: `http://127.0.0.1:…`
+       * or `http://192.168.1.1/reboot` in an icon field turned this client into a request
+       * generator inside the user's own network — reaching exactly what a remote attacker
+       * cannot. The device's own host stays exempt; see `urlPolicy.ts` for the rule and for
+       * the limit it does not cover.
+       */
+      logger.warn('media.icon-target-refused', { reason: verdict.reason })
+      return notFound(`app icon refused: ${verdict.reason}`)
     }
-    if (icon.protocol !== 'http:' && icon.protocol !== 'https:') {
-      logger.info('media.icon-scheme-rejected', { scheme: icon.protocol })
-      return notFound(`app icon scheme ${icon.protocol} is not fetchable`)
-    }
+    const icon = new URL(target)
 
     const foreign = icon.hostname !== ctx.value.host
     let fetched: Response
@@ -141,6 +146,15 @@ const handle = async (request: Request): Promise<Response> => {
       return notFound(`app icon could not be fetched from ${icon.hostname}`)
     }
     if (!fetched.ok) return notFound(`app icon ${fetched.status}`)
+
+    // Redirects are followed (jsdelivr and github need it), so the host that finally answered
+    // is not necessarily the one that was vetted. A public URL answering `302 ->
+    // http://127.0.0.1:9997/…` would walk straight through the check above.
+    const landed = redirectAllowed(fetched.url, icon.toString(), ctx.value.host)
+    if (!landed.allowed) {
+      logger.warn('media.icon-redirect-refused', { from: icon.hostname, reason: landed.reason })
+      return notFound(`app icon refused: ${landed.reason}`)
+    }
 
     const contentType = fetched.headers.get('content-type') ?? ''
     if (!contentType.startsWith('image/')) {

@@ -1,9 +1,10 @@
-import { readFileSync, writeFileSync, mkdirSync, chmodSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { app } from 'electron'
 import type { Capabilities, Device } from '@shared/domain'
 import { appError, err, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
+import { writePrivateJson } from '@main/storage/privateFile'
 import { addressKey, applyPriorityOrder, byPriority, mergeDevice } from './ordering'
 
 /**
@@ -52,15 +53,7 @@ const read = (): StoredState => {
 
 const write = (state: StoredState): Result<void> => {
   try {
-    mkdirSync(dirname(filePath()), { recursive: true })
-    writeFileSync(filePath(), `${JSON.stringify(state, null, 2)}\n`, {
-      encoding: 'utf8',
-      mode: 0o600,
-    })
-    // `mode` above only applies when the file is *created*. A registry written by an older
-    // build already exists at 0644/0664, and writing to it keeps that mode — the option
-    // would report success and change nothing. chmod is the part that acts on what is there.
-    chmodSync(filePath(), 0o600)
+    writePrivateJson(filePath(), state)
     return ok(undefined)
   } catch (cause) {
     return err(
