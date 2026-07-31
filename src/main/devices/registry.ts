@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, chmodSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
 import type { Capabilities, Device } from '@shared/domain'
@@ -10,9 +10,10 @@ import { addressKey, applyPriorityOrder, byPriority, mergeDevice } from './order
  * The device registry: which devices we know, how to reach each of them, and in which
  * order to try.
  *
- * Persisted as plain JSON next to the credential store. It holds no secrets — only
- * addresses and names — so it stays readable for support purposes. The refresh token
- * lives in the credential store and is referenced by device id.
+ * Persisted as plain JSON next to the credential store. It holds no secrets — the refresh
+ * token lives in the credential store and is referenced by device id — but it does hold
+ * device names and LAN addresses, which is network topology. That is nobody else's business
+ * on a shared machine, so the file is 0600 like the credential store.
  */
 
 const FILE = 'devices.json'
@@ -52,7 +53,14 @@ const read = (): StoredState => {
 const write = (state: StoredState): Result<void> => {
   try {
     mkdirSync(dirname(filePath()), { recursive: true })
-    writeFileSync(filePath(), `${JSON.stringify(state, null, 2)}\n`, 'utf8')
+    writeFileSync(filePath(), `${JSON.stringify(state, null, 2)}\n`, {
+      encoding: 'utf8',
+      mode: 0o600,
+    })
+    // `mode` above only applies when the file is *created*. A registry written by an older
+    // build already exists at 0644/0664, and writing to it keeps that mode — the option
+    // would report success and change nothing. chmod is the part that acts on what is there.
+    chmodSync(filePath(), 0o600)
     return ok(undefined)
   } catch (cause) {
     return err(

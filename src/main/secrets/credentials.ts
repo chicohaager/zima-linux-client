@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, rmSync, mkdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, rmSync, mkdirSync, existsSync, chmodSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app, safeStorage } from 'electron'
 import { appError, err, ok, type Result } from '@shared/result'
@@ -52,6 +52,8 @@ const writeStore = (store: Store): Result<void> => {
       encoding: 'utf8',
       mode: 0o600,
     })
+    // `mode` only applies on creation; an existing file keeps whatever mode it had.
+    chmodSync(filePath(), 0o600)
     return ok(undefined)
   } catch (cause) {
     return err(
