@@ -65,8 +65,14 @@ reports/
 # Beide liegen weiter unter docs/ auf der Arbeitsmaschine — sie sind nur nicht Teil dessen,
 # was das Repository veröffentlicht. Achtung: das Privacy-Gate läuft über VERFOLGTE Dateien,
 # diese zwei prüft es also nicht mehr mit. Vor dem Weitergeben selbst durchsehen.
+docs/START-HIER.txt
 docs/TESTER.md
 docs/TESTPROTOKOLL.md
+docs/TESTPROTOKOLL.html
+docs/START-HERE.txt
+docs/TESTER-EN.md
+docs/TEST-PROTOCOL-EN.md
+docs/TEST-PROTOCOL-EN.html
 
 # Screenshots und Reports der Verifikationsläufe — Messartefakte, kein Quelltext.
 # Sie zeigen echte Geräte: Tailnet-Namen, Peer-Adressen, Ordnernamen.
