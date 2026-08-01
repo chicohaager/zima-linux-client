@@ -7,8 +7,9 @@ Desktop client for ZimaOS on Linux — files, photos, apps and device management
 > Whether it starts on yours is an open question — that is what the current test round is for.
 > The 0.9.x line lives on `main` and under [`legacy-0.9/`](legacy-0.9/); nothing was deleted.
 >
-> Testers: [`docs/TESTER.md`](docs/TESTER.md) · [`docs/TESTPROTOKOLL.md`](docs/TESTPROTOKOLL.md)
 > What is built and what is measured: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
+> Testers get their notes and the protocol form handed to them directly — those are not in
+> this repository.
 
 ## English
 

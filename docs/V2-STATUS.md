@@ -1496,7 +1496,8 @@ Namespaces. Das ist das Verhalten von electron-builder, kein Rest dieses Fehlers
 den Benutzer »_apt« nicht zugegriffen werden kann. - pkgAcquire::Run (13: Keine Berechtigung)`.
 Gemessen: `/home/<benutzer>` steht auf `750`, `_apt` kommt also nicht bis zur Datei; apt lädt sie
 dann selbst als root. Es ist eine **Notiz**, kein Abbruch — die Installation lief nachweislich
-durch. Steht so in `docs/TESTER.md`, weil jeder Ubuntu-24.04-Tester sie sehen wird.
+durch. Steht so in den Tester-Hinweisen (die nicht im Repository liegen), weil jeder
+Ubuntu-24.04-Tester sie sehen wird.
 
 **Weiterhin NICHT gemessen:** dasselbe auf einer RPM- oder Arch-Distribution.
 
