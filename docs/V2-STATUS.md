@@ -1,19 +1,23 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.0-alpha.1 · **Stand:** 2026-07-31
+**Branch:** `v2` · **Version:** 2.0.0-alpha.1 · **Stand:** 2026-08-01
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
 
-**Zuletzt gefahren, 2026-07-31 — der Stand dieses Commits:**
+**Zuletzt gefahren, 2026-08-01 — der Stand dieses Commits:**
 
 ```
-npm run verify   ✓  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓  184 Tests in 19 Dateien
+npm run verify   ✓ (rc=0)  type-check · lint · build · build-gate · i18n-gate · privacy-gate
+npx vitest run   ✓ (rc=0)  188 Tests in 20 Dateien
 i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 182 verfolgte Dateien
-Pakete              deb · AppImage · tar.gz gebaut und gestartet (siehe Phase 8)
+privacy gate        clean, 186 verfolgte Dateien
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut, Nutzlast gestartet (Phase 8)
+Zweig               auf `origin/v2` hochgeladen (2026-08-01, per `git ls-remote` gegengeprüft)
 ```
+
+Die Exit-Codes stehen mit dabei, weil sie einzeln abgefragt wurden: `npm run verify | tail`
+zeigt die Ausgabe des Gates und wirft seinen Rückgabewert weg.
 
 Die Testzahlen weiter unten (21, 63) sind **Messwerte ihrer jeweiligen Phase** und bleiben so
 stehen — sie sagen, was damals grün war, nicht was heute existiert.
