@@ -7,8 +7,9 @@ Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwa
 > Ob er auf deiner startet, ist offen — genau dafür läuft der aktuelle Test.
 > Die 0.9.x-Linie liegt auf `main` und unter [`legacy-0.9/`](legacy-0.9/); gelöscht wurde nichts.
 >
-> Für Tester: [`docs/TESTER.md`](docs/TESTER.md) · [`docs/TESTPROTOKOLL.md`](docs/TESTPROTOKOLL.md)
 > Was gebaut und was gemessen ist: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
+> Testerinnen und Tester bekommen ihre Hinweise und das Protokollformular direkt — die beiden
+> Dateien liegen nicht in diesem Repository.
 
 ## Übersicht
 

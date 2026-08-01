@@ -60,6 +60,14 @@ out/
 # out of anything shareable (project rule: no private data in shareable files).
 reports/
 
+# Tester-Unterlagen. Sie gehen direkt an die Testerinnen und Tester und nicht auf GitHub:
+# TESTER.md erklärt die Hintergründe, TESTPROTOKOLL.md ist das Formular zum Zurückschicken.
+# Beide liegen weiter unter docs/ auf der Arbeitsmaschine — sie sind nur nicht Teil dessen,
+# was das Repository veröffentlicht. Achtung: das Privacy-Gate läuft über VERFOLGTE Dateien,
+# diese zwei prüft es also nicht mehr mit. Vor dem Weitergeben selbst durchsehen.
+docs/TESTER.md
+docs/TESTPROTOKOLL.md
+
 # Screenshots und Reports der Verifikationsläufe — Messartefakte, kein Quelltext.
 # Sie zeigen echte Geräte: Tailnet-Namen, Peer-Adressen, Ordnernamen.
 tour-*.png
