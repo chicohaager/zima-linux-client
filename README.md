@@ -1,168 +1,221 @@
 # ZimaOS Client
 
-Modern Desktop Client for ZimaOS with integrated ZeroTier and SMB management.
+Desktop client for ZimaOS on Linux — files, photos, apps and device management.
+
+> **This is the `v2` branch: version 2.0.0-alpha.1, a rewrite.**
+> It has been started on **exactly one machine** (Ubuntu 24.04, GNOME on Wayland, x86_64).
+> Whether it starts on yours is an open question — that is what the current test round is for.
+> The 0.9.x line lives on `main` and under [`legacy-0.9/`](legacy-0.9/); nothing was deleted.
+>
+> Testers: [`docs/TESTER.md`](docs/TESTER.md) · [`docs/TESTPROTOKOLL.md`](docs/TESTPROTOKOLL.md)
+> What is built and what is measured: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
 
 ## English
 
 ### Overview
 
-ZimaOS Client is a powerful desktop application for Linux and macOS that provides seamless connectivity to your ZimaOS devices. Connect to your personal cloud storage, access Docker applications, and manage automated backups - all from a native desktop client.
+ZimaOS Client connects a Linux desktop to ZimaOS devices — over the local network, a direct IP
+address, or a Remote ID. It browses files, shows the photo library, lists installed apps and
+reports the device's state.
 
-### Features
+Every claim in this repository's documentation names the command or the measurement behind it.
+Where something is unmeasured, it says so instead of sounding finished.
 
-- **Remote Connectivity**: Connect to ZimaOS devices via local network or remote ID using ZeroTier
-- **SMB/CIFS Integration**: Browse and access shared folders with automatic mounting
-- **Docker App Management**: View and access your ZimaOS Docker applications directly from the client
-- **Automated Backups**: Schedule and manage automated backup jobs from local folders to ZimaOS shares
-- **Recent Connections**: Quick access to previously connected devices
-- **Network Discovery**: Automatic discovery of ZimaOS devices on your local network
-- **ZeroTier Diagnostics**: Built-in diagnostic tools to troubleshoot connectivity issues
-- **Settings Management**: Configure language, theme, ZeroTier options, and backup preferences
-- **Dark Mode**: Full dark mode support with system theme detection
+### What it does
 
-### Screenshots
+**Getting in — three ways, side by side**
 
-#### Connection Screen
-![Remote Connect](resources/1.png)
+- **Scan the local network** — mDNS over `_zimaos._tcp` (port 80, TXT `os=ZimaOS`), implemented
+  directly against the wire format, no third-party dependency.
+- **Connect by IP address** — for devices the scan does not reach.
+- **Connect by Remote ID** — the device's ZeroTier network ID. Joining the network, deriving the
+  device address and probing it happens in one step; the ZeroTier part is machinery, not a step
+  you perform by hand.
 
-#### Device Discovery & Shares
-![Discovered Devices](resources/2.png)
+Every candidate address — discovered, typed or derived — goes through the same probe, and the
+result carries a measured latency. A named reason comes back instead of an empty list, because
+"empty" reads like "no device found".
 
-#### Docker Apps
-![Apps View](resources/3.png)
+**Once connected**
 
-#### Backup Management
-![Backup Jobs](resources/4.png)
+- **Files** — browse, search, create folders, upload and download, transfer tasks, trash with
+  restore, pinned folders.
+- **Photos** — gallery and folder grid, search, the device's indexing progress, and a foreground
+  backup of local folders. It runs only while the window is open, says so on screen, and lists
+  every skipped file with its reason.
+- **Apps** — installed apps with their own icons, start and stop, open the web UI.
+- **Device** — model and system info, CPU/memory utilisation, volumes, power actions.
+- **Several devices** — a registry with priorities, switching, and forgetting a device including
+  its session.
+- **Import from 0.9** — reads the old client's configuration **read-only**. No secrets are
+  migrated: moving a password between keyring backends without asking is a silent trust breach,
+  so v2 asks for it once instead.
 
-#### Settings & ZeroTier Diagnostics
-![Settings Page](resources/5.png)
+**Around all of that**
+
+- **28 languages**, complete (280 keys each). Only `de_DE`, `en_US` and `en_GB` have been
+  reviewed; the other 25 are machine-translated and marked "unreviewed" in the language menu.
+- **Light, dark, or follow the system** — three states, not a two-way toggle, so "follow the
+  system" stays reachable.
+- **Two layouts, one information architecture**: a floating pill below 860 px, a labelled
+  sidebar above it — two component trees, not one restyled.
+- **Tailscale is detected, never operated.** If a tunnel is already running it is used. Nothing
+  is started, stopped or reconfigured, and no DNS setting is touched.
+
+### What it deliberately does not do
+
+- **No background synchronisation.** Photo backup runs while the window is open, and stops with it.
+- **No SMB/CIFS mounting and no scheduled backup jobs.** Both existed in the 0.9 line and are
+  not part of this rewrite.
+- **No automatic updates.** A new version arrives as a new package.
+- **It does not take over your tunnel.** See Tailscale above.
 
 ### Installation
 
-#### Linux
+Packages are built for **x86_64 only**. There is no arm64 build, and no Flatpak.
 
-Download the latest release from the [releases page](https://github.com/chicohaager/zima-linux-client/releases).
+**Debian, Ubuntu, Linux Mint, Pop!\_OS:**
+
+```bash
+sudo apt install ./zima-linux-client_2.0.0-alpha.1_amd64.deb
+```
+
+**Fedora, openSUSE, RHEL derivatives:**
+
+```bash
+sudo dnf install ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+```
 
 **AppImage:**
+
 ```bash
-chmod +x ZimaOS\ Client-*.AppImage
-./ZimaOS\ Client-*.AppImage
+chmod +x "ZimaOS Client-2.0.0-alpha.1.AppImage"
+"./ZimaOS Client-2.0.0-alpha.1.AppImage"
 ```
 
-**Debian/Ubuntu (.deb):**
+More convenient, and it measures the result: [`scripts/install.sh`](scripts/install.sh) picks the
+package matching your distribution, compares the checksum, installs it with the right tool and
+then checks whether the application can actually start. `--check` inspects without changing
+anything, `--repair` fixes what is fixable, `--uninstall` removes it.
+
+Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as the entry point.
+
+### Requirements
+
+- **x86_64 Linux** with a desktop session. On problematic DRM drivers the client relaunches
+  itself under X11 — measured on `vmwgfx`, where Wayland ends in SIGSEGV.
+- **`.deb` declares `libcap2-bin`** — `setcap` is needed by the post-install script.
+- **The AppImage is type 2 and needs FUSE 2.** The test machine had `libfuse2t64` installed; a
+  system without it is unmeasured.
+- **ZeroTier ships with the package** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`) and is
+  granted `CAP_NET_ADMIN` during installation. Nothing is pulled in, an existing system-wide
+  ZeroTier is left untouched, and the application itself never asks for a password.
+- **A keyring is expected but not required.** Only the refresh token is stored, never the
+  password. If the keyring falls back to plain text, the UI warns **before** anything is written.
+
+### Building from source
+
+Requires **Node.js 22 or newer** (`engines.node: >=22`).
+
 ```bash
-sudo apt install ./zima-linux-client_*_amd64.deb
-```
-
-More convenient, and it measures the result: `scripts/install.sh` (see `docs/TESTER.md`) finds
-the package matching the distribution, verifies the checksum, installs it and then checks
-whether the application can actually start.
-
-#### macOS
-
-Download the latest macOS release from the [releases page](https://github.com/chicohaager/zima-linux-client/releases).
-
-### Building from Source
-
-#### Prerequisites
-
-- Node.js 18 or higher
-- npm or yarn
-- Git
-
-#### Build Steps
-
-```bash
-# Clone the repository
 git clone https://github.com/chicohaager/zima-linux-client.git
 cd zima-linux-client
-
-# Install dependencies
+git checkout v2
 npm install
 
-# Development mode
-npm run dev
+npm run dev          # development mode
+npm run dev:x11      # same, forced onto X11 (see below)
+npm run build        # type-check + production build
+```
 
-# Build for production
-npm run build
+`npm run dev` does **not** relaunch on X11 even on a problematic driver — that would kill the Vite
+dev server, which is the parent process. It prints the reason and the command instead; `dev:x11`
+is that command. Only argv works here, because Ozone picks its platform before any JavaScript runs.
 
-# Package
+**Packaging:**
+
+```bash
 npm run package:deb       # .deb          — no extra tooling needed
 npm run package:tar       # .tar.gz       — no extra tooling needed
 npm run package:appimage  # .AppImage     — no extra tooling needed
 npm run package:rpm       # .rpm          — needs rpmbuild   (apt install rpm)
 npm run package:pacman    # .pacman       — needs bsdtar     (apt install libarchive-tools)
-npm run package:flatpak   # .flatpak      — needs flatpak-builder
-npm run package:linux     # every target above at once — fails unless all of the above are installed
+npm run package:flatpak   # .flatpak      — needs flatpak-builder and an installed runtime
+npm run package:linux     # every target at once — fails unless all tools are present
 ```
 
-The three "no extra tooling" targets were built and started on Ubuntu 24.04 on 2026-07-31;
-the other three abort with a named missing program, not silently.
+Five of the six were built on Ubuntu 24.04 on 2026-07-31 and their payload was started from a
+directory named exactly `ZimaOS Client`. Flatpak was not built: the builder is present, but no
+runtime is installed. The missing tools are named on failure, not swallowed.
 
-### Requirements
+### Verification
 
-- **Linux**: libfuse2, smbclient
-- **ZeroTier**: the package **ships its own** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`)
-  and grants it `CAP_NET_ADMIN` on install. Nothing is pulled in, and an existing system-wide
-  ZeroTier is left untouched.
+```bash
+npm run verify          # type-check · lint · tests · build · build gate · i18n gate · privacy gate
+npm test                # 188 tests in 20 files (2026-08-01)
+npm run verify:build    # reads the BUILT files: preload is CJS, sandbox on, CSP without unsafe-eval
+npm run verify:i18n     # completeness, unknown keys, placeholder drift, "English copy" detection
+npm run verify:privacy  # no LAN addresses, user names or e-mail addresses in tracked files
+npm run verify:live     # reads against a real device, with the same parsers the IPC handlers use
+```
 
-### Usage
+Check the exit code, not the output: `npm run verify | tail` discards the gate's return value.
 
-1. **Launch the application**
-2. **Connect to your ZimaOS**:
-   - Use "Scan Local Network" to find devices on your local network
-   - Use "Connect via Remote ID" to connect remotely using ZeroTier
-3. **Access your shares**: Browse and mount SMB shares from discovered devices
-4. **Manage apps**: View and access your Docker applications
-5. **Setup backups**: Create scheduled backup jobs to protect your data
-6. **Configure settings**: Click the gear icon in the top-right corner to access:
-   - **General**: Language selection and theme (Light/Dark/System)
-   - **ZeroTier**: Auto-start options, default network, and diagnostics
-   - **Backup**: Notification preferences and log levels
-   - **About**: Version info, license, and links to report issues
+`ZIMA_VERIFY_STARTUP=<report.json>` starts the built application, asks the **running engine** for
+applied CSS rules and computed styles, looks for visible raw i18n keys, and writes a screenshot
+plus a JSON report. `ZIMA_VERIFY_SCENARIO=tour` clicks through all four screens and counts what
+was actually rendered.
 
-### Troubleshooting
+### Architecture
 
-**Connection issues?**
+Electron 43 · React 19 · Vite 7 · electron-vite 5 · Tailwind 4 · zod 4 · TanStack Query ·
+zustand · i18next · electron-log · Vitest 3 · TypeScript 5.9.
 
-The app includes built-in diagnostics to help troubleshoot ZeroTier connectivity:
+- **A hard process boundary**: renderer with `sandbox: true`, `contextIsolation: true`,
+  `nodeIntegration: false`, a CSP without `unsafe-eval`, and every window opening decided
+  explicitly.
+- **A typed IPC contract** (`src/shared/contract.ts`): one zod schema per channel, answers always
+  wrapped as `{ok:true,value} | {ok:false,error}`. No generic `invoke(channel)`.
+- **`Result<T,E>` instead of exceptions**, with error kinds kept apart: `refused` ≠ `timeout` ≠
+  `dns` ≠ `unexpected-status`.
+- **The preload is CJS and dependency-free** — a sandboxed preload cannot load ESM, and the most
+  privileged boundary of the app should not carry a validation library.
+- **Envelope handling lives in the application code**, because a wrong password is HTTP **400** on
+  this API, and 400 means "invalid path" on the files API. Reading only the status code would tell
+  the user the device rejected a path.
 
-1. **Open Settings** (gear icon in top-right corner)
-2. Navigate to the **ZeroTier** tab
-3. Click **Run Diagnostics** to check:
-   - ZeroTier binary existence and permissions
-   - Service status
-   - Network connectivity
-   - Port availability
-   - System configuration
-
-**Common solutions:**
-- **Log out and back in** after installation (group permissions need a fresh login)
-- Check ZeroTier service: `sudo systemctl status zima-zerotier.service`
-- Review diagnostic results in Settings > ZeroTier > Diagnostics
+```
+src/
+├── main/            # Electron main process
+│   ├── app/         # startup, platform resilience, verification tooling
+│   ├── devices/     # registry, ordering, priorities
+│   ├── discovery/   # mDNS, straight off the wire format
+│   ├── ipc/         # handlers, one per domain
+│   ├── legacy/      # read-only import of the 0.9 configuration
+│   ├── media/       # icon fetching with an explicit URL policy
+│   ├── secrets/     # keyring, refresh token only
+│   ├── tailscale/   # detection, read-only
+│   ├── transport/   # probe, strategies
+│   ├── zerotier/    # own daemon via systemd --user
+│   └── zima/        # endpoints, envelopes, auth, JWT
+├── preload/         # the CJS bridge
+├── renderer/src/    # React UI: features/, i18n/, shared/, styles/
+└── shared/          # contract, channels, result, domain types
+```
 
 ### Development
 
 ```bash
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Check test coverage
-npm run test:coverage
-
-# Lint code
-npm run lint
-
-# Type checking
-npm run type-check
+npm test              # run tests
+npm run test:watch    # watch mode
+npm run lint          # ESLint
+npm run type-check    # tsc, both projects
+npm run format        # prettier
 ```
 
 ### License
 
-MIT License - see LICENSE file for details
+MIT License — see LICENSE.
 
 ### Author
 
@@ -174,162 +227,227 @@ Holger Kühn
 
 ### Übersicht
 
-ZimaOS Client ist eine leistungsstarke Desktop-Anwendung für Linux und macOS, die nahtlose Konnektivität zu Ihren ZimaOS-Geräten bietet. Verbinden Sie sich mit Ihrem persönlichen Cloud-Speicher, greifen Sie auf Docker-Anwendungen zu und verwalten Sie automatisierte Backups - alles von einem nativen Desktop-Client aus.
+Der ZimaOS Client verbindet einen Linux-Desktop mit ZimaOS-Geräten — über das lokale Netz, eine
+IP-Adresse oder eine Remote-ID. Er durchsucht Dateien, zeigt die Fotobibliothek, listet
+installierte Apps und meldet den Zustand des Geräts.
 
-### Funktionen
+Jede Aussage in der Dokumentation dieses Zweigs nennt das Kommando oder den Messwert dahinter. Wo
+etwas **nicht** gemessen ist, steht das ausdrücklich dabei, statt fertig zu klingen.
 
-- **Remote-Konnektivität**: Verbindung zu ZimaOS-Geräten über lokales Netzwerk oder Remote-ID mit ZeroTier
-- **SMB/CIFS-Integration**: Durchsuchen und Zugriff auf freigegebene Ordner mit automatischem Mounten
-- **Docker-App-Verwaltung**: Anzeigen und Zugriff auf Ihre ZimaOS Docker-Anwendungen direkt vom Client aus
-- **Automatisierte Backups**: Planen und Verwalten von automatisierten Backup-Jobs von lokalen Ordnern zu ZimaOS-Freigaben
-- **Letzte Verbindungen**: Schnellzugriff auf zuvor verbundene Geräte
-- **Netzwerk-Erkennung**: Automatische Erkennung von ZimaOS-Geräten in Ihrem lokalen Netzwerk
-- **ZeroTier-Diagnose**: Integrierte Diagnosetools zur Fehlerbehebung bei Verbindungsproblemen
-- **Einstellungsverwaltung**: Konfiguration von Sprache, Theme, ZeroTier-Optionen und Backup-Einstellungen
-- **Dark Mode**: Vollständige Dark-Mode-Unterstützung mit System-Theme-Erkennung
+### Was er kann
 
-### Screenshots
+**Hinein — drei Wege, gleichrangig**
 
-#### Verbindungsbildschirm
-![Remote Connect](resources/1.png)
+- **Lokales Netzwerk durchsuchen** — mDNS über `_zimaos._tcp` (Port 80, TXT `os=ZimaOS`), direkt
+  am Drahtformat umgesetzt, ohne Fremdabhängigkeit.
+- **Über IP-Adresse verbinden** — für Geräte, die der Suchlauf nicht erreicht.
+- **Über Remote-ID verbinden** — die ZeroTier-Netzwerk-ID des Geräts. Beitreten, Adresse ableiten
+  und Erreichbarkeit belegen passiert in einem Schritt; der ZeroTier-Teil ist Mechanik und kein
+  Handgriff des Nutzers.
 
-#### Geräteerkennung & Freigaben
-![Entdeckte Geräte](resources/2.png)
+Jede Kandidatenadresse — gefunden, getippt oder abgeleitet — geht durch dieselbe Probe, und das
+Ergebnis trägt eine gemessene Laufzeit. Scheitert es, kommt ein **benannter Grund** zurück statt
+einer leeren Liste: „leer" liest sich wie „kein Gerät gefunden".
 
-#### Docker Apps
-![Apps-Ansicht](resources/3.png)
+**Nach dem Verbinden**
 
-#### Backup-Verwaltung
-![Backup-Jobs](resources/4.png)
+- **Dateien** — navigieren, suchen, Ordner anlegen, hoch- und herunterladen, Übertragungsaufgaben,
+  Papierkorb mit Wiederherstellen, angeheftete Ordner.
+- **Fotos** — Galerie und Ordnerraster, Suche, Indexfortschritt des Geräts sowie ein
+  Vordergrund-Backup lokaler Ordner. Es läuft nur bei offenem Fenster, sagt das auf dem Bildschirm,
+  und listet jede übersprungene Datei mit Grund.
+- **Apps** — installierte Apps mit eigenem Symbol, starten und stoppen, Weboberfläche öffnen.
+- **Gerät** — Modell und Systemdaten, CPU-/Speicherauslastung, Datenträger, Power-Aktionen.
+- **Mehrere Geräte** — Registry mit Priorität, Umschalten und Entfernen samt Sitzung.
+- **Übernahme aus 0.9** — liest die Konfiguration des alten Clients **nur lesend**. Geheimnisse
+  werden nicht übernommen: ein Passwort ungefragt zwischen Schlüsselbunden zu verschieben ist ein
+  stiller Vertrauensbruch, also fragt v2 einmal danach.
 
-#### Einstellungen & ZeroTier-Diagnose
-![Einstellungsseite](resources/5.png)
+**Drumherum**
+
+- **28 Sprachen**, vollständig (je 280 Schlüssel). Geprüft sind nur `de_DE`, `en_US` und `en_GB`;
+  die anderen 25 sind maschinell übersetzt und stehen im Sprachmenü mit dem Hinweis „ungeprüft".
+- **Hell, dunkel oder dem System folgen** — drei Zustände statt eines Umschalters, damit „dem
+  System folgen" erreichbar bleibt.
+- **Zwei Layouts, eine Informationsarchitektur**: schwebende Pill unter 860 px, beschriftete
+  Seitenleiste darüber — zwei Komponentenbäume, nicht dasselbe anders gestylt.
+- **Tailscale wird erkannt, nie betrieben.** Läuft ein Tunnel, wird er benutzt. Nichts wird
+  gestartet, gestoppt oder umkonfiguriert, kein DNS angefasst.
+
+### Was er bewusst nicht tut
+
+- **Keine Hintergrund-Synchronisation.** Das Foto-Backup läuft bei offenem Fenster und endet mit ihm.
+- **Kein SMB/CIFS-Einbinden, keine geplanten Backup-Jobs.** Beides gab es in der 0.9-Linie und ist
+  nicht Teil dieses Rewrites.
+- **Keine automatische Aktualisierung.** Eine neue Fassung kommt als neues Paket.
+- **Er reißt den Tunnel nicht an sich.** Siehe Tailscale oben.
 
 ### Installation
 
-#### Linux
+Es gibt Pakete **nur für x86_64** — kein arm64, kein Flatpak.
 
-Laden Sie die neueste Version von der [Releases-Seite](https://github.com/chicohaager/zima-linux-client/releases) herunter.
+**Debian, Ubuntu, Linux Mint, Pop!\_OS:**
+
+```bash
+sudo apt install ./zima-linux-client_2.0.0-alpha.1_amd64.deb
+```
+
+**Fedora, openSUSE, RHEL-Abkömmlinge:**
+
+```bash
+sudo dnf install ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+```
 
 **AppImage:**
+
 ```bash
-chmod +x ZimaOS\ Client-*.AppImage
-./ZimaOS\ Client-*.AppImage
+chmod +x "ZimaOS Client-2.0.0-alpha.1.AppImage"
+"./ZimaOS Client-2.0.0-alpha.1.AppImage"
 ```
 
-**Debian/Ubuntu (.deb):**
-```bash
-sudo dpkg -i zima-linux-client_*_amd64.deb
-sudo apt-get install -f  # Abhängigkeiten installieren falls nötig
-```
+Bequemer und mit Nachmessung: [`scripts/install.sh`](scripts/install.sh) sucht das Paket, das zur
+Distribution passt, vergleicht die Prüfsumme, installiert mit dem richtigen Werkzeug — und prüft
+danach, ob die Anwendung überhaupt starten kann. `--check` sieht nur nach, `--repair` behebt, was
+behebbar ist, `--uninstall` entfernt.
 
-#### macOS
+Installiert wird nach `/opt/ZimaOS Client/`, Einstiegspunkt ist `/usr/bin/zima-linux-client`.
 
-Laden Sie die neueste macOS-Version von der [Releases-Seite](https://github.com/chicohaager/zima-linux-client/releases) herunter.
+### Anforderungen
+
+- **x86_64-Linux** mit Desktop-Sitzung. Auf problematischen DRM-Treibern startet sich der Client
+  selbst unter X11 neu — gemessen an `vmwgfx`, wo Wayland in einem SIGSEGV endet.
+- **Das `.deb` deklariert `libcap2-bin`** — das Post-Install-Skript braucht `setcap`.
+- **Die AppImage ist Typ 2 und braucht FUSE 2.** Auf der Testmaschine lag `libfuse2t64` vor; ein
+  System ohne FUSE 2 ist ungemessen.
+- **ZeroTier bringt das Paket selbst mit** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`) und
+  erteilt ihm bei der Installation `CAP_NET_ADMIN`. Es wird **nichts** nachinstalliert, ein
+  vorhandenes System-ZeroTier bleibt unangetastet, und die Anwendung fragt **nie** nach einem
+  Passwort.
+- **Ein Schlüsselbund wird erwartet, aber nicht vorausgesetzt.** Gespeichert wird nur der
+  Refresh-Token, nie das Passwort. Fällt der Schlüsselbund auf Klartext zurück, warnt die
+  Oberfläche, **bevor** etwas geschrieben wird.
 
 ### Aus Quellcode erstellen
 
-#### Voraussetzungen
-
-- Node.js 18 oder höher
-- npm oder yarn
-- Git
-
-#### Build-Schritte
+Braucht **Node.js 22 oder neuer** (`engines.node: >=22`).
 
 ```bash
-# Repository klonen
 git clone https://github.com/chicohaager/zima-linux-client.git
 cd zima-linux-client
-
-# Abhängigkeiten installieren
+git checkout v2
 npm install
 
-# Entwicklungsmodus
-npm run dev
+npm run dev          # Entwicklungsmodus
+npm run dev:x11      # dasselbe, erzwungen auf X11 (siehe unten)
+npm run build        # Typprüfung + Produktionsbau
+```
 
-# Für Produktion erstellen
-npm run build
+`npm run dev` startet auch auf einem problematischen Treiber **nicht** auf X11 neu — das würde den
+Vite-Dev-Server erschlagen, der der Elternprozess ist. Stattdessen stehen Grund und Kommando auf
+stderr; `dev:x11` ist dieses Kommando. Nur argv zählt, weil Ozone seine Plattform wählt, bevor
+irgendein JavaScript läuft.
 
-# Paketieren
+**Paketieren:**
+
+```bash
 npm run package:deb       # .deb          — ohne Zusatzwerkzeug
 npm run package:tar       # .tar.gz       — ohne Zusatzwerkzeug
 npm run package:appimage  # .AppImage     — ohne Zusatzwerkzeug
 npm run package:rpm       # .rpm          — braucht rpmbuild  (apt install rpm)
 npm run package:pacman    # .pacman       — braucht bsdtar    (apt install libarchive-tools)
-npm run package:flatpak   # .flatpak      — braucht flatpak-builder
-npm run package:linux     # alle Ziele auf einmal — schlägt fehl, solange eines der Werkzeuge fehlt
+npm run package:flatpak   # .flatpak      — braucht flatpak-builder und eine installierte Runtime
+npm run package:linux     # alle Ziele auf einmal — scheitert, solange ein Werkzeug fehlt
 ```
 
-Die drei Ziele ohne Zusatzwerkzeug sind am 2026-07-31 auf Ubuntu 24.04 gebaut **und gestartet**
-worden; die anderen drei brechen mit dem Namen des fehlenden Programms ab, nicht stillschweigend.
+Fünf der sechs sind am 2026-07-31 auf Ubuntu 24.04 gebaut worden, und ihre Nutzlast wurde aus
+einem Verzeichnis namens exakt `ZimaOS Client` gestartet. Flatpak ist **nicht** gebaut: der Builder
+liegt vor, aber keine Runtime. Fehlende Werkzeuge werden beim Namen genannt, nicht verschluckt.
 
-### Anforderungen
+### Verifikation
 
-- **Linux**: libfuse2, smbclient
-- **ZeroTier**: Wird automatisch bei der Paketinstallation installiert
+```bash
+npm run verify          # Typprüfung · Lint · Tests · Build · Build-Gate · i18n-Gate · Privacy-Gate
+npm test                # 188 Tests in 20 Dateien (2026-08-01)
+npm run verify:build    # liest die GEBAUTEN Dateien: Preload CJS, Sandbox an, CSP ohne unsafe-eval
+npm run verify:i18n     # Vollständigkeit, unbekannte Schlüssel, Platzhalter, „englische Kopie"
+npm run verify:privacy  # keine LAN-Adressen, Benutzernamen oder E-Mail-Adressen im Bestand
+npm run verify:live     # liest gegen ein echtes Gerät, mit denselben Parsern wie die IPC-Handler
+```
 
-### Verwendung
+Den Exit-Code prüfen, nicht die Ausgabe: `npm run verify | tail` wirft den Rückgabewert des Gates weg.
 
-1. **Starten Sie die Anwendung**
-2. **Verbinden Sie sich mit Ihrem ZimaOS**:
-   - Verwenden Sie "Scan Local Network", um Geräte in Ihrem lokalen Netzwerk zu finden
-   - Verwenden Sie "Connect via Remote ID", um sich remote über ZeroTier zu verbinden
-3. **Greifen Sie auf Ihre Freigaben zu**: Durchsuchen und mounten Sie SMB-Freigaben von entdeckten Geräten
-4. **Verwalten Sie Apps**: Anzeigen und Zugriff auf Ihre Docker-Anwendungen
-5. **Richten Sie Backups ein**: Erstellen Sie geplante Backup-Jobs zum Schutz Ihrer Daten
-6. **Einstellungen konfigurieren**: Klicken Sie auf das Zahnrad-Symbol oben rechts für:
-   - **Allgemein**: Sprachauswahl und Theme (Hell/Dunkel/System)
-   - **ZeroTier**: Auto-Start-Optionen, Standard-Netzwerk und Diagnose
-   - **Backup**: Benachrichtigungseinstellungen und Log-Level
-   - **Über**: Versionsinformationen, Lizenz und Links zum Melden von Problemen
+`ZIMA_VERIFY_STARTUP=<report.json>` startet die gebaute Anwendung, fragt die **laufende Engine**
+nach angewandten CSS-Regeln und berechneten Stilwerten, sucht sichtbare rohe i18n-Schlüssel und
+legt Screenshot plus JSON-Report ab. `ZIMA_VERIFY_SCENARIO=tour` klickt alle vier Bildschirme durch
+und zählt, was tatsächlich gerendert wurde.
 
-### Fehlerbehebung
+### Architektur
 
-**Verbindungsprobleme?**
+Electron 43 · React 19 · Vite 7 · electron-vite 5 · Tailwind 4 · zod 4 · TanStack Query ·
+zustand · i18next · electron-log · Vitest 3 · TypeScript 5.9.
 
-Die App enthält integrierte Diagnosetools zur Fehlerbehebung bei ZeroTier-Verbindungen:
+- **Harte Prozessgrenze**: Renderer mit `sandbox: true`, `contextIsolation: true`,
+  `nodeIntegration: false`, CSP ohne `unsafe-eval`, jede Fensteröffnung ausdrücklich entschieden.
+- **Typisierter IPC-Kontrakt** (`src/shared/contract.ts`): ein zod-Schema je Kanal, Antworten immer
+  als Hülle `{ok:true,value} | {ok:false,error}`. Kein generisches `invoke(channel)`.
+- **`Result<T,E>` statt Ausnahmen**, mit unterschiedenen Fehlerarten: `refused` ≠ `timeout` ≠
+  `dns` ≠ `unexpected-status`.
+- **Das Preload ist CJS und abhängigkeitsfrei** — ein sandboxed Preload kann kein ESM laden, und an
+  die privilegierteste Grenze der App gehört keine Validierungsbibliothek.
+- **Die Hüllen-Auswertung liegt im Anwendungscode**, weil ein falsches Passwort auf dieser API
+  HTTP **400** ist — und 400 auf der Files-API „ungültiger Pfad" heißt. Wer nur den Status liest,
+  erzählt dem Nutzer, das Gerät habe einen Pfad abgelehnt.
 
-1. **Einstellungen öffnen** (Zahnrad-Symbol oben rechts)
-2. Zum Tab **ZeroTier** navigieren
-3. **Diagnose ausführen** klicken, um zu prüfen:
-   - ZeroTier-Binary-Existenz und -Berechtigungen
-   - Service-Status
-   - Netzwerkkonnektivität
-   - Port-Verfügbarkeit
-   - Systemkonfiguration
-
-**Häufige Lösungen:**
-- **Abmelden und wieder anmelden** nach der Installation (Gruppenberechtigungen erfordern einen neuen Login)
-- ZeroTier-Service prüfen: `sudo systemctl status zima-zerotier.service`
-- Diagnoseergebnisse in Einstellungen > ZeroTier > Diagnostics überprüfen
+```
+src/
+├── main/            # Electron-Hauptprozess
+│   ├── app/         # Start, Plattform-Resilienz, Verifikationswerkzeug
+│   ├── devices/     # Registry, Reihenfolge, Priorität
+│   ├── discovery/   # mDNS, direkt am Drahtformat
+│   ├── ipc/         # Handler, einer je Domäne
+│   ├── legacy/      # nur lesende Übernahme der 0.9-Konfiguration
+│   ├── media/       # Icon-Abruf mit ausdrücklicher URL-Richtlinie
+│   ├── secrets/     # Schlüsselbund, nur Refresh-Token
+│   ├── tailscale/   # Erkennung, nur lesend
+│   ├── transport/   # Probe, Strategien
+│   ├── zerotier/    # eigener Daemon über systemd --user
+│   └── zima/        # Endpunkte, Hüllen, Auth, JWT
+├── preload/         # die CJS-Brücke
+├── renderer/src/    # React-Oberfläche: features/, i18n/, shared/, styles/
+└── shared/          # Kontrakt, Kanäle, Result, Domänentypen
+```
 
 ### Entwicklung
 
 ```bash
-# Tests ausführen
-npm test
-
-# Tests im Watch-Modus ausführen
-npm run test:watch
-
-# Test-Abdeckung prüfen
-npm run test:coverage
-
-# Code-Linting
-npm run lint
-
-# Typ-Prüfung
-npm run type-check
+npm test              # Tests ausführen
+npm run test:watch    # Watch-Modus
+npm run lint          # ESLint
+npm run type-check    # tsc, beide Projekte
+npm run format        # prettier
 ```
+
+### Screenshots
+
+Die Bilder der 0.9-Linie zeigten eine Oberfläche, die es in diesem Zweig nicht mehr gibt
+(SMB-Freigaben, Backup-Jobs, Einstellungsdialog) — sie sind deshalb hier entfernt worden. Neue
+kommen mit dem Release; die Screenshots der Verifikationsläufe zeigen echte Geräte und bleiben
+außerhalb des Repositorys.
 
 ### Lizenz
 
-MIT-Lizenz - siehe LICENSE-Datei für Details
+MIT-Lizenz — siehe LICENSE.
 
 ### Autor
 
 Holger Kühn
+
+### Links
+
+- **Homepage**: https://www.zimaspace.com
+- **Repository**: https://github.com/chicohaager/zima-linux-client
+- **Issues**: https://github.com/chicohaager/zima-linux-client/issues
+- **Releases**: https://github.com/chicohaager/zima-linux-client/releases
 
 ---
 
