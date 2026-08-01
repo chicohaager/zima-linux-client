@@ -7,6 +7,10 @@ erste Frage, die dieser Test beantworten soll.
 Was in diesem Dokument steht, ist gemessen. Wo etwas **nicht** gemessen ist, steht das ausdrücklich
 dabei — dann ist es eine Bitte um einen Test, keine Zusage.
 
+**Zum Ausfüllen und Zurückschicken gibt es [TESTPROTOKOLL.md](TESTPROTOKOLL.md)** — dieselben
+Schritte als Formular, mit den Befehlen, die deine Umgebung und die Rechte nach der Installation
+festhalten. Dieses Dokument hier erklärt die Hintergründe, das Protokoll fragt die Ergebnisse ab.
+
 ---
 
 ## 1. Was du bekommst
@@ -198,8 +202,10 @@ Distribution, Desktop-Umgebung und Wayland/X11.
 
 * **Nur eine Maschine hat diesen Stand gestartet** (Ubuntu 24.04, GNOME/Wayland). Fedora, Arch und
   openSUSE sind ungetestet — das ist der Hauptgrund für diesen Test.
-* **Die Wirkung der Installation ist nicht nachgemessen** (Terminal-Befehl, AppArmor-Profil,
-  Sandkasten-Rechte). Siehe Punkt 3.
+* **Die Wirkung der Installation ist nur auf Ubuntu 24.04 nachgemessen** — dort liegen
+  `/usr/bin/zima-linux-client`, das AppArmor-Profil und die ZeroTier-Capability nachweislich
+  richtig (2026-07-31, am installierten Paket abgelesen). Auf jeder anderen Distribution ist das
+  offen; Punkt 4 des [Testprotokolls](TESTPROTOKOLL.md) fragt es mit fünf Befehlen ab.
 * **Übersetzungen:** 28 Sprachen sind vollständig, aber 25 davon sind maschinell übersetzt und von
   keinem Muttersprachler geprüft. Holprige Formulierungen sind erwartbar — Meldungen trotzdem
   willkommen.
