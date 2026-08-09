@@ -211,6 +211,7 @@ export const DeviceScreen = (): React.JSX.Element => {
         </Button>
         <Button
           variant="secondary"
+          data-action="direct-ip"
           onClick={() => setTarget({ host: '', port: 80, kind: 'direct' })}
         >
           {t('device.directIp')}

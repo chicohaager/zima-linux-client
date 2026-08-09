@@ -19,7 +19,9 @@ const RULES = [
     name: 'RFC1918 address',
     pattern: /\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})\b/g,
     // Documentation examples and the ZeroTier range are fine; a real home address is not.
-    allow: [/^192\.168\.1\.100$/, /^192\.168\.1\.1$/, /^192\.168\.0\.\d+$/, /^10\.147\.\d+\.\d+$/, /^192\.168\.50\.50$/, /^10\.0\.0\.1$/, /^192\.168\.1\.256$/],
+    // The last one is the single 172.16/12 representative used by the fixture scrubber's
+    // canary — an exact value, not the range, so the rule keeps its teeth everywhere else.
+    allow: [/^192\.168\.1\.100$/, /^192\.168\.1\.1$/, /^192\.168\.0\.\d+$/, /^10\.147\.\d+\.\d+$/, /^192\.168\.50\.50$/, /^10\.0\.0\.1$/, /^192\.168\.1\.256$/, /^172\.20\.1\.9$/],
     /*
      * One file, by path, because its SUBJECT is these addresses: `urlPolicy.test.ts` asserts
      * that RFC1918 targets are refused, and it cannot do that without naming one of each

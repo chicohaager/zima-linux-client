@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
 import { runTour } from './tourScenario'
+import { runTailscaleSignIn } from './tailscaleSignInScenario'
 
 /**
  * Scripted UI scenarios for the startup verifier.
@@ -275,6 +276,26 @@ export const runScenario = async (
       return signInIpcDump(window, argument)
     case 'remote-id':
       return remoteIdScenario(window, argument)
+    case 'direct-signin':
+    case 'tailscale-signin': {
+      // Same report-path rule as the tour below: no working-directory default, because that
+      // once put screenshots of a real tailnet into a commit.
+      const path = process.env['ZIMA_VERIFY_STARTUP'] ?? ''
+      if (path.length === 0) {
+        return {
+          name,
+          ok: false,
+          observed: {},
+          failures: [`${name}: set ZIMA_VERIFY_STARTUP so screenshots have a home`],
+        }
+      }
+      return runTailscaleSignIn(
+        window,
+        argument,
+        path,
+        name === 'tailscale-signin' ? 'tailscale-panel' : 'direct-ip',
+      )
+    }
     case 'tour': {
       // The argument is the report path, so the tour can put its screenshots beside it.
       //

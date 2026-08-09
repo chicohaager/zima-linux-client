@@ -79,3 +79,7 @@ docs/TEST-PROTOCOL-EN.html
 tour-*.png
 startup-report*.json
 scenario-report*.json
+
+# Playwright
+test-results/
+playwright-report/

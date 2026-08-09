@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, v2]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gates:
+    name: Type-check, lint, unit tests, build gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # One command, one exit code. Deliberately NOT piped into anything: a pipe discards
+      # the gate's status and makes a red run look green.
+      - run: npm run verify
+
+  e2e:
+    name: End-to-end against a replayed device
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # Electron needs the same shared libraries Chromium does. Playwright already knows
+      # the list for this distribution, so it is not re-guessed here.
+      - name: Install the libraries Electron needs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          npx playwright install-deps chromium
+
+      # The client has no port field — its UI always connects on 80. Lowering this is what
+      # lets the replay server bind 80 as an ordinary user; without it `fake-device.mjs`
+      # falls back to publishing the port through Docker, which also works but is slower.
+      - name: Allow binding port 80 unprivileged
+        run: sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
+
+      - run: npm run build
+
+      - name: End-to-end
+        run: xvfb-run --auto-servernum npm run test:e2e
+
+      # Only on failure, and only the artefacts a human needs to see what the assertions
+      # saw. A green run uploading screenshots nobody opens is noise.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-failure-evidence
+          path: test-results/
+          retention-days: 7
