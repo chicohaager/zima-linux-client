@@ -58,4 +58,33 @@ describe('Button', () => {
     const button = screen.getByRole('button')
     expect(button.hasAttribute('variant')).toBe(false)
   })
+
+  /**
+   * 🔴 A smuggled prop must not be able to overrule the variant styling.
+   *
+   * The rest object collects everything not destructured — including `style`. Spread after
+   * `style={VARIANTS[variant]}`, a smuggled one wins and the button renders without its
+   * colours. TypeScript cannot stop it: the `data-${string}` index signature only rejects
+   * unknown keys written literally in JSX, and an object spread is exempt from
+   * excess-property checking altogether — which is exactly how such a prop arrives.
+   *
+   * The cast models that spread: it is the shape a call site produces, not a shape anyone
+   * would type out by hand.
+   */
+  it('keeps the variant styling when a foreign prop is smuggled in via a spread', () => {
+    const smuggled = { style: { background: 'red' }, id: 'x' } as unknown as {
+      'data-smuggled'?: string
+    }
+    render(
+      <Button variant="danger" {...smuggled}>
+        Entfernen
+      </Button>,
+    )
+
+    const button = screen.getByRole('button')
+    // The variant's own background survived …
+    expect(button.style.background).toBe('var(--danger-soft)')
+    // … and nothing that was not a data attribute reached the DOM.
+    expect(button.hasAttribute('id')).toBe(false)
+  })
 })

@@ -1,7 +1,16 @@
-import { writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
 import type { ScenarioResult } from './scenarios'
+import {
+  capturePng,
+  CLICK_ACTION,
+  FILL,
+  pollUntil,
+  SIGNED_IN,
+  sleep,
+  SUBMIT_SIGN_IN,
+  waitForResumeSettled,
+} from './scenarioKit'
 import { runTour } from './tourScenario'
 
 /**
@@ -34,11 +43,18 @@ import { runTour } from './tourScenario'
  * defaulted, and never logged. No credential means a loud failure, not a skipped check.
  */
 
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
-
 /** How long a sign-in over a tunnel may take before it counts as broken. */
 const SIGN_IN_BUDGET_MS = 30_000
 const POLL_MS = 500
+/**
+ * How long the Tailscale panel may take to list its peers.
+ *
+ * The list comes from `tailscale status` through IPC, so it is a subprocess round-trip, not
+ * a render. It used to be read exactly once after a fixed sleep — and a busy `tailscaled`
+ * then produced `the Tailscale panel offered no button`, a confident negative about a
+ * working app. Polling turns a slow daemon back into what it is: slow, not broken.
+ */
+const PEERS_BUDGET_MS = 15_000
 
 /**
  * How the sign-in form is reached.
@@ -59,8 +75,30 @@ export const runTailscaleSignIn = async (
   const resultName = entry === 'tailscale-panel' ? 'tailscale-signin' : 'direct-signin'
   /** What the session must record for this route. */
   const expectedKind = entry === 'tailscale-panel' ? 'tailscale' : 'direct'
-  const run = async (script: string): Promise<unknown> =>
-    window.webContents.executeJavaScript(script, true)
+
+  /**
+   * 🔴 Every step is contained, so one rejection cannot take the report with it.
+   *
+   * `executeJavaScript` rejects when the page has no `window.zima` — a broken preload, which
+   * this project has actually shipped once. Unwrapped, that rejection propagates out of this
+   * function and `startupVerification` replaces the whole result with `observed: {}` plus
+   * "scenario threw". Every measurement taken before it — the peers on offer, the prefilled
+   * host, how long the sign-in took — is discarded for exactly the runs that need it most.
+   *
+   * A failed step therefore returns a marked string instead: the callers below already treat
+   * anything but `ok` as a failure, and now the report names which step broke and keeps the
+   * rest.
+   */
+  const failed: string[] = []
+  const run = async (script: string): Promise<unknown> => {
+    try {
+      return await window.webContents.executeJavaScript(script, true)
+    } catch (cause) {
+      const note = `threw: ${String(cause).slice(0, 160)}`
+      failed.push(note)
+      return note
+    }
+  }
 
   const username = process.env['ZIMA_VERIFY_USER'] ?? ''
   const password = process.env['ZIMA_VERIFY_PASSWORD'] ?? ''
@@ -77,24 +115,29 @@ export const runTailscaleSignIn = async (
       name: resultName,
       ok: false,
       observed,
-      failures: ['no address — use ZIMA_VERIFY_SCENARIO=tailscale-signin:<tailnet-address>'],
+      // Names the scenario that was actually invoked. Hard-coding `tailscale-signin` here
+      // sent anyone running `direct-signin` — the CI route, chosen precisely because no
+      // tailnet exists there — to the panel route, which then fails for a second reason.
+      failures: [`no address — use ZIMA_VERIFY_SCENARIO=${resultName}:<address>`],
     }
   }
 
-  const signedIn = async (): Promise<boolean> =>
-    Boolean(await run(`document.querySelector('[data-action="sign-out"]') !== null`))
+  const signedIn = async (): Promise<boolean> => Boolean(await run(SIGNED_IN))
 
-  await sleep(3_500)
+  // Wait for the start-up session restore to reach a terminal state instead of sleeping a
+  // fixed 3.5 s. See `waitForResumeSettled` for the race that bet used to lose.
+  const resume = await waitForResumeSettled(run)
+  observed['resumePhase'] = resume.phase
+  observed['resumeWaitMs'] = String(resume.elapsedMs)
 
   // 1. Start cold. A session restored from the keyring would let every later assertion pass
   //    without a single byte crossing the tunnel.
   observed['startedSignedIn'] = String(await signedIn())
   if (observed['startedSignedIn'] === 'true') {
-    await run(`document.querySelector('[data-action="sign-out"]').click()`)
-    for (let waited = 0; waited < 10_000 && (await signedIn()); waited += POLL_MS) {
-      await sleep(POLL_MS)
-    }
-    observed['signedOutFirst'] = String(!(await signedIn()))
+    observed['signOutClick'] = String(await run(CLICK_ACTION('sign-out')))
+    const out = await pollUntil(async () => !(await signedIn()), 10_000, POLL_MS)
+    observed['signOutMs'] = String(out.elapsedMs)
+    observed['signedOutFirst'] = String(out.ok)
     if (observed['signedOutFirst'] !== 'true') {
       failures.push('the existing session could not be signed out; the run would be warm')
       return { name: resultName, ok: false, observed, failures }
@@ -106,10 +149,22 @@ export const runTailscaleSignIn = async (
   if (entry === 'tailscale-panel') {
     //  Pick the peer. The panel only renders online peers, so a missing button is a real
     //  finding — and the report names what was there instead of just saying "not found".
-    const offered = (await run(`Array.from(
+    //
+    //  Polled, not read once: the peer list arrives from `tailscale status` over IPC, and a
+    //  single read after a fixed sleep turns a slow daemon into "the panel offered no
+    //  button" — a red verdict on a working app.
+    const offeredScript = `Array.from(
       document.querySelectorAll('[data-tailscale-use]'),
-    ).map((b) => b.getAttribute('data-tailscale-use')).join(',')`)) as string
+    ).map((b) => b.getAttribute('data-tailscale-use')).join(',')`
+    let offered = ''
+    const peers = await pollUntil(async () => {
+      offered = String(await run(offeredScript))
+      // Waits for THIS host, not for any peer: a panel listing three other machines is not
+      // the state this scenario needs, and stopping at the first render would race it.
+      return offered.split(',').includes(host)
+    }, PEERS_BUDGET_MS, POLL_MS)
     observed['peersOffered'] = offered.length === 0 ? '(none)' : offered
+    observed['peersWaitMs'] = String(peers.elapsedMs)
 
     const clicked = (await run(`(() => {
       const target = document.querySelector('[data-tailscale-use=' + ${JSON.stringify(
@@ -122,17 +177,13 @@ export const runTailscaleSignIn = async (
     observed['usePeer'] = clicked
     if (clicked !== 'ok') {
       failures.push(
-        `the Tailscale panel offered no button for ${host} (offered: ${observed['peersOffered']})`,
+        `the Tailscale panel offered no button for ${host} within ${PEERS_BUDGET_MS} ms ` +
+          `(offered: ${observed['peersOffered']})`,
       )
       return { name: resultName, ok: false, observed, failures }
     }
   } else {
-    const clicked = (await run(`(() => {
-      const target = document.querySelector('[data-action="direct-ip"]')
-      if (!target) return 'missing-direct-ip-button'
-      target.click()
-      return 'ok'
-    })()`)) as string
+    const clicked = String(await run(CLICK_ACTION('direct-ip')))
     observed['openDirectIp'] = clicked
     if (clicked !== 'ok') {
       failures.push('the "connect by IP address" button was not found')
@@ -158,23 +209,21 @@ export const runTailscaleSignIn = async (
     return { name: resultName, ok: false, observed, failures }
   }
 
-  // 4. Type and submit. The value goes through the native setter so React's state changes;
-  //    assigning `.value` updates the DOM only and submits an empty form.
-  const typed = (await run(`(() => {
-    const set = (name, value) => {
-      const input = document.querySelector('input[name="' + name + '"]')
-      if (!input) return 'missing:' + name
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set
-      setter.call(input, value)
-      input.dispatchEvent(new Event('input', { bubbles: true }))
-      return 'ok'
+  // 4. Type and submit, through the shared FILL: the value goes via the native setter so
+  //    React's state changes — assigning `.value` updates the DOM only and submits an empty
+  //    form. This used to be a third private copy of that mechanism.
+  let typed = 'ok'
+  for (const [field, value] of [
+    ['host', host],
+    ['username', username],
+    ['password', password],
+  ] as const) {
+    const result = String(await run(FILL(field, value)))
+    if (result !== 'ok') {
+      typed = result
+      break
     }
-    const h = set('host', ${JSON.stringify(host)})
-    if (h !== 'ok') return h
-    const u = set('username', ${JSON.stringify(username)})
-    if (u !== 'ok') return u
-    return set('password', ${JSON.stringify(password)})
-  })()`)) as string
+  }
   // Deliberately not recording what was typed — only whether the fields existed.
   observed['fillCredentials'] = typed
   if (typed !== 'ok') {
@@ -183,33 +232,28 @@ export const runTailscaleSignIn = async (
   }
 
   await sleep(300)
-  const submitted = (await run(`(() => {
-    const input = document.querySelector('input[name="password"]')
-    const form = input ? input.closest('form') : null
-    if (!form) return 'missing-form'
-    form.requestSubmit()
-    return 'ok'
-  })()`)) as string
+  const submitted = String(await run(SUBMIT_SIGN_IN))
   observed['submit'] = submitted
   if (submitted !== 'ok') {
     failures.push('the sign-in form could not be submitted')
     return { name: resultName, ok: false, observed, failures }
   }
 
-  let waited = 0
-  while (waited < SIGN_IN_BUDGET_MS && !(await signedIn())) {
-    await sleep(POLL_MS)
-    waited += POLL_MS
-  }
-  observed['signInMs'] = String(waited)
+  // Measured elapsed time, not the sum of the sleeps: each check is an `executeJavaScript`
+  // round-trip, and counting only the quanta under-reports the sign-in by exactly the time
+  // the app took to answer.
+  const signIn = await pollUntil(signedIn, SIGN_IN_BUDGET_MS, POLL_MS)
+  observed['signInMs'] = String(signIn.elapsedMs)
 
-  if (!(await signedIn())) {
+  if (!signIn.ok) {
     // The screen is part of the failure. "Sign-in did not complete" without the rendered
     // text sends the reader looking in the wrong component.
     observed['screen'] = String(await run(`(document.body.innerText || '').slice(0, 2000)`))
-    failures.push(`no session after ${SIGN_IN_BUDGET_MS} ms over ${host}; see observed.screen`)
-    const shot = await window.webContents.capturePage()
-    await writeFile(join(dirname(reportPath), `${resultName}-failed.png`), shot.toPNG())
+    failures.push(`no session after ${signIn.elapsedMs} ms over ${host}; see observed.screen`)
+    observed['screenshot'] = await capturePng(
+      window,
+      join(dirname(reportPath), `${resultName}-failed.png`),
+    )
     return { name: resultName, ok: false, observed, failures }
   }
 
@@ -230,14 +274,20 @@ export const runTailscaleSignIn = async (
     )
   }
 
-  const shot = await window.webContents.capturePage()
-  await writeFile(join(dirname(reportPath), `${resultName}-signed-in.png`), shot.toPNG())
+  observed['screenshot'] = await capturePng(
+    window,
+    join(dirname(reportPath), `${resultName}-signed-in.png`),
+  )
 
   // 6. Having a session is not having a working app. The tour clicks all four sections and
   //    asserts on what they rendered — over this tunnel, with this session.
   const tour = await runTour(window, reportPath)
   for (const [key, value] of Object.entries(tour.observed)) observed[`tour.${key}`] = value
   failures.push(...tour.failures.map((f) => `tour: ${f}`))
+
+  // A step that threw is a finding of its own — it means a read did not happen, so every
+  // assertion depending on it was made on a missing value rather than on a measurement.
+  failures.push(...failed.map((note) => `a step could not run — ${note}`))
 
   return { name: resultName, ok: failures.length === 0, observed, failures }
 }

@@ -28,6 +28,28 @@ const VARIANTS: Record<NonNullable<ButtonProps['variant']>, React.CSSProperties>
   danger: { background: 'var(--danger-soft)', color: 'var(--danger)' },
 }
 
+/**
+ * Keeps only the `data-*` keys, and drops everything else.
+ *
+ * 🔴 The rest object collects every prop that is not destructured above — including `style`.
+ * Spreading it after `style={VARIANTS[variant]}` let a smuggled `style` win and render the
+ * button without its variant colours. TypeScript does not stop that: the `data-${string}`
+ * index signature only rejects unknown keys written literally in JSX, and an object spread
+ * (`<Button {...rowProps}>`) is exempt from excess-property checking altogether.
+ *
+ * Filtering by prefix rather than reordering the spread, because reordering would only move
+ * the problem: with `{...rest}` first, a smuggled `className` or `onClick` would be
+ * overwritten silently instead — a prop that vanishes is as confusing as one that wins.
+ * Here anything that is not a `data-` attribute simply never reaches the DOM, which is the
+ * contract the props type already states.
+ */
+const dataOnly = (props: Record<string, unknown>): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(props).filter(
+      ([key, value]) => key.startsWith('data-') && typeof value === 'string',
+    ),
+  ) as Record<string, string>
+
 export const Button = ({
   children,
   onClick,
@@ -36,7 +58,7 @@ export const Button = ({
   type = 'button',
   title,
   className = '',
-  ...dataAttributes
+  ...rest
 }: ButtonProps): React.JSX.Element => (
   <button
     type={type}
@@ -45,7 +67,7 @@ export const Button = ({
     title={title}
     className={`flex items-center justify-center gap-2 rounded-[999px] px-4 py-2.5 text-sm font-medium transition-opacity disabled:opacity-55 ${className}`}
     style={VARIANTS[variant]}
-    {...dataAttributes}
+    {...dataOnly(rest)}
   >
     {children}
   </button>

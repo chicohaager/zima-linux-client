@@ -1,6 +1,6 @@
-import { writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
+import { capturePng, CLICK_ACTION, FILL, SIGNED_IN, sleep, SUBMIT_SIGN_IN } from './scenarioKit'
 import { runTour } from './tourScenario'
 import { runTailscaleSignIn } from './tailscaleSignInScenario'
 
@@ -20,27 +20,6 @@ export interface ScenarioResult {
   readonly observed: Readonly<Record<string, string>>
   readonly failures: readonly string[]
 }
-
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
-
-/** Types into a labelled input and dispatches the events React listens for. */
-const FILL = (name: string, value: string): string => `(() => {
-  const input = document.querySelector('input[name="${name}"]')
-  if (!input) return 'missing:${name}'
-  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set
-  setter.call(input, ${JSON.stringify(value)})
-  input.dispatchEvent(new Event('input', { bubbles: true }))
-  return 'ok'
-})()`
-
-const CLICK_TEXT = (text: string): string => `(() => {
-  const target = Array.from(document.querySelectorAll('button')).find(
-    (b) => (b.textContent || '').trim().startsWith(${JSON.stringify(text)}),
-  )
-  if (!target) return 'missing-button'
-  target.click()
-  return 'ok'
-})()`
 
 const VISIBLE_TEXT = `(document.body.innerText || '').trim()`
 
@@ -65,7 +44,10 @@ const signInWrongPassword = async (
   const run = async (script: string): Promise<string> =>
     String(await window.webContents.executeJavaScript(script, true))
 
-  observed['openForm'] = await run(CLICK_TEXT('Über IP-Adresse verbinden'))
+  // Clicked by its `data-action`, not by its German label. The label works in exactly one
+  // of 28 catalogues; every other ZIMA_VERIFY_LOCALE turned this into `missing-button` and
+  // reported a working app as broken — the same defect the tour already fixed with data-nav.
+  observed['openForm'] = await run(CLICK_ACTION('direct-ip'))
   await sleep(400)
 
   observed['fillHost'] = await run(FILL('host', host))
@@ -73,7 +55,7 @@ const signInWrongPassword = async (
   observed['fillPassword'] = await run(FILL('password', 'not-a-real-password'))
   await sleep(200)
 
-  observed['submit'] = await run(CLICK_TEXT('Anmelden'))
+  observed['submit'] = await run(SUBMIT_SIGN_IN)
   // Give the device time to answer; the login endpoint replied in well under a second
   // when measured, so three seconds is generous rather than hopeful.
   await sleep(3_000)
@@ -210,11 +192,19 @@ const remoteIdScenario = async (
   // Joining a network and probing takes real time on a real tunnel.
   await new Promise((resolve) => setTimeout(resolve, 25_000))
 
+  /*
+   * 🔴 `signedIn` is read from the attribute, not from the button's text.
+   *
+   * It used to match the literals 'Abmelden' / 'Sign out', which are correct in 2 of the 28
+   * catalogues. With any other ZIMA_VERIFY_LOCALE — and a stored session resuming straight
+   * to the signed-in screen, which is the case this branch exists for — both matches miss,
+   * no password field is present either, and the scenario reports "neither the sign-in form
+   * nor a signed-in session was reached" for a route that worked.
+   */
   const after = (await run(`(() => ({
     text: document.body.innerText || '',
     hasPasswordField: document.querySelector('input[type="password"]') !== null,
-    signedIn: document.body.innerText.includes('Abmelden') ||
-              document.body.innerText.includes('Sign out'),
+    signedIn: ${SIGNED_IN},
   }))()`)) as { text: string; hasPasswordField: boolean; signedIn: boolean }
 
   observed['screen'] = after.text.slice(0, 1500)
@@ -247,9 +237,10 @@ const remoteIdScenario = async (
   if (reportDir === undefined || reportDir.length === 0) {
     observed['screenshot'] = 'not written — ZIMA_VERIFY_STARTUP names no report path'
   } else {
-    const shot = await window.webContents.capturePage()
-    await writeFile(join(dirname(reportDir), 'remote-id.png'), shot.toPNG())
-    observed['screenshot'] = join(dirname(reportDir), 'remote-id.png')
+    // Bounded, like every other capture in this codebase: `capturePage()` can never return
+    // (measured 2026-07-31 on the packaged payload), and an unbounded await here would hang
+    // the scenario where its own caller cannot see it.
+    observed['screenshot'] = await capturePng(window, join(dirname(reportDir), 'remote-id.png'))
   }
 
   return { name: 'remote-id', ok: failures.length === 0, observed, failures }

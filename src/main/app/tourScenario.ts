@@ -1,7 +1,7 @@
-import { writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
 import { RAW_KEY_SCAN } from './catalogueKeys'
+import { capturePng, sleep } from './scenarioKit'
 import type { ScenarioResult } from './scenarios'
 
 /**
@@ -20,8 +20,6 @@ import type { ScenarioResult } from './scenarios'
  * A section that renders its error state is a FAILURE of the tour, with the error text in the
  * report — that is the whole point: an error on screen is invisible to every other gate.
  */
-
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
 
 /**
  * Clicks a navigation button by its section key.
@@ -148,8 +146,13 @@ export const runTour = async (window: BrowserWindow, reportPath: string): Promis
       failures.push(`${section}: only ${look.buttons} buttons rendered — the screen looks empty`)
     }
 
-    const shot = await window.webContents.capturePage()
-    await writeFile(join(dirname(reportPath), `tour-${section}.png`), shot.toPNG())
+    // Bounded: `capturePage()` can never return (measured 2026-07-31 on the packaged
+    // payload). Unbounded here it would stall the tour halfway, and the report would blame
+    // the section it had already walked successfully.
+    observed[`${section}.screenshot`] = await capturePng(
+      window,
+      join(dirname(reportPath), `tour-${section}.png`),
+    )
   }
 
   return { name: 'tour', ok: failures.length === 0, observed, failures }

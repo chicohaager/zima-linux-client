@@ -84,5 +84,23 @@ export const useAutoResume = (): ResumeState => {
     void run()
   }, [queryClient])
 
+  /*
+   * Publishes the phase where a scripted verification can see it.
+   *
+   * 🔴 The startup scenarios used to wait for this by sleeping 3.5 s — a bet that
+   * `currentSession` → `listDevices` → `resumeSession`, all real network round-trips, finish
+   * within that window. When the bet lost, the sign-in scenario recorded `startedSignedIn:false`
+   * for a run that was not cold, skipped its sign-out guard, and could then be overtaken: a
+   * restore landing AFTER the explicit sign-in replaces the session with the old device's, and
+   * the scenario blames the panel for a race it created itself.
+   *
+   * Written from the hook rather than rendered as an element, because it must agree with
+   * `state` by construction — a marker in one of DeviceScreen's two return branches would go
+   * missing the day someone adds a third.
+   */
+  useEffect(() => {
+    document.body.dataset['resumePhase'] = state.phase
+  }, [state.phase])
+
   return state
 }
