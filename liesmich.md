@@ -1,6 +1,7 @@
 # ZimaOS Client
 
-Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwaltung.
+Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwaltung, mit ZeroTier
+eingebaut und Tailscale genutzt, wenn es ohnehin schon läuft.
 
 > **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.1, ein Rewrite.**
 > Das installierte Paket ist auf **sechs Distributionen** gestartet worden (Ubuntu 22.04 und 24.04,
@@ -10,6 +11,7 @@ Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwa
 > Die 0.9.x-Linie liegt auf `main` und unter [`legacy-0.9/`](legacy-0.9/); gelöscht wurde nichts.
 >
 > Was gebaut und was gemessen ist: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
+> English version of this file: [`README.md`](README.md)
 > Testerinnen und Tester bekommen ihre Hinweise und das Protokollformular direkt — die beiden
 > Dateien liegen nicht in diesem Repository.
 
@@ -177,7 +179,9 @@ bleibt für den Tag, an dem beides erledigt ist.
 
 ```bash
 npm run verify          # Typprüfung · Lint · Tests · Build · Build-Gate · i18n-Gate · Privacy-Gate
-npm test                # 201 Tests in 22 Dateien (2026-08-09)
+npm test                # 227 Tests in 24 Dateien (2026-08-09)
+npm run test:e2e        # 4 End-to-End-Abläufe im echten Fenster, gegen das aufgezeichnete Gerät
+npm run screenshots     # die Bilder unten, aus dem aktuellen Build
 npm run verify:build    # liest die GEBAUTEN Dateien: Preload CJS, Sandbox an, CSP ohne unsafe-eval
 npm run verify:i18n     # Vollständigkeit, unbekannte Schlüssel, Platzhalter, „englische Kopie"
 npm run verify:privacy  # keine LAN-Adressen, Benutzernamen oder E-Mail-Adressen im Bestand
@@ -241,10 +245,41 @@ npm run format        # prettier
 
 ## Screenshots
 
-Die Bilder der 0.9-Linie zeigten eine Oberfläche, die es in diesem Zweig nicht mehr gibt
-(SMB-Freigaben, Backup-Jobs, Einstellungsdialog) — sie sind deshalb hier entfernt worden. Neue
-kommen mit dem Release; die Screenshots der Verifikationsläufe zeigen echte Geräte und bleiben
-außerhalb des Repositorys.
+Alle Bilder in [`docs/img/`](docs/img/) stammen aus dem echten Build, aufgenommen mit
+`npm run screenshots` gegen dasselbe aufgezeichnete Gerät, das auch die End-to-End-Suite abspielt.
+Nichts ist gestellt und nichts nachbearbeitet. Die Bildstrecke mit Bildunterschriften steht in der
+[README](README.md#screenshots).
+
+| Bild | Was darauf zu sehen ist |
+| --- | --- |
+| [`01-connect.png`](docs/img/01-connect.png) | Die drei Wege hinein, gleichrangig nebeneinander |
+| [`02-device.png`](docs/img/02-device.png) | Gerätebildschirm, helles Thema |
+| [`03-files.png`](docs/img/03-files.png) | Dateien: Volumes, Pfadleiste, Suche, Liste |
+| [`04-photos.png`](docs/img/04-photos.png) | Fotos: Indexfortschritt, Suche, Sicherung im Vordergrund |
+| [`05-apps.png`](docs/img/05-apps.png) | Apps mit eigenen Symbolen, Port und Zustand |
+| [`06-dark.png`](docs/img/06-dark.png) | Derselbe Gerätebildschirm im dunklen Thema |
+| [`07-narrow.png`](docs/img/07-narrow.png) | Schmales Fenster: Navigation als schwebende Pille |
+
+Drei Dinge, die dabei zu wissen sind:
+
+- **Das Gerät ist eine Aufzeichnung** (`e2e/fixtures/zimaos-session.json`, gewaschen von
+  `e2e/scrub-fixture.mjs`): Datei- und Ordnernamen sind vollständig ersetzt, Adressen, E-Mail-
+  Adressen und Tokens umgeschrieben. Deshalb heißen die Ordner `Ordner-1` und die Apps `App 223` —
+  diese Bilder *können* niemandes echte Dateien zeigen, weil das einzige beteiligte Gerät keine hat.
+- **Der rote Kasten stimmt, und er handelt vom Aufnahme-Rechner, nicht vom Programm.** Dort gibt es
+  keinen Schlüsselbund, also würde Electron Zugangsdaten mit einem fest eingebauten Passwort
+  ablegen — und der Client sagt das **vor** dem ersten Schreiben, statt still zu speichern. Auf
+  einem Desktop mit funktionierendem Schlüsselbund steht an derselben Stelle „Zugangsdaten sind
+  durch … geschützt".
+- **Die Aufnahme läuft mit leerem Heimatverzeichnis und ohne Tailscale im PATH**, und ein Wächter
+  weigert sich, ein Bild zu schreiben, auf dem eine andere Adresse als die abgespielte, ein Tailnet
+  oder ein Heimatpfad steht. Das ist keine Gewohnheit des Nachschauens, sondern
+  [`scripts/screenshot-guard.mjs`](scripts/screenshot-guard.mjs) mit eigenen Tests.
+
+Der erste Lauf dieses Skripts hatte genau das nötig gemacht: er schrieb das echte Tailnet des
+Autors ins erste Bild, samt drei Rechnernamen und ihren Adressen, und die Kachel „Vom alten Client
+übernehmen" zeigte drei echte Pfade aus `~/.config`. Die Aufzeichnung deckt, was das **Gerät**
+antwortet — nicht, was sonst noch auf demselben Bildschirm steht.
 
 ## Lizenz
 
