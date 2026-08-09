@@ -1350,8 +1350,10 @@ im Netz tut.
   seit 2026-08-09 **aus der Standard-Zielliste genommen** — es ist kein Remote eingerichtet, und
   electron-builder zielt auf die zurückgezogene Runtime `20.08`; solange es in der Liste stand,
   brach `package:linux` daran ab, **bevor** deb/rpm/pacman gebaut waren.
-* **arm64** ist nicht gebaut und schon gar nicht gestartet — das mitgelieferte arm64-ZeroTier ist
-  bisher nur eine Datei im Repository, keine belegte Funktion.
+* **arm64** ist seit 2026-08-09 gebaut und installiert, das mitgelieferte ZeroTier läuft dort —
+  **der App-Start bleibt unbelegt**, siehe
+  [arm64](#-arm64-drei-viertel-belegt-und-das-letzte-viertel-braucht-hardware). Ausgeliefert wird
+  arm64 deshalb nicht.
 * ~~**Distro-Start-Matrix** (Plan § 11.5)~~ **Erledigt 2026-08-09**: sechs Distributionen, das
   installierte Paket im echten Pfad, Startbeleg je Zeile. Damit ist der frühere Vorbehalt
   („gemessen wurde auf **einer** Maschine") aufgehoben.
@@ -1565,6 +1567,64 @@ unterschiedlichen `nav`-Zahlen und kein Befund.
 **Der erste Lauf war 1 von 6.** Was dazwischen lag, steht in den drei Abschnitten hier drunter —
 alle drei Fehler waren ausschließlich am **ausgelieferten** Paket sichtbar und für jeden Test,
 jeden Build und jeden Start aus `dist/linux-unpacked` unsichtbar.
+
+## 🟡 arm64: drei Viertel belegt, und das letzte Viertel braucht Hardware
+
+Gemessen 2026-08-09 unter `qemu-user` (binfmt über `tonistiigi/binfmt --install arm64`), Paket
+gebaut mit `electron-builder --linux deb --arm64 -c.directories.output=dist-arm64`.
+
+| Frage | Antwort | Beleg |
+| --- | --- | --- |
+| Baut ein arm64-Paket? | ja | `zima-linux-client_2.0.0-alpha.1_arm64.deb`, `dpkg -f … Architecture` → `arm64` |
+| Trägt es das richtige ZeroTier? | ja, **nur** das arm64 | `dpkg-deb -c` zeigt allein `resources/zerotier/arm64/` |
+| Installiert es auf aarch64? | ja | `ldd` am installierten Binary: **0** fehlende Bibliotheken |
+| Erteilt das Post-Install dort die Rechte? | ja | `getcap` → `cap_net_bind_service,cap_net_admin,cap_net_raw=eip` |
+| Läuft das mitgelieferte `zerotier-one` auf arm64? | **ja, 1.14.2** | siehe unten |
+| Startet die **App** auf arm64? | **unbelegt** | qemu-user scheitert an Chromiums `clone` |
+
+### Zwei Fehlbilder, die beide keine waren
+
+**`zerotier-one: Operation not permitted`** — dieselbe Datei hatte Minuten vorher aus dem
+Repository `1.14.2` gemeldet. Unterschied: das `setcap` des Post-Installs. Der Kernel reicht
+Datei-Capabilities **nicht** durch einen binfmt-Interpreter, und unter qemu ist genau das der
+Ausführungsweg. Drei Läufe statt einer Vermutung:
+
+| | Ergebnis |
+| --- | --- |
+| Original **mit** Capabilities | startet nicht, exit 126 |
+| Kopie (Capabilities fallen beim Kopieren weg) | `1.14.2` |
+| dasselbe Original nach `setcap -r` | `1.14.2` |
+
+Das Binary ist also arm64-tauglich; die Meldung gehört dem Emulator. Auf echter Hardware gibt es
+keinen Interpreter, dort stellt sich die Frage nicht.
+
+**`failed to execvp: /opt/ZimaOS`** — der Pfad abgeschnitten am Leerzeichen, also exakt das Bild
+des Relaunch-Fehlers, den dieses Projekt schon einmal hatte. Das wäre die teure Fehldiagnose
+gewesen: eine Reparatur an Pfadbehandlung, die nachweislich funktioniert (sechs grüne Zeilen der
+x86-Matrix aus genau diesem Pfad). Gegenprobe, dieselbe Nutzlast an zwei Orten im selben Lauf:
+
+```
+A) /opt/ZimaOS Client/…   failed to execvp: /opt/ZimaOS
+                          FATAL zygote_host_impl_linux.cc:207   exit 133
+B) /opt/nospace/…         clone: Invalid argument
+                          FATAL zygote_host_impl_linux.cc:207   exit 133
+```
+
+Beide sterben an **derselben** Zeile, und B nennt die Ursache mit qemus eigener Fehlermeldung:
+die `clone`-Flags von Chromiums Zygote sind unter `qemu-user` nicht nachbildbar. Das Leerzeichen
+ist unschuldig.
+
+### Was ausdrücklich NICHT gemessen ist
+
+Ein Startbeweis auf arm64. Er ist über Emulation **nicht zu holen** — nicht „noch nicht", sondern
+gar nicht, solange der Zygote am Emulator scheitert. Dafür braucht es eine echte arm64-Maschine.
+Bis dahin sagen README und liesmich weiterhin „kein arm64", und es wird auch keines ausgeliefert:
+ein Paket, dessen Start niemand gesehen hat, gehört nicht in eine Veröffentlichung.
+
+*Ein weiterer Isolationslauf (`--no-sandbox`, `--no-zygote`) sollte den Zygote noch genauer
+einkreisen und ist an einem Off-by-one in meinem eigenen Sondenskript gescheitert — Berichtspfad
+und Flags um eine Stelle verschoben. Die drei Läufe sind ungültig und stehen hier nicht als Beleg;
+der Schluss oben hängt allein an der A/B-Gegenprobe.*
 
 ## 🔴 Derselbe Anpassungspunkt-Fehler, ein Feld weiter: `depends` ersetzte die Standardliste
 

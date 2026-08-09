@@ -75,7 +75,13 @@ result carries a measured latency. A named reason comes back instead of an empty
 
 ### Installation
 
-Packages are built for **x86_64 only**. There is no arm64 build, and no Flatpak.
+Packages are shipped for **x86_64 only** — no arm64, no Flatpak.
+
+An arm64 `.deb` does build, installs cleanly on aarch64, and the bundled ZeroTier runs there
+(1.14.2, with its capabilities granted by the post-install). What is missing is the one thing
+that matters: nobody has seen the application **start** on arm64. It cannot be shown under
+emulation — Chromium's zygote dies on `clone` inside `qemu-user` — so it needs real hardware.
+Until then arm64 is not published.
 
 **Debian, Ubuntu, Linux Mint, Pop!\_OS:**
 
@@ -301,7 +307,13 @@ einer leeren Liste: „leer" liest sich wie „kein Gerät gefunden".
 
 ### Installation
 
-Es gibt Pakete **nur für x86_64** — kein arm64, kein Flatpak.
+Ausgeliefert wird **nur x86_64** — kein arm64, kein Flatpak.
+
+Ein arm64-`.deb` lässt sich bauen, installiert sauber auf aarch64, und das mitgelieferte
+ZeroTier läuft dort (1.14.2, samt der Rechte, die das Post-Install erteilt). Es fehlt genau das
+Entscheidende: Niemand hat die Anwendung auf arm64 **starten** sehen. Unter Emulation ist das
+nicht zu zeigen — Chromiums Zygote scheitert in `qemu-user` an `clone` —, es braucht also echte
+Hardware. Bis dahin wird arm64 nicht veröffentlicht.
 
 **Debian, Ubuntu, Linux Mint, Pop!\_OS:**
 
