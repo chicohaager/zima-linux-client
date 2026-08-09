@@ -72,7 +72,13 @@ einer leeren Liste: „leer" liest sich wie „kein Gerät gefunden".
 
 ## Installation
 
-Es gibt Pakete **nur für x86_64** — kein arm64, kein Flatpak.
+Ausgeliefert wird **nur x86_64** — kein arm64, kein Flatpak.
+
+Ein arm64-`.deb` lässt sich bauen, installiert sauber auf aarch64, und das mitgelieferte
+ZeroTier läuft dort (1.14.2, samt der Rechte, die das Post-Install erteilt). Es fehlt genau das
+Entscheidende: Niemand hat die Anwendung auf arm64 **starten** sehen. Unter Emulation ist das
+nicht zu zeigen — Chromiums Zygote scheitert in `qemu-user` an `clone` —, es braucht also echte
+Hardware. Bis dahin wird arm64 nicht veröffentlicht.
 
 **Debian, Ubuntu, Linux Mint, Pop!\_OS:**
 
