@@ -59,7 +59,15 @@ export const SessionCard = (): React.JSX.Element | null => {
           <p className="font-medium">{data.displayName}</p>
           <Muted>{t('signIn.signedInAs', { username: data.username, role: data.role })}</Muted>
         </div>
-        <Button variant="secondary" className="ml-auto" onClick={() => signOut.mutate()}>
+        {/* The one reliable, locale-independent answer to "is a session open?". The tour
+            used to decide that by looking for the words "Abmelden" or "Sign out", which is
+            wrong in 26 of the 28 catalogues. */}
+        <Button
+          variant="secondary"
+          className="ml-auto"
+          data-action="sign-out"
+          onClick={() => signOut.mutate()}
+        >
           {t('signIn.signOut')}
         </Button>
       </div>

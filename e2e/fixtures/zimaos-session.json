@@ -1,0 +1,835 @@
+{
+  "recordedFrom": "a ZimaOS v1.7.0 device (address removed)",
+  "credentials": {
+    "username": "zima",
+    "password": "zima-e2e-password"
+  },
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/v1/gateway/routes",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "[{\"path\":\"/v2/mod_management\",\"target\":\"http://127.0.0.1:34537\"},{\"path\":\"/v2/photos\",\"target\":\"http://127.0.0.1:38677\"},{\"path\":\"/v2/dashboard\",\"target\":\"http://127.0.0.1:37815\"},{\"path\":\"/doc/v2/files\",\"target\":\"http://127.0.0.1:33129\"},{\"path\":\"/v2/zfw\",\"target\":\"http://127.0.0.1:8489\"},{\"path\":\"/v2/migration\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v1/container\",\"target\":\"http://127.0.0.1:34537\"},{\"path\":\"/doc/v2/message_bus\",\"target\":\"http://127.0.0.1:35095\"},{\"path\":\"/v2/file\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v2/backup\",\"target\":\"http://127.0.0.1:32993\"},{\"path\":\"/doc/v2/backup\",\"target\":\"http://127.0.0.1:32993\"},{\"path\":\"/v1/zt\",\"target\":\"http://127.0.0.1:38710\"},{\"path\":\"/v2/zimaos\",\"target\":\"http://127.0.0.1:38710\"},{\"path\":\"/.well-known/jwks.json\",\"target\":\"http://127.0.0.1:37815\"},{\"path\":\"/v2/share\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v1/apps\",\"target\":\"http://127.0.0.1:34537\"},{\"path\":\"/v1/other\",\"target\":\"http://127.0.0.1:38710\"},{\"path\":\"/v2/users\",\"target\":\"http://127.0.0.1:37815\"},{\"path\":\"/v2/virt_management\",\"target\":\"http://127.0.0.1:43141\"},{\"path\":\"/v3/file\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v1/app-categories\",\"target\":\"http://127.0.0.1:34537\"},{\"path\":\"/v2/app_management\",\"target\":\"http://127.0.0.1:34537\"},{\"path\":\"/v2/settings\",\"target\":\"http://127.0.0.1:38710\"},{\"path\":\"/v2/local_storage\",\"target\":\"http://127.0.0.1:37819\"},{\"path\":\"/v2/pin\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v2_1/files\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v2/installer\",\"target\":\"http://127.0.0.1:43083\"},{\"path\":\"/v1/gateway\",\"target\":\"http://127.0.0.1:40553\"},{\"path\":\"/v2/filedrop\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v2/folder\",\"target\":\"http://127.0.0.1:37813\"},{\"path\":\"/v2/files\",\"target\":\"http://127.0.0.1:33129\"},{\"path\":\"/v3/app_store\",\"target\":\"http://127.0.0.1:34537\"},{\"path\":\"/v2/vm_extras\",\"target\":\"http://127.0.0.1:8473\"},{\"path\":\"/v1/sys\",\"target\":\"http://127.0.0.1:38710\"},{\"path\":\"/v1/users\",\"target\":\"http://127.0.0.1:37815\"},{\"path\":\"/cron\",\"target\":\"http://127.0.0.1:42011\"},{\"path\":\"/v2/message_bus\",\"target\":\"http://127.0.0.1:35095\"},{\"path\":\"/v2/trash\",\"target\":\"http://127.0.0.1:37813\"}]"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/v1/users/login",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"success\":200,\"message\":\"ok\",\"data\":{\"token\":{\"refresh_token\":\"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aW1hIiwicm9sZSI6ImFkbWluIiwiaXNzIjoicmVmcmVzaCIsImlhdCI6MTc2NzIyNTYwMCwibmJmIjoxNzY3MjI1NjAwLCJleHAiOjE3Njc4MzA0MDB9.not-a-real-signature\",\"access_token\":\"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aW1hIiwicm9sZSI6ImFkbWluIiwiaXNzIjoiY2FzYW9zIiwiaWF0IjoxNzY3MjI1NjAwLCJuYmYiOjE3NjcyMjU2MDAsImV4cCI6MTc2NzIzNjQwMH0.not-a-real-signature\",\"expires_at\":1786282529},\"user\":{\"ZormLastId\":0,\"id\":1,\"username\":\"zima\",\"role\":\"admin\",\"email\":\"\",\"nickname\":\"zima\",\"avatar\":\"\",\"description\":\"\",\"created_at\":\"2026-03-30T13:00:03Z\",\"updated_at\":\"0001-01-01T00:00:00Z\"}}}"
+      },
+      "requestBody": "(request body removed)"
+    },
+    {
+      "method": "GET",
+      "path": "/v2/zimaos/zt/info",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"id\":\"fce194e597ffd3a5\",\"ip\":\"127.0.0.1\",\"name\":\"IceWhale-RemoteAccess\",\"status\":\"online\"}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/local_storage/storages?all=true",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "[{\"extensions\":{\"health\":true,\"size\":490047844352,\"used\":251397857280},\"font\":\"\",\"name\":\"ZimaOS-HD\",\"path\":\"/media/ZimaOS-HD\",\"type\":\"SYSTEM\"},{\"extensions\":{\"health\":true,\"size\":4000663207936,\"used\":473825280},\"font\":\"\",\"name\":\"sda\",\"path\":\"/media/sda\",\"type\":\"USB\"}]"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/zimaos/device/info",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"arch\":\"amd64\",\"can_control_powerled\":false,\"cpu\":{\"cores\":12,\"frequency\":\"4.50\",\"model\":\"13th Gen Intel(R) CoreT i7-1360P\",\"threads\":16},\"device_code\":\"5e2d470a-e1db-8f7a-e72f-69531737eb2d\",\"device_image_path\":\"/v2/zimaos/device/image?model=Default%20string\",\"device_model\":\"Default string\",\"device_name\":\"ZimaOS\",\"gpu\":[\"Intel Raptor Lake-P [UHD Graphics]\"],\"hash\":\"--\",\"is_licensed\":false,\"memory\":{\"frequency\":\"4800 MHz\",\"slots_used\":\"1\",\"total_byte\":33409363968,\"type\":\"DDR5\"},\"os_version\":\"v1.7.0\"}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sys/utilization",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"success\":200,\"message\":\"ok\",\"data\":{\"cpu\":{\"model\":\"intel\",\"num\":12,\"percent\":2,\"power\":{\"timestamp\":\"1786271729\",\"value\":\"132626751294\"},\"temperature\":42},\"gpu\":[],\"mem\":{\"available\":21569073152,\"free\":1969225728,\"total\":33409363968,\"used\":11285733376,\"usedPercent\":33.8},\"net\":[{\"name\":\"eth0\",\"bytesSent\":6035150810,\"bytesRecv\":20981040056,\"packetsSent\":27884629,\"packetsRecv\":33600752,\"errin\":0,\"errout\":0,\"dropin\":1301513,\"dropout\":2,\"fifoin\":0,\"fifoout\":0,\"state\":\"up\",\"time\":1786271729},{\"name\":\"eth1\",\"bytesSent\":0,\"bytesRecv\":0,\"packetsSent\":0,\"packetsRecv\":0,\"errin\":0,\"errout\":0,\"dropin\":0,\"dropout\":2,\"fifoin\":0,\"fifoout\":0,\"state\":\"down\",\"time\":1786271729},{\"name\":\"wlan0\",\"bytesSent\":0,\"bytesRecv\":0,\"packetsSent\":0,\"packetsRecv\":0,\"errin\":0,\"errout\":0,\"dropin\":0,\"dropout\":2,\"fifoin\":0,\"fifoout\":0,\"state\":\"down\",\"time\":1786271729}],\"sys_disk\":{\"avail\":4398114320384,\"health\":true,\"size\":4658621411328,\"used\":251866877952},\"sys_usb\":{}}}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sys/utilization",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"success\":200,\"message\":\"ok\",\"data\":{\"cpu\":{\"model\":\"intel\",\"num\":12,\"percent\":1.3,\"power\":{\"timestamp\":\"1786271734\",\"value\":\"132655617187\"},\"temperature\":42},\"gpu\":[],\"mem\":{\"available\":21569847296,\"free\":1969999872,\"total\":33409363968,\"used\":11284955136,\"usedPercent\":33.8},\"net\":[{\"name\":\"eth0\",\"bytesSent\":6035154743,\"bytesRecv\":20981058313,\"packetsSent\":27884665,\"packetsRecv\":33600811,\"errin\":0,\"errout\":0,\"dropin\":1301520,\"dropout\":2,\"fifoin\":0,\"fifoout\":0,\"state\":\"up\",\"time\":1786271734},{\"name\":\"eth1\",\"bytesSent\":0,\"bytesRecv\":0,\"packetsSent\":0,\"packetsRecv\":0,\"errin\":0,\"errout\":0,\"dropin\":0,\"dropout\":2,\"fifoin\":0,\"fifoout\":0,\"state\":\"down\",\"time\":1786271734},{\"name\":\"wlan0\",\"bytesSent\":0,\"bytesRecv\":0,\"packetsSent\":0,\"packetsRecv\":0,\"errin\":0,\"errout\":0,\"dropin\":0,\"dropout\":2,\"fifoin\":0,\"fifoout\":0,\"state\":\"down\",\"time\":1786271734}],\"sys_disk\":{\"avail\":4398114320384,\"health\":true,\"size\":4658621411328,\"used\":251866877952},\"sys_usb\":{}}}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/tasks?visible=true",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"data\":[],\"message\":\"success\"}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/file?path=%2Fmedia%2FZimaOS-HD&index=1&size=500&sort=name&direction=asc",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"all\":80,\"content\":[{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1786116953,\"name\":\"Ordner-1\",\"path\":\"/media/ZimaOS-HD/Ordner-1\",\"size\":4096},{\"extensions\":{\"mounted\":false,\"pin\":true},\"is_dir\":true,\"modified\":1781508841,\"name\":\"Ordner-2\",\"path\":\"/media/ZimaOS-HD/Ordner-2\",\"size\":4096},{\"extensions\":{\"mounted\":false,\"pin\":true},\"is_dir\":true,\"modified\":1784131582,\"name\":\"Ordner-3\",\"path\":\"/media/ZimaOS-HD/Ordner-3\",\"size\":4096},{\"extensions\":{\"mounted\":false,\"pin\":true,\"share_id\":4,\"shared\":true},\"is_dir\":true,\"modified\":1785746805,\"name\":\"Ordner-4\",\"path\":\"/media/ZimaOS-HD/Ordner-4\",\"size\":16384},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1781439849,\"name\":\"Ordner-5\",\"path\":\"/media/ZimaOS-HD/Ordner-5\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1781439849,\"name\":\"Ordner-6\",\"path\":\"/media/ZimaOS-HD/Ordner-6\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1781439849,\"name\":\"Ordner-7\",\"path\":\"/media/ZimaOS-HD/Ordner-7\",\"size\":4096},{\"extensions\":{\"mounted\":false,\"share_id\":7,\"shared\":true},\"is_dir\":true,\"modified\":1781372641,\"name\":\"Ordner-8\",\"path\":\"/media/ZimaOS-HD/Ordner-8\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1780658256,\"name\":\"Ordner-9\",\"path\":\"/media/ZimaOS-HD/Ordner-9\",\"size\":4096},{\"extensions\":{\"mounted\":true},\"is_dir\":true,\"modified\":1780659173,\"name\":\"Ordner-10\",\"path\":\"/media/ZimaOS-HD/Ordner-10\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1775150188,\"name\":\"Ordner-11\",\"path\":\"/media/ZimaOS-HD/Ordner-11\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1779274459,\"name\":\"Ordner-12\",\"path\":\"/media/ZimaOS-HD/Ordner-12\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1784572269,\"name\":\"Ordner-13\",\"path\":\"/media/ZimaOS-HD/Ordner-13\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1784401167,\"name\":\"Ordner-14\",\"path\":\"/media/ZimaOS-HD/Ordner-14\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1785851436,\"name\":\"Ordner-15\",\"path\":\"/media/ZimaOS-HD/Ordner-15\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1783496682,\"name\":\"Ordner-16\",\"path\":\"/media/ZimaOS-HD/Ordner-16\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1783498832,\"name\":\"Ordner-17\",\"path\":\"/media/ZimaOS-HD/Ordner-17\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1781439925,\"name\":\"Ordner-18\",\"path\":\"/media/ZimaOS-HD/Ordner-18\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1780559220,\"name\":\"Ordner-19\",\"path\":\"/media/ZimaOS-HD/Ordner-19\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1786238076,\"name\":\"Ordner-20\",\"path\":\"/media/ZimaOS-HD/Ordner-20\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1784278267,\"name\":\"Ordner-21\",\"path\":\"/media/ZimaOS-HD/Ordner-21\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1780155280,\"name\":\"Ordner-22\",\"path\":\"/media/ZimaOS-HD/Ordner-22\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1777212442,\"name\":\"Ordner-23\",\"path\":\"/media/ZimaOS-HD/Ordner-23\",\"size\":4096},{\"extensions\":{\"mounted\":false},\"is_dir\":true,\"modified\":1775753906,\"name\":\"Ordner-24\",\"path\":\"/media/ZimaOS-HD/Ordner-24\",\"size\":4096},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-26.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-26.png\",\"size\":252747},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-28.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-28.png\",\"size\":17122},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-30.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-30.png\",\"size\":35189},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-32.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-32.png\",\"size\":92308},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-34.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-34.png\",\"size\":12233},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-36.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-36.png\",\"size\":28275},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-38.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-38.png\",\"size\":133556},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-40.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-40.png\",\"size\":118516},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-42.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-42.png\",\"size\":450968},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-44.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-44.png\",\"size\":463219},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-46.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-46.png\",\"size\":83725},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-48.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-48.png\",\"size\":94133},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-50.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-50.png\",\"size\":22321},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-52.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-52.png\",\"size\":337149},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-54.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-54.png\",\"size\":118141},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-56.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-56.png\",\"size\":147292},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-58.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-58.png\",\"size\":18886},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-60.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-60.png\",\"size\":7610},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-62.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-62.png\",\"size\":39502},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-64.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-64.png\",\"size\":85634},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-66.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-66.png\",\"size\":21124},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-68.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-68.png\",\"size\":83923},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-70.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-70.png\",\"size\":230339},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-72.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-72.png\",\"size\":41537},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-74.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-74.png\",\"size\":85857},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-76.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-76.png\",\"size\":256615},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-78.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-78.png\",\"size\":146823},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-80.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-80.png\",\"size\":10831},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-82.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-82.png\",\"size\":13457},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-84.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-84.png\",\"size\":38293},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-86.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-86.png\",\"size\":35081},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-88.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-88.png\",\"size\":3472},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-90.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-90.png\",\"size\":60193},{\"extensions\":{},\"is_dir\":false,\"modified\":1785846944,\"name\":\"Datei-91.txt\",\"path\":\"/media/ZimaOS-HD/Datei-91.txt\",\"size\":3386},{\"extensions\":{},\"is_dir\":false,\"modified\":1785842945,\"name\":\"Datei-93.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-93.png\",\"size\":210645},{\"extensions\":{},\"is_dir\":false,\"modified\":1783000218,\"name\":\"Datei-94.md\",\"path\":\"/media/ZimaOS-HD/Datei-94.md\",\"size\":134453},{\"extensions\":{},\"is_dir\":false,\"modified\":1783001735,\"name\":\"Datei-95.html\",\"path\":\"/media/ZimaOS-HD/Datei-95.html\",\"size\":29903},{\"extensions\":{},\"is_dir\":false,\"modified\":1785856740,\"name\":\"Datei-96.bak-20260805-143007\",\"path\":\"/media/ZimaOS-HD/Datei-96.bak-20260805-143007\",\"size\":3259},{\"extensions\":{},\"is_dir\":false,\"modified\":1785422330,\"name\":\"Datei-98.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-98.png\",\"size\":470184},{\"extensions\":{},\"is_dir\":false,\"modified\":1780559708,\"name\":\"Datei-99.txt\",\"path\":\"/media/ZimaOS-HD/Datei-99.txt\",\"size\":0},{\"extensions\":{},\"is_dir\":false,\"modified\":1785767309,\"name\":\"Datei-101.png\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-101.png\",\"size\":478275},{\"extensions\":{},\"is_dir\":false,\"modified\":1782483859,\"name\":\"Datei-102.json\",\"path\":\"/media/ZimaOS-HD/Datei-102.json\",\"size\":11619},{\"extensions\":{},\"is_dir\":false,\"modified\":1782742306,\"name\":\"Datei-103.json\",\"path\":\"/media/ZimaOS-HD/Datei-103.json\",\"size\":11882},{\"extensions\":{},\"is_dir\":false,\"modified\":1785998746,\"name\":\"Datei-104.html\",\"path\":\"/media/ZimaOS-HD/Datei-104.html\",\"size\":35114},{\"extensions\":{},\"is_dir\":false,\"modified\":1779277106,\"name\":\"Datei-105\",\"path\":\"/media/ZimaOS-HD/Datei-105\",\"size\":32},{\"extensions\":{},\"is_dir\":false,\"modified\":1785613296,\"name\":\"Datei-106.sh\",\"path\":\"/media/ZimaOS-HD/Datei-106.sh\",\"size\":1838},{\"extensions\":{},\"is_dir\":false,\"modified\":1785614388,\"name\":\"Datei-107.log\",\"path\":\"/media/ZimaOS-HD/Datei-107.log\",\"size\":365},{\"extensions\":{},\"is_dir\":false,\"modified\":1785613835,\"name\":\"Datei-108.sh\",\"path\":\"/media/ZimaOS-HD/Datei-108.sh\",\"size\":327},{\"extensions\":{},\"is_dir\":false,\"modified\":1786192628,\"name\":\"Datei-109.sh\",\"path\":\"/media/ZimaOS-HD/Datei-109.sh\",\"size\":8456},{\"extensions\":{},\"is_dir\":false,\"modified\":1782742306,\"name\":\"Datei-110.sh\",\"path\":\"/media/ZimaOS-HD/Datei-110.sh\",\"size\":1451},{\"extensions\":{},\"is_dir\":false,\"modified\":1784272888,\"name\":\"Datei-111.sh\",\"path\":\"/media/ZimaOS-HD/Datei-111.sh\",\"size\":7079},{\"extensions\":{},\"is_dir\":false,\"modified\":1784616704,\"name\":\"Datei-112.md\",\"path\":\"/media/ZimaOS-HD/Datei-112.md\",\"size\":4862},{\"extensions\":{},\"is_dir\":false,\"modified\":1784562000,\"name\":\"Datei-113.gz\",\"path\":\"/media/ZimaOS-HD/Datei-113.gz\",\"size\":5224217},{\"extensions\":{},\"is_dir\":false,\"modified\":1785991817,\"name\":\"Datei-115.mp4\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-115.mp4\",\"size\":14794873},{\"extensions\":{},\"is_dir\":false,\"modified\":1785991832,\"name\":\"Datei-117.mp4\",\"path\":\"/media/ZimaOS-HD/Gallery/Datei-117.mp4\",\"size\":6042431},{\"extensions\":{},\"is_dir\":false,\"modified\":1785348013,\"name\":\"Datei-118.sh\",\"path\":\"/media/ZimaOS-HD/Datei-118.sh\",\"size\":1554}],\"depth\":1,\"index\":1,\"size\":500,\"total\":80}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/thumbnail?path=%2Fmedia%2FZimaOS-HD%2FBildschirmfoto+vom+2026-07-06+15-26-53.png",
+      "status": 200,
+      "contentType": "image/png",
+      "body": {
+        "kind": "binary",
+        "bytes": 1018
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/thumbnail?path=%2Fmedia%2FZimaOS-HD%2FBildschirmfoto+vom+2026-07-06+18-06-24.png",
+      "status": 200,
+      "contentType": "image/png",
+      "body": {
+        "kind": "binary",
+        "bytes": 6599
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/thumbnail?path=%2Fmedia%2FZimaOS-HD%2FBildschirmfoto+vom+2026-07-03+18-52-33.png",
+      "status": 200,
+      "contentType": "image/png",
+      "body": {
+        "kind": "binary",
+        "bytes": 5789
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/thumbnail?path=%2Fmedia%2FZimaOS-HD%2FBildschirmfoto+vom+2026-07-05+10-01-00.png",
+      "status": 200,
+      "contentType": "image/png",
+      "body": {
+        "kind": "binary",
+        "bytes": 2643
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/thumbnail?path=%2Fmedia%2FZimaOS-HD%2FBildschirmfoto+vom+2026-07-06+14-36-13.png",
+      "status": 200,
+      "contentType": "image/png",
+      "body": {
+        "kind": "binary",
+        "bytes": 6330
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2_1/files/thumbnail?path=%2Fmedia%2FZimaOS-HD%2FBildschirmfoto+vom+2026-07-02+13-29-15.png",
+      "status": 200,
+      "contentType": "image/png",
+      "body": {
+        "kind": "binary",
+        "bytes": 12518
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/gallery/stream?media_types=img%2Cvideo&limit=120&collapse_groups=true",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "body": {
+        "kind": "text",
+        "text": "{\"total\":104,\"items\":[{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260769,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805465600000\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-119.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260769,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/250\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260763,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805851475968\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-120.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260763,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":8.5,\"aperture\":3.2,\"exposure_time\":\"1/800\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806094745600\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-121.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":11,\"exposure_time\":\"1/30\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806090551296\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-122.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":11,\"exposure_time\":\"1/30\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806077968384\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-123.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":11.5,\"aperture\":3.6,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806069579776\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-124.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/200\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806065385472\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-125.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4.5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806056996864\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-126.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5.6,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805977305088\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-127.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.5,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1308,\"height\":1164,\"asset\":{\"file_id\":\"340550805973110784\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-128.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1308,\"height\":1164,\"quality_score\":65.22512,\"shooting_params\":{\"width\":1308,\"height\":1164,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805960527872\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-129.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":11.7,\"aperture\":2.2,\"exposure_time\":\"1/100\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805956333568\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-130.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":7.1,\"aperture\":11,\"exposure_time\":\"1/30\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805943750656\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-131.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":6.3,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805935362048\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-132.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4.5,\"exposure_time\":\"1/500\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805922779136\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-133.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":9.4,\"aperture\":3.6,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805838893056\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-134.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":14.8,\"aperture\":2.5,\"exposure_time\":\"1/160\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805813727232\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-135.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/200\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1587,\"height\":995,\"asset\":{\"file_id\":\"340550805801144320\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-136.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1587,\"height\":995,\"quality_score\":65.79065,\"shooting_params\":{\"width\":1587,\"height\":995,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/50\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805775978496\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-137.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/100\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805771784192\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-138.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805763395584\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-139.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.5,\"exposure_time\":\"1/800\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805759201280\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-140.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.8,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805750812672\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-141.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":10.7,\"aperture\":2.5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805742424064\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-142.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":11.2,\"aperture\":3.2,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805734035456\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-143.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805713063936\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-144.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":10,\"exposure_time\":\"1/500\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805708869632\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-145.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":6.3,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260752,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805503348736\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-146.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260752,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.8,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260750,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806023442432\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-147.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260750,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.8,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260748,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806027636736\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-148.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260748,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260745,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805952139264\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-149.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260745,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":7.1,\"aperture\":2.2,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260741,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806015053824\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-150.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260741,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260737,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805729841152\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-151.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260737,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/400\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260734,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805746618368\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-152.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260734,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260732,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806031831040\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-153.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260732,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4.5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260731,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805939556352\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-154.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260731,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5.6,\"exposure_time\":\"1/500\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806052802560\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-155.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":13.1,\"aperture\":4,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806048608256\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-156.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":9.4,\"aperture\":5.6,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806044413952\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-157.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":8.5,\"aperture\":3.6,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806036025344\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-158.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":8,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806010859520\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-159.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":8.5,\"aperture\":2,\"exposure_time\":\"1/40\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806006665216\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-160.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/100\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806002470912\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-161.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/125\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805989888000\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-162.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":11,\"exposure_time\":\"1/30\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805985693696\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-163.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/50\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805968916480\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-164.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":11.7,\"aperture\":2.2,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805926973440\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-165.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4,\"exposure_time\":\"1/800\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805834698752\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-166.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":11,\"exposure_time\":\"1/50\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805830504448\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-167.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":2.8,\"exposure_time\":\"1/100\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805822115840\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-168.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"nsfw_score\":0.036615573,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2.5,\"exposure_time\":\"1/400\",\"iso\":100}},\"nsfw_score\":0.036615573},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805784367104\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-169.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/320\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1524,\"height\":879,\"asset\":{\"file_id\":\"340550805780172800\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-170.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1524,\"height\":879,\"quality_score\":63.39596,\"shooting_params\":{\"width\":1524,\"height\":879,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805725646848\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-171.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":12.6,\"aperture\":6.3,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805721452544\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-172.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":8,\"aperture\":9,\"exposure_time\":\"1/320\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805704675328\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-173.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":9,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805700481024\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-174.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":8.5,\"aperture\":5.6,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805683703808\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-175.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":7,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805679509504\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-176.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":6.3,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805662732288\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-177.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":9,\"aperture\":4.5,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805658537984\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-178.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":7,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805654343680\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-179.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":10,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805645955072\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-180.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5.6,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805599817728\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-181.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805578846208\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-182.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5.6,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805570457600\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-183.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805566263296\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-184.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5.6,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805562068992\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-185.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4.5,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805557874688\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-186.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":7,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805549486080\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-187.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5.6,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805545291776\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-188.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":4.5,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805536903168\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-189.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":7,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805528514560\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-190.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":8.8,\"aperture\":5.6,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805520125952\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-191.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5.6,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805511737344\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-192.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4.5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805494960128\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-193.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4.5,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805486571520\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-194.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":3.6,\"exposure_time\":\"1/500\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805478182912\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-195.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":10,\"exposure_time\":\"1/400\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805473988608\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-196.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/60\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805448822784\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-197.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":79.2,\"document_kind\":\"document\",\"badges\":[\"document\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/160\",\"iso\":100}},\"badges\":[\"document\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805440434176\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-198.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5,\"exposure_time\":\"1/650\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805432045568\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-199.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":5,\"exposure_time\":\"1/800\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805415268352\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-200.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5.6,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805402685440\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-201.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":6.3,\"exposure_time\":\"1/500\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260730,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805390102528\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-202.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260730,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":7,\"exposure_time\":\"1/400\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806082162688\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-203.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":4.5,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550806073774080\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-204.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5.6,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805994082304\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-205.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":4,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805843087360\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-206.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":2.8,\"exposure_time\":\"1/400\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1342,\"height\":917,\"asset\":{\"file_id\":\"340550805792755712\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-207.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1342,\"height\":917,\"quality_score\":62.30614,\"shooting_params\":{\"width\":1342,\"height\":917,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/100\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805692092416\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-208.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":7.5,\"aperture\":6.3,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805687898112\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-209.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":6.3,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805671120896\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-210.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":10,\"aperture\":5,\"exposure_time\":\"1/500\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805666926592\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-211.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":9,\"aperture\":6.3,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805457211392\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-212.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":89.2,\"face_count\":1,\"badges\":[\"face\"],\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":6.6,\"aperture\":2,\"exposure_time\":\"1/125\",\"iso\":100}},\"badges\":[\"face\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1785260727,\"width\":1600,\"height\":1200,\"asset\":{\"file_id\":\"340550805423656960\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-213.JPG\",\"media_type\":\"img\",\"panorama\":false,\"capture_ts\":1785260727,\"is_favorite\":false,\"width\":1600,\"height\":1200,\"quality_score\":69.2,\"shooting_params\":{\"width\":1600,\"height\":1200,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"focal_length\":19.1,\"aperture\":5,\"exposure_time\":\"1/650\",\"iso\":100}}},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1628600088,\"width\":1920,\"height\":1080,\"asset\":{\"file_id\":\"340550862961119232\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-214.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1628600088,\"is_favorite\":false,\"width\":1920,\"height\":1080,\"quality_score\":70.736,\"lat\":47.98809814453125,\"lon\":12.413999557495117,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1080,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1628600088,\"gps_latitude\":47.9881,\"gps_longitude\":12.414}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1628599946,\"width\":1920,\"height\":1080,\"asset\":{\"file_id\":\"340550862894010368\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-215.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1628599946,\"is_favorite\":false,\"width\":1920,\"height\":1080,\"quality_score\":70.736,\"lat\":47.9546012878418,\"lon\":12.261899948120117,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1080,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1628599946,\"gps_latitude\":47.9546,\"gps_longitude\":12.2619}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1628599778,\"width\":1920,\"height\":1080,\"asset\":{\"file_id\":\"340550862801735680\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-216.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1628599778,\"is_favorite\":false,\"width\":1920,\"height\":1080,\"quality_score\":70.736,\"lat\":47.9141,\"lon\":12.0876,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1080,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1628599778,\"gps_latitude\":47.9141,\"gps_longitude\":12.0876}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1628599551,\"width\":1920,\"height\":1080,\"asset\":{\"file_id\":\"340550862751404032\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-217.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1628599551,\"is_favorite\":false,\"width\":1920,\"height\":1080,\"quality_score\":70.736,\"lat\":47.8633,\"lon\":11.8828,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1080,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1628599551,\"gps_latitude\":47.8633,\"gps_longitude\":11.8828}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1628599523,\"width\":1920,\"height\":1080,\"asset\":{\"file_id\":\"340550862713655296\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-218.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1628599523,\"is_favorite\":false,\"width\":1920,\"height\":1080,\"quality_score\":70.736,\"lat\":47.8487,\"lon\":11.9201,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1080,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1628599523,\"gps_latitude\":47.8487,\"gps_longitude\":11.9201}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1628599502,\"width\":1920,\"height\":1080,\"asset\":{\"file_id\":\"340550862654935040\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-219.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1628599502,\"is_favorite\":false,\"width\":1920,\"height\":1080,\"quality_score\":70.736,\"lat\":47.8466,\"lon\":11.9265,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1080,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1628599502,\"gps_latitude\":47.8466,\"gps_longitude\":11.9265}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1628599006,\"width\":1920,\"height\":1080,\"asset\":{\"file_id\":\"340550862541688832\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-220.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1628599006,\"is_favorite\":false,\"width\":1920,\"height\":1080,\"quality_score\":70.736,\"lat\":47.9324,\"lon\":12.4136,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1080,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1628599006,\"gps_latitude\":47.9324,\"gps_longitude\":12.4136}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1627899750,\"width\":1920,\"height\":1440,\"asset\":{\"file_id\":\"340550862361333760\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-221.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1627899750,\"is_favorite\":false,\"width\":1920,\"height\":1440,\"quality_score\":77.648,\"lat\":47.8774,\"lon\":11.9019,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1440,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1627899750,\"gps_latitude\":47.8774,\"gps_longitude\":11.9019}},\"badges\":[\"location\"]},{\"entry_type\":\"asset\",\"count\":1,\"capture_ts\":1627899750,\"width\":1920,\"height\":1440,\"asset\":{\"file_id\":\"340550862344556544\",\"path\":\"/media/ZimaOS-HD/Gallery/bild-222.MOV\",\"media_type\":\"video\",\"panorama\":false,\"capture_ts\":1627899750,\"is_favorite\":false,\"width\":1920,\"height\":1440,\"quality_score\":77.648,\"lat\":47.8774,\"lon\":11.9019,\"badges\":[\"location\"],\"shooting_params\":{\"width\":1920,\"height\":1440,\"camera_make\":\"ACME\",\"camera_model\":\"Model X\",\"date_taken\":1627899750,\"gps_latitude\":47.8774,\"gps_longitude\":11.9019}},\"badges\":[\"location\"]}]}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/progress",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "body": {
+        "kind": "text",
+        "text": "{\"content_processed\":22,\"gallery_facts_status\":{\"status\":\"idle\"},\"pending_images\":0,\"pending_videos\":0,\"processed_images\":95,\"processed_videos\":9,\"progress_segments\":[{\"task_id\":\"task-1\",\"kind\":\"startup_initial_scan\",\"label\":\"media_scan\",\"color\":\"#0f6cbd\",\"status\":\"completed\",\"stage\":\"completed\",\"total_items\":22,\"completed_items\":22,\"failed_items\":0,\"current_item\":\"/media/sda/Media/Photos/Flug Mainau Mai 2005/P1010081.JPG\",\"percentage\":100},{\"task_id\":\"task-2\",\"kind\":\"metadata_backfill\",\"label\":\"metadata_backfill\",\"color\":\"#0f6cbd\",\"status\":\"completed\",\"stage\":\"metadata_backfill\",\"total_items\":0,\"completed_items\":0,\"failed_items\":0,\"percentage\":100},{\"task_id\":\"task-3\",\"kind\":\"startup_heavy_backfill\",\"label\":\"ai_backfill\",\"color\":\"#7c3aed\",\"status\":\"completed\",\"stage\":\"backfilling\",\"total_items\":0,\"completed_items\":0,\"failed_items\":0,\"percentage\":100},{\"task_id\":\"task-4\",\"kind\":\"people_identity_backfill\",\"label\":\"people_identity\",\"color\":\"#2563eb\",\"status\":\"completed\",\"stage\":\"backfilling\",\"total_items\":0,\"completed_items\":0,\"failed_items\":0,\"percentage\":100}],\"stage_progress\":[{\"kind\":\"exif\",\"label\":\"EXIF\",\"status\":\"completed\",\"total_items\":104,\"completed_items\":104,\"pending_items\":0,\"percentage\":100},{\"kind\":\"nn\",\"label\":\"NN\",\"status\":\"completed\",\"total_items\":104,\"completed_items\":104,\"pending_items\":0,\"percentage\":100,\"children\":[{\"kind\":\"vlm\",\"label\":\"VLM\",\"status\":\"completed\",\"total_items\":104,\"completed_items\":104,\"pending_items\":0,\"percentage\":100},{\"kind\":\"people_identity\",\"label\":\"People Identity\",\"status\":\"completed\",\"total_items\":24,\"completed_items\":24,\"pending_items\":0,\"percentage\":100}]},{\"kind\":\"nsfw\",\"label\":\"NSFW\",\"status\":\"disabled\",\"total_items\":0,\"completed_items\":0,\"pending_items\":0,\"percentage\":0}],\"status\":\"idle\",\"subtitles_extracted\":0,\"system_stats\":{\"cpu_percent\":0,\"goroutines\":31,\"indexing_speed\":8,\"memory_alloc_mb\":82,\"memory_anon_mb\":257,\"memory_cgroup_current_mb\":321,\"memory_cgroup_high_mb\":0,\"memory_cgroup_max_mb\":0,\"memory_cgroup_percent\":0,\"memory_percent\":28.530104165049895,\"memory_rss_mb\":321,\"memory_swap_mb\":0,\"memory_sys_mb\":288},\"total_images\":95,\"total_videos\":9,\"vlm\":{\"dependencies\":{\"mmproj\":{\"available\":true},\"model\":{\"available\":true},\"runtime\":{\"available\":true}},\"enabled\":true,\"error\":\"\",\"image_backend\":\"llm-image\",\"missing\":[],\"mode\":\"vlm\",\"progress\":{\"completed_items\":3,\"percentage\":100,\"total_items\":3},\"ready\":true,\"runtime\":\"llama-server\",\"startup_resources\":{\"memory_total_mb\":31861,\"memory_available_mb\":20573,\"intel_gpu_available\":true},\"status\":\"enabled\"}}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010111.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 29640
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010009.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 25865
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010112.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 22179
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010079.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 44255
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010118.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 20489
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010113.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 24250
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010115.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 23057
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010117.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 28987
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010091.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 49090
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010090.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 48722
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010085.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 34960
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010088.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 42111
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010083.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 37559
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010087.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 29352
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010081.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 44948
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010077.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 32769
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010073.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 29532
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010065.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 29769
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010072.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 22110
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010051.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 27523
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010016.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 34244
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010100.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 35702
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010052.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 24255
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010058.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 45196
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010061.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 34322
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010060.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 41195
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010062.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 35942
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010082.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 40934
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010064.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 41561
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010086.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 24647
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010101.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 36137
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010076.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 22601
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010096.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 21516
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010093.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 25035
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010059.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 29286
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010104.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 16941
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010098.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 35180
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010057.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 30149
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010053.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 17938
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010054.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 19525
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010069.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 22505
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010070.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 27441
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010074.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 18645
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010075.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 21817
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010097.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 38190
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010092.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 34267
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010089.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 15729
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010056.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 30596
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010108.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 18284
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010102.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 36331
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010106.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 22574
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010099.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 34922
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010084.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 31103
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010110.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 11719
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/photos/thumbnail?path=%2Fmedia%2Fsda%2FMedia%2FPhotos%2FFlug+Mainau+Mai+2005%2FP1010050.JPG&width=320&height=320&scene=photo&format=jpeg&mode=best",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "body": {
+        "kind": "binary",
+        "bytes": 17703
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v2/app_management/installed/list",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"data\":[{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1785823968,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"4d5f6c1848464c30b5b5b40891d87b4da0dc6e4464f1266c9e3420220adb374a\",\"image\":\"amir20/dozzle:v10.6.14\",\"is_main\":true,\"name\":\"big-bear-dozzle\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"big-bear-dozzle_default\"}],\"paused\":null,\"port_mappings\":[\"8888:8080/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"app\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 25 hours\"}],\"created_at\":1785823968,\"hostname\":null,\"icon\":\"https://cdn.jsdelivr.net/gh/bigbeartechworld/big-bear-universal-apps/apps/dozzle/logo.png\",\"id\":\"zimaapp://v2app/big-bear-dozzle\",\"index\":null,\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-223\",\"port\":\"8888\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"en_us\":\"App 223\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1785823991,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"2412105d3cf8d523cec3e67ec823735cecded0e60fc03b691d3c137db87c1b04\",\"image\":\"hkotel/mealie:v3.22.0\",\"is_main\":true,\"name\":\"big-bear-mealie\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"big-bear-mealie_default\"}],\"paused\":null,\"port_mappings\":[\"9925:9000/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"app\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 5 days (healthy)\"}],\"created_at\":1785823991,\"hostname\":null,\"icon\":\"https://cdn.jsdelivr.net/gh/selfhst/icons/png/mealie.png\",\"id\":\"zimaapp://v2app/big-bear-mealie\",\"index\":null,\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-224\",\"port\":\"9925\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"en_us\":\"App 224\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"official\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1785221738,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"de85ee8d5482f84a0440051aa798e524a0edcab3c08d90a819885b70a1989a9a\",\"image\":\"chicohaager/casadrop:2.4.4\",\"is_main\":true,\"name\":\"casadrop\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"casadrop_default\"}],\"paused\":null,\"port_mappings\":[\"8086:8080/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"casadrop\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"},{\"created_at\":1784398238,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"2ec0bcd685f37236c1e1ac083563c940a0c15b03ce58b5f28f3fb589ef824df2\",\"image\":\"casadrop-tunnel:rev\",\"is_main\":false,\"name\":\"casadrop-tunnel\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"casadrop_default\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"tunnel\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"},{\"created_at\":1783101000,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"2a85efbe18bef848145de667ecec7376cfc49d1d1acf1ce246b5ee35e2fac945\",\"image\":\"clamav/clamav:latest\",\"is_main\":false,\"name\":\"casadrop-clamav\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"casadrop_default\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"clamav\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"}],\"created_at\":1785221738,\"hostname\":null,\"icon\":\"http://127.0.0.1:8086/static/logo.png\",\"id\":\"zimaapp://v2app/casadrop\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-225\",\"port\":\"8086\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"de_de\":\"App 225\",\"en_us\":\"App 225\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1778948672,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"4c23b339e625ffd1361f3ca5475430e273a3d957712c430c1139c946ebbd9ced\",\"image\":\"filebrowser/filebrowser:v2.63.3-s6\",\"is_main\":true,\"name\":\"filebrowser-filebrowser-1\",\"network_type\":null,\"networks\":[],\"paused\":null,\"port_mappings\":[\"8035:80/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"filebrowser\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"}],\"created_at\":1778948672,\"hostname\":null,\"icon\":\"https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/FileBrowser/icon.png\",\"id\":\"zimaapp://v2app/filebrowser\",\"index\":null,\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":true,\"name\":\"app-226\",\"port\":\"8035\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"en_US\":\"App 226\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"official\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1782499153,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"ca7da05c87adab6ac7eaf0c805a9f5e132142070956c1b9cfb1d385a328761ab\",\"image\":\"flights-serpapi:latest\",\"is_main\":true,\"name\":\"flights-serpapi\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"flights-serpapi_default\"}],\"paused\":null,\"port_mappings\":[\"8718:8718/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"app\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"}],\"created_at\":1782499153,\"hostname\":null,\"icon\":\"http://127.0.0.1:8718/icon.svg\",\"id\":\"zimaapp://v2app/flights-serpapi\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-227\",\"port\":\"8718\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"en_us\":\"App 227\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1776340123,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"3ecbde434ec80ff80a55058113f4738559bad6e79d77f2877bc9e3bbfd9f7d0d\",\"image\":\"haushaltskasse-frontend:1.0.0\",\"is_main\":true,\"name\":\"haushaltskasse-frontend\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"haushaltskasse-netz\",\"name\":\"haushaltskasse-netzwerk\"}],\"paused\":null,\"port_mappings\":[\"8181:80/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"frontend\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"},{\"created_at\":1776065627,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"61cb0781a4fabb4b0d99f4829a7a8cfbef5a150e04b1683e04a90acd0c213b58\",\"image\":\"haushaltskasse-backend:1.0.0\",\"is_main\":false,\"name\":\"haushaltskasse-backend\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"haushaltskasse-netz\",\"name\":\"haushaltskasse-netzwerk\"},{\"external\":true,\"key\":\"ki-net\",\"name\":\"ki-net\"},{\"external\":true,\"key\":\"paperless-ngx-net\",\"name\":\"paperless-ngx-net\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"backend\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"}],\"created_at\":1776340123,\"hostname\":\"\",\"icon\":\"https://cdn-icons-png.flaticon.com/512/2830/2830284.png\",\"id\":\"zimaapp://v2app/haushaltskasse\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-228\",\"port\":\"8181\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"custom\":\"App 228\",\"de_de\":\"App 228\",\"en_us\":\"App 228\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1783079199,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"65de11dcc1f21fcd7f2fca3efcb0d1eaeaea1d2586c81fdb446d03f5dfbf30f7\",\"image\":\"ghcr.io/immich-app/immich-server:v3.0.1\",\"is_main\":true,\"name\":\"immich_server\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"immich_default\"}],\"paused\":null,\"port_mappings\":[\"2283:2283/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"immich-server\",\"started_at\":null,\"state\":\"exited\",\"status\":\"Exited (1) 11 days ago\"},{\"created_at\":1783079198,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"7a3f12e3f43b2de89a5cd62b3d607bd98ab82e5585e31e071b8e93a196811fec\",\"image\":\"ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23\",\"is_main\":false,\"name\":\"immich_postgres\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"immich_default\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"database\",\"started_at\":null,\"state\":\"exited\",\"status\":\"Exited (0) 11 days ago\"},{\"created_at\":1783079198,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"a76c8c1265e62ea8f836bc3c34c01fffa86c98318426b2a6808b6329eaa9cc6f\",\"image\":\"docker.io/valkey/valkey:9@sha256:3eeb09785cd61ec8e3be35f8804c8892080f3ca21934d628abc24ee4ed1698f6\",\"is_main\":false,\"name\":\"immich_redis\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"immich_default\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"redis\",\"started_at\":null,\"state\":\"exited\",\"status\":\"Exited (0) 11 days ago\"},{\"created_at\":1783079198,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"e1ac53407e8e2df5da5a09cae865843cc44ec8c7f9074f33a49ce3b7b6ba0968\",\"image\":\"ghcr.io/immich-app/immich-machine-learning:v3.0.1\",\"is_main\":false,\"name\":\"immich_machine_learning\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"immich_default\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"immich-machine-learning\",\"started_at\":null,\"state\":\"exited\",\"status\":\"Exited (143) 11 days ago\"}],\"created_at\":1783079199,\"hostname\":\"\",\"icon\":\"https://cdn.jsdelivr.net/gh/selfhst/icons/png/immich.png\",\"id\":\"zimaapp://v2app/immich\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-229\",\"port\":\"2283\",\"repo_app_id\":\"org.icewhale.immich\",\"repo_id\":\"zimaos-appstore\",\"scheme\":\"http\",\"status\":\"exited\",\"title\":{\"custom\":\"App 229\",\"en_us\":\"App 229\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1786078784,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"1cffeffdc5775c013a1582aed256cc0c3ce95c24d093d43223f04acc5cdf66c2\",\"image\":\"n8nio/n8n:latest\",\"is_main\":true,\"name\":\"n8n\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"n8n_default\"}],\"paused\":null,\"port_mappings\":[\"5678:5678/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"n8n\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 2 days\"}],\"created_at\":1786078784,\"hostname\":\"\",\"icon\":\"https://cdn.jsdelivr.net/gh/selfhst/icons/png/n8n.png\",\"id\":\"zimaapp://v2app/n8n\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-230\",\"port\":\"5678\",\"repo_app_id\":\"org.icewhale.n8n\",\"repo_id\":\"zimaos-appstore\",\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"custom\":\"App 230\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1779363324,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"74aadf9e54303cfc59e5eb281cbe47db61fb1799700cebb813903e95b4202d12\",\"image\":\"fosrl/newt:latest\",\"is_main\":true,\"name\":\"newt-143\",\"network_type\":\"host\",\"networks\":[],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"newt\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"}],\"created_at\":1779363324,\"hostname\":\"\",\"icon\":\"https://github.com/fosrl/pangolin/raw/main/public/logo/word_mark_black.png\",\"id\":\"zimaapp://v2app/newt\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-231\",\"port\":null,\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"custom\":\"App 231\",\"en_us\":\"App 231\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1786116953,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"a4fa9dec194aaaeaace06d9e9638a3f65c80386addf82f66a6abac7f2bb4e208\",\"image\":\"onlyoffice/documentserver:9.4.0.1\",\"is_main\":true,\"name\":\"onlyoffice-documentserver\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"onlyoffice-network\",\"name\":\"onlyoffice_onlyoffice-network\"}],\"paused\":null,\"port_mappings\":[\"8090:80/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"onlyoffice\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 43 hours (healthy)\"}],\"created_at\":1786116953,\"hostname\":null,\"icon\":\"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/onlyoffice.png\",\"id\":\"zimaapp://v2app/onlyoffice\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-232\",\"port\":\"8090\",\"repo_app_id\":\"io.github.chicohaager.onlyoffice\",\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"custom\":\"App 232\",\"en_us\":\"App 232\"},\"version\":\"9.4.0.1\"},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1784380138,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"2a3743400f31b169123f674f7f0a9175d8a2172a227ebe22e4356a51cd80f23b\",\"image\":\"ghcr.io/open-webui/open-webui:ollama\",\"is_main\":true,\"name\":\"open-webui-ollama\",\"network_type\":\"bridge\",\"networks\":[],\"paused\":null,\"port_mappings\":[\"3050:8080/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"open-webui-ollama\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"}],\"created_at\":1784380138,\"hostname\":null,\"icon\":\"https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/OpenWebUI/icon.png\",\"id\":\"zimaapp://v2app/open-webui-ollama\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-233\",\"port\":\"3050\",\"repo_app_id\":\"org.icewhale.openwebuiollama\",\"repo_id\":\"zimaos-appstore\",\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"en_GB\":\"App 233\",\"en_US\":\"App 233\",\"ja_JP\":\"App 233\",\"zh_CN\":\"App 233\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1775909524,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"250633077e891aeea4d4c89d4eb008452340f7c410455b2132eec77271bd001e\",\"image\":\"clusterzx/paperless-ai:latest\",\"is_main\":true,\"name\":\"paperless-ai\",\"network_type\":\"bridge\",\"networks\":[],\"paused\":null,\"port_mappings\":[\"3009:3000/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"paperless-ai\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"}],\"created_at\":1775909524,\"hostname\":\"\",\"icon\":\"https://i.imgur.com/LGVPJ8g.png\",\"id\":\"zimaapp://v2app/paperless-ai\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-234\",\"port\":\"3009\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"custom\":\"App 234\",\"de_de\":\"App 234\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1775909986,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"9cfd00f98ea4a65fd0cc5ca607bc451716304b1a7e00fa35df61c9db1d4ea54b\",\"image\":\"gotenberg/gotenberg:8\",\"is_main\":false,\"name\":\"paperless-ngx-gotenberg\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"paperless\",\"name\":\"paperless-ngx-net\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"gotenberg\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"},{\"created_at\":1775909986,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"ce615a5294135207c50d2b65d7b464f17059cd06a3e7976aa19af27a2610b8ab\",\"image\":\"postgres:16-alpine\",\"is_main\":false,\"name\":\"paperless-ngx-db\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"paperless\",\"name\":\"paperless-ngx-net\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"db\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"},{\"created_at\":1775909986,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"4bab2cb00e8adb743bdb8385a5b5f727d1a618bde58841e420c385e2db2d29ff\",\"image\":\"redis:7-alpine\",\"is_main\":true,\"name\":\"paperless-ngx-redis\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"paperless\",\"name\":\"paperless-ngx-net\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"broker\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"},{\"created_at\":1775909986,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"7d5fca0a4667473e35d3b589a86daf4eeb61b3f7f3d149b8baa0357305df890f\",\"image\":\"apache/tika:latest\",\"is_main\":false,\"name\":\"paperless-ngx-tika\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"paperless\",\"name\":\"paperless-ngx-net\"}],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"tika\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"},{\"created_at\":1775909986,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"fbb56a2e375257bdcc5dcc3c33a611cdaa0b7948af1a9bf2e76e7739818cf648\",\"image\":\"ghcr.io/paperless-ngx/paperless-ngx:latest\",\"is_main\":false,\"name\":\"paperless-ngx\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"paperless\",\"name\":\"paperless-ngx-net\"}],\"paused\":null,\"port_mappings\":[\"8000:8000/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"webserver\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"}],\"created_at\":1775909986,\"hostname\":\"\",\"icon\":\"https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/main/src-ui/src/assets/logo-notext.svg\",\"id\":\"zimaapp://v2app/paperless-ngx\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-235\",\"port\":\"8000\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"custom\":\"App 235\",\"de_de\":\"App 235\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1779814740,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"7af2069f9cc41e423fb4690e3b4aa25065cfd5ecf1720b6f5a786de989250d94\",\"image\":\"stirlingtools/stirling-pdf:latest\",\"is_main\":true,\"name\":\"stirling-pdf\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"stirling-pdf-network\",\"name\":\"stirling-pdf_stirling-pdf-network\"}],\"paused\":null,\"port_mappings\":[\"8080:8080/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"stirling-pdf\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days (healthy)\"}],\"created_at\":1779814740,\"hostname\":null,\"icon\":\"https://raw.githubusercontent.com/Stirling-Tools/Stirling-PDF/main/docs/stirling.png\",\"id\":\"zimaapp://v2app/stirling-pdf\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-236\",\"port\":\"8080\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"de_de\":\"App 236\",\"en_us\":\"App 236\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"community\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1784716880,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"1d47eaf7f3aeaa9205fb3a9dcd2fbf53275bbd1141ec604a02690d2489bd62cd\",\"image\":\"gelbuilding/zimabrain-ce:1.6.0-beta\",\"is_main\":true,\"name\":\"zimabrain-ce\",\"network_type\":\"bridge\",\"networks\":[],\"paused\":null,\"port_mappings\":[\"8601:8601/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"zimabrain-ce\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"}],\"created_at\":1784716880,\"hostname\":\"\",\"icon\":\"https://icon.casaos.io/main/all/zimabrain-ce.png\",\"id\":\"zimaapp://v2app/zimabrain-ce\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-237\",\"port\":\"8601\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"custom\":\"App 237\",\"en_us\":\"App 237\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"official\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1786025334,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"3cf0895c09018d1906e77aa4f891f8fbc3e6e272d4cf442e412c20c0eb925084\",\"image\":\"chicohaager/zimaos-mcp:latest\",\"is_main\":true,\"name\":\"zimaos-mcp\",\"network_type\":\"host\",\"networks\":[],\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":\"zimaos-mcp\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 2 days (healthy)\"}],\"created_at\":1786025334,\"hostname\":null,\"icon\":\"https://raw.githubusercontent.com/chicohaager/mcp/main/web/icon.svg\",\"id\":\"zimaapp://v2app/zimaos-mcp\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-238\",\"port\":\"8717\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"de_de\":\"App 238\",\"en_us\":\"App 238\"},\"version\":null},{\"app_type\":\"v2app\",\"author_type\":\"official\",\"auto_start\":\"disabled\",\"containers\":[{\"created_at\":1785953383,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"8f25b3f2c1202480a0f35fadd310001596afdae4efa8ab2d413071e0cdb05995\",\"image\":\"zippy-zippy\",\"is_main\":true,\"name\":\"zippy\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"zippy_default\"},{\"external\":true,\"key\":\"ki-net\",\"name\":\"ki-net\"}],\"paused\":null,\"port_mappings\":[\"7860:7860/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"zippy\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 3 days (healthy)\"},{\"created_at\":1776404380,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"dd7421397d877dcd328705508fb28925002ee1b28fb6fc5f22d6025061755fe1\",\"image\":\"caddy:2-alpine\",\"is_main\":false,\"name\":\"zippy-caddy\",\"network_type\":null,\"networks\":[{\"external\":false,\"key\":\"default\",\"name\":\"zippy_default\"}],\"paused\":null,\"port_mappings\":[\"7443:7443/tcp\"],\"restarting\":null,\"running\":null,\"service_name\":\"caddy\",\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"}],\"created_at\":1785953383,\"hostname\":null,\"icon\":\"https://raw.githubusercontent.com/chicohaager/zippy/main/desktop/src-tauri/icons/icon.png\",\"id\":\"zimaapp://v2app/zippy\",\"index\":\"/\",\"install_error\":null,\"install_status\":\"completed\",\"is_uncontrolled\":false,\"name\":\"app-239\",\"port\":\"7860\",\"repo_app_id\":null,\"repo_id\":null,\"scheme\":\"http\",\"status\":\"running\",\"title\":{\"de_de\":\"App 239\",\"en_us\":\"App 239\"},\"version\":null},{\"app_type\":\"container\",\"auto_start\":null,\"containers\":[{\"created_at\":1784728626,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"c165caadb46d52d0342ef9f04a7a4548aeb6002cd82d69b120013a019953fe83\",\"image\":\"docker:cli\",\"is_main\":false,\"name\":\"zimaos-mcp-deployer\",\"network_type\":null,\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":null,\"started_at\":null,\"state\":\"exited\",\"status\":\"Exited (0) 2 weeks ago\"}],\"created_at\":1784728626,\"hostname\":null,\"icon\":null,\"id\":\"zimaapp://container/c165caadb46d52d0342ef9f04a7a4548aeb6002cd82d69b120013a019953fe83\",\"index\":null,\"install_error\":null,\"install_status\":null,\"is_uncontrolled\":null,\"name\":\"app-240\",\"port\":null,\"repo_app_id\":null,\"repo_id\":null,\"status\":\"exited\",\"title\":{\"en_US\":\"App 240\"},\"version\":null},{\"app_type\":\"container\",\"auto_start\":null,\"containers\":[{\"created_at\":1776683621,\"error\":null,\"exit_code\":null,\"finished_at\":null,\"id\":\"e6e66bb9605cb5da0dcfdc22e08555b1e7d5e5a009c781f7e5922234bb78319f\",\"image\":\"ollama/ollama:latest\",\"is_main\":false,\"name\":\"ollama\",\"network_type\":null,\"paused\":null,\"port_mappings\":[],\"restarting\":null,\"running\":null,\"service_name\":null,\"started_at\":null,\"state\":\"running\",\"status\":\"Up 11 days\"}],\"created_at\":1776683621,\"hostname\":null,\"icon\":null,\"id\":\"zimaapp://container/e6e66bb9605cb5da0dcfdc22e08555b1e7d5e5a009c781f7e5922234bb78319f\",\"index\":null,\"install_error\":null,\"install_status\":null,\"is_uncontrolled\":null,\"name\":\"app-241\",\"port\":null,\"repo_app_id\":null,\"repo_id\":null,\"status\":\"running\",\"title\":{\"en_US\":\"App 241\"},\"version\":null}]}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v1/users/status",
+      "status": 200,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"success\":200,\"message\":\"ok\",\"data\":{\"gpuCount\":0,\"gpus\":0,\"initialized\":true,\"key\":\"\"}}"
+      },
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/v1/users/login",
+      "status": 400,
+      "contentType": "application/json",
+      "body": {
+        "kind": "text",
+        "text": "{\"success\":10013,\"message\":\"User does not exist or password is invalid\",\"data\":null}"
+      },
+      "requestBody": "(request body removed)",
+      "variant": "invalid-credentials"
+    }
+  ]
+}

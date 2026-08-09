@@ -34,6 +34,7 @@ export const LanguageMenu = ({
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={t('settings.language')}
+        data-action="language-menu"
         className="flex h-11 items-center gap-2 rounded-full px-3.5 text-sm font-medium"
         style={{
           background: 'var(--surface-card)',
@@ -63,6 +64,7 @@ export const LanguageMenu = ({
               <li key={locale.code}>
                 <button
                   type="button"
+                  data-locale={locale.code}
                   onClick={() => {
                     void changeLocale(locale.code as Locale)
                     setOpen(false)

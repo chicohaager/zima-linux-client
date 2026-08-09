@@ -35,7 +35,8 @@
     "package:flatpak": "npm run build && electron-builder --linux flatpak",
     "verify:build": "node scripts/verify-build.mjs",
     "verify": "npm run type-check && npm run lint && npm test && npm run build && npm run verify:build && npm run verify:i18n && npm run verify:privacy",
-    "verify:i18n": "node scripts/verify-i18n.mjs"
+    "verify:i18n": "node scripts/verify-i18n.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
@@ -50,6 +51,7 @@
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

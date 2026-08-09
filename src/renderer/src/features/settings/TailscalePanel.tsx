@@ -89,7 +89,14 @@ export const TailscalePanel = ({
                     {address} · {peer.os}
                   </Muted>
                 </div>
-                <Button variant="secondary" onClick={() => onUse(address, peer.hostName)}>
+                {/* Addressed by its address, not by its label: the label is translated, and
+                    a verification that matches on it only ever checks one locale. Same
+                    reason `data-nav` exists on the navigation. */}
+                <Button
+                  variant="secondary"
+                  data-tailscale-use={address}
+                  onClick={() => onUse(address, peer.hostName)}
+                >
                   {t('tailscale.use')}
                 </Button>
               </li>

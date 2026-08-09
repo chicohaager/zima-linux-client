@@ -6,6 +6,20 @@ interface ButtonProps {
   readonly type?: 'button' | 'submit'
   readonly title?: string
   readonly className?: string
+  /**
+   * `data-*` attributes, passed through to the real `<button>`.
+   *
+   * 🔴 They used to be dropped in silence, and TypeScript cannot catch it: JSX attribute
+   * names containing a hyphen are exempt from excess-property checking, so
+   * `<Button data-action="sign-out">` type-checks against a props type that has no such
+   * field and then renders a button without the attribute. Measured 2026-08-09 — a
+   * verification scenario reported "the Tailscale panel offered no button", while the
+   * screenshot taken seconds earlier showed three of them.
+   *
+   * Which is the familiar shape: a negative finding produced by my own instrument. The
+   * screenshot was the positive control that caught it.
+   */
+  readonly [dataAttribute: `data-${string}`]: string | undefined
 }
 
 const VARIANTS: Record<NonNullable<ButtonProps['variant']>, React.CSSProperties> = {
@@ -22,6 +36,7 @@ export const Button = ({
   type = 'button',
   title,
   className = '',
+  ...dataAttributes
 }: ButtonProps): React.JSX.Element => (
   <button
     type={type}
@@ -30,6 +45,7 @@ export const Button = ({
     title={title}
     className={`flex items-center justify-center gap-2 rounded-[999px] px-4 py-2.5 text-sm font-medium transition-opacity disabled:opacity-55 ${className}`}
     style={VARIANTS[variant]}
+    {...dataAttributes}
   >
     {children}
   </button>

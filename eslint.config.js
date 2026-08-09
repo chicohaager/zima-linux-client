@@ -59,8 +59,10 @@ export default tseslint.config(
     },
   },
   {
-    // Evidence tools run in plain Node and are meant to print — that is their job.
-    files: ['scripts/**/*.{mjs,ts}', '*.config.{ts,js}'],
+    // Evidence tools run in plain Node and are meant to print — that is their job. The
+    // end-to-end scaffolding under e2e/ is the same kind of thing: a recording proxy, a
+    // replay server and the Playwright specs that drive them.
+    files: ['scripts/**/*.{mjs,ts}', 'e2e/**/*.{mjs,ts}', '*.config.{ts,js}'],
     languageOptions: {
       globals: {
         console: 'readonly',
@@ -71,6 +73,8 @@ export default tseslint.config(
         fetch: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       },
     },
     rules: { 'no-console': 'off' },
