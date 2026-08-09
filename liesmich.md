@@ -3,8 +3,10 @@
 Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwaltung.
 
 > **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.1, ein Rewrite.**
-> Er ist auf **genau einer** Maschine gestartet worden (Ubuntu 24.04, GNOME auf Wayland, x86_64).
-> Ob er auf deiner startet, ist offen — genau dafür läuft der aktuelle Test.
+> Das installierte Paket ist auf **sechs Distributionen** gestartet worden (Ubuntu 22.04 und 24.04,
+> Debian 12, Fedora 41, Arch, openSUSE Tumbleweed) — in Containern, unter Xvfb, nur x86_64.
+> Auf einem **echten Desktop** ist er auf genau einer Maschine benutzt worden (Ubuntu 24.04, GNOME
+> auf Wayland); eine echte Sitzung auf deiner Hardware ist weiterhin das, wofür der Test läuft.
 > Die 0.9.x-Linie liegt auf `main` und unter [`legacy-0.9/`](legacy-0.9/); gelöscht wurde nichts.
 >
 > Was gebaut und was gemessen ist: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
@@ -102,7 +104,9 @@ Installiert wird nach `/opt/ZimaOS Client/`, Einstiegspunkt ist `/usr/bin/zima-l
 
 - **x86_64-Linux** mit Desktop-Sitzung. Auf problematischen DRM-Treibern startet sich der Client
   selbst unter X11 neu — gemessen an `vmwgfx`, wo Wayland in einem SIGSEGV endet.
-- **Das `.deb` deklariert `libcap2-bin`** — das Post-Install-Skript braucht `setcap`.
+- **Das `.deb` deklariert zwölf Abhängigkeiten** — die neun, die electron-builder per Default
+  einträgt, dazu `libasound2t64 | libasound2` und `libgbm1` (Electron 43 braucht beide, die
+  Standardliste nennt keine davon) und `libcap2-bin` für das `setcap` des Post-Install-Skripts.
 - **Die AppImage ist Typ 2 und braucht FUSE 2.** Auf der Testmaschine lag `libfuse2t64` vor; ein
   System ohne FUSE 2 ist ungemessen.
 - **ZeroTier bringt das Paket selbst mit** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`) und
@@ -141,19 +145,33 @@ npm run package:tar       # .tar.gz       — ohne Zusatzwerkzeug
 npm run package:appimage  # .AppImage     — ohne Zusatzwerkzeug
 npm run package:rpm       # .rpm          — braucht rpmbuild  (apt install rpm)
 npm run package:pacman    # .pacman       — braucht bsdtar    (apt install libarchive-tools)
-npm run package:flatpak   # .flatpak      — braucht flatpak-builder und eine installierte Runtime
-npm run package:linux     # alle Ziele auf einmal — scheitert, solange ein Werkzeug fehlt
+npm run package:flatpak   # .flatpak      — braucht flatpak-builder UND eine installierte Runtime
+npm run package:linux     # die fünf Ziele oben auf einmal — Flatpak gehört nicht dazu
 ```
 
-Fünf der sechs sind am 2026-07-31 auf Ubuntu 24.04 gebaut worden, und ihre Nutzlast wurde aus
-einem Verzeichnis namens exakt `ZimaOS Client` gestartet. Flatpak ist **nicht** gebaut: der Builder
-liegt vor, aber keine Runtime. Fehlende Werkzeuge werden beim Namen genannt, nicht verschluckt.
+Die fünf sind auf Ubuntu 24.04 gebaut worden. Fehlende Werkzeuge werden beim Namen genannt, nicht
+verschluckt.
+
+deb, rpm und pacman werden von `scripts/distro-matrix.sh` auf **sechs Distributionen installiert
+und gestartet** — Ubuntu 22.04 und 24.04, Debian 12, Fedora 41, Arch und openSUSE Tumbleweed. Jede
+Zeile installiert das echte Artefakt in den echten Pfad (`/opt/ZimaOS Client/`, Leerzeichen
+inklusive), startet es als gewöhnlicher Benutzer **mit eingeschaltetem Sandkasten** und nimmt den
+Startbericht der App selbst als Beleg. Alle sechs: `ok=true`, 51 CSS-Regeln angewandt, kein roher
+Übersetzungsschlüssel auf dem Schirm, kein Konsolenfehler.
+
+**Flatpak steht mit Absicht nicht in der Standard-Zielliste.** Bis zum 2026-08-09 stand es darin,
+und dort hat es Schaden angerichtet: `npm run package:linux` brach **an** Flatpak ab — nach
+AppImage und tar.gz, vor deb, rpm und pacman. Zurück blieb ein `dist/`, das wie ein fertiger Bau
+aussah und genau die drei Pakete nicht enthielt, die die Distro-Matrix braucht. Gelingen kann es
+hier aus zwei Gründen nicht: es ist kein Flatpak-Remote eingerichtet, und electron-builder zielt
+per Default auf die Runtime `20.08`, die von Flathub zurückgezogen wurde. `npm run package:flatpak`
+bleibt für den Tag, an dem beides erledigt ist.
 
 ## Verifikation
 
 ```bash
 npm run verify          # Typprüfung · Lint · Tests · Build · Build-Gate · i18n-Gate · Privacy-Gate
-npm test                # 188 Tests in 20 Dateien (2026-08-01)
+npm test                # 201 Tests in 22 Dateien (2026-08-09)
 npm run verify:build    # liest die GEBAUTEN Dateien: Preload CJS, Sandbox an, CSP ohne unsafe-eval
 npm run verify:i18n     # Vollständigkeit, unbekannte Schlüssel, Platzhalter, „englische Kopie"
 npm run verify:privacy  # keine LAN-Adressen, Benutzernamen oder E-Mail-Adressen im Bestand

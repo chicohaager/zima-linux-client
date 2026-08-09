@@ -9,7 +9,7 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 
 ```
 npm run verify   ✓ (rc=0)  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓ (rc=0)  188 Tests in 20 Dateien
+npx vitest run   ✓ (rc=0)  201 Tests in 22 Dateien
 i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
 privacy gate        clean, 186 verfolgte Dateien
 Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut, Nutzlast gestartet (Phase 8)
@@ -820,17 +820,48 @@ oben. Was hier steht, gilt nur noch für die verbliebenen Lücken.)*
 
 Es fehlen weiterhin:
 
-* **Playwright-E2E.** Der Rundgang (`ZIMA_VERIFY_SCENARIO=tour`) leistet heute die Arbeit,
-  läuft aber nur gegen ein Gerät im LAN und nicht in CI.
-* **Distro-Start-Matrix** (Phase 8) und die arm64-Frage beim mitgelieferten ZeroTier-Binary.
-  Der Paketbau selbst ist inzwischen für deb, AppImage und tar.gz belegt — siehe
-  [Phase 8](#phase-8--ausliefern-die-ersten-pakete-und-was-sie-über-den-laufenden-code-verraten-haben).
-* **Anmeldung über eine Tailscale-Adresse**, durchgeklickt von Anfang bis Ende.
+* ~~**Playwright-E2E.**~~ **Erledigt 2026-08-09** (`66f2371`): Aufzeichnungs-Proxy, Scrubber und
+  Replay-Server, vier Fälle, laufen ohne Gerät in CI.
+* ~~**Anmeldung über eine Tailscale-Adresse**~~ **Erledigt 2026-08-09** (`66f2371`), durchgeklickt
+  über den DERP-Relay, nicht über das LAN.
+* ~~**Distro-Start-Matrix**~~ **Erledigt 2026-08-09**: sechs von sechs Zeilen grün, am
+  ausgelieferten Paket, mit eingeschaltetem Sandkasten — siehe
+  [Distro-Start-Matrix](#-distro-start-matrix-sechs-von-sechs-am-ausgelieferten-paket).
+  Offen bleibt die **arm64**-Frage beim mitgelieferten ZeroTier-Binary.
 * **Muttersprachliche Prüfung der Übersetzungen.** Alle 28 Kataloge sind seit 2026-07-31
   vollständig (280/280), aber 25 davon habe **ich** übersetzt — sie stehen weiterhin als
   `reviewed: false` im Sprachmenü. Vollständig ist nicht dasselbe wie richtig.
-* **Sub-Account-Rechte** (Plan § 14 Punkt 6) — der Admin-Pfad allein beantwortet nicht,
-  welche Endpunkte ein Nicht-Admin benutzen darf.
+* ~~**Sub-Account-Rechte**~~ **Beantwortet 2026-08-09** — die Frage ist auf ZimaOS 1.7.0
+  gegenstandslos, siehe den nächsten Abschnitt.
+
+## Sub-Account-Rechte — die Frage hat auf ZimaOS 1.7.0 keinen Gegenstand
+
+Plan § 14 Punkt 6 wollte wissen, welche Endpunkte ein **Nicht-Admin** benutzen darf. Die Antwort
+ist nicht „diese hier" und auch nicht „unbekannt", sondern: **ein zweites Konto gibt es nicht.**
+Gemessen 2026-08-09 gegen einen ZimaOS-**v1.7.0**-Host im LAN (`PRETTY_NAME` aus `/etc/os-release`
+über SSH gelesen), mit einem gültigen Admin-Token, ohne irgendetwas auf dem Gerät zu verändern:
+
+| Gemessen | Antwort | Was daraus folgt |
+| --- | --- | --- |
+| `GET /v1/users/name` | `200`, `data` = Liste mit **genau einem** Namen | Der Endpunkt ist die Kontoliste. Auf diesem Gerät steht ein Konto darin. |
+| `GET /v1/users/current` | `200`, `id: 1`, `role: "admin"` | Das eine Konto ist das erste und ist Admin. |
+| `GET /v1/users/list` | `500`, `{"success":10006,"message":"User does not exist"}` | Es gibt keine Auflistung mehrerer Konten — der Pfad existiert, der Dienst kennt kein zweites. |
+| `GET /v2/users/*` | `404`, `{"message":"no matching operation was found"}` | `/v2/users` steht zwar in der Gateway-Routentabelle, hat aber **keine einzige** Operation. |
+| `POST /v1/users/register` (leerer Body) | `400`, `{"success":10008,"message":"Key does not exist"}` | Registrierung verlangt einen Schlüssel … |
+| `GET /v1/users/status` | `200`, `initialized: true`, `key: ""` | … und der ist nach der Ersteinrichtung **leer**. `register` ist der Einrichtungs-Endpunkt des ersten Starts, keine Benutzerverwaltung. |
+| ZimaOS-Web-Bundle (`index-*.js`, `vendor-api-system-*.js`) | nur `getUserInfo`, `getUserName`, `getUserStatus`, `getUserAvatar`, `updateUserAvatar` | Auch die Oberfläche des Herstellers hat kein Anlegen, kein Löschen, keine Rollenvergabe. |
+
+**Warum das hier steht und nicht als „ungeprüft" durchgeht:** die ursprüngliche Aufgabe lautete,
+ein Testkonto anzulegen und wieder zu entfernen. Ein Entfernen-Endpunkt existiert nicht — ein
+angelegtes Konto wäre also **nicht zurücknehmbar** gewesen, auf einem Gerät, das in Benutzung ist.
+Deshalb ist der Befund ausschließlich aus lesenden Abrufen gebaut.
+
+**Folge für den Client:** Er darf Mehrbenutzer-Fähigkeit nirgends behaupten, und die
+Rollen-Anzeige der Sitzungskarte (`role` aus dem JWT) bleibt das, was sie ist — eine Anzeige des
+gelesenen Feldes, keine Zusicherung, dass andere Rollen existieren oder funktionieren.
+
+**Geltungsbereich:** gemessen an **einem** Gerät auf **v1.7.0**, an den oben genannten Endpunkten.
+Wenn ZimaOS später Konten bekommt, ist das hier ein Datum, kein Naturgesetz.
 
 ## Erfolgspfad der Anmeldung — belegt, und zwar nicht von meinem eigenen Skript
 
@@ -1315,13 +1346,15 @@ im Netz tut.
 
 ### Was an Phase 8 ausdrücklich offen ist
 
-* ~~**rpm, pacman**~~ **gebaut und gestartet** (2026-07-31 abends, siehe Tabelle). **flatpak** bleibt
-  ungebaut: `flatpak-builder` liegt vor, aber es ist keine Runtime installiert.
+* ~~**rpm, pacman**~~ **gebaut und gestartet** (2026-07-31 abends, siehe Tabelle). **flatpak** ist
+  seit 2026-08-09 **aus der Standard-Zielliste genommen** — es ist kein Remote eingerichtet, und
+  electron-builder zielt auf die zurückgezogene Runtime `20.08`; solange es in der Liste stand,
+  brach `package:linux` daran ab, **bevor** deb/rpm/pacman gebaut waren.
 * **arm64** ist nicht gebaut und schon gar nicht gestartet — das mitgelieferte arm64-ZeroTier ist
   bisher nur eine Datei im Repository, keine belegte Funktion.
-* **Distro-Start-Matrix** (Plan § 11.5) steht aus: gemessen wurde auf **einer** Maschine
-  (Ubuntu 24.04, GNOME-Wayland, vmwgfx). Dass die Pakete auf Fedora, Arch oder openSUSE starten,
-  ist damit **nicht** belegt.
+* ~~**Distro-Start-Matrix** (Plan § 11.5)~~ **Erledigt 2026-08-09**: sechs Distributionen, das
+  installierte Paket im echten Pfad, Startbeleg je Zeile. Damit ist der frühere Vorbehalt
+  („gemessen wurde auf **einer** Maschine") aufgehoben.
 * **README und liesmich beschreiben weiterhin den 0.9-Client** (macOS-Abschnitt, alte Screenshots,
   alte Projektstruktur). Angeglichen wurden nur die Paketier-Befehle, weil die nachweislich falsch
   waren (`npm run package:mac` existiert in diesem Zweig nicht). Der Rest gehört zum Release.
@@ -1500,6 +1533,170 @@ durch. Steht so in den Tester-Hinweisen (die nicht im Repository liegen), weil j
 Ubuntu-24.04-Tester sie sehen wird.
 
 **Weiterhin NICHT gemessen:** dasselbe auf einer RPM- oder Arch-Distribution.
+
+## 🟢 Distro-Start-Matrix: sechs von sechs, am ausgelieferten Paket
+
+`scripts/distro-matrix.sh`, gefahren 2026-08-09 gegen die an diesem Tag gebauten Pakete. Jede Zeile
+installiert das **echte Artefakt** in einem frischen Container, in den echten Installationspfad
+`/opt/ZimaOS Client/` (mit Leerzeichen), und startet es als **gewöhnlicher Benutzer** — mit
+**eingeschaltetem** Sandkasten, denn genau den richtet das Post-Install ein. Der Container läuft
+dafür mit `--security-opt seccomp=unconfined`; Dockers Standardprofil verbietet die
+Namespace-Aufrufe, die Chromiums Sandkasten braucht. Ein `--no-sandbox` hätte jede Zeile grün
+gemacht, auch mit kaputtem `chrome-sandbox` — deshalb steht es nur im Kontrolllauf, der greift,
+wenn der echte Weg nichts geschrieben hat.
+
+Beleg je Zeile ist der Startbericht der App selbst (`ZIMA_VERIFY_STARTUP`), der die **laufende
+Engine** fragt, nicht die Dateien:
+
+| Zeile | Paket | `ok` | CSS-Regeln | Fenster | rohe i18n-Schlüssel | Konsolenfehler |
+| --- | --- | --- | --- | --- | --- | --- |
+| `ubuntu:22.04` | deb | ✅ | 51 | 1180 px, Seitenleiste | 0 | 0 |
+| `ubuntu:24.04` | deb | ✅ | 51 | 1180 px, Seitenleiste | 0 | 0 |
+| `debian:12` | deb | ✅ | 51 | 1180 px, Seitenleiste | 0 | 0 |
+| `fedora:41` | rpm | ✅ | 51 | 639 px, Pillenleiste | 0 | 0 |
+| `archlinux` | pacman | ✅ | 51 | 639 px, Pillenleiste | 0 | 0 |
+| `opensuse/tumbleweed` | rpm | ✅ | 51 | 614 px, Pillenleiste | 0 | 0 |
+
+Nebenbei mitbelegt, ohne dass es geplant war: die **responsive Umschaltung**. Die Xvfb-Vorgabe ist
+je Distribution verschieden, und beide Layouts sind darüber gelaufen — Seitenleiste mit 4
+Navigationsknöpfen bei 1180 px, Pillenleiste mit 8 bei ~620 px. Das ist die Erklärung für die
+unterschiedlichen `nav`-Zahlen und kein Befund.
+
+**Der erste Lauf war 1 von 6.** Was dazwischen lag, steht in den drei Abschnitten hier drunter —
+alle drei Fehler waren ausschließlich am **ausgelieferten** Paket sichtbar und für jeden Test,
+jeden Build und jeden Start aus `dist/linux-unpacked` unsichtbar.
+
+## 🔴 Derselbe Anpassungspunkt-Fehler, ein Feld weiter: `depends` ersetzte die Standardliste
+
+Gemessen 2026-08-09, erste Zeile der Distro-Matrix, `ubuntu:24.04`, gegen das an diesem Tag frisch
+gebaute `.deb`. Die Installation gelang, und dann:
+
+```
+/usr/bin/zima-linux-client: error while loading shared libraries: libnspr4.so:
+cannot open shared object file: No such file or directory        → app exited 127
+```
+
+Kein Fenster, kein Startbericht. Ursache im `package.json`:
+
+```json
+"deb": { "depends": ["libcap2-bin"] }
+```
+
+`build.<ziel>.depends` **ersetzt** die Standardliste von electron-builder, es ergänzt sie nicht —
+dieselbe Familie wie beim `afterInstall` im Abschnitt darüber, ein Feld weiter. Das gebaute Paket
+forderte genau eine Bibliothek an und **keine** der neun, die app-builder-lib per Default einträgt
+(`out/targets/FpmTarget.js:315`). Am Paket abgelesen, nicht vermutet:
+
+```
+$ dpkg-deb -f dist/zima-linux-client_2.0.0-alpha.1_amd64.deb Depends
+libcap2-bin
+```
+
+`libnspr4` kommt mit `libnss3` — der fehlenden Angabe. **Warum es so lange unsichtbar war:** jeder
+Rechner, auf dem wir gebaut und gestartet haben, hatte GTK und NSS längst installiert. Die
+fehlende Deklaration kostet dort nichts. Sie kostet auf einer schlanken Installation den Start —
+und `apt` warnt nicht, denn das Paket sagt ja, es brauche nichts weiter.
+
+**Behoben:** die Standardliste steht jetzt vollständig in `package.json`, für alle drei Formate,
+plus je eine gemessene Ergänzung:
+
+| Ziel | Ergänzung | Warum, gemessen 2026-08-09 |
+| --- | --- | --- |
+| deb | `libcap2-bin` | `setcap` fehlt auf `ubuntu:24.04`; das Post-Install braucht es |
+| rpm | `/usr/sbin/setcap` | Datei-Abhängigkeit, weil das Paket je Distribution anders heißt: `fedora:41` löst sie auf `libcap` auf, `tumbleweed` auf `libcap-progs` — und dort fehlt `setcap` im Basis-Abbild tatsächlich |
+| pacman | `libcap` | besitzt `/usr/bin/setcap` auf Arch (`pacman -Qo`) |
+
+### Und dann war auch die Standardliste selbst nicht genug
+
+Mit der wiederhergestellten Liste kam die App **immer noch** nicht hoch, nur mit einem anderen
+Namen im Fehler. Statt Fehler für Fehler nachzuziehen, ist die vollständige Lücke gemessen worden:
+Paket installieren, dann `ldd` auf das installierte Binary und **alle** `not found` einsammeln.
+
+| Zeile | fehlt nach der Installation |
+| --- | --- |
+| `ubuntu:22.04` | `libasound.so.2`, `libgbm.so.1` |
+| `ubuntu:24.04` | `libasound.so.2` |
+| `debian:12` | `libasound.so.2` |
+| `opensuse/tumbleweed` | `libasound.so.2`, `libgbm.so.1` |
+| `fedora:41` | — (dort zieht `gtk3` beides transitiv nach; deshalb war diese Zeile schon grün) |
+
+Electron 43 braucht beide, electron-builders Standardliste nennt keine von beiden. Nachgetragen:
+`libasound2` und `libgbm1` für deb, und für rpm die **Soname-Fähigkeiten**
+`libasound.so.2()(64bit)` / `libgbm.so.1()(64bit)` — weil eine einzige rpm-Liste zwei
+Distributionen bedienen muss, die die Pakete verschieden nennen (`alsa-lib`/`mesa-libgbm` auf
+Fedora, `libasound2`/`libgbm1` auf Tumbleweed). Beide Schreibweisen sind auf beiden Distributionen
+als auflösbar gemessen.
+
+### `http-parser` machte das `.pacman`-Paket unbenutzbar
+
+Arch brach in der Matrix schon bei der Installation ab:
+
+```
+warning: cannot resolve "http-parser", a dependency of "zima-linux-client"
+error: failed to prepare transaction (could not satisfy dependencies)
+```
+
+`http-parser` steht in electron-builders Standardliste für pacman und existiert in **keinem**
+Arch-Repository mehr (`pacman -Si` und `pacman -Sp` scheitern beide). Das Paket war damit auf
+aktuellem Arch schlicht nicht installierbar. Entfernt — und weil der Wächter oben eine Obermenge
+verlangt, mit einer **namentlichen** Ausnahme samt Messprotokoll, nicht mit einem Schalter, der die
+Regel abschaltet. Ein zweiter Test lässt diese Ausnahme rot werden, sobald electron-builder den
+Namen selbst fallen lässt; sie soll ihren Grund nicht überleben. `libappindicator-gtk3` sah zuerst
+genauso aus, löst aber über `libappindicator` auf — gegengeprüft und deshalb geblieben.
+
+### 🔴 Der teuerste der drei: ein Paket, das sich sauber installiert und dann stirbt
+
+Nach dem Nachtragen von `libasound2` startete die App auf 22.04, Debian 12, Fedora, Arch und
+Tumbleweed — auf **Ubuntu 24.04** dagegen:
+
+```
+symbol lookup error: undefined symbol: snd_device_name_get_hint, version ALSA_0.9
+→ app exited 127
+```
+
+Keine fehlende Bibliothek: die Datei war da, das Symbol nicht. Ursache ist der `time_t`-Übergang.
+Auf 24.04 heißt die echte Bibliothek `libasound2t64`, und `libasound2` ist nur noch ein **Name**,
+den außerdem `liboss4-salsa-asound2` liefert — eine OSS-Kompatibilitätsschicht. apt hat die
+Schicht gewählt; `dpkg -l` nach der Installation zeigte sie, und kein `libasound2t64`. Die Schicht
+trägt den Soname und einen Teil der Symbole, `snd_device_name_get_hint` gehört nicht dazu.
+
+**Das ist die unangenehmere Hälfte dieses Fehlerbildes:** eine fehlende Bibliothek fällt bei der
+Installation auf, ein falscher Anbieter erst beim Start. `apt` meldet Erfolg.
+
+**Behoben** als Alternative mit der echten Bibliothek zuerst — die Schreibweise überlebt fpm und
+steht so im Paket:
+
+```
+$ dpkg-deb -f dist/zima-linux-client_2.0.0-alpha.1_amd64.deb Depends
+… libsecret-1-0, libasound2t64 | libasound2, libgbm1, libcap2-bin
+```
+
+Gemessen nach der Änderung, je Distribution installiert und nachgesehen, **welches** Paket
+tatsächlich kam:
+
+| Zeile | gezogen | fehlende Bibliotheken |
+| --- | --- | --- |
+| `ubuntu:22.04` | `libasound2 1.2.6.1` | 0 |
+| `ubuntu:24.04` | `libasound2t64 1.2.11` | 0 |
+| `debian:12` | `libasound2 1.2.8` | 0 |
+
+Ein Test hält die Schreibweise **samt Reihenfolge** fest, damit sie niemand später zu `libasound2`
+„vereinfacht" — das wäre auf 24.04 genau dieser Absturz.
+
+🔴 **Dreimal an einem Nachmittag hat mein Messgerät „nein" gesagt, wo es die Frage nicht stellen
+konnte:** `awk` fehlt im openSUSE-Basisabbild (die Messwerte wurden zu einer Fehlermeldung);
+`apt-get install -s libasound2` scheitert auf 24.04, obwohl `libasound2t64` den Namen liefert und
+`Depends: libasound2` sauber auflöst — die falsche Operation für die Frage; `dnf install
+--assumeno` liefert **immer** einen Fehlercode, weil das Flag die Rückfrage verneint. Jedes Mal sah
+es aus wie ein Befund über die Sache. Konsequenz: jede Prüfung, aus deren Fehlschlag etwas
+geschlossen wird, läuft einmal gegen einen Fall, der anschlagen **muss**.
+
+**Wächter:** `src/main/app/__tests__/packageDepends.test.ts` liest die Standardliste **zur
+Laufzeit** aus `app-builder-lib` und verlangt, dass unsere eine Obermenge ist. Damit wird ein
+electron-builder-Update rot, statt still weniger zu deklarieren — genau die Konsequenz, die beim
+`afterInstall` schon gezogen wurde. **Positivkontrolle gefahren:** `libnss3` aus `package.json`
+entfernt (Sabotage am Ziel geprüft, `grep -c '"libnss3"'` = 0), Test wird rot und **benennt den
+fehlenden Namen**; nach Rücknahme wieder grün.
 
 ## 🔴 „Das Gerät hat nicht geantwortet" — während das Gerät in 3 ms antwortete
 

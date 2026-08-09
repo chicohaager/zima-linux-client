@@ -3,8 +3,10 @@
 Desktop client for ZimaOS on Linux — files, photos, apps and device management.
 
 > **This is the `v2` branch: version 2.0.0-alpha.1, a rewrite.**
-> It has been started on **exactly one machine** (Ubuntu 24.04, GNOME on Wayland, x86_64).
-> Whether it starts on yours is an open question — that is what the current test round is for.
+> The installed package has been started on **six distributions** (Ubuntu 22.04 and 24.04,
+> Debian 12, Fedora 41, Arch, openSUSE Tumbleweed) — in containers, under Xvfb, x86_64 only.
+> On a **real desktop** it has been used on exactly one machine (Ubuntu 24.04, GNOME on Wayland),
+> so a real session on your hardware is still what the current test round is for.
 > The 0.9.x line lives on `main` and under [`legacy-0.9/`](legacy-0.9/); nothing was deleted.
 >
 > What is built and what is measured: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
@@ -105,7 +107,9 @@ Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as
 
 - **x86_64 Linux** with a desktop session. On problematic DRM drivers the client relaunches
   itself under X11 — measured on `vmwgfx`, where Wayland ends in SIGSEGV.
-- **`.deb` declares `libcap2-bin`** — `setcap` is needed by the post-install script.
+- **`.deb` declares twelve dependencies** — the nine electron-builder declares by default, plus
+  `libasound2t64 | libasound2` and `libgbm1` (Electron 43 needs both, the default list names
+  neither), plus `libcap2-bin` for the post-install script's `setcap`.
 - **The AppImage is type 2 and needs FUSE 2.** The test machine had `libfuse2t64` installed; a
   system without it is unmeasured.
 - **ZeroTier ships with the package** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`) and is
@@ -141,19 +145,31 @@ npm run package:tar       # .tar.gz       — no extra tooling needed
 npm run package:appimage  # .AppImage     — no extra tooling needed
 npm run package:rpm       # .rpm          — needs rpmbuild   (apt install rpm)
 npm run package:pacman    # .pacman       — needs bsdtar     (apt install libarchive-tools)
-npm run package:flatpak   # .flatpak      — needs flatpak-builder and an installed runtime
-npm run package:linux     # every target at once — fails unless all tools are present
+npm run package:flatpak   # .flatpak      — needs flatpak-builder AND an installed runtime
+npm run package:linux     # the five targets above at once — Flatpak is not in the set
 ```
 
-Five of the six were built on Ubuntu 24.04 on 2026-07-31 and their payload was started from a
-directory named exactly `ZimaOS Client`. Flatpak was not built: the builder is present, but no
-runtime is installed. The missing tools are named on failure, not swallowed.
+The five were built on Ubuntu 24.04. Missing tools are named on failure, not swallowed.
+
+The deb, rpm and pacman packages are **installed and started on six distributions** by
+`scripts/distro-matrix.sh` — Ubuntu 22.04 and 24.04, Debian 12, Fedora 41, Arch and openSUSE
+Tumbleweed. Each row installs the real artefact into the real path (`/opt/ZimaOS Client/`, space
+included), runs it as an ordinary user **with the sandbox on**, and keeps the app's own startup
+report as the evidence. All six: `ok=true`, 51 CSS rules applied, no raw translation key on
+screen, no console error.
+
+**Flatpak is deliberately not in the default target set.** It was in it until 2026-08-09, and it
+did damage there: `npm run package:linux` aborted *on* Flatpak — after AppImage and tar.gz, before
+deb, rpm and pacman. The run left a `dist/` that looked like a build and was missing exactly the
+three packages the distro matrix needs. Two reasons it cannot succeed here: no Flatpak remote is
+configured, and electron-builder still defaults to runtime `20.08`, which has been withdrawn from
+Flathub. `npm run package:flatpak` is kept for the day both are dealt with.
 
 ### Verification
 
 ```bash
 npm run verify          # type-check · lint · tests · build · build gate · i18n gate · privacy gate
-npm test                # 188 tests in 20 files (2026-08-01)
+npm test                # 201 tests in 22 files (2026-08-09)
 npm run verify:build    # reads the BUILT files: preload is CJS, sandbox on, CSP without unsafe-eval
 npm run verify:i18n     # completeness, unknown keys, placeholder drift, "English copy" detection
 npm run verify:privacy  # no LAN addresses, user names or e-mail addresses in tracked files
@@ -317,7 +333,9 @@ Installiert wird nach `/opt/ZimaOS Client/`, Einstiegspunkt ist `/usr/bin/zima-l
 
 - **x86_64-Linux** mit Desktop-Sitzung. Auf problematischen DRM-Treibern startet sich der Client
   selbst unter X11 neu — gemessen an `vmwgfx`, wo Wayland in einem SIGSEGV endet.
-- **Das `.deb` deklariert `libcap2-bin`** — das Post-Install-Skript braucht `setcap`.
+- **Das `.deb` deklariert zwölf Abhängigkeiten** — die neun, die electron-builder per Default
+  einträgt, dazu `libasound2t64 | libasound2` und `libgbm1` (Electron 43 braucht beide, die
+  Standardliste nennt keine davon) und `libcap2-bin` für das `setcap` des Post-Install-Skripts.
 - **Die AppImage ist Typ 2 und braucht FUSE 2.** Auf der Testmaschine lag `libfuse2t64` vor; ein
   System ohne FUSE 2 ist ungemessen.
 - **ZeroTier bringt das Paket selbst mit** (`/opt/ZimaOS Client/resources/zerotier/<arch>/`) und
@@ -356,19 +374,33 @@ npm run package:tar       # .tar.gz       — ohne Zusatzwerkzeug
 npm run package:appimage  # .AppImage     — ohne Zusatzwerkzeug
 npm run package:rpm       # .rpm          — braucht rpmbuild  (apt install rpm)
 npm run package:pacman    # .pacman       — braucht bsdtar    (apt install libarchive-tools)
-npm run package:flatpak   # .flatpak      — braucht flatpak-builder und eine installierte Runtime
-npm run package:linux     # alle Ziele auf einmal — scheitert, solange ein Werkzeug fehlt
+npm run package:flatpak   # .flatpak      — braucht flatpak-builder UND eine installierte Runtime
+npm run package:linux     # die fünf Ziele oben auf einmal — Flatpak gehört nicht dazu
 ```
 
-Fünf der sechs sind am 2026-07-31 auf Ubuntu 24.04 gebaut worden, und ihre Nutzlast wurde aus
-einem Verzeichnis namens exakt `ZimaOS Client` gestartet. Flatpak ist **nicht** gebaut: der Builder
-liegt vor, aber keine Runtime. Fehlende Werkzeuge werden beim Namen genannt, nicht verschluckt.
+Die fünf sind auf Ubuntu 24.04 gebaut worden. Fehlende Werkzeuge werden beim Namen genannt, nicht
+verschluckt.
+
+deb, rpm und pacman werden von `scripts/distro-matrix.sh` auf **sechs Distributionen installiert
+und gestartet** — Ubuntu 22.04 und 24.04, Debian 12, Fedora 41, Arch und openSUSE Tumbleweed. Jede
+Zeile installiert das echte Artefakt in den echten Pfad (`/opt/ZimaOS Client/`, Leerzeichen
+inklusive), startet es als gewöhnlicher Benutzer **mit eingeschaltetem Sandkasten** und nimmt den
+Startbericht der App selbst als Beleg. Alle sechs: `ok=true`, 51 CSS-Regeln angewandt, kein roher
+Übersetzungsschlüssel auf dem Schirm, kein Konsolenfehler.
+
+**Flatpak steht mit Absicht nicht in der Standard-Zielliste.** Bis zum 2026-08-09 stand es darin,
+und dort hat es Schaden angerichtet: `npm run package:linux` brach **an** Flatpak ab — nach
+AppImage und tar.gz, vor deb, rpm und pacman. Zurück blieb ein `dist/`, das wie ein fertiger Bau
+aussah und genau die drei Pakete nicht enthielt, die die Distro-Matrix braucht. Gelingen kann es
+hier aus zwei Gründen nicht: es ist kein Flatpak-Remote eingerichtet, und electron-builder zielt
+per Default auf die Runtime `20.08`, die von Flathub zurückgezogen wurde. `npm run package:flatpak`
+bleibt für den Tag, an dem beides erledigt ist.
 
 ### Verifikation
 
 ```bash
 npm run verify          # Typprüfung · Lint · Tests · Build · Build-Gate · i18n-Gate · Privacy-Gate
-npm test                # 188 Tests in 20 Dateien (2026-08-01)
+npm test                # 201 Tests in 22 Dateien (2026-08-09)
 npm run verify:build    # liest die GEBAUTEN Dateien: Preload CJS, Sandbox an, CSP ohne unsafe-eval
 npm run verify:i18n     # Vollständigkeit, unbekannte Schlüssel, Platzhalter, „englische Kopie"
 npm run verify:privacy  # keine LAN-Adressen, Benutzernamen oder E-Mail-Adressen im Bestand
