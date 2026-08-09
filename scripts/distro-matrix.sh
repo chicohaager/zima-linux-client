@@ -66,7 +66,18 @@ run_row() {
   # nothing to do with the package. If the sandboxed start fails anyway, the row falls back
   # to `--no-sandbox` and reports BOTH results, so "the app cannot start" stays separable
   # from "the sandbox cannot work inside this container".
+  # `--platform linux/amd64`, explicitly: these are the x86_64 packages, and the row must
+  # measure them on x86_64.
+  #
+  # Measured 2026-08-09: an arm64 experiment earlier the same day pulled `ubuntu:24.04` for
+  # linux/arm64, which overwrote the LOCAL tag. The next matrix run — no `--platform`, so
+  # whatever the tag now points at — installed the amd64 .deb into an arm64 container and
+  # reported `E: Unable to correct problems, you have held broken packages`. That reads as a
+  # broken package and was a broken measurement: the row had silently changed architecture
+  # underneath itself. Pinning it here means the tag's state can no longer decide what this
+  # script measures.
   docker run --rm \
+    --platform linux/amd64 \
     --security-opt seccomp=unconfined \
     -v "${pkgdir}:/pkg:ro" \
     -v "${OUT}:/out" \
