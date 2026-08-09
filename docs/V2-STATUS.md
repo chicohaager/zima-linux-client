@@ -1,19 +1,21 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.0-alpha.1 · **Stand:** 2026-08-01
+**Branch:** `v2` · **Version:** 2.0.0-alpha.1 · **Stand:** 2026-08-09
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
 
-**Zuletzt gefahren, 2026-08-01 — der Stand dieses Commits:**
+**Zuletzt gefahren, 2026-08-09 — der Stand dieses Commits:**
 
 ```
 npm run verify   ✓ (rc=0)  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓ (rc=0)  201 Tests in 22 Dateien
+npx vitest run   ✓ (rc=0)  227 Tests in 24 Dateien
+npm run test:e2e ✓ (rc=0)  4 Abläufe im echten Fenster gegen das aufgezeichnete Gerät
 i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 186 verfolgte Dateien
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut, Nutzlast gestartet (Phase 8)
-Zweig               auf `origin/v2` hochgeladen (2026-08-01, per `git ls-remote` gegengeprüft)
+privacy gate        clean, 204 verfolgte Dateien (Bilder überspringt es — siehe unten)
+Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix)
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut; Flatpak aus der Zielliste
+Zweig               auf `origin/v2` hochgeladen (2026-08-09, per `git ls-remote` gegengeprüft)
 ```
 
 Die Exit-Codes stehen mit dabei, weil sie einzeln abgefragt wurden: `npm run verify | tail`
@@ -1815,6 +1817,47 @@ angeglichen; die Lücke bleibt benannt und gehört zur ohnehin offenen mutterspr
 Eine *saubere* mechanische Lösung wäre eine Frische-Markierung nach gettext-Art (Quelltext-Hash je
 Schlüssel und Katalog) — sie misst „die Quelle hat sich seit der Übersetzung geändert" und nicht
 den Text selbst; nicht gebaut.
+
+## 🔴 Die README-Screenshots — und was der erste Lauf beinahe veröffentlicht hätte
+
+`npm run screenshots` (`scripts/screenshots.mjs`) nimmt sieben Bilder im echten Fenster auf,
+gegen dasselbe aufgezeichnete Gerät, das auch die E2E-Suite abspielt. Sie liegen in `docs/img/`
+und stehen mit Bildunterschriften in README und `liesmich.md`.
+
+**Der Fehler:** Ich hatte geschlossen „läuft gegen ein gewaschenes Fixture, also kann nichts
+Privates im Bild sein". Das **erste Bild** zeigte das echte Tailnet des Aufnahme-Rechners —
+Name, drei Rechnernamen, drei Adressen. Die Tailscale-Kachel fragt nicht das Gerät, sie fragt den
+**lokalen Daemon**. Zweiter Fund auf demselben Bildschirm: die Kachel „Vom alten Client
+übernehmen" liest `~/.config` und zeigte drei echte Pfade **samt Benutzername** neben den zuletzt
+benutzten Hosts; `--user-data-dir` verlegt Electrons Speicher, nicht das, was die Anwendung liest.
+
+Eine Aufzeichnung belegt die Herkunft dessen, was sie **ersetzt** — nicht die von allem anderen,
+das mit ihr auf demselben Bildschirm steht.
+
+**Warum kein Tor es gesehen hat:** das Fixture *war* gewaschen, das Privacy-Gate meldete „clean"
+(es überspringt `.png`, siehe `verify-privacy.mjs`, Zeile 94), und die Dateien waren noch nicht
+committet. Gefunden hat es ein **Blick auf das Bild**.
+
+**Was jetzt davorsteht — Technik, nicht Vorsatz:**
+
+| Maßnahme | Beleg |
+| --- | --- |
+| Aufnahmelauf mit eigenem leerem `HOME` und `PATH` ohne `tailscale` | Lauf meldet „removed 2 director(y\|ies) holding a tailscale binary" |
+| `scripts/screenshot-guard.mjs` prüft **vor jeder** Aufnahme | schlug beim zweiten Lauf sofort an: „2 address(es) not from the recording (10.x.x.x, 172.x.x.x)" |
+| Als **positive** Eigenschaft formuliert (erlaubt ist nur die abgespielte Adresse) | eine Sperrliste privater Werte müsste sie enthalten, um zu wirken |
+| Meldet maskiert (`100.x.x.x`, `/home/<user>`) | sonst schreibt der Wächter den Wert in das Protokoll, das er schützen soll |
+| 8 Tests, Positivkontrolle gefahren | sabotiert werden 3 rot; die Sabotage war per `grep -c` nachweislich in der Datei |
+| PNG-Metadaten von Hand geprüft (das Gate kann es nicht) | nur `IHDR/IDAT/IEND`, kein Textblock; 0 Treffer für `/home/`, Name, Domain, Adressen |
+
+**Und ein zweiter eigener Fehler direkt danach:** ich hatte die geleakten Adressen wörtlich als
+Testdaten in den neuen Test übernommen. Das Privacy-Gate hat sie gefangen — jetzt RFC 5737
+(`203.0.113.x`, `192.0.2.x`).
+
+**Bewusst im Bild geblieben,** weil es die Wahrheit über den Aufnahme-Rechner ist und in der README
+als solche benannt wird: der rote Keyring-Kasten (kein Schlüsselbund; zwei Versuche mit
+Wegwerf-Schlüsselbund in eigener D-Bus-Sitzung und `--password-store=gnome-libsecret` blieben bei
+`basic_text`) und die flachen Farbkacheln der Fotogalerie (die Aufzeichnung liefert
+Platzhalter-Bytes, weil echte Fotos echte wären).
 
 ## Alt-Stand
 
