@@ -102,7 +102,6 @@
         "AppImage",
         "deb",
         "rpm",
-        "flatpak",
         "pacman",
         "tar.gz"
       ],
@@ -116,6 +115,17 @@
       "maintainer": "Holger Kühn <zima-client@virtual-services.info>",
       "priority": "optional",
       "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0",
+        "libuuid1",
+        "libsecret-1-0",
+        "libasound2t64 | libasound2",
+        "libgbm1",
         "libcap2-bin"
       ],
       "afterInstall": "build/linux-after-install.sh"
@@ -124,9 +134,38 @@
       "fpm": [
         "--license=MIT"
       ],
+      "depends": [
+        "gtk3",
+        "libnotify",
+        "nss",
+        "libXScrnSaver",
+        "(libXtst or libXtst6)",
+        "xdg-utils",
+        "at-spi2-core",
+        "(libuuid or libuuid1)",
+        "libasound.so.2()(64bit)",
+        "libgbm.so.1()(64bit)",
+        "/usr/sbin/setcap"
+      ],
       "afterInstall": "build/linux-after-install.sh"
     },
     "pacman": {
+      "depends": [
+        "c-ares",
+        "ffmpeg",
+        "gtk3",
+        "libevent",
+        "libvpx",
+        "libxslt",
+        "libxss",
+        "minizip",
+        "nss",
+        "re2",
+        "snappy",
+        "libnotify",
+        "libappindicator-gtk3",
+        "libcap"
+      ],
       "afterInstall": "build/linux-after-install.sh"
     }
   }
