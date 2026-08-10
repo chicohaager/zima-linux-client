@@ -15,7 +15,9 @@ privacy gate        clean, 204 verfolgte Dateien (Bilder überspringt es — sie
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix)
 Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 6a7e917, alle fünf in
                     einem Lauf am 2026-08-10 (Spanne 5,9 min); Flatpak aus der Zielliste
-Zweig               auf `origin/v2` hochgeladen (2026-08-09, per `git ls-remote` gegengeprüft)
+Zweig               auf `origin/v2` hochgeladen (2026-08-10, per `git ls-remote` gegengeprüft)
+Release             v2.0.0-alpha.1 als Pre-Release, 7 Assets; `sha256sum -c` aus dem echten
+                    Download grün für alle fünf Pakete (nicht an den lokalen Dateien geprüft)
 ```
 
 Die Zeile `Pakete` nennt seit dem 2026-08-10 den **Commit**, aus dem gebaut wurde, und
