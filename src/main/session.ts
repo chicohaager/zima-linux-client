@@ -5,6 +5,7 @@ import { fetchRoutes, request, type DeviceContext } from '@main/zima/client'
 import { deriveCapabilities, parseRoutes, probeZerotier } from '@main/zima/capabilities'
 import { BASE, ZT } from '@main/zima/endpoints'
 import * as registry from '@main/devices/registry'
+import { selectBestAddress } from '@main/transport/probe'
 import { joinNetwork as zerotierJoin } from '@main/zerotier/daemon'
 import * as credentials from '@main/secrets/credentials'
 import { logger } from '@main/logging/logger'
@@ -264,6 +265,64 @@ const reopenRemoteRoad = async (
 }
 
 /** Restores a session from the stored refresh token — no password needed. */
+/**
+ * Which stored path to resume on — measured, not assumed.
+ *
+ * This used to be `byPriority(device.addresses)[0]`: take the first entry and drive on it,
+ * whatever its state. Measured on 2026-08-10 on a machine standing in the same LAN as its
+ * device: over the stored Tailscale path 3 of 16 requests succeeded, over the LAN address
+ * 16 of 16 in 2–6 ms — while `tailscale status` reported `active; direct` throughout. The
+ * client sat on the dead path for the whole session and blamed a firewall.
+ *
+ * Paths that need no tunnel are probed first, all at once, fastest answer wins. Only if
+ * none of them answers is a remote-id road opened — opening one costs a ZeroTier join that
+ * can take over the user's DNS, which is far too much to spend while a LAN address two
+ * milliseconds away would have done.
+ */
+const chooseResumeAddress = async (device: Device): Promise<Result<DeviceAddress>> => {
+  const ordered = registry.byPriority(device.addresses)
+  if (ordered.length === 0) {
+    return err(appError('internal', 'device has no addresses', 'error.internal', {
+      deviceId: device.id,
+    }))
+  }
+
+  const attempts: string[] = []
+  const withoutRoad = ordered.filter((a) => a.kind !== 'remote-id')
+
+  if (withoutRoad.length > 0) {
+    const { best, results } = await selectBestAddress(withoutRoad)
+    for (const r of results) attempts.push(`${r.host}=${r.reachable ? `${r.latencyMs}ms` : r.failure}`)
+    if (best !== null) {
+      logger.info('session.resume-path-chosen', { deviceId: device.id, host: best.host, attempts })
+      return ok(best)
+    }
+  }
+
+  // Only now is a tunnel worth its cost.
+  for (const candidate of ordered.filter((a) => a.kind === 'remote-id')) {
+    const road = await reopenRemoteRoad(device, candidate)
+    if (isErr(road)) {
+      attempts.push(`${candidate.host}=road-failed`)
+      continue
+    }
+    const { best, results } = await selectBestAddress([candidate])
+    for (const r of results) attempts.push(`${r.host}=${r.reachable ? `${r.latencyMs}ms` : r.failure}`)
+    if (best !== null) {
+      logger.info('session.resume-path-chosen', { deviceId: device.id, host: best.host, attempts })
+      return ok(best)
+    }
+  }
+
+  logger.warn('session.resume-no-path', { deviceId: device.id, attempts })
+  return err(
+    appError('timeout', `no stored path answered: ${attempts.join(', ')}`, 'error.noPathAnswered', {
+      deviceId: device.id,
+      paths: attempts.join(', '),
+    }),
+  )
+}
+
 export const resume = async (deviceId: string): Promise<Result<SessionSummary>> => {
   const device = registry.get(deviceId)
   if (device === null) {
@@ -276,27 +335,21 @@ export const resume = async (deviceId: string): Promise<Result<SessionSummary>> 
     return err(appError('unauthorized', 'no stored session for this device', 'error.signInRequired'))
   }
 
-  const address = registry.byPriority(device.addresses)[0]
-  if (address === undefined) {
-    return err(appError('internal', 'device has no addresses', 'error.internal', { deviceId }))
-  }
+  const address = await chooseResumeAddress(device)
+  if (isErr(address)) return address
 
-  // The road has to exist before anything drives on it.
-  const road = await reopenRemoteRoad(device, address)
-  if (isErr(road)) return road
-
-  const holder = new TokenHolder(address.host, address.port)
+  const holder = new TokenHolder(address.value.host, address.value.port)
   // Adopt a tokens object that only has the refresh half, then force a renewal. This is
   // the one place where a refresh token legitimately becomes a session — and it goes
   // through the same iss-pinned path as everything else.
-  const renewed = await renewFromRefreshToken(holder, address, stored.value)
+  const renewed = await renewFromRefreshToken(holder, address.value, stored.value)
   if (isErr(renewed)) return renewed
 
-  active = { device, address, tokens: holder, username: renewed.value.access.username }
+  active = { device, address: address.value, tokens: holder, username: renewed.value.access.username }
 
   // Same probe as on sign-in. Without it a resumed session would show ZeroTier as
   // 'noch nicht geprüft' forever, which is a different claim from the measured one.
-  await refreshZerotierState(deviceId, address.host, address.port, holder)
+  await refreshZerotierState(deviceId, address.value.host, address.value.port, holder)
 
   const saved = credentials.saveRefreshToken(deviceId, renewed.value.refreshToken)
   if (isErr(saved)) logger.warn('session.refresh-token-not-persisted', { deviceId })

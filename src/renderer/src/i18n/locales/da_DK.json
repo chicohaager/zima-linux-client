@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Enheden afviste forbindelsen — intet lytter på denne port.",
-    "timeout": "Slet intet svar — måske smider en firewall forbindelsen væk.",
+    "timeout": "Intet svar ad denne vej — enheden kan ikke nås sådan.",
     "dns": "Værtsnavnet kunne ikke slås op.",
     "unexpectedStatus": "Uventet svar fra enheden (HTTP {{status}}).",
     "malformedResponse": "Enheden svarede i en form, som denne klient ikke forstår.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Den lokale ZeroTier-tjeneste startede ikke.",
     "unexpected-status": "Enheden svarede med en uventet status.",
     "zerotierNoCapability": "Den lokale ZeroTier-tjeneste må ikke oprette en virtuel netværksenhed. Den præcise kommando til at give lov står nedenfor.",
-    "remoteIdUnknown": "Der er intet Remote ID gemt for denne enhed. Log ind én gang via «Forbind via Remote ID»."
+    "remoteIdUnknown": "Der er intet Remote ID gemt for denne enhed. Log ind én gang via «Forbind via Remote ID».",
+    "noPathAnswered": "Ingen gemt forbindelsesvej svarede ({{paths}})."
   },
   "common": {
     "retry": "Prøv igen",

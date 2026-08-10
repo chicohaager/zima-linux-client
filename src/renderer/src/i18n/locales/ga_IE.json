@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Dhiúltaigh an gléas an ceangal — níl aon rud ag éisteacht ar an bport seo.",
-    "timeout": "Gan freagra ar bith — b’fhéidir go bhfuil balla dóiteáin ag caitheamh an cheangail uaidh.",
+    "timeout": "Gan freagra ar an gcosán seo — ní féidir an gléas a bhaint amach mar seo.",
     "dns": "Níorbh fhéidir ainm an óstaigh a réiteach.",
     "unexpectedStatus": "Freagra gan choinne ón ngléas (HTTP {{status}}).",
     "malformedResponse": "Fhreagair an gléas i bhfoirm nach dtuigeann an cliant seo.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Níor thosaigh an tseirbhís ZeroTier áitiúil.",
     "unexpected-status": "D’fhreagair an gléas le stádas nach rabhthas ag súil leis.",
     "zerotierNoCapability": "Níl cead ag an tseirbhís ZeroTier áitiúil gléas líonra fíorúil a chruthú. Tá an t-ordú beacht chun é sin a dheonú thíos.",
-    "remoteIdUnknown": "Níl aon Remote ID stóráilte don ghléas seo. Sínigh isteach uair amháin trí «Ceangail le Remote ID»."
+    "remoteIdUnknown": "Níl aon Remote ID stóráilte don ghléas seo. Sínigh isteach uair amháin trí «Ceangail le Remote ID».",
+    "noPathAnswered": "Níor fhreagair aon chosán ceangail stóráilte ({{paths}})."
   },
   "common": {
     "retry": "Bain triail eile as",

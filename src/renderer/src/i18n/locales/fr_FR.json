@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "L’appareil a refusé la connexion — rien n’écoute sur ce port.",
-    "timeout": "Aucune réponse — un pare-feu bloque peut-être la connexion.",
+    "timeout": "Aucune réponse par ce chemin — l’appareil n’est pas joignable ainsi.",
     "dns": "Le nom d’hôte n’a pas pu être résolu.",
     "unexpectedStatus": "Réponse inattendue de l’appareil (HTTP {{status}}).",
     "malformedResponse": "L’appareil a répondu dans un format que ce client ne comprend pas.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Le service ZeroTier local n’a pas démarré.",
     "unexpected-status": "L’appareil a répondu avec un statut inattendu.",
     "zerotierNoCapability": "Le service ZeroTier local n’a pas le droit de créer un périphérique réseau virtuel. La commande exacte pour l’accorder figure ci-dessous.",
-    "remoteIdUnknown": "Aucune Remote ID n’est enregistrée pour cet appareil. Connectez-vous une fois via « Se connecter par Remote ID »."
+    "remoteIdUnknown": "Aucune Remote ID n’est enregistrée pour cet appareil. Connectez-vous une fois via « Se connecter par Remote ID ».",
+    "noPathAnswered": "Aucun chemin de connexion enregistré n’a répondu ({{paths}})."
   },
   "common": {
     "retry": "Réessayer",

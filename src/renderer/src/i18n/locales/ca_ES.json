@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "El dispositiu ha rebutjat la connexió: res no escolta en aquest port.",
-    "timeout": "Cap resposta: potser un tallafoc descarta la connexió.",
+    "timeout": "Cap resposta per aquest camí — el dispositiu no és accessible així.",
     "dns": "No s’ha pogut resoldre el nom de l’amfitrió.",
     "unexpectedStatus": "Resposta inesperada del dispositiu (HTTP {{status}}).",
     "malformedResponse": "El dispositiu ha respost en un format que aquest client no entén.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "El servei local de ZeroTier no s’ha iniciat.",
     "unexpected-status": "El dispositiu ha respost amb un estat inesperat.",
     "zerotierNoCapability": "El servei local de ZeroTier no té permís per crear un dispositiu de xarxa virtual. L’ordre exacta per concedir-lo és a sota.",
-    "remoteIdUnknown": "Per a aquest dispositiu no hi ha cap Remote ID desada. Inicia la sessió un cop mitjançant «Connecta mitjançant Remote ID»."
+    "remoteIdUnknown": "Per a aquest dispositiu no hi ha cap Remote ID desada. Inicia la sessió un cop mitjançant «Connecta mitjançant Remote ID».",
+    "noPathAnswered": "Cap camí de connexió desat no ha respost ({{paths}})."
   },
   "common": {
     "retry": "Torna-ho a provar",

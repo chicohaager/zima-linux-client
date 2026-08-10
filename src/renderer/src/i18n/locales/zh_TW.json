@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "裝置拒絕連線——此連接埠沒有服務在監聽。",
-    "timeout": "完全沒有回應——可能有防火牆丟棄連線。",
+    "timeout": "此路徑沒有任何回應 — 無法以這種方式連線裝置。",
     "dns": "無法解析主機名稱。",
     "unexpectedStatus": "裝置傳回未預期的回應（HTTP {{status}}）。",
     "malformedResponse": "裝置的回應格式此用戶端無法理解。",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "本機 ZeroTier 服務未啟動。",
     "unexpected-status": "裝置回傳了非預期的狀態。",
     "zerotierNoCapability": "本機 ZeroTier 服務無權建立虛擬網路裝置。授予該權限的確切指令列於下方。",
-    "remoteIdUnknown": "此裝置沒有儲存遠端 ID。請先透過「透過遠端 ID 連線」登入一次。"
+    "remoteIdUnknown": "此裝置沒有儲存遠端 ID。請先透過「透過遠端 ID 連線」登入一次。",
+    "noPathAnswered": "沒有任何已儲存的連線路徑回應（{{paths}}）。"
   },
   "common": {
     "retry": "重試",

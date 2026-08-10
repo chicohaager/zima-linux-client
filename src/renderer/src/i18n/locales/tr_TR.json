@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Cihaz bağlantıyı reddetti — bu portta hiçbir şey dinlemiyor.",
-    "timeout": "Hiç yanıt yok — bir güvenlik duvarı bağlantıyı düşürüyor olabilir.",
+    "timeout": "Bu yoldan yanıt yok — cihaza bu şekilde ulaşılamıyor.",
     "dns": "Ana makine adı çözümlenemedi.",
     "unexpectedStatus": "Cihazdan beklenmeyen yanıt (HTTP {{status}}).",
     "malformedResponse": "Cihaz, bu istemcinin anlamadığı bir biçimde yanıt verdi.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Yerel ZeroTier hizmeti başlamadı.",
     "unexpected-status": "Cihaz beklenmedik bir durumla yanıt verdi.",
     "zerotierNoCapability": "Yerel ZeroTier hizmetinin sanal ağ aygıtı oluşturmasına izin yok. Bunu vermek için gereken tam komut aşağıda.",
-    "remoteIdUnknown": "Bu cihaz için kayıtlı bir Remote ID yok. Bir kez «Remote ID ile bağlan» üzerinden oturum açın."
+    "remoteIdUnknown": "Bu cihaz için kayıtlı bir Remote ID yok. Bir kez «Remote ID ile bağlan» üzerinden oturum açın.",
+    "noPathAnswered": "Kayıtlı hiçbir bağlantı yolu yanıt vermedi ({{paths}})."
   },
   "common": {
     "retry": "Yeniden dene",

@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Enheten avviste tilkoblingen — ingenting lytter på denne porten.",
-    "timeout": "Ingen svar i det hele tatt — en brannmur kan forkaste tilkoblingen.",
+    "timeout": "Ingen svar via denne veien — enheten kan ikke nås slik.",
     "dns": "Vertsnavnet kunne ikke slås opp.",
     "unexpectedStatus": "Uventet svar fra enheten (HTTP {{status}}).",
     "malformedResponse": "Enheten svarte i en form denne klienten ikke forstår.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Den lokale ZeroTier-tjenesten startet ikke.",
     "unexpected-status": "Enheten svarte med en uventet status.",
     "zerotierNoCapability": "Den lokale ZeroTier-tjenesten får ikke opprette en virtuell nettverksenhet. Den nøyaktige kommandoen for å gi den lov står nedenfor.",
-    "remoteIdUnknown": "Ingen Remote ID er lagret for denne enheten. Logg inn én gang via «Koble til via Remote ID»."
+    "remoteIdUnknown": "Ingen Remote ID er lagret for denne enheten. Logg inn én gang via «Koble til via Remote ID».",
+    "noPathAnswered": "Ingen lagret tilkoblingsvei svarte ({{paths}})."
   },
   "common": {
     "retry": "Prøv igjen",

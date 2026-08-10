@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "设备拒绝了连接——此端口上没有任何服务在监听。",
-    "timeout": "完全没有响应——可能有防火墙丢弃了连接。",
+    "timeout": "此路径没有任何响应 — 无法通过这种方式连接设备。",
     "dns": "无法解析主机名。",
     "unexpectedStatus": "设备返回了意外响应（HTTP {{status}}）。",
     "malformedResponse": "设备的响应格式此客户端无法理解。",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "本地 ZeroTier 服务未启动。",
     "unexpected-status": "设备返回了意外的状态。",
     "zerotierNoCapability": "本地 ZeroTier 服务无权创建虚拟网络设备。授予该权限的确切命令见下方。",
-    "remoteIdUnknown": "此设备没有保存远程 ID。请先通过「通过远程 ID 连接」登录一次。"
+    "remoteIdUnknown": "此设备没有保存远程 ID。请先通过「通过远程 ID 连接」登录一次。",
+    "noPathAnswered": "没有任何已保存的连接路径作出响应（{{paths}}）。"
   },
   "common": {
     "retry": "重试",
