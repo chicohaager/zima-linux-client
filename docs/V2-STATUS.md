@@ -8,11 +8,13 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 **Zuletzt gefahren, 2026-08-10 — der Stand dieses Commits:**
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 275 Tests · build · build-gate · i18n · privacy
-npm run verify:release ✓ (rc=0)  8 Prüfungen am dist-Verzeichnis (siehe unten)
+npm run verify        ✓ (rc=0)  type-check · lint · 287 Tests · build · build-gate · i18n · privacy
+npm run verify:release ✗ (rc=1)  2 von 8 rot — der Wächter-Fix 68c68dc ist NEUER als die
+                    veröffentlichten alpha.4-Pakete (gebaut aus 4fd04b3). Beabsichtigt und
+                    stehengelassen: die nächste Fassung trägt ihn, alpha.4 nicht
 npx playwright test   ✓ 4 von 4 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
 i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 215 verfolgte Dateien (Bilder überspringt es — siehe unten)
+privacy gate        clean, 216 verfolgte Dateien (Bilder überspringt es — siehe unten)
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN alpha.4-Paket, Sandkasten an, 2026-08-10
                     (`dist/matrix-alpha4/`); jede Zeile mit 399 Zeichen sichtbarem Text.
                     Die openSUSE-Zeile brauchte dafür erst eine Schriftart — siehe unten
