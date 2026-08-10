@@ -8,6 +8,10 @@ built in and Tailscale used when it is already there.
 > Debian 12, Fedora 41, Arch, openSUSE Tumbleweed) — in containers, under Xvfb, x86_64 only.
 > On a **real desktop** it has been used on exactly one machine (Ubuntu 24.04, GNOME on Wayland),
 > so a real session on your hardware is still what the current test round is for.
+> On **Zorin OS 18.1** the 2.0.0-alpha.1 package installed cleanly on real hardware and passed
+> every post-install check (`install.sh --check`: registration, placement, sandbox,
+> `CAP_NET_ADMIN`, AppArmor). That says the application *can* start — the start itself has not
+> been reported back yet, and the two are not the same measurement.
 > The 0.9.x line lives on `main` and under [`legacy-0.9/`](legacy-0.9/); nothing was deleted.
 >
 > What is built and what is measured: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
@@ -144,29 +148,55 @@ that matters: nobody has seen the application **start** on arm64. It cannot be s
 emulation — Chromium's zygote dies on `clone` inside `qemu-user` — so it needs real hardware.
 Until then arm64 is not published.
 
-**Debian, Ubuntu, Linux Mint, Pop!\_OS:**
+The packages live in the
+[**v2.0.0-alpha.1 pre-release**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.1).
+Fetch the installer, the checksums and the one package for your distribution:
 
 ```bash
-sudo apt install ./zima-linux-client_2.0.0-alpha.1_amd64.deb
+cd ~/Downloads
+B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.0-alpha.1
+
+wget $B/install.sh $B/SHA256SUMS-2.0.0-alpha.1.txt          # always these two
+
+wget $B/zima-linux-client_2.0.0-alpha.1_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
+wget $B/zima-linux-client-2.0.0-alpha.1.x86_64.rpm          # Fedora, openSUSE, RHEL derivatives
+wget $B/zima-linux-client-2.0.0-alpha.1.pacman              # Arch, Manjaro
+
+chmod +x install.sh && sudo ./install.sh
 ```
 
-**Fedora, openSUSE, RHEL derivatives:**
+[`install.sh`](scripts/install.sh) compares the checksum, picks the package matching your
+distribution, installs it with the right tool and then **measures** whether the application can
+start — registration, placement, Chromium's sandbox, `CAP_NET_ADMIN` for the bundled ZeroTier,
+AppArmor profile. It never launches anything: a check that opens a window is not a check.
+`--check` inspects without changing anything and needs no sudo, `--repair` fixes what is fixable,
+`--uninstall` removes it.
+
+By hand instead:
 
 ```bash
+sha256sum -c SHA256SUMS-2.0.0-alpha.1.txt   # OK for the file you downloaded
+
+# Debian, Ubuntu, Zorin, Linux Mint, Pop!_OS — apt needs an absolute path or a leading ./
+sudo apt install ~/Downloads/zima-linux-client_2.0.0-alpha.1_amd64.deb
+
+# Fedora
 sudo dnf install ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+
+# openSUSE — the package is unsigned, hence the two flags
+sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+
+# Arch, Manjaro
+sudo pacman -U ./zima-linux-client-2.0.0-alpha.1.pacman
 ```
 
-**AppImage:**
+**AppImage** — nothing is installed and none of the permissions above are set. GitHub replaces the
+space in the file name with a dot, so it downloads as:
 
 ```bash
-chmod +x "ZimaOS Client-2.0.0-alpha.1.AppImage"
-"./ZimaOS Client-2.0.0-alpha.1.AppImage"
+chmod +x ZimaOS.Client-2.0.0-alpha.1.AppImage
+./ZimaOS.Client-2.0.0-alpha.1.AppImage
 ```
-
-More convenient, and it measures the result: [`scripts/install.sh`](scripts/install.sh) picks the
-package matching your distribution, compares the checksum, installs it with the right tool and
-then checks whether the application can actually start. `--check` inspects without changing
-anything, `--repair` fixes what is fixable, `--uninstall` removes it.
 
 Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as the entry point.
 
