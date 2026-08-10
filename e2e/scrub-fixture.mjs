@@ -54,6 +54,14 @@ const nextId = () => {
   return counter
 }
 
+/**
+ * The stand-in for any UUID in a recording — device codes above all.
+ *
+ * A fixed value on purpose: tests may assert on it, and a random one per run would make the
+ * fixture churn on every wash.
+ */
+export const FIXTURE_DEVICE_CODE = '0f3b7c9e-1a2d-4b5c-8e6f-7a8b9c0d1e2f'
+
 /** File and directory names, replaced wholesale rather than judged one by one. */
 const renameEntry = (name, isDir) => {
   const n = nextId()
@@ -71,6 +79,17 @@ const scrubString = (value) =>
     .replace(/\b100\.(?:6[4-9]|[7-9]\d|1\d\d)\.\d{1,3}\.\d{1,3}\b/g, FAKE_HOST)
     .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, 'nobody@example.invalid')
     .replace(/\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_.-]+/g, fakeJwt('casaos', 10_800))
+    /*
+     * The device's own UUID. Found in this fixture on 2026-08-10 — it had survived every
+     * wash because the rules above look for addresses, mail and tokens, and a UUID is none
+     * of those. It identifies one physical machine and belongs in a public repository as
+     * little as an address does. Replaced with a fixed documentation value so the recorded
+     * session stays coherent: every occurrence maps to the same stand-in.
+     */
+    .replace(
+      /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/g,
+      FIXTURE_DEVICE_CODE,
+    )
 
 const scrub = (node, key = '') => {
   if (Array.isArray(node)) return node.map((item) => scrub(item, key))

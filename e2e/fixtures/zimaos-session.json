@@ -56,7 +56,7 @@
       "contentType": "application/json",
       "body": {
         "kind": "text",
-        "text": "{\"arch\":\"amd64\",\"can_control_powerled\":false,\"cpu\":{\"cores\":12,\"frequency\":\"4.50\",\"model\":\"13th Gen Intel(R) CoreT i7-1360P\",\"threads\":16},\"device_code\":\"5e2d470a-e1db-8f7a-e72f-69531737eb2d\",\"device_image_path\":\"/v2/zimaos/device/image?model=Default%20string\",\"device_model\":\"Default string\",\"device_name\":\"ZimaOS\",\"gpu\":[\"Intel Raptor Lake-P [UHD Graphics]\"],\"hash\":\"--\",\"is_licensed\":false,\"memory\":{\"frequency\":\"4800 MHz\",\"slots_used\":\"1\",\"total_byte\":33409363968,\"type\":\"DDR5\"},\"os_version\":\"v1.7.0\"}"
+        "text": "{\"arch\":\"amd64\",\"can_control_powerled\":false,\"cpu\":{\"cores\":12,\"frequency\":\"4.50\",\"model\":\"13th Gen Intel(R) CoreT i7-1360P\",\"threads\":16},\"device_code\":\"0f3b7c9e-1a2d-4b5c-8e6f-7a8b9c0d1e2f\",\"device_image_path\":\"/v2/zimaos/device/image?model=Default%20string\",\"device_model\":\"Default string\",\"device_name\":\"ZimaOS\",\"gpu\":[\"Intel Raptor Lake-P [UHD Graphics]\"],\"hash\":\"--\",\"is_licensed\":false,\"memory\":{\"frequency\":\"4800 MHz\",\"slots_used\":\"1\",\"total_byte\":33409363968,\"type\":\"DDR5\"},\"os_version\":\"v1.7.0\"}"
       },
       "requestBody": null
     },
