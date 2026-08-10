@@ -18,8 +18,10 @@ Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 6190b4
                     einem Lauf am 2026-08-10, 13:29–13:35; Flatpak aus der Zielliste.
                     `sha256sum -c SHA256SUMS-2.0.0-alpha.2.txt` → 5× OK
 Zweig               auf `origin/v2` hochgeladen (2026-08-10, per `git ls-remote` gegengeprüft)
-Release             v2.0.0-alpha.1 als Pre-Release, 7 Assets; `sha256sum -c` aus dem echten
-                    Download grün für alle fünf Pakete (nicht an den lokalen Dateien geprüft)
+Release             v2.0.0-alpha.2 als Pre-Release, 7 Assets, Tag auf d5ac6c9;
+                    `sha256sum -c` aus dem echten GitHub-Download grün für alle fünf Pakete
+                    (heruntergeladen, nicht an den lokalen Dateien geprüft).
+                    v2.0.0-alpha.1 bleibt daneben stehen
 ```
 
 Der Vorgängerbau aus `de27002` liegt unter `dist/_stale-2026-08-10-de27002/` — beiseitegelegt,
