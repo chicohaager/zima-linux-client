@@ -3,7 +3,7 @@
 Desktop client for ZimaOS on Linux — files, photos, apps and device management, with ZeroTier
 built in and Tailscale used when it is already there.
 
-> **This is the `v2` branch: version 2.0.0-alpha.3, a rewrite.**
+> **This is the `v2` branch: version 2.0.0-alpha.4, a rewrite.**
 > The latest **published** package is `v2.0.0-alpha.1`; `alpha.2` exists as a build for the
 > current test round and carries the connection-path work described in `docs/V2-STATUS.md`.
 > The installed package has been started on **six distributions** (Ubuntu 22.04 and 24.04,
@@ -139,6 +139,10 @@ result carries a measured latency. A named reason comes back instead of an empty
   not part of this rewrite.
 - **No automatic updates.** A new version arrives as a new package.
 - **It does not take over your tunnel.** See Tailscale above.
+- **It does not connect on its own.** A saved device is reached when you press **Connect** and
+  not before — nothing reaches out to a tunnel at start-up. Opening a ZeroTier road costs a
+  network join that can take over the machine's DNS, and using a stored Tailscale address
+  assumes you wanted that link up right now. Which network you are on is your decision.
 
 ## Installation
 

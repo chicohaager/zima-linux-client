@@ -1,6 +1,6 @@
 {
   "name": "zima-linux-client",
-  "version": "2.0.0-alpha.3",
+  "version": "2.0.0-alpha.4",
   "description": "Desktop client for ZimaOS on Linux — files, photos, apps and device management",
   "main": "out/main/index.js",
   "author": {
