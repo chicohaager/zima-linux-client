@@ -32,6 +32,9 @@ const api = {
   setAddressPriorities: invoke(CHANNELS.devicesSetPriorities),
   forgetDevice: invoke(CHANNELS.devicesForget),
   powerDevice: invoke(CHANNELS.devicesPower),
+  // Looking and adopting are separate calls on purpose — see channels.ts.
+  findDevicePaths: invoke(CHANNELS.devicesFindPaths),
+  addDevicePath: invoke(CHANNELS.devicesAddPath),
 
   listFiles: invoke(CHANNELS.filesList),
   searchFiles: invoke(CHANNELS.filesSearch),

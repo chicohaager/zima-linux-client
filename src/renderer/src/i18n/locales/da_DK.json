@@ -29,7 +29,17 @@
     "remoteIdHint": "Indtast det Remote ID, der vises på enheden. Forbindelsen sættes op for dig — derefter logger du ind som sædvanlig.",
     "remoteIdLabel": "Remote ID (16 tegn)",
     "remoteIdConnecting": "Forbinder…",
-    "connect": "Forbind"
+    "connect": "Forbind",
+    "pathOffer": {
+      "title": "Er dette din enhed?",
+      "explain": "Enheden svarede ikke på nogen gemt vej. En ZimaOS-enhed svarer i dit netværk — er det den samme, så tilføj den som vej.",
+      "add": "Tilføj som vej",
+      "adding": "Tilføjer {{host}} …",
+      "added": "Vej tilføjet.",
+      "addedHint": "Prøv at forbinde igen — klienten måler nu begge veje og bruger den, der svarer.",
+      "searching": "Leder efter andre veje til denne enhed …",
+      "learned": "{{count}} vej genkendt automatisk."
+    }
   },
   "capability": {
     "photoLibrary": "Fotosøgning og facetter",

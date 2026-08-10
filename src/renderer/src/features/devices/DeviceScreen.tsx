@@ -7,6 +7,7 @@ import { Button, ErrorNote, Field } from '../../shared/ui/Controls'
 import { SearchIcon } from '../../shared/ui/Icons'
 import { DeviceList } from './DeviceList'
 import { DiscoveryResults } from './DiscoveryResults'
+import { PathOffer } from './PathOffer'
 import { SessionCard } from '../session/SessionCard'
 import { SignInForm } from '../session/SignInForm'
 import { useAutoResume } from '../session/useAutoResume'
@@ -175,6 +176,10 @@ export const DeviceScreen = (): React.JSX.Element => {
                     .join('  ')
             }
           />
+          {/* Directly under the failure, because this is the one actionable thing at that
+              moment: the device may be standing in this network under an address that was
+              never stored. Asks, never adopts — see PathOffer. */}
+          {resume.deviceId !== null && <PathOffer deviceId={resume.deviceId} />}
         </div>
       )}
 

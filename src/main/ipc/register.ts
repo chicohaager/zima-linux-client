@@ -9,6 +9,8 @@ import { readStatus } from '@main/secrets/store'
 import { setPlaintextConsent } from '@main/secrets/credentials'
 import * as session from '@main/session'
 import * as registry from '@main/devices/registry'
+import { learnAddressesFor } from '@main/devices/rediscover'
+import { fetchIdentity } from '@main/zima/identity'
 import * as appsCache from '@main/cache/appsCache'
 import { logger } from '@main/logging/logger'
 import { handle, toWire, wireError } from './wire'
@@ -110,6 +112,42 @@ export const registerIpc = (): void => {
     // device the user just removed, which reads as "it is still connected".
     appsCache.forget(deviceId)
     return ok({ forgotten: true as const })
+  })
+
+  handle(CHANNELS.devicesFindPaths, async (input) => {
+    const device = registry.get(input.deviceId)
+    if (device === null) {
+      return wireError(appError('internal', `unknown device ${input.deviceId}`, 'error.internal'))
+    }
+    const outcome = await learnAddressesFor(device)
+    logger.info('devices.paths-searched', {
+      deviceId: device.id,
+      learned: outcome.learned.length,
+      candidates: outcome.candidates.length,
+    })
+    return ok({ learned: outcome.learned, candidates: outcome.candidates })
+  })
+
+  handle(CHANNELS.devicesAddPath, async (input) => {
+    const { deviceId, host, port } = input
+
+    /*
+     * Asked again here rather than trusting what the search reported. Between the search and
+     * the click the answer can have changed — another box can have taken the address by DHCP —
+     * and this is the call that writes. The code is stored with the address, so the device is
+     * recognised automatically next time and nobody has to click again.
+     */
+    const identity = await fetchIdentity(host, port)
+    if (isErr(identity)) return toWire(identity)
+
+    const added = registry.addAddress(deviceId, { kind: 'lan', host, port, priority: 99 })
+    if (isErr(added)) return toWire(added)
+
+    const noted = registry.setDeviceCode(deviceId, identity.value.deviceCode)
+    if (isErr(noted)) return toWire(noted)
+
+    logger.info('devices.path-added', { deviceId, host, port })
+    return ok(noted.value)
   })
 
   handle(CHANNELS.appInfo, async () =>

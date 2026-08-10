@@ -29,7 +29,17 @@
     "remoteIdHint": "기기에 표시된 원격 ID를 입력하세요. 연결은 자동으로 준비됩니다 — 그다음 평소처럼 로그인하세요.",
     "remoteIdLabel": "원격 ID(16자)",
     "remoteIdConnecting": "연결 중…",
-    "connect": "연결"
+    "connect": "연결",
+    "pathOffer": {
+      "title": "이 장치가 맞습니까?",
+      "explain": "저장된 어떤 경로로도 장치가 응답하지 않았습니다. 네트워크에서 ZimaOS 장치가 응답하고 있습니다 — 같은 장치라면 경로로 추가하세요.",
+      "add": "경로로 추가",
+      "adding": "{{host}} 추가 중 …",
+      "added": "경로가 추가되었습니다.",
+      "addedHint": "다시 연결해 보세요 — 이제 두 경로를 측정해 응답하는 쪽을 사용합니다.",
+      "searching": "이 장치에 대한 다른 경로를 찾는 중 …",
+      "learned": "{{count}}개의 경로를 자동으로 인식했습니다."
+    }
   },
   "capability": {
     "photoLibrary": "사진 검색 및 패싯",

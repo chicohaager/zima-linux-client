@@ -29,7 +29,17 @@
     "remoteIdHint": "Ange det Remote ID som visas på enheten. Anslutningen sätts upp åt dig — sedan loggar du in som vanligt.",
     "remoteIdLabel": "Remote ID (16 tecken)",
     "remoteIdConnecting": "Ansluter…",
-    "connect": "Anslut"
+    "connect": "Anslut",
+    "pathOffer": {
+      "title": "Är detta din enhet?",
+      "explain": "Enheten svarade inte på någon sparad väg. I ditt nätverk svarar en ZimaOS-enhet — är det samma, lägg till den som väg.",
+      "add": "Lägg till som väg",
+      "adding": "Lägger till {{host}} …",
+      "added": "Väg tillagd.",
+      "addedHint": "Försök ansluta igen — båda vägarna mäts nu.",
+      "searching": "Letar efter andra vägar till den här enheten …",
+      "learned": "{{count}} väg identifierad automatiskt."
+    }
   },
   "capability": {
     "photoLibrary": "Fotosökning och facetter",

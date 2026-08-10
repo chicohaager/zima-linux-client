@@ -29,7 +29,17 @@
     "remoteIdHint": "Skriv inn Remote ID-en som vises på enheten. Forbindelsen settes opp for deg — deretter logger du inn som vanlig.",
     "remoteIdLabel": "Remote ID (16 tegn)",
     "remoteIdConnecting": "Kobler til…",
-    "connect": "Koble til"
+    "connect": "Koble til",
+    "pathOffer": {
+      "title": "Er dette enheten din?",
+      "explain": "Enheten svarte ikke på noen lagret vei. En ZimaOS-enhet svarer i nettverket ditt — er det den samme, legg den til som vei.",
+      "add": "Legg til som vei",
+      "adding": "Legger til {{host}} …",
+      "added": "Vei lagt til.",
+      "addedHint": "Prøv å koble til igjen — begge veier måles nå.",
+      "searching": "Ser etter andre veier til denne enheten …",
+      "learned": "{{count}} vei gjenkjent automatisk."
+    }
   },
   "capability": {
     "photoLibrary": "Bildesøk og fasetter",

@@ -309,7 +309,7 @@ export interface Device {
    * Null must never match anything: see `sameDevice` in `main/zima/identity.ts`. Measured
    * stable across a real reboot and different between two devices (2026-08-10).
    */
-  readonly deviceCode?: string | null
+  readonly deviceCode?: string | null | undefined
 }
 
 /**

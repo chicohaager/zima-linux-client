@@ -29,7 +29,17 @@
     "remoteIdHint": "Introdueix la Remote ID que es mostra al dispositiu. La connexió es prepara sola; després inicia la sessió com sempre.",
     "remoteIdLabel": "Remote ID (16 caràcters)",
     "remoteIdConnecting": "S’està connectant…",
-    "connect": "Connecta"
+    "connect": "Connecta",
+    "pathOffer": {
+      "title": "És aquest el vostre dispositiu?",
+      "explain": "El dispositiu no ha respost per cap camí desat. Hi ha un dispositiu ZimaOS que respon a la vostra xarxa — si és el mateix, afegiu-lo com a camí.",
+      "add": "Afegeix com a camí",
+      "adding": "Afegint {{host}} …",
+      "added": "Camí afegit.",
+      "addedHint": "Torneu a connectar: ara es mesuren tots dos camins i s’utilitza el que respon.",
+      "searching": "Cercant altres maneres d’arribar a aquest dispositiu …",
+      "learned": "{{count}} camí reconegut automàticament."
+    }
   },
   "capability": {
     "photoLibrary": "Cerca de fotos i facetes",

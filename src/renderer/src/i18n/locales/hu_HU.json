@@ -29,7 +29,17 @@
     "remoteIdHint": "Adja meg az eszközön látható Remote ID-t. A kapcsolatot a program készíti elő — utána a szokásos módon jelentkezzen be.",
     "remoteIdLabel": "Remote ID (16 karakter)",
     "remoteIdConnecting": "Csatlakozás…",
-    "connect": "Csatlakozás"
+    "connect": "Csatlakozás",
+    "pathOffer": {
+      "title": "Ez az Ön eszköze?",
+      "explain": "Az eszköz egyik mentett útvonalon sem válaszolt. A hálózatában egy ZimaOS eszköz válaszol — ha ugyanaz, adja hozzá útvonalként.",
+      "add": "Hozzáadás útvonalként",
+      "adding": "{{host}} hozzáadása …",
+      "added": "Útvonal hozzáadva.",
+      "addedHint": "Próbáljon újra csatlakozni — a kliens most mindkét útvonalat megméri.",
+      "searching": "Más útvonalak keresése az eszközhöz …",
+      "learned": "{{count}} útvonal automatikusan felismerve."
+    }
   },
   "capability": {
     "photoLibrary": "Fotókeresés és szűrők",

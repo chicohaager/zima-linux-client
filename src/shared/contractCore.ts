@@ -142,6 +142,12 @@ export const deviceSchema = z.object({
   addresses: z.array(deviceAddressSchema).readonly(),
   lastSeenIso: z.string().nullable(),
   capabilities: capabilitiesSchema.nullable(),
+  /**
+   * Optional, not nullable-required: entries written before this field existed carry no
+   * code, and a schema that demanded one would make every one of them fail validation —
+   * turning a stored device list into an empty one on the first read after an update.
+   */
+  deviceCode: z.string().nullable().optional(),
 })
 
 
@@ -219,6 +225,41 @@ export const coreChannelSchemas = {
   [CHANNELS.devicesForget]: {
     request: z.object({ deviceId: z.string().min(1) }),
     response: envelope(z.object({ forgotten: z.literal(true) })),
+  },
+  /**
+   * Looks for other ways to reach a stored device and reports what it found.
+   *
+   * `learned` was recognised by its `device_code` and is already stored; `candidates` are
+   * ZimaOS devices in the LAN that could NOT be matched — no code stored yet, or a different
+   * one. Candidates are never adopted here: the answer to "is this your device?" belongs to
+   * the person, because getting it wrong points a session at somebody else's machine.
+   */
+  [CHANNELS.devicesFindPaths]: {
+    request: z.object({ deviceId: z.string().min(1) }),
+    response: envelope(
+      z.object({
+        learned: z.array(deviceAddressSchema).readonly(),
+        candidates: z
+          .array(
+            z.object({
+              host: z.string().min(1),
+              port: z.number().int().min(1).max(65_535),
+              deviceCode: z.string().min(1),
+              deviceName: z.string().nullable(),
+            }),
+          )
+          .readonly(),
+      }),
+    ),
+  },
+  /** Adopts one candidate as a path of this device. Only ever called from a user action. */
+  [CHANNELS.devicesAddPath]: {
+    request: z.object({
+      deviceId: z.string().min(1),
+      host: z.string().min(1),
+      port: z.number().int().min(1).max(65_535),
+    }),
+    response: envelope(deviceSchema),
   },
   [CHANNELS.appInfo]: {
     request: z.object({}),

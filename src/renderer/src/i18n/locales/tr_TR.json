@@ -29,7 +29,17 @@
     "remoteIdHint": "Cihazda görünen Remote ID’yi girin. Bağlantı sizin için kurulur — ardından her zamanki gibi oturum açın.",
     "remoteIdLabel": "Remote ID (16 karakter)",
     "remoteIdConnecting": "Bağlanıyor…",
-    "connect": "Bağlan"
+    "connect": "Bağlan",
+    "pathOffer": {
+      "title": "Bu sizin cihazınız mı?",
+      "explain": "Cihaz kayıtlı hiçbir yolda yanıt vermedi. Ağınızda bir ZimaOS cihazı yanıt veriyor — aynı cihazsa yol olarak ekleyin.",
+      "add": "Yol olarak ekle",
+      "adding": "{{host}} ekleniyor …",
+      "added": "Yol eklendi.",
+      "addedHint": "Yeniden bağlanmayı deneyin — artık her iki yol da ölçülüyor.",
+      "searching": "Bu cihaza giden başka yollar aranıyor …",
+      "learned": "{{count}} yol otomatik olarak tanındı."
+    }
   },
   "capability": {
     "photoLibrary": "Fotoğraf arama ve süzgeçler",

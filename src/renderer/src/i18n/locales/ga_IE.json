@@ -29,7 +29,17 @@
     "remoteIdHint": "Cuir isteach an Remote ID atá ar taispeáint ar an ngléas. Cuirtear an ceangal ar bun duit — ansin sínigh isteach mar is gnách.",
     "remoteIdLabel": "Remote ID (16 carachtar)",
     "remoteIdConnecting": "Á cheangal…",
-    "connect": "Ceangail"
+    "connect": "Ceangail",
+    "pathOffer": {
+      "title": "An é seo do ghléas?",
+      "explain": "Níor fhreagair an gléas ar aon chosán stóráilte. Tá gléas ZimaOS ag freagairt i do líonra — más é an ceann céanna é, cuir leis mar chosán.",
+      "add": "Cuir leis mar chosán",
+      "adding": "{{host}} á chur leis …",
+      "added": "Cosán curtha leis.",
+      "addedHint": "Bain triail as ceangal arís — tomhaistear an dá chosán anois.",
+      "searching": "Ag cuardach bealaí eile chuig an ngléas seo …",
+      "learned": "{{count}} cosán aitheanta go huathoibríoch."
+    }
   },
   "capability": {
     "photoLibrary": "Cuardach grianghraf agus scagairí",

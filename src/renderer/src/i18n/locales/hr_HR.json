@@ -29,7 +29,17 @@
     "remoteIdHint": "Unesite Remote ID prikazan na uređaju. Veza se priprema sama — zatim se prijavite kao i inače.",
     "remoteIdLabel": "Remote ID (16 znakova)",
     "remoteIdConnecting": "Povezivanje…",
-    "connect": "Poveži se"
+    "connect": "Poveži se",
+    "pathOffer": {
+      "title": "Je li ovo vaš uređaj?",
+      "explain": "Uređaj nije odgovorio ni na jednom spremljenom putu. U vašoj mreži odgovara ZimaOS uređaj — ako je isti, dodajte ga kao put.",
+      "add": "Dodaj kao put",
+      "adding": "Dodajem {{host}} …",
+      "added": "Put dodan.",
+      "addedHint": "Pokušajte se ponovno povezati — sada se mjere oba puta.",
+      "searching": "Tražim druge putove do ovog uređaja …",
+      "learned": "{{count}} put automatski prepoznat."
+    }
   },
   "capability": {
     "photoLibrary": "Pretraga fotografija i filtri",

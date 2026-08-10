@@ -23,6 +23,15 @@ export const CHANNELS = {
   devicesSetPriorities: 'devices:set-priorities',
   devicesForget: 'devices:forget',
   devicesPower: 'devices:power',
+  /**
+   * Two channels, deliberately not one.
+   *
+   * `devicesFindPaths` only looks and reports; `devicesAddPath` is the write, and it happens
+   * only because a person asked for it. A single "find and adopt" channel would make the
+   * dangerous half invisible at the call site.
+   */
+  devicesFindPaths: 'devices:find-paths',
+  devicesAddPath: 'devices:add-path',
 
   filesList: 'files:list',
   filesSearch: 'files:search',

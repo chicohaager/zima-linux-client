@@ -29,7 +29,17 @@
     "remoteIdHint": "Wpisz Remote ID wyświetlone na urządzeniu. Połączenie zostanie przygotowane automatycznie — potem zaloguj się jak zwykle.",
     "remoteIdLabel": "Remote ID (16 znaków)",
     "remoteIdConnecting": "Łączenie…",
-    "connect": "Połącz"
+    "connect": "Połącz",
+    "pathOffer": {
+      "title": "Czy to Twoje urządzenie?",
+      "explain": "Urządzenie nie odpowiedziało na żadnej zapisanej ścieżce. W Twojej sieci odpowiada urządzenie ZimaOS — jeśli to to samo, dodaj je jako ścieżkę.",
+      "add": "Dodaj jako ścieżkę",
+      "adding": "Dodawanie {{host}} …",
+      "added": "Ścieżka dodana.",
+      "addedHint": "Spróbuj połączyć się ponownie — obie ścieżki są teraz mierzone.",
+      "searching": "Szukanie innych ścieżek do tego urządzenia …",
+      "learned": "Rozpoznano automatycznie ścieżki: {{count}}."
+    }
   },
   "capability": {
     "photoLibrary": "Wyszukiwanie zdjęć i filtry",
