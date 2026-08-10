@@ -124,13 +124,25 @@ describe('the scripts scenarios inject', () => {
 
 describe('waitForResumeSettled', () => {
   it('waits for a terminal phase instead of a fixed sleep', async () => {
-    const phases = ['idle', 'running', 'running', 'done']
+    // Starts at `running` on purpose: since the automatic restore was removed on 2026-08-10,
+    // `idle` means "the user has not asked yet" and is itself terminal — a sequence starting
+    // there would stop at the first read and prove nothing about waiting.
+    const phases = ['running', 'running', 'running', 'done']
     const read = vi.fn(async () => phases.shift() ?? 'done')
 
     const settled = await waitForResumeSettled(read, 5_000)
 
     expect(settled.phase).toBe('done')
     expect(read.mock.calls.length).toBeGreaterThanOrEqual(4)
+  })
+
+  it('treats "idle" as settled — nothing runs by itself any more', async () => {
+    // Before the change this would have waited out the whole budget on a screen where no
+    // restore was ever requested, and then reported a stall for a correct app.
+    const settled = await waitForResumeSettled(async () => 'idle', 10_000)
+
+    expect(settled.phase).toBe('idle')
+    expect(settled.elapsedMs).toBeLessThan(1_000)
   })
 
   for (const terminal of ['done', 'nothing-stored', 'failed']) {

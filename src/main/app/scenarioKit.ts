@@ -140,7 +140,13 @@ export const SIGNED_IN = `document.querySelector('[data-action="sign-out"]') !==
 export const RESUME_PHASE = `(document.querySelector('[data-resume-phase]')
   ?.getAttribute('data-resume-phase') ?? 'absent')`
 
-const SETTLED = new Set(['done', 'nothing-stored', 'failed'])
+/**
+ * `idle` counts as settled since 2026-08-10, when the automatic restore was removed: with
+ * nothing running by itself, "the user has not asked yet" IS the terminal state at start.
+ * Leaving it out would make every scenario wait out its full budget for an event that is
+ * never coming — a waiter that turns a correct app into a timeout.
+ */
+const SETTLED = new Set(['idle', 'done', 'nothing-stored', 'failed'])
 
 /**
  * Waits until the start-up restore has finished one way or another.

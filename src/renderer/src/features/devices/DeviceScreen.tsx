@@ -10,7 +10,7 @@ import { DiscoveryResults } from './DiscoveryResults'
 import { PathOffer } from './PathOffer'
 import { SessionCard } from '../session/SessionCard'
 import { SignInForm } from '../session/SignInForm'
-import { useAutoResume } from '../session/useAutoResume'
+import { useResume } from '../session/useResume'
 import { DashboardCards } from './DashboardCards'
 import { PowerActions } from './PowerActions'
 import { TailscalePanel } from '../settings/TailscalePanel'
@@ -39,7 +39,7 @@ export const DeviceScreen = (): React.JSX.Element => {
   const { t } = useTranslation()
   // Restores a stored session before the user has to do anything. Its outcome is rendered
   // below, because a failed restore that says nothing looks like an unexplained logout.
-  const resume = useAutoResume()
+  const resume = useResume()
   const [target, setTarget] = useState<SignInTarget | null>(null)
   const [remoteOpen, setRemoteOpen] = useState(false)
   const [remoteId, setRemoteId] = useState('')
@@ -54,6 +54,18 @@ export const DeviceScreen = (): React.JSX.Element => {
     queryFn: async () => unwrap(await window.zima.currentSession({})),
     retry: false,
   })
+  /*
+   * 🔴 The LIVE answer, not the last one that worked.
+   *
+   * react-query keeps `data` from the last successful fetch when a later one fails. The
+   * screen was gated on `session.data !== undefined`, so after the session went away the
+   * dashboard kept rendering from that stale copy — while its own sub-queries, which need a
+   * token, each put up "Please sign in." Seen on a real desktop on 2026-08-10: storage
+   * figures and Restart/Power-off buttons next to two identical "no active session"
+   * banners. A screen may not claim two contradictory things at once, and offering to power
+   * off a machine there is no session for is worse than useless.
+   */
+  const signedIn = session.status === 'success' && session.data !== undefined
   const zerotier = session.data?.capabilities?.zerotier
   const deviceNetworkId =
     zerotier !== undefined && zerotier !== 'unknown' && 'networkId' in zerotier
@@ -144,7 +156,7 @@ export const DeviceScreen = (): React.JSX.Element => {
 
       <SessionCard />
 
-      {session.data !== undefined && (
+      {signedIn && session.data !== undefined && (
         <>
           <DashboardCards />
           <PowerActions
@@ -155,7 +167,7 @@ export const DeviceScreen = (): React.JSX.Element => {
         </>
       )}
 
-      {resume.phase === 'running' && (
+      {resume.state.phase === 'running' && (
         <Card className="mb-4">
           <Muted>{t('signIn.resuming')}</Muted>
         </Card>
@@ -164,14 +176,14 @@ export const DeviceScreen = (): React.JSX.Element => {
       {/* A stored token that fails to restore is named, with the technical reason
           underneath. "nothing-stored" is deliberately silent — that is a fresh install,
           not a fault. */}
-      {resume.phase === 'failed' && (
+      {resume.state.phase === 'failed' && (
         <div className="mb-4">
           <ErrorNote
-            message={`${t('signIn.resumeFailed')} ${errorMessage(t, resume.error)}`}
+            message={`${t('signIn.resumeFailed')} ${errorMessage(t, resume.state.error)}`}
             detail={
-              resume.error.context === undefined
+              resume.state.error.context === undefined
                 ? undefined
-                : Object.entries(resume.error.context)
+                : Object.entries(resume.state.error.context)
                     .map(([key, value]) => `${key}=${String(value)}`)
                     .join('  ')
             }
@@ -181,27 +193,43 @@ export const DeviceScreen = (): React.JSX.Element => {
               never stored. Asks, never adopts — see PathOffer. The failure travels with it:
               the card carries a sentence about reachability and must stay silent for a
               failure that was not about reachability (a 401 is not a dead path). */}
-          {resume.deviceId !== null && (
-            <PathOffer deviceId={resume.deviceId} resumeError={resume.error} />
+          {resume.state.deviceId !== null && (
+            <PathOffer deviceId={resume.state.deviceId} resumeError={resume.state.error} />
           )}
         </div>
       )}
 
       <DeviceList
         onConnect={(device: Device) => {
-          const address = [...device.addresses].sort((a, b) => a.priority - b.priority)[0]
-          if (address !== undefined) {
-            setTarget({
-              host: address.host,
-              port: address.port,
-              // 🔴 The kind is KEPT, not downgraded to 'direct'. A saved remote-id address
-              // is a number inside a tunnel; calling it 'direct' loses the one fact needed
-              // to reopen that tunnel, and the sign-in then runs into a full timeout.
-              kind: address.kind,
-              displayName: device.displayName,
-              ...(address.networkId === undefined ? {} : { networkId: address.networkId }),
-            })
-          }
+          /*
+           * 🔴 This button is now the ONLY thing that reaches out to a stored device.
+           *
+           * The stored token is tried first, because that is what "connect" means for a
+           * device you have used before — and only when there is none, or it no longer
+           * works, does the form appear. Nothing happens before this click: an unasked-for
+           * restore decides for the user which tunnel comes up.
+           */
+          void (async () => {
+            const outcome = await resume.start(device.id)
+            if (outcome.phase === 'done') return
+            // 'failed' keeps its banner and its path offer above; a missing secret is not a
+            // fault, it is the normal case for a device that was only ever scanned.
+            if (outcome.phase !== 'nothing-stored') return
+
+            const address = [...device.addresses].sort((a, b) => a.priority - b.priority)[0]
+            if (address !== undefined) {
+              setTarget({
+                host: address.host,
+                port: address.port,
+                // 🔴 The kind is KEPT, not downgraded to 'direct'. A saved remote-id address
+                // is a number inside a tunnel; calling it 'direct' loses the one fact needed
+                // to reopen that tunnel, and the sign-in then runs into a full timeout.
+                kind: address.kind,
+                displayName: device.displayName,
+                ...(address.networkId === undefined ? {} : { networkId: address.networkId }),
+              })
+            }
+          })()
         }}
       />
 
