@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { NO_PATH_ANSWERED, type AppError } from '@shared/result'
+import { errorMessage } from '../../shared/lib/ipc'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Button } from '../../shared/ui/Controls'
 import { WifiIcon } from '../../shared/ui/Icons'
@@ -58,7 +59,7 @@ export const PathOffer = ({
     | { readonly phase: 'nothing' }
     | { readonly phase: 'adding'; readonly host: string }
     | { readonly phase: 'added' }
-    | { readonly phase: 'failed'; readonly i18nKey: string }
+    | { readonly phase: 'failed'; readonly error: AppError }
     // Lazy, so a failure the card has nothing to say about never even flashes the
     // "searching …" line on its way to rendering null.
   >(() => (offers ? { phase: 'searching' } : { phase: 'nothing' }))
@@ -70,7 +71,7 @@ export const PathOffer = ({
       const found = await window.zima.findDevicePaths({ deviceId })
       if (cancelled) return
       if (!found.ok) {
-        setState({ phase: 'failed', i18nKey: found.error.i18nKey })
+        setState({ phase: 'failed', error: found.error })
         return
       }
       const { candidates, learned } = found.value
@@ -98,7 +99,7 @@ export const PathOffer = ({
     setState({ phase: 'adding', host })
     const added = await window.zima.addDevicePath({ deviceId, host, port })
     if (!added.ok) {
-      setState({ phase: 'failed', i18nKey: added.error.i18nKey })
+      setState({ phase: 'failed', error: added.error })
       return
     }
     // The device list carries the new path; the session screen should try again with it.
@@ -121,7 +122,7 @@ export const PathOffer = ({
   if (state.phase === 'failed') {
     return (
       <Card className="mb-4">
-        <Muted>{t(state.i18nKey)}</Muted>
+        <Muted>{errorMessage(t, state.error)}</Muted>
       </Card>
     )
   }

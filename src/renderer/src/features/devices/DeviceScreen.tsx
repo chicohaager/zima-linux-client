@@ -17,7 +17,7 @@ import { TailscalePanel } from '../settings/TailscalePanel'
 import { ZerotierPanel } from '../settings/ZerotierPanel'
 import { LegacyImportPanel } from '../settings/LegacyImportPanel'
 import { LogFolderButton } from '../settings/LogFolderButton'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 
 interface SignInTarget {
   readonly host: string
@@ -136,7 +136,7 @@ export const DeviceScreen = (): React.JSX.Element => {
     )
   }
 
-  const scanError = scan.error as { i18nKey?: string } | null
+  const scanError = asAppError(scan.error)
 
   return (
     <>
@@ -167,7 +167,7 @@ export const DeviceScreen = (): React.JSX.Element => {
       {resume.phase === 'failed' && (
         <div className="mb-4">
           <ErrorNote
-            message={`${t('signIn.resumeFailed')} ${t(resume.error.i18nKey)}`}
+            message={`${t('signIn.resumeFailed')} ${errorMessage(t, resume.error)}`}
             detail={
               resume.error.context === undefined
                 ? undefined
@@ -267,7 +267,7 @@ export const DeviceScreen = (): React.JSX.Element => {
           {remoteError !== null && (
             <div className="mt-3">
               <ErrorNote
-                message={t(remoteError.i18nKey ?? 'error.internal')}
+                message={errorMessage(t, remoteError)}
                 detail={errorDetail(remoteError)}
               />
             </div>
@@ -318,7 +318,7 @@ export const DeviceScreen = (): React.JSX.Element => {
           {provisionError !== null && (
             <div className="mt-3">
               <ErrorNote
-                message={t(provisionError.i18nKey ?? 'error.internal')}
+                message={errorMessage(t, provisionError)}
                 detail={errorDetail(provisionError)}
               />
             </div>
@@ -326,7 +326,7 @@ export const DeviceScreen = (): React.JSX.Element => {
         </Card>
       )}
 
-      {scanError !== null && <ErrorNote message={t(scanError.i18nKey ?? 'error.internal')} />}
+      {scanError !== null && <ErrorNote message={errorMessage(t, scanError)} />}
 
       {/* An empty result is explained, never left as a blank list: mDNS is routinely
           blocked between network segments, which is not the same as "no device here". */}

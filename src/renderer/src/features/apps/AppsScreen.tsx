@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card, Muted, SectionTitle } from '../../shared/ui/Card'
 import { Badge, Button, ErrorNote } from '../../shared/ui/Controls'
 import { ExternalIcon, GridIcon, PlayIcon, RefreshIcon, StopIcon } from '../../shared/ui/Icons'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 import { formatTime } from '../../shared/lib/format'
 
 /**
@@ -92,12 +92,12 @@ export const AppsScreen = (): React.JSX.Element => {
 
       {listError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(listError.i18nKey)} detail={errorDetail(listError)} />
+          <ErrorNote message={errorMessage(t, listError)} detail={errorDetail(listError)} />
         </div>
       )}
       {actionError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(actionError.i18nKey)} detail={errorDetail(actionError)} />
+          <ErrorNote message={errorMessage(t, actionError)} detail={errorDetail(actionError)} />
         </div>
       )}
 

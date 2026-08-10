@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Button, ErrorNote } from '../../shared/ui/Controls'
-import { asAppError, errorDetail } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage } from '../../shared/lib/ipc'
 import { formatBytes, formatDateTime } from '../../shared/lib/format'
 import { useTrash } from './useFiles'
 
@@ -47,7 +47,7 @@ export const TrashPanel = ({
       </div>
 
       {trash.isPending && <Muted>{t('files.loading')}</Muted>}
-      {error !== null && <ErrorNote message={t(error.i18nKey)} detail={errorDetail(error)} />}
+      {error !== null && <ErrorNote message={errorMessage(t, error)} detail={errorDetail(error)} />}
       {trash.data !== undefined && trash.data.length === 0 && <Muted>{t('files.trashEmpty')}</Muted>}
 
       {trash.data !== undefined && trash.data.length > 0 && (

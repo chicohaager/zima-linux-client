@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Button, ErrorNote } from '../../shared/ui/Controls'
 import { PowerIcon, RefreshIcon } from '../../shared/ui/Icons'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 
 /**
  * Restart and power off.
@@ -82,7 +82,7 @@ export const PowerActions = ({
       {error !== null && (
         <div className="mt-2">
           <ErrorNote
-            message={`${t('power.noConfirmation')} ${t(error.i18nKey)}`}
+            message={`${t('power.noConfirmation')} ${errorMessage(t, error)}`}
             detail={errorDetail(error)}
           />
         </div>
