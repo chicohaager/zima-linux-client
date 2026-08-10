@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.0-alpha.2 · **Stand:** 2026-08-10
+**Branch:** `v2` · **Version:** 2.0.0-alpha.3 · **Stand:** 2026-08-10
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -8,26 +8,38 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 **Zuletzt gefahren, 2026-08-10 — der Stand dieses Commits:**
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 263 Tests · build · build-gate · i18n · privacy
+npm run verify        ✓ (rc=0)  type-check · lint · 269 Tests · build · build-gate · i18n · privacy
 npm run verify:release ✓ (rc=0)  8 Prüfungen am dist-Verzeichnis (siehe unten)
+npx playwright test   ✓ 4 von 4 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
 i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
 privacy gate        clean, 214 verfolgte Dateien (Bilder überspringt es — siehe unten)
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix) —
-                    Messwert am Paket aus de27002, am Neubau NICHT wiederholt
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 6190b46, alle fünf in
-                    einem Lauf am 2026-08-10, 13:29–13:35; Flatpak aus der Zielliste.
-                    `sha256sum -c SHA256SUMS-2.0.0-alpha.2.txt` → 5× OK
+                    Messwert vom 2026-08-09, an alpha.3 NICHT wiederholt
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus cbc81fa, alle fünf in
+                    einem Lauf am 2026-08-10, 14:43–14:49; Flatpak aus der Zielliste.
+                    `sha256sum -c SHA256SUMS-2.0.0-alpha.3.txt` → 5× OK
+postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
+                    electron-builder-Vorlage (update-alternatives, chmod 4755
+                    chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen (2026-08-10, per `git ls-remote` gegengeprüft)
-Release             v2.0.0-alpha.2 als Pre-Release, 7 Assets, Tag auf d5ac6c9;
+Release             v2.0.0-alpha.3 als Pre-Release, 7 Assets, Tag auf cbc81fa;
                     `sha256sum -c` aus dem echten GitHub-Download grün für alle fünf Pakete
                     (heruntergeladen, nicht an den lokalen Dateien geprüft).
-                    v2.0.0-alpha.1 bleibt daneben stehen
+                    alpha.1 und alpha.2 bleiben stehen; alpha.2 trägt oben einen
+                    Warnhinweis, weil es „({{paths}})" auf den Bildschirm schrieb
 ```
 
-Der Vorgängerbau aus `de27002` liegt unter `dist/_stale-2026-08-10-de27002/` — beiseitegelegt,
-nicht gelöscht, damit im `dist/` nie wieder Dateien aus zwei Läufen unter einer Versionsnummer
-stehen. Das Release-Gate war vor dem Neubau **rot** (`rc=1`, „no artefact predates the last
-build-input commit") und hat damit genau die Lage gemeldet, für die es gebaut wurde.
+Die Vorgängerbauten liegen unter `dist/_stale-2026-08-10-de27002/` und
+`dist/_stale-2026-08-10-alpha2/` — beiseitegelegt, nicht gelöscht, damit im `dist/` nie wieder
+Dateien aus zwei Läufen unter einer Versionsnummer stehen. Das Release-Gate war vor dem Neubau
+schon einmal **rot** (`rc=1`, „no artefact predates the last build-input commit") und hat damit
+genau die Lage gemeldet, für die es gebaut wurde.
+
+**Was alpha.2 gekostet hat, als Merkposten:** Die Fassung ging mit einem ungefüllten Platzhalter
+auf dem Bildschirm heraus (`… hat geantwortet ({{paths}})`). Drei Prüfungen waren grün und keine
+davon konnte es sehen — das i18n-Gate zählt Schlüssel, der Rundgang sucht rohe Schlüssel, und die
+Unit-Tests haben diesen Zweig nie **gerendert**. Der Wächter dagegen steht jetzt in
+`src/renderer/src/shared/lib/__tests__/errorMessage.test.tsx` und misst am gerenderten Text.
 
 Die Zeile `Pakete` nennt seit dem 2026-08-10 den **Commit**, aus dem gebaut wurde, und
 `npm run verify:release` erzwingt das: eine Bau-Behauptung ohne Commit lässt das Gate rot
