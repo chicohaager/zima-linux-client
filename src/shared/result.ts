@@ -70,6 +70,19 @@ export const appError = (
 ): AppError => ({ kind, message, i18nKey, context, cause })
 
 /**
+ * The one failure that means "not a single stored path answered".
+ *
+ * 🔴 Shared as a constant, not written twice, because two parts of the program have to agree
+ * on it: `session.resume` produces it, and the renderer's path offer is allowed to appear
+ * only for it. Measured on 2026-08-10 in a tester's log: the resume failed with HTTP 401 after
+ * the path had answered in 8 ms — and the card underneath still claimed "the device answered
+ * on no stored path". A wrong sentence in the UI, produced by a condition that was never
+ * checked. With the key spelled out on both sides, a rename would have drifted silently;
+ * here it breaks the build.
+ */
+export const NO_PATH_ANSWERED = 'error.noPathAnswered'
+
+/**
  * Digs the OS-level error code out of a thrown value.
  *
  * Necessary because `fetch` wraps transport failures: an ECONNREFUSED arrives as

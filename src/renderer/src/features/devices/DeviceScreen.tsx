@@ -178,8 +178,12 @@ export const DeviceScreen = (): React.JSX.Element => {
           />
           {/* Directly under the failure, because this is the one actionable thing at that
               moment: the device may be standing in this network under an address that was
-              never stored. Asks, never adopts — see PathOffer. */}
-          {resume.deviceId !== null && <PathOffer deviceId={resume.deviceId} />}
+              never stored. Asks, never adopts — see PathOffer. The failure travels with it:
+              the card carries a sentence about reachability and must stay silent for a
+              failure that was not about reachability (a 401 is not a dead path). */}
+          {resume.deviceId !== null && (
+            <PathOffer deviceId={resume.deviceId} resumeError={resume.error} />
+          )}
         </div>
       )}
 
