@@ -1,6 +1,15 @@
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
-import { capturePng, CLICK_ACTION, FILL, SIGNED_IN, sleep, SUBMIT_SIGN_IN } from './scenarioKit'
+import {
+  capturePng,
+  CLICK_ACTION,
+  FILL,
+  pollUntil,
+  SIGNED_IN,
+  sleep,
+  SUBMIT_SIGN_IN,
+  waitForResumeSettled,
+} from './scenarioKit'
 import { runTour } from './tourScenario'
 import { runTailscaleSignIn } from './tailscaleSignInScenario'
 
@@ -22,6 +31,9 @@ export interface ScenarioResult {
 }
 
 const VISIBLE_TEXT = `(document.body.innerText || '').trim()`
+
+/** How long joining a ZeroTier network and probing the device may take before it counts as broken. */
+const REMOTE_ID_BUDGET_MS = 40_000
 
 /**
  * Signs in against a real device with a username that does not exist, and asserts the
@@ -141,44 +153,39 @@ const remoteIdScenario = async (
   const run = async (script: string): Promise<unknown> =>
     window.webContents.executeJavaScript(script, true)
 
-  await new Promise((resolve) => setTimeout(resolve, 3_000))
+  const resume = await waitForResumeSettled(run)
+  observed['resumePhase'] = resume.phase
+  observed['resumeWaitMs'] = String(resume.elapsedMs)
 
-  const clicked = String(
-    await run(`(() => {
-      const wanted = ${JSON.stringify('Über Remote-ID verbinden')}
-      const button = Array.from(document.querySelectorAll('button'))
-        .find((b) => (b.textContent || '').trim() === wanted)
-      if (!button) return 'missing-button'
-      button.click()
-      return 'ok'
-    })()`),
-  )
+  /*
+   * 🔴 Clicked by `data-action`, not by its German label.
+   *
+   * The literal 'Über Remote-ID verbinden' is correct in exactly one of the 28 catalogues.
+   * Under any other ZIMA_VERIFY_LOCALE the lookup returned `missing-button` and this
+   * scenario reported "the Remote-ID button was not found" — a red verdict on a working
+   * app, produced entirely by the instrument. The same defect was fixed in the tour and in
+   * signInWrongPassword and left standing here; a sibling inherits the bug as readily as
+   * the assumption.
+   */
+  const clicked = String(await run(CLICK_ACTION('remote-id')))
   observed['openPanel'] = clicked
   if (clicked !== 'ok') {
     return { name: 'remote-id', ok: false, observed, failures: ['the Remote-ID button was not found'] }
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 600))
+  await sleep(600)
 
-  // Typed through the native value setter so React's onChange actually fires — assigning
-  // `.value` directly updates the DOM and leaves React's state untouched, which would
-  // submit an empty form and look like a validation bug.
-  const filled = String(
-    await run(`(() => {
-      const input = document.querySelector('input[name="remoteId"]')
-      if (!input) return 'missing-input'
-      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
-      setter.call(input, ${JSON.stringify(remoteId)})
-      input.dispatchEvent(new Event('input', { bubbles: true }))
-      return 'ok'
-    })()`),
-  )
+  // Through the shared FILL: the value goes via the native setter so React's state changes.
+  // This used to be a private third copy of that mechanism — if one copy ever needs a fix
+  // (a 'change' event, a missing prototype descriptor), the others keep the old behaviour
+  // and their scenarios fail silently in a way that looks like an app bug.
+  const filled = String(await run(FILL('remoteId', remoteId)))
   observed['fillField'] = filled
   if (filled !== 'ok') {
     return { name: 'remote-id', ok: false, observed, failures: ['the Remote-ID field was not found'] }
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 400))
+  await sleep(400)
   const submitted = String(
     await run(`(() => {
       const form = document.querySelector('input[name="remoteId"]').closest('form')
@@ -189,8 +196,24 @@ const remoteIdScenario = async (
   )
   observed['submit'] = submitted
 
-  // Joining a network and probing takes real time on a real tunnel.
-  await new Promise((resolve) => setTimeout(resolve, 25_000))
+  /*
+   * Joining a network and probing takes real time on a real tunnel — but waiting is not the
+   * same as sleeping for the worst case. The fixed 25 s were spent in full on every run,
+   * including the ones that were done in three, and they still would not have been enough
+   * for a join that took 26. Polled, the budget only costs what the tunnel actually needs,
+   * and the report says how long that was.
+   */
+  const settled = await pollUntil(
+    async () =>
+      Boolean(
+        await run(
+          `(document.querySelector('input[type="password"]') !== null) || (${SIGNED_IN})`,
+        ),
+      ),
+    REMOTE_ID_BUDGET_MS,
+    1_000,
+  )
+  observed['remoteIdWaitMs'] = String(settled.elapsedMs)
 
   /*
    * 🔴 `signedIn` is read from the attribute, not from the button's text.
@@ -246,6 +269,28 @@ const remoteIdScenario = async (
   return { name: 'remote-id', ok: failures.length === 0, observed, failures }
 }
 
+/**
+ * Where screenshots may be written — the safety rule, in one place.
+ *
+ * 🔴 It used to stand twice, once per branch below. That is how the rule was born: the tour's
+ * `?? 'report.json'` made `dirname` return `.`, and on 2026-07-31 four PNGs of a real tailnet
+ * landed in the repository root and were committed. Duplicated, the next tightening (checking
+ * that the directory exists, say) lands in one copy and not the other — and the branch that
+ * missed it is the one nobody looks at.
+ *
+ * Returns the path, or the failure to hand straight back to the caller. No working-directory
+ * default in either case: a forgotten argument must be loud, not quietly resolved to `.`.
+ */
+const requireReportPath = (
+  name: string,
+  argument: string,
+  hint: string,
+): { path: string } | ScenarioResult => {
+  const path = argument.length > 0 ? argument : (process.env['ZIMA_VERIFY_STARTUP'] ?? '')
+  if (path.length > 0) return { path }
+  return { name, ok: false, observed: {}, failures: [`${name}: ${hint}`] }
+}
+
 export const parseScenario = (): { name: string; argument: string } | null => {
   const raw = process.env['ZIMA_VERIFY_SCENARIO']
   if (raw === undefined || raw.length === 0) return null
@@ -269,44 +314,25 @@ export const runScenario = async (
       return remoteIdScenario(window, argument)
     case 'direct-signin':
     case 'tailscale-signin': {
-      // Same report-path rule as the tour below: no working-directory default, because that
-      // once put screenshots of a real tailnet into a commit.
-      const path = process.env['ZIMA_VERIFY_STARTUP'] ?? ''
-      if (path.length === 0) {
-        return {
-          name,
-          ok: false,
-          observed: {},
-          failures: [`${name}: set ZIMA_VERIFY_STARTUP so screenshots have a home`],
-        }
-      }
+      // The argument here is the ADDRESS, not the report path — so only the environment can
+      // name a home for the screenshots.
+      const home = requireReportPath(name, '', 'set ZIMA_VERIFY_STARTUP so screenshots have a home')
+      if (!('path' in home)) return home
       return runTailscaleSignIn(
         window,
         argument,
-        path,
+        home.path,
         name === 'tailscale-signin' ? 'tailscale-panel' : 'direct-ip',
       )
     }
     case 'tour': {
-      // The argument is the report path, so the tour can put its screenshots beside it.
-      //
-      // 🔴 Without this fallback an empty argument became `dirname('')` === '.', and the
-      // tour wrote four PNGs into the current directory — measured 2026-07-31: they landed
-      // in the repository root and were committed, showing a real tailnet with peer
-      // addresses. A default that quietly picks the working directory turns a forgotten
-      // argument into files where nobody looks for them.
-      const path = argument.length > 0 ? argument : (process.env['ZIMA_VERIFY_STARTUP'] ?? '')
-      if (path.length === 0) {
-        return {
-          name,
-          ok: false,
-          observed: {},
-          failures: [
-            'tour: no report path — pass ZIMA_VERIFY_SCENARIO=tour:<path> or set ZIMA_VERIFY_STARTUP',
-          ],
-        }
-      }
-      return runTour(window, path)
+      const home = requireReportPath(
+        name,
+        argument,
+        'no report path — pass ZIMA_VERIFY_SCENARIO=tour:<path> or set ZIMA_VERIFY_STARTUP',
+      )
+      if (!('path' in home)) return home
+      return runTour(window, home.path)
     }
     default:
       // An unknown scenario name is a failure, not a silent pass. A verifier that

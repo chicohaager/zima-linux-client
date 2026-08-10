@@ -132,13 +132,19 @@ export const runTailscaleSignIn = async (
 
   // 1. Start cold. A session restored from the keyring would let every later assertion pass
   //    without a single byte crossing the tunnel.
-  observed['startedSignedIn'] = String(await signedIn())
-  if (observed['startedSignedIn'] === 'true') {
+  //
+  //    The booleans stay booleans and are only stringified INTO the report. Round-tripping
+  //    them through `observed` and comparing against 'true' made the control flow depend on
+  //    a formatting decision: a future `String(x).toUpperCase()` anywhere near here would
+  //    silently flip the branch, and nothing would go red.
+  const startedSignedIn = await signedIn()
+  observed['startedSignedIn'] = String(startedSignedIn)
+  if (startedSignedIn) {
     observed['signOutClick'] = String(await run(CLICK_ACTION('sign-out')))
     const out = await pollUntil(async () => !(await signedIn()), 10_000, POLL_MS)
     observed['signOutMs'] = String(out.elapsedMs)
     observed['signedOutFirst'] = String(out.ok)
-    if (observed['signedOutFirst'] !== 'true') {
+    if (!out.ok) {
       failures.push('the existing session could not be signed out; the run would be warm')
       return { name: resultName, ok: false, observed, failures }
     }

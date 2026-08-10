@@ -228,7 +228,11 @@ export const DeviceScreen = (): React.JSX.Element => {
         {/* The third way in, on the same footing as the other two. It used to exist only as
             a ZeroTier network-management panel further down the screen, which is not how
             anyone thinks about it: you have an ID, you want to reach your device. */}
-        <Button variant="secondary" onClick={() => setRemoteOpen((open) => !open)}>
+        <Button
+          variant="secondary"
+          data-action="remote-id"
+          onClick={() => setRemoteOpen((open) => !open)}
+        >
           {t('device.remoteId')}
         </Button>
       </div>
