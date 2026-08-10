@@ -4,16 +4,17 @@ Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwa
 eingebaut und Tailscale genutzt, wenn es ohnehin schon läuft.
 
 > **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.4, ein Rewrite.**
-> Das zuletzt **veröffentlichte** Paket ist `v2.0.0-alpha.1`; `alpha.2` ist ein Bau für die
-> laufende Testrunde und enthält die Arbeit an den Verbindungswegen (siehe `docs/V2-STATUS.md`).
+> Das zuletzt **veröffentlichte** Paket ist
+> [`v2.0.0-alpha.4`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.4).
 > Das installierte Paket ist auf **sechs Distributionen** gestartet worden (Ubuntu 22.04 und 24.04,
 > Debian 12, Fedora 41, Arch, openSUSE Tumbleweed) — in Containern, unter Xvfb, nur x86_64.
-> Auf einem **echten Desktop** ist er auf genau einer Maschine benutzt worden (Ubuntu 24.04, GNOME
-> auf Wayland); eine echte Sitzung auf deiner Hardware ist weiterhin das, wofür der Test läuft.
-> Auf **Zorin OS 18.1** hat sich das Paket 2.0.0-alpha.1 auf echter Hardware sauber installiert und
-> alle Nachinstallations-Prüfungen bestanden (`install.sh --check`: Registrierung, Ablage,
-> Sandkasten, `CAP_NET_ADMIN`, AppArmor). Das sagt, dass die Anwendung starten *kann* — der Start
-> selbst ist noch nicht zurückgemeldet, und das sind zwei verschiedene Messungen.
+> Auf einem **echten Desktop** ist er auf zwei Maschinen benutzt worden: Ubuntu 24.04 (GNOME auf
+> Wayland) und **Zorin OS 18**, wo alpha.4 von Hand durchgegangen wurde — der Client startete ohne
+> Sitzung und griff von sich aus nach nichts, **Verbinden** stellte die Sitzung aus dem
+> gespeicherten Token ohne Passwortabfrage her, und Dateien, Fotos und Apps liefen über ZeroTier
+> wie über Tailscale.
+> Was das **nicht** abdeckt: Fedora, openSUSE und Arch auf echter Hardware — und damit Wayland auf
+> einem einzigen Treiber, SELinux und jeden Schlüsselbund außer dem von GNOME.
 > Die 0.9.x-Linie liegt auf `main` und unter [`legacy-0.9/`](legacy-0.9/); gelöscht wurde nichts.
 >
 > Was gebaut und was gemessen ist: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
@@ -61,7 +62,7 @@ einer leeren Liste: „leer" liest sich wie „kein Gerät gefunden".
 
 ### Drumherum
 
-- **28 Sprachen**, vollständig (je 280 Schlüssel). Geprüft sind nur `de_DE`, `en_US` und `en_GB`;
+- **28 Sprachen**, vollständig (je 289 Schlüssel). Geprüft sind nur `de_DE`, `en_US` und `en_GB`;
   die anderen 25 sind maschinell übersetzt und stehen im Sprachmenü mit dem Hinweis „ungeprüft".
 - **Hell, dunkel oder dem System folgen** — drei Zustände statt eines Umschalters, damit „dem
   System folgen" erreichbar bleibt.
@@ -94,18 +95,18 @@ nicht zu zeigen — Chromiums Zygote scheitert in `qemu-user` an `clone` —, es
 Hardware. Bis dahin wird arm64 nicht veröffentlicht.
 
 Die Pakete liegen im
-[**Pre-Release v2.0.0-alpha.1**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.1).
+[**Pre-Release v2.0.0-alpha.4**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.4).
 Hol dir den Installer, die Prüfsummen und das eine Paket für deine Distribution:
 
 ```bash
 cd ~/Downloads
-B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.0-alpha.1
+B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.0-alpha.4
 
-wget $B/install.sh $B/SHA256SUMS-2.0.0-alpha.1.txt          # immer diese beiden
+wget $B/install.sh $B/SHA256SUMS-2.0.0-alpha.4.txt          # immer diese beiden
 
-wget $B/zima-linux-client_2.0.0-alpha.1_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
-wget $B/zima-linux-client-2.0.0-alpha.1.x86_64.rpm          # Fedora, openSUSE, RHEL-Abkömmlinge
-wget $B/zima-linux-client-2.0.0-alpha.1.pacman              # Arch, Manjaro
+wget $B/zima-linux-client_2.0.0-alpha.4_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
+wget $B/zima-linux-client-2.0.0-alpha.4.x86_64.rpm          # Fedora, openSUSE, RHEL-Abkömmlinge
+wget $B/zima-linux-client-2.0.0-alpha.4.pacman              # Arch, Manjaro
 
 chmod +x install.sh && sudo ./install.sh
 ```
@@ -120,27 +121,27 @@ entfernt.
 Von Hand stattdessen:
 
 ```bash
-sha256sum -c SHA256SUMS-2.0.0-alpha.1.txt   # OK für die Datei, die du geladen hast
+sha256sum -c SHA256SUMS-2.0.0-alpha.4.txt   # OK für die Datei, die du geladen hast
 
 # Debian, Ubuntu, Zorin, Linux Mint, Pop!_OS — apt braucht einen absoluten Pfad oder ein ./
-sudo apt install ~/Downloads/zima-linux-client_2.0.0-alpha.1_amd64.deb
+sudo apt install ~/Downloads/zima-linux-client_2.0.0-alpha.4_amd64.deb
 
 # Fedora
-sudo dnf install ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+sudo dnf install ./zima-linux-client-2.0.0-alpha.4.x86_64.rpm
 
 # openSUSE — das Paket ist unsigniert, daher die zwei Schalter
-sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.0-alpha.1.x86_64.rpm
+sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.0-alpha.4.x86_64.rpm
 
 # Arch, Manjaro
-sudo pacman -U ./zima-linux-client-2.0.0-alpha.1.pacman
+sudo pacman -U ./zima-linux-client-2.0.0-alpha.4.pacman
 ```
 
 **AppImage** — nichts wird installiert, keine der obigen Rechte wird gesetzt. GitHub ersetzt das
 Leerzeichen im Dateinamen durch einen Punkt, sie kommt also so an:
 
 ```bash
-chmod +x ZimaOS.Client-2.0.0-alpha.1.AppImage
-./ZimaOS.Client-2.0.0-alpha.1.AppImage
+chmod +x ZimaOS.Client-2.0.0-alpha.4.AppImage
+./ZimaOS.Client-2.0.0-alpha.4.AppImage
 ```
 
 Installiert wird nach `/opt/ZimaOS Client/`, Einstiegspunkt ist `/usr/bin/zima-linux-client`.
@@ -216,7 +217,7 @@ bleibt für den Tag, an dem beides erledigt ist.
 
 ```bash
 npm run verify          # Typprüfung · Lint · Tests · Build · Build-Gate · i18n-Gate · Privacy-Gate
-npm test                # 227 Tests in 24 Dateien (2026-08-09)
+npm test                # 287 Tests in 33 Dateien (2026-08-10)
 npm run test:e2e        # 4 End-to-End-Abläufe im echten Fenster, gegen das aufgezeichnete Gerät
 npm run screenshots     # die Bilder unten, aus dem aktuellen Build
 npm run verify:build    # liest die GEBAUTEN Dateien: Preload CJS, Sandbox an, CSP ohne unsafe-eval
