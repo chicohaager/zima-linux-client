@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { app } from 'electron'
-import type { Capabilities, Device } from '@shared/domain'
+import type { Capabilities, Device, DeviceAddress } from '@shared/domain'
 import { appError, err, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import { writePrivateJson } from '@main/storage/privateFile'
@@ -122,6 +122,56 @@ export const setZerotierState = (id: string, state: Capabilities['zerotier']): R
     devices: current.devices.map((d) => (d.id === id ? merged : d)),
   })
   return written.ok ? ok(merged) : written
+}
+
+/**
+ * Records the device's own identifier, touching nothing else.
+ *
+ * Same reasoning as `setZerotierState`: the caller holds one measurement, not a whole
+ * device, and writing a partial device through a merge is how a known name or address list
+ * gets erased.
+ *
+ * Deliberately overwrites an existing code rather than keeping the first one. A device that
+ * starts answering with a different code IS, as far as this client can tell, a different
+ * device at that address — pinning the old value would keep matching a machine that is no
+ * longer there.
+ */
+export const setDeviceCode = (id: string, deviceCode: string): Result<Device> => {
+  const state = read()
+  const existing = state.devices.find((d) => d.id === id)
+  if (existing === undefined) {
+    return err(appError('internal', `unknown device ${id}`, 'error.internal', { deviceId: id }))
+  }
+  const updated: Device = { ...existing, deviceCode }
+  const written = write({
+    devices: [...state.devices.filter((d) => d.id !== id), updated],
+    activeDeviceId: state.activeDeviceId,
+  })
+  return written.ok ? ok(updated) : written
+}
+
+/**
+ * Adds a way to reach a device that we learned about after it was stored.
+ *
+ * The address list is merged, never replaced: a second path is a gain, and losing the one
+ * the user typed would be a regression. An address that is already known — same kind, host
+ * and port — leaves the list untouched, so repeated discovery cannot grow it without bound.
+ */
+export const addAddress = (id: string, address: DeviceAddress): Result<Device> => {
+  const state = read()
+  const existing = state.devices.find((d) => d.id === id)
+  if (existing === undefined) {
+    return err(appError('internal', `unknown device ${id}`, 'error.internal', { deviceId: id }))
+  }
+  if (existing.addresses.some((a) => addressKey(a) === addressKey(address))) {
+    return ok(existing)
+  }
+  const updated: Device = { ...existing, addresses: [...existing.addresses, address] }
+  const written = write({
+    devices: [...state.devices.filter((d) => d.id !== id), updated],
+    activeDeviceId: state.activeDeviceId,
+  })
+  return written.ok ? ok(updated) : written
 }
 
 export const setActive = (id: string): Result<Device> => {
