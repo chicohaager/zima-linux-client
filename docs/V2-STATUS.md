@@ -8,24 +8,24 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 **Zuletzt gefahren, 2026-08-10 — der Stand dieses Commits:**
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 269 Tests · build · build-gate · i18n · privacy
+npm run verify        ✓ (rc=0)  type-check · lint · 275 Tests · build · build-gate · i18n · privacy
 npm run verify:release ✓ (rc=0)  8 Prüfungen am dist-Verzeichnis (siehe unten)
 npx playwright test   ✓ 4 von 4 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
 i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 214 verfolgte Dateien (Bilder überspringt es — siehe unten)
+privacy gate        clean, 215 verfolgte Dateien (Bilder überspringt es — siehe unten)
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix) —
-                    Messwert vom 2026-08-09, an alpha.3 NICHT wiederholt
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus cbc81fa, alle fünf in
-                    einem Lauf am 2026-08-10, 14:43–14:49; Flatpak aus der Zielliste.
-                    `sha256sum -c SHA256SUMS-2.0.0-alpha.3.txt` → 5× OK
+                    Messwert vom 2026-08-09, an alpha.4 NICHT wiederholt
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 4fd04b3, alle fünf in
+                    einem Lauf am 2026-08-10, 15:52–15:58; Flatpak aus der Zielliste.
+                    `sha256sum -c SHA256SUMS-2.0.0-alpha.4.txt` → 5× OK
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen (2026-08-10, per `git ls-remote` gegengeprüft)
-Release             v2.0.0-alpha.3 als Pre-Release, 7 Assets, Tag auf cbc81fa;
+Release             v2.0.0-alpha.4 als Pre-Release, 7 Assets, Tag auf 4fd04b3;
                     `sha256sum -c` aus dem echten GitHub-Download grün für alle fünf Pakete
                     (heruntergeladen, nicht an den lokalen Dateien geprüft).
-                    alpha.1 und alpha.2 bleiben stehen; alpha.2 trägt oben einen
+                    alpha.1 bis alpha.3 bleiben stehen; alpha.2 trägt oben einen
                     Warnhinweis, weil es „({{paths}})" auf den Bildschirm schrieb
 ```
 
@@ -34,6 +34,13 @@ Die Vorgängerbauten liegen unter `dist/_stale-2026-08-10-de27002/` und
 Dateien aus zwei Läufen unter einer Versionsnummer stehen. Das Release-Gate war vor dem Neubau
 schon einmal **rot** (`rc=1`, „no artefact predates the last build-input commit") und hat damit
 genau die Lage gemeldet, für die es gebaut wurde.
+
+**Was alpha.3 noch nicht konnte, als Merkposten:** Der Client stellte gespeicherte Verbindungen
+beim Start von selbst wieder her. Die Beschwerde galt dem **Ob**, ich hatte sie als Beschwerde
+über das **Wie** gelesen und den Automatismus nur klüger gemacht — zwei Releases lang. Seit
+`660c886` passiert beim Start nichts; der Knopf „Verbinden" ist die einzige Stelle, die noch nach
+außen greift. Der tragende Test ist der negative
+(`src/renderer/src/features/session/__tests__/useResume.test.tsx`).
 
 **Was alpha.2 gekostet hat, als Merkposten:** Die Fassung ging mit einem ungefüllten Platzhalter
 auf dem Bildschirm heraus (`… hat geantwortet ({{paths}})`). Drei Prüfungen waren grün und keine
