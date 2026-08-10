@@ -186,3 +186,25 @@ test('switching the language renders translated text, not keys or English', asyn
     await close(launched)
   }
 })
+
+/*
+ * NICHT hier: ein E2E-Fall für die Karte "Ist das dein Gerät?".
+ *
+ * Versucht am 2026-08-10 und als undurchführbar gemessen, damit es niemand ein zweites Mal
+ * versucht. Der Fall braucht eine GESPEICHERTE Sitzung, deren Weg dann stirbt. In dieser
+ * Umgebung gibt es keinen Schlüsselbund, und `safeStorage.encryptString` scheitert — im Log
+ * der Testinstanz nachgelesen:
+ *
+ *     session.refresh-token-not-persisted {"id":"host:127.0.0.1","kind":"internal"}
+ *     session.signed-in {... "persisted":false}
+ *
+ * Ohne gespeicherten Token meldet der zweite Start "nichts gespeichert" statt eines
+ * fehlgeschlagenen Fortsetzens — ein anderer Zustand als der gesuchte. Die Einwilligung zum
+ * Klartext-Backend zu geben ändert daran nichts: sie erlaubt das Schreiben, sie repariert
+ * nicht die fehlende Verschlüsselung.
+ *
+ * Was den Fall stattdessen abdeckt: `devices/__tests__/rediscover.test.ts` (Erkennung und
+ * die drei Fälle, in denen NICHT übernommen werden darf) und
+ * `ipc/__tests__/devicePaths.test.ts` (die beiden Kanäle). Was dort nicht abgedeckt ist und
+ * ehrlich offen bleibt: ob die Karte im laufenden Fenster erscheint.
+ */

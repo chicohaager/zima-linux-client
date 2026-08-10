@@ -34,6 +34,23 @@ const RULES = [
     allowFiles: ['src/main/media/__tests__/urlPolicy.test.ts'],
   },
   {
+    /*
+     * A device's own UUID from `/v2/zimaos/device/info`. Found on 2026-08-10 in the tracked
+     * E2E fixture: the recording had been scrubbed of addresses, mail and tokens, and the
+     * device code sat there untouched because none of those rules describe a UUID. It names
+     * one physical machine.
+     *
+     * Written as a POSITIVE property, not as a list of forbidden values: a blocklist would
+     * have to contain the real code to work, which is the very thing that must not be
+     * committed. So any UUID is a finding unless it is the documentation stand-in the
+     * scrubber writes.
+     */
+    name: 'device code (UUID)',
+    pattern: /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi,
+    allow: [/^0f3b7c9e-1a2d-4b5c-8e6f-7a8b9c0d1e2f$/i, /^9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d$/i],
+    allowFiles: [],
+  },
+  {
     name: 'maintainer identity',
     /*
      * The trailing \b used to sit right after the name, so the rule matched "Holgi" and
