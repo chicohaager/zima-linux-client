@@ -3,7 +3,7 @@
 Desktop client for ZimaOS on Linux — files, photos, apps and device management, with ZeroTier
 built in and Tailscale used when it is already there.
 
-> **This is the `v2` branch: version 2.0.0-alpha.2, a rewrite.**
+> **This is the `v2` branch: version 2.0.0-alpha.3, a rewrite.**
 > The latest **published** package is `v2.0.0-alpha.1`; `alpha.2` exists as a build for the
 > current test round and carries the connection-path work described in `docs/V2-STATUS.md`.
 > The installed package has been started on **six distributions** (Ubuntu 22.04 and 24.04,
