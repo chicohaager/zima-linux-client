@@ -37,7 +37,9 @@
     "verify": "npm run type-check && npm run lint && npm test && npm run build && npm run verify:build && npm run verify:i18n && npm run verify:privacy",
     "verify:i18n": "node scripts/verify-i18n.mjs",
     "test:e2e": "playwright test",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "verify:release": "node scripts/verify-release.mjs",
+    "verify:release:self-test": "node scripts/verify-release.mjs --self-test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",

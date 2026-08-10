@@ -1,22 +1,27 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.0-alpha.1 · **Stand:** 2026-08-09
+**Branch:** `v2` · **Version:** 2.0.0-alpha.1 · **Stand:** 2026-08-10
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
 
-**Zuletzt gefahren, 2026-08-09 — der Stand dieses Commits:**
+**Zuletzt gefahren, 2026-08-10 — der Stand dieses Commits:**
 
 ```
-npm run verify   ✓ (rc=0)  type-check · lint · build · build-gate · i18n-gate · privacy-gate
-npx vitest run   ✓ (rc=0)  227 Tests in 24 Dateien
-npm run test:e2e ✓ (rc=0)  4 Abläufe im echten Fenster gegen das aufgezeichnete Gerät
+npm run verify        ✓ (rc=0)  type-check · lint · 227 Tests · build · build-gate · i18n · privacy
+npm run verify:release ✓ (rc=0)  8 Prüfungen am dist-Verzeichnis (siehe unten)
 i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
 privacy gate        clean, 204 verfolgte Dateien (Bilder überspringt es — siehe unten)
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix)
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut; Flatpak aus der Zielliste
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 6a7e917, alle fünf in
+                    einem Lauf am 2026-08-10 (Spanne 5,9 min); Flatpak aus der Zielliste
 Zweig               auf `origin/v2` hochgeladen (2026-08-09, per `git ls-remote` gegengeprüft)
 ```
+
+Die Zeile `Pakete` nennt seit dem 2026-08-10 den **Commit**, aus dem gebaut wurde, und
+`npm run verify:release` erzwingt das: eine Bau-Behauptung ohne Commit lässt das Gate rot
+werden. Der Grund steht in `scripts/verify-release.mjs` — hier standen einen Tag lang fünf
+Pakete aus **drei** Läufen unter der Überschrift „der Stand dieses Commits".
 
 Die Exit-Codes stehen mit dabei, weil sie einzeln abgefragt wurden: `npm run verify | tail`
 zeigt die Ausgabe des Gates und wirft seinen Rückgabewert weg.
