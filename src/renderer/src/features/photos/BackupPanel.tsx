@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { Card, Muted, Pill } from '../../shared/ui/Card'
 import { Badge, Button, ErrorNote } from '../../shared/ui/Controls'
 import { CloudIcon, UploadIcon } from '../../shared/ui/Icons'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 import { formatBytes } from '../../shared/lib/format'
 
 /**
@@ -93,7 +93,7 @@ export const BackupPanel = ({
         </ul>
       )}
 
-      {error !== null && <ErrorNote message={t(error.i18nKey)} detail={errorDetail(error)} />}
+      {error !== null && <ErrorNote message={errorMessage(t, error)} detail={errorDetail(error)} />}
 
       {state !== undefined && state.phase !== 'idle' && (
         <>

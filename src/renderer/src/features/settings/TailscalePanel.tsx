@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Badge, Button, ErrorNote } from '../../shared/ui/Controls'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 
 /**
  * Tailscale — detected, never operated.
@@ -58,7 +58,7 @@ export const TailscalePanel = ({
 
       {error !== null && (
         <div className="mt-3">
-          <ErrorNote message={t(error.i18nKey ?? 'error.internal')} detail={errorDetail(error)} />
+          <ErrorNote message={errorMessage(t, error)} detail={errorDetail(error)} />
         </div>
       )}
 

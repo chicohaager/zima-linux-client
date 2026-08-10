@@ -14,7 +14,7 @@ import {
   TrashIcon,
   UploadIcon,
 } from '../../shared/ui/Icons'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 import { breadcrumbs, parentPath } from '../../shared/lib/format'
 import { FileList, type Entry } from './FileList'
 import { TaskList } from './TaskList'
@@ -104,7 +104,7 @@ export const FilesScreen = (): React.JSX.Element => {
             is the honest answer — a guessed root would produce "path not exist" and look
             like a broken client. */}
         <ErrorNote
-          message={volumesError === null ? t('files.noVolumes') : t(volumesError.i18nKey)}
+          message={volumesError === null ? t('files.noVolumes') : errorMessage(t, volumesError)}
           detail={errorDetail(volumesError)}
         />
       </>
@@ -285,12 +285,12 @@ export const FilesScreen = (): React.JSX.Element => {
 
       {actionError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(actionError.i18nKey)} detail={errorDetail(actionError)} />
+          <ErrorNote message={errorMessage(t, actionError)} detail={errorDetail(actionError)} />
         </div>
       )}
       {searchError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(searchError.i18nKey)} detail={errorDetail(searchError)} />
+          <ErrorNote message={errorMessage(t, searchError)} detail={errorDetail(searchError)} />
         </div>
       )}
 
@@ -302,7 +302,7 @@ export const FilesScreen = (): React.JSX.Element => {
         {listing.isPending && <Muted>{t('files.loading')}</Muted>}
 
         {listingError !== null && (
-          <ErrorNote message={t(listingError.i18nKey)} detail={errorDetail(listingError)} />
+          <ErrorNote message={errorMessage(t, listingError)} detail={errorDetail(listingError)} />
         )}
 
         {search.result !== undefined && (

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Badge, Button, ErrorNote, Field } from '../../shared/ui/Controls'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 
 /**
  * Remote ID over ZeroTier — Plan § 3b.
@@ -129,7 +129,7 @@ export const ZerotierPanel = ({
 
       {error !== null && (
         <div className="mt-2">
-          <ErrorNote message={t(error.i18nKey)} detail={errorDetail(error)} />
+          <ErrorNote message={errorMessage(t, error)} detail={errorDetail(error)} />
         </div>
       )}
     </Card>

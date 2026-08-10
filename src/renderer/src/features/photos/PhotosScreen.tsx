@@ -5,7 +5,7 @@ import { isVideoName } from '@shared/media'
 import { Card, Muted, Pill, SectionTitle } from '../../shared/ui/Card'
 import { Badge, Button, ErrorNote } from '../../shared/ui/Controls'
 import { ChevronLeftIcon, FolderIcon, SearchIcon } from '../../shared/ui/Icons'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 import { basename, parentPath } from '../../shared/lib/format'
 import { PhotoGrid, type GridItem } from './PhotoGrid'
 import { BackupPanel } from './BackupPanel'
@@ -221,17 +221,17 @@ export const PhotosScreen = (): React.JSX.Element => {
 
       {searchError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(searchError.i18nKey)} detail={errorDetail(searchError)} />
+          <ErrorNote message={errorMessage(t, searchError)} detail={errorDetail(searchError)} />
         </div>
       )}
       {galleryError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(galleryError.i18nKey)} detail={errorDetail(galleryError)} />
+          <ErrorNote message={errorMessage(t, galleryError)} detail={errorDetail(galleryError)} />
         </div>
       )}
       {gridError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(gridError.i18nKey)} detail={errorDetail(gridError)} />
+          <ErrorNote message={errorMessage(t, gridError)} detail={errorDetail(gridError)} />
         </div>
       )}
 

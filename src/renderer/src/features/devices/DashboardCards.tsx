@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Badge, ErrorNote } from '../../shared/ui/Controls'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 import { formatBytes, formatPercent } from '../../shared/lib/format'
 
 /**
@@ -76,7 +76,7 @@ export const DashboardCards = (): React.JSX.Element => {
 
       {infoError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(infoError.i18nKey)} detail={errorDetail(infoError)} />
+          <ErrorNote message={errorMessage(t, infoError)} detail={errorDetail(infoError)} />
         </div>
       )}
 
@@ -120,7 +120,7 @@ export const DashboardCards = (): React.JSX.Element => {
 
       {loadError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(loadError.i18nKey)} detail={errorDetail(loadError)} />
+          <ErrorNote message={errorMessage(t, loadError)} detail={errorDetail(loadError)} />
         </div>
       )}
 
@@ -165,7 +165,7 @@ export const DashboardCards = (): React.JSX.Element => {
 
       {volumesError !== null && (
         <div className="mb-4">
-          <ErrorNote message={t(volumesError.i18nKey)} detail={errorDetail(volumesError)} />
+          <ErrorNote message={errorMessage(t, volumesError)} detail={errorDetail(volumesError)} />
         </div>
       )}
     </>

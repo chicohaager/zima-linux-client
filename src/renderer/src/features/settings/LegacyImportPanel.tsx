@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Button, ErrorNote } from '../../shared/ui/Controls'
-import { asAppError, errorDetail, unwrap } from '../../shared/lib/ipc'
+import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 
 /**
  * Adopting devices from a 0.9.x installation — Plan § 13.
@@ -74,7 +74,7 @@ export const LegacyImportPanel = (): React.JSX.Element | null => {
 
       {error !== null && (
         <div className="mt-2">
-          <ErrorNote message={t(error.i18nKey)} detail={errorDetail(error)} />
+          <ErrorNote message={errorMessage(t, error)} detail={errorDetail(error)} />
         </div>
       )}
     </Card>

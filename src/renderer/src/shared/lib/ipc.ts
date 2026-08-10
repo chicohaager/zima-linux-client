@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next'
 import type { AppError } from '@shared/result'
 
 /**
@@ -39,3 +40,31 @@ export const errorDetail = (error: AppError | null): string | undefined => {
   const parts = [error.message, ...context].filter((part) => part.length > 0)
   return parts.length > 0 ? parts.join('  ·  ') : undefined
 }
+
+/**
+ * The translated sentence for an error — **with its values filled in**.
+ *
+ * 🔴 Every one of the ~20 call sites used to write `t(error.i18nKey)` and nothing else. Two
+ * catalogue entries carry placeholders — `error.noPathAnswered` ("… ({{paths}})") and
+ * `error.unexpectedStatus` ("… (HTTP {{status}})") — and both rendered the placeholder
+ * verbatim. Seen on a real desktop on 2026-08-10 in the shipped 2.0.0-alpha.2:
+ *
+ *     Kein gespeicherter Verbindungsweg hat geantwortet ({{paths}}).
+ *
+ * The values were never missing: they sit in `error.context`, and the line underneath was
+ * printing them the whole time. They simply were not handed to the translator.
+ *
+ * `replace` rather than spreading the context into the options object: i18next treats
+ * `count`, `context`, `lng`, `ns` and friends as its own options, so a context field with
+ * one of those names would change the lookup instead of filling a hole — a bug that would
+ * surface in one language and not the next.
+ *
+ * A missing placeholder value stays visible on purpose. i18next leaves `{{x}}` standing when
+ * nothing is supplied, and that is the honest outcome: a hole shows there is a hole, while a
+ * silent blank would read as a finished sentence.
+ */
+export const errorMessage = (
+  t: TFunction,
+  error: AppError | null,
+  fallbackKey = 'error.internal',
+): string => t(error?.i18nKey ?? fallbackKey, { replace: error?.context ?? {} })

@@ -3,6 +3,7 @@ import type { ConnectionKind } from '@shared/domain'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, SectionTitle } from '../../shared/ui/Card'
+import { asAppError, errorMessage } from '../../shared/lib/ipc'
 import { Button, ErrorNote, Field } from '../../shared/ui/Controls'
 
 interface Props {
@@ -78,7 +79,7 @@ export const SignInForm = ({
     },
   })
 
-  const error = signIn.error as { i18nKey?: string; context?: Record<string, unknown> } | null
+  const error = asAppError(signIn.error)
   const canSubmit = host.trim().length > 0 && username.length > 0 && password.length > 0
 
   return (
@@ -117,7 +118,7 @@ export const SignInForm = ({
 
           {error !== null && (
             <ErrorNote
-              message={t(error.i18nKey ?? 'error.internal')}
+              message={errorMessage(t, error)}
               detail={
                 error.context === undefined
                   ? undefined
