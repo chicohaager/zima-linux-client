@@ -15,6 +15,10 @@ i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 
 privacy gate        clean, 215 verfolgte Dateien (Bilder überspringt es — siehe unten)
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix) —
                     Messwert vom 2026-08-09, an alpha.4 NICHT wiederholt
+Handlauf alpha.4    Zorin OS 18: Start OHNE Sitzung und ohne eigenmächtigen Zugriff; nach
+                    Verbinden über Remote-ID stand die Sitzung, 38 Gateway-Routen, neun
+                    Fähigkeiten `available`, Dateien/Fotos/Apps benutzt. NICHT geprüft:
+                    der Knopf „Verbinden" am gespeicherten Gerät (Token-Weg)
 Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 4fd04b3, alle fünf in
                     einem Lauf am 2026-08-10, 15:52–15:58; Flatpak aus der Zielliste.
                     `sha256sum -c SHA256SUMS-2.0.0-alpha.4.txt` → 5× OK
