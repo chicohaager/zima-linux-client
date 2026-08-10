@@ -301,6 +301,15 @@ export interface Device {
   readonly addresses: readonly DeviceAddress[]
   readonly lastSeenIso: string | null
   readonly capabilities: Capabilities | null
+  /**
+   * `device_code` from `GET /v2/zimaos/device/info` — how this device is recognised again
+   * at an address nobody stored yet.
+   *
+   * Null for entries written before this existed, and for devices that were never reached.
+   * Null must never match anything: see `sameDevice` in `main/zima/identity.ts`. Measured
+   * stable across a real reboot and different between two devices (2026-08-10).
+   */
+  readonly deviceCode?: string | null
 }
 
 /**

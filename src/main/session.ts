@@ -6,6 +6,8 @@ import { deriveCapabilities, parseRoutes, probeZerotier } from '@main/zima/capab
 import { BASE, ZT } from '@main/zima/endpoints'
 import * as registry from '@main/devices/registry'
 import { selectBestAddress } from '@main/transport/probe'
+import { learnAddressesFor } from '@main/devices/rediscover'
+import { fetchIdentity } from '@main/zima/identity'
 import { joinNetwork as zerotierJoin } from '@main/zerotier/daemon'
 import * as credentials from '@main/secrets/credentials'
 import { logger } from '@main/logging/logger'
@@ -176,6 +178,16 @@ export const signIn = async (params: {
   })
   if (isErr(stored)) return stored
 
+  // The device's own identifier, read credential-free from the same host we just signed
+  // into. Stored so this box can be recognised later at an address nobody typed yet.
+  const identity = await fetchIdentity(host, port)
+  if (!isErr(identity)) {
+    const noted = registry.setDeviceCode(id, identity.value.deviceCode)
+    if (isErr(noted)) logger.warn('session.device-code-not-stored', { deviceId: id })
+  } else {
+    logger.info('session.device-code-unavailable', { host, kind: identity.error.kind })
+  }
+
   const holder = new TokenHolder(host, port)
   holder.adopt(tokens.value)
   active = { device: stored.value, address, tokens: holder, username }
@@ -299,6 +311,27 @@ const chooseResumeAddress = async (device: Device): Promise<Result<DeviceAddress
     }
   }
 
+  /*
+   * No stored path answered. Before opening a tunnel, ask the network whether this device
+   * is simply standing next to us under an address nobody wrote down — which is exactly
+   * how the measured failure looked: one stored Tailscale path, dead, while the same box
+   * answered in 3 ms over the LAN. Recognition is by `device_code`, so a stranger in the
+   * LAN cannot be adopted; see devices/rediscover.ts.
+   */
+  const relearned = await learnAddressesFor(device)
+  if (relearned.learned.length > 0) {
+    const { best, results } = await selectBestAddress(relearned.learned)
+    for (const r of results) attempts.push(`${r.host}=${r.reachable ? `${r.latencyMs}ms` : r.failure}`)
+    if (best !== null) {
+      logger.info('session.resume-path-relearned', {
+        deviceId: device.id,
+        host: best.host,
+        attempts,
+      })
+      return ok(best)
+    }
+  }
+
   // Only now is a tunnel worth its cost.
   for (const candidate of ordered.filter((a) => a.kind === 'remote-id')) {
     const road = await reopenRemoteRoad(device, candidate)
@@ -346,6 +379,21 @@ export const resume = async (deviceId: string): Promise<Result<SessionSummary>> 
   if (isErr(renewed)) return renewed
 
   active = { device, address: address.value, tokens: holder, username: renewed.value.access.username }
+
+  /*
+   * Backfill the device's identifier for entries written before it existed — the reported among
+   * them. Without this a device stored earlier could never be recognised at a new address,
+   * because recognition compares against a code that is null and null matches nothing.
+   * Runs on the path that just answered, so it costs one short request on a live route.
+   */
+  if (device.deviceCode === null || device.deviceCode === undefined) {
+    const identity = await fetchIdentity(address.value.host, address.value.port)
+    if (!isErr(identity)) {
+      const noted = registry.setDeviceCode(deviceId, identity.value.deviceCode)
+      if (isErr(noted)) logger.warn('session.device-code-not-stored', { deviceId })
+      else logger.info('session.device-code-backfilled', { deviceId })
+    }
+  }
 
   // Same probe as on sign-in. Without it a resumed session would show ZeroTier as
   // 'noch nicht geprüft' forever, which is a different claim from the measured one.

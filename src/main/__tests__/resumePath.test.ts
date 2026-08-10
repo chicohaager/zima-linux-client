@@ -4,7 +4,7 @@
  * 🔴 Measured on 2026-08-10, a machine standing in the same LAN as its device, connected
  * over Tailscale. A watcher sampling both paths every ten seconds for three minutes:
  *
- *     LAN 192.168.1.143     16 of 16 answered, 2–6 ms
+ *     LAN 192.0.2.10     16 of 16 answered, 2–6 ms
  *     Tailscale 100.x       3 of 16 answered, the rest timed out
  *     tailscale status      "active; direct" the entire time
  *
@@ -76,8 +76,8 @@ vi.mock('@main/zerotier/daemon', () => ({
   },
 }))
 
-const lan: DeviceAddress = { kind: 'lan', host: '192.168.1.143', port: 80, priority: 1 }
-const tailscale: DeviceAddress = { kind: 'tailscale', host: '100.110.212.65', port: 80, priority: 0 }
+const lan: DeviceAddress = { kind: 'lan', host: '192.0.2.10', port: 80, priority: 1 }
+const tailscale: DeviceAddress = { kind: 'tailscale', host: '198.51.100.10', port: 80, priority: 0 }
 const remote: DeviceAddress = {
   kind: 'remote-id',
   host: '10.147.18.5',

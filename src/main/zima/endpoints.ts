@@ -115,7 +115,15 @@ export const systemState = (state: SystemState): string => `/state/${encodeURICo
 
 /** Paths relative to BASE.zimaos. */
 export const SYSTEM = {
-  /** sdk: `getDeviceInfo` — name, model, arch, cpu, os version */
+  /**
+   * live 2026-08-10: `getDeviceInfo` — and it answers **without a token**, HTTP 200.
+   *
+   * Shape read off two hosts: `{arch, cpu{cores,model,threads,frequency}, device_code,
+   * device_model, device_name, gpu[], hash, is_licensed, memory{…}, os_version}`.
+   * `device_code` is a UUID that stayed identical across a real reboot of .143 and differs
+   * between two devices — which is why device recognition hangs off it (see identity.ts).
+   * `hash` was `--` on both hosts, so placeholder values do occur in this document.
+   */
   deviceInfo: '/device/info',
   /** sdk: `getDeviceImage`, query model,type — the product photo on the dashboard */
   deviceImage: '/device/image',
