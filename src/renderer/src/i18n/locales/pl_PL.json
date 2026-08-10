@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Urządzenie odrzuciło połączenie — na tym porcie nic nie nasłuchuje.",
-    "timeout": "Brak jakiejkolwiek odpowiedzi — być może zapora odrzuca połączenie.",
+    "timeout": "Brak odpowiedzi tą ścieżką — urządzenie jest tak nieosiągalne.",
     "dns": "Nie udało się rozwiązać nazwy hosta.",
     "unexpectedStatus": "Nieoczekiwana odpowiedź urządzenia (HTTP {{status}}).",
     "malformedResponse": "Urządzenie odpowiedziało w formie, której ten klient nie rozumie.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Lokalna usługa ZeroTier nie wystartowała.",
     "unexpected-status": "Urządzenie odpowiedziało nieoczekiwanym statusem.",
     "zerotierNoCapability": "Lokalna usługa ZeroTier nie ma prawa tworzyć wirtualnego urządzenia sieciowego. Dokładne polecenie, które to nadaje, znajduje się poniżej.",
-    "remoteIdUnknown": "Dla tego urządzenia nie zapisano żadnego Remote ID. Zaloguj się raz przez «Połącz przez Remote ID»."
+    "remoteIdUnknown": "Dla tego urządzenia nie zapisano żadnego Remote ID. Zaloguj się raz przez «Połącz przez Remote ID».",
+    "noPathAnswered": "Żadna zapisana ścieżka połączenia nie odpowiedziała ({{paths}})."
   },
   "common": {
     "retry": "Ponów",

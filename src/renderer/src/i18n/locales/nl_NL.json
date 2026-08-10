@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Het apparaat weigerde de verbinding — er luistert niets op deze poort.",
-    "timeout": "Helemaal geen antwoord — mogelijk verwerpt een firewall de verbinding.",
+    "timeout": "Geen antwoord via dit pad — het apparaat is zo niet bereikbaar.",
     "dns": "De hostnaam kon niet worden omgezet.",
     "unexpectedStatus": "Onverwacht antwoord van het apparaat (HTTP {{status}}).",
     "malformedResponse": "Het apparaat antwoordde in een vorm die deze client niet begrijpt.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "De lokale ZeroTier-dienst is niet gestart.",
     "unexpected-status": "Het apparaat antwoordde met een onverwachte status.",
     "zerotierNoCapability": "De lokale ZeroTier-dienst mag geen virtueel netwerkapparaat aanmaken. Het precieze commando om dat toe te staan staat hieronder.",
-    "remoteIdUnknown": "Voor dit apparaat is geen Remote ID opgeslagen. Meld je één keer aan via \"Verbinden via Remote ID\"."
+    "remoteIdUnknown": "Voor dit apparaat is geen Remote ID opgeslagen. Meld je één keer aan via \"Verbinden via Remote ID\".",
+    "noPathAnswered": "Geen opgeslagen verbindingspad heeft geantwoord ({{paths}})."
   },
   "common": {
     "retry": "Opnieuw",

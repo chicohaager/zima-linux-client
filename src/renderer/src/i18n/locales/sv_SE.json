@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Enheten avvisade anslutningen — inget lyssnar på denna port.",
-    "timeout": "Inget svar alls — en brandvägg kan kasta anslutningen.",
+    "timeout": "Inget svar via den här vägen — enheten går inte att nå så.",
     "dns": "Värdnamnet kunde inte slås upp.",
     "unexpectedStatus": "Oväntat svar från enheten (HTTP {{status}}).",
     "malformedResponse": "Enheten svarade i en form som denna klient inte förstår.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Den lokala ZeroTier-tjänsten startade inte.",
     "unexpected-status": "Enheten svarade med en oväntad status.",
     "zerotierNoCapability": "Den lokala ZeroTier-tjänsten får inte skapa en virtuell nätverksenhet. Det exakta kommandot för att ge den rätten står nedan.",
-    "remoteIdUnknown": "Inget Remote ID är sparat för den här enheten. Logga in en gång via «Anslut via Remote ID»."
+    "remoteIdUnknown": "Inget Remote ID är sparat för den här enheten. Logga in en gång via «Anslut via Remote ID».",
+    "noPathAnswered": "Ingen sparad anslutningsväg svarade ({{paths}})."
   },
   "common": {
     "retry": "Försök igen",

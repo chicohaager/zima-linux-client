@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Il dispositivo ha rifiutato la connessione: nessuno è in ascolto su questa porta.",
-    "timeout": "Nessuna risposta: forse un firewall scarta la connessione.",
+    "timeout": "Nessuna risposta su questo percorso — il dispositivo non è raggiungibile così.",
     "dns": "Non è stato possibile risolvere il nome host.",
     "unexpectedStatus": "Risposta inattesa dal dispositivo (HTTP {{status}}).",
     "malformedResponse": "Il dispositivo ha risposto in un formato che questo client non comprende.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Il servizio ZeroTier locale non è partito.",
     "unexpected-status": "Il dispositivo ha risposto con uno stato inatteso.",
     "zerotierNoCapability": "Il servizio ZeroTier locale non può creare un dispositivo di rete virtuale. Il comando esatto per concederlo è qui sotto.",
-    "remoteIdUnknown": "Per questo dispositivo non è salvato alcun Remote ID. Accedi una volta tramite «Connetti tramite Remote ID»."
+    "remoteIdUnknown": "Per questo dispositivo non è salvato alcun Remote ID. Accedi una volta tramite «Connetti tramite Remote ID».",
+    "noPathAnswered": "Nessun percorso di connessione salvato ha risposto ({{paths}})."
   },
   "common": {
     "retry": "Riprova",

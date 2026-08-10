@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Az eszköz elutasította a kapcsolatot — ezen a porton semmi sem figyel.",
-    "timeout": "Egyáltalán nincs válasz — talán egy tűzfal eldobja a kapcsolatot.",
+    "timeout": "Nincs válasz ezen az útvonalon — az eszköz így nem érhető el.",
     "dns": "A gépnév nem volt feloldható.",
     "unexpectedStatus": "Váratlan válasz az eszköztől (HTTP {{status}}).",
     "malformedResponse": "Az eszköz olyan formában válaszolt, amelyet ez a kliens nem ért.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "A helyi ZeroTier szolgáltatás nem indult el.",
     "unexpected-status": "Az eszköz váratlan állapottal válaszolt.",
     "zerotierNoCapability": "A helyi ZeroTier szolgáltatás nem hozhat létre virtuális hálózati eszközt. A pontos parancs, amivel ez engedélyezhető, alább látható.",
-    "remoteIdUnknown": "Ehhez az eszközhöz nincs Remote ID mentve. Jelentkezzen be egyszer a «Csatlakozás Remote ID-vel» ponton keresztül."
+    "remoteIdUnknown": "Ehhez az eszközhöz nincs Remote ID mentve. Jelentkezzen be egyszer a «Csatlakozás Remote ID-vel» ponton keresztül.",
+    "noPathAnswered": "Egyik mentett kapcsolati útvonal sem válaszolt ({{paths}})."
   },
   "common": {
     "retry": "Újra",

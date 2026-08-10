@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "The device refused the connection — nothing is listening on this port.",
-    "timeout": "No answer at all — a firewall may be dropping the connection.",
+    "timeout": "No answer over this path — the device cannot be reached this way.",
     "dns": "The host name could not be resolved.",
     "unexpectedStatus": "Unexpected response from the device (HTTP {{status}}).",
     "malformedResponse": "The device answered in a form this client does not understand.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "The local ZeroTier service did not start.",
     "unexpected-status": "The device answered with an unexpected status.",
     "zerotierNoCapability": "The local ZeroTier service is not allowed to create a virtual network device. The exact command to grant that is below.",
-    "remoteIdUnknown": "No Remote ID is stored for this device. Sign in once via \"Connect via Remote ID\"."
+    "remoteIdUnknown": "No Remote ID is stored for this device. Sign in once via \"Connect via Remote ID\".",
+    "noPathAnswered": "No stored connection path answered ({{paths}})."
   },
   "common": {
     "retry": "Retry",

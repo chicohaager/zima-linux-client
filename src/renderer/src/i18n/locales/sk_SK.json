@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Zariadenie odmietlo pripojenie — na tomto porte nič nepočúva.",
-    "timeout": "Žiadna odpoveď — možno firewall spojenie zahadzuje.",
+    "timeout": "Žiadna odpoveď touto cestou — zariadenie takto nie je dostupné.",
     "dns": "Názov hostiteľa sa nedal preložiť.",
     "unexpectedStatus": "Neočekávaná odpoveď zariadenia (HTTP {{status}}).",
     "malformedResponse": "Zariadenie odpovedalo vo forme, ktorú tento klient nerozumie.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Miestna služba ZeroTier sa nespustila.",
     "unexpected-status": "Zariadenie odpovedalo neočakávaným stavom.",
     "zerotierNoCapability": "Miestna služba ZeroTier nesmie vytvoriť virtuálne sieťové zariadenie. Presný príkaz, ktorý to povolí, je nižšie.",
-    "remoteIdUnknown": "Pre toto zariadenie nie je uložené žiadne Remote ID. Prihláste sa raz cez «Pripojiť cez Remote ID»."
+    "remoteIdUnknown": "Pre toto zariadenie nie je uložené žiadne Remote ID. Prihláste sa raz cez «Pripojiť cez Remote ID».",
+    "noPathAnswered": "Žiadna uložená cesta pripojenia neodpovedala ({{paths}})."
   },
   "common": {
     "retry": "Skúsiť znova",

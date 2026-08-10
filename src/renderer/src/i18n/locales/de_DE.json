@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Das Gerät hat die Verbindung abgewiesen — auf diesem Port lauscht nichts.",
-    "timeout": "Überhaupt keine Antwort — möglicherweise verwirft eine Firewall die Verbindung.",
+    "timeout": "Keine Antwort über diesen Weg — das Gerät ist so nicht erreichbar.",
     "dns": "Der Hostname war nicht auflösbar.",
     "unexpectedStatus": "Unerwartete Antwort vom Gerät (HTTP {{status}}).",
     "malformedResponse": "Das Gerät hat in einer Form geantwortet, die dieser Client nicht versteht.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Der lokale ZeroTier-Dienst ist nicht gestartet.",
     "unexpected-status": "Das Gerät hat mit einem unerwarteten Status geantwortet.",
     "zerotierNoCapability": "Der lokale ZeroTier-Dienst darf kein virtuelles Netzwerkgerät anlegen. Das Kommando, um das einmalig zu erlauben, steht darunter.",
-    "remoteIdUnknown": "Zu diesem Gerät ist keine Remote-ID gespeichert. Melde dich einmal über „Über Remote-ID verbinden\" an."
+    "remoteIdUnknown": "Zu diesem Gerät ist keine Remote-ID gespeichert. Melde dich einmal über „Über Remote-ID verbinden\" an.",
+    "noPathAnswered": "Kein gespeicherter Verbindungsweg hat geantwortet ({{paths}})."
   },
   "common": {
     "retry": "Erneut versuchen",

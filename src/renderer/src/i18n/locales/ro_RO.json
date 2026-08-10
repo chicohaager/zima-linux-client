@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Dispozitivul a refuzat conexiunea — nimic nu ascultă pe acest port.",
-    "timeout": "Niciun răspuns — poate un firewall respinge conexiunea.",
+    "timeout": "Niciun răspuns pe această cale — dispozitivul nu este accesibil astfel.",
     "dns": "Numele gazdei nu a putut fi rezolvat.",
     "unexpectedStatus": "Răspuns neașteptat de la dispozitiv (HTTP {{status}}).",
     "malformedResponse": "Dispozitivul a răspuns într-o formă pe care acest client nu o înțelege.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Serviciul ZeroTier local nu a pornit.",
     "unexpected-status": "Dispozitivul a răspuns cu o stare neașteptată.",
     "zerotierNoCapability": "Serviciul ZeroTier local nu are voie să creeze un dispozitiv de rețea virtual. Comanda exactă pentru a acorda acest drept este mai jos.",
-    "remoteIdUnknown": "Pentru acest dispozitiv nu este salvat niciun Remote ID. Autentificați-vă o dată prin «Conectare prin Remote ID»."
+    "remoteIdUnknown": "Pentru acest dispozitiv nu este salvat niciun Remote ID. Autentificați-vă o dată prin «Conectare prin Remote ID».",
+    "noPathAnswered": "Nicio cale de conexiune salvată nu a răspuns ({{paths}})."
   },
   "common": {
     "retry": "Reîncearcă",

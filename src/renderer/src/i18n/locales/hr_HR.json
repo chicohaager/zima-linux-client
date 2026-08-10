@@ -158,7 +158,7 @@
   },
   "error": {
     "refused": "Uređaj je odbio vezu — na ovom priključku ništa ne sluša.",
-    "timeout": "Nema nikakvog odgovora — možda vatrozid odbacuje vezu.",
+    "timeout": "Nema odgovora ovim putem — uređaj tako nije dostupan.",
     "dns": "Naziv računala nije bilo moguće razriješiti.",
     "unexpectedStatus": "Neočekivan odgovor uređaja (HTTP {{status}}).",
     "malformedResponse": "Uređaj je odgovorio u obliku koji ovaj klijent ne razumije.",
@@ -193,7 +193,8 @@
     "zerotierNoStart": "Lokalna ZeroTier usluga nije se pokrenula.",
     "unexpected-status": "Uređaj je odgovorio neočekivanim statusom.",
     "zerotierNoCapability": "Lokalna ZeroTier usluga ne smije stvoriti virtualni mrežni uređaj. Točna naredba koja to dopušta nalazi se ispod.",
-    "remoteIdUnknown": "Za ovaj uređaj nije spremljen nijedan Remote ID. Prijavite se jednom putem «Poveži se putem Remote ID-a»."
+    "remoteIdUnknown": "Za ovaj uređaj nije spremljen nijedan Remote ID. Prijavite se jednom putem «Poveži se putem Remote ID-a».",
+    "noPathAnswered": "Nijedan spremljeni put veze nije odgovorio ({{paths}})."
   },
   "common": {
     "retry": "Pokušaj ponovno",
