@@ -1,9 +1,24 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
+import { NO_PATH_ANSWERED, type AppError } from '@shared/result'
 import { Card, Muted } from '../../shared/ui/Card'
 import { Button } from '../../shared/ui/Controls'
 import { WifiIcon } from '../../shared/ui/Icons'
+
+/**
+ * Whether this failure is the one the card's sentence talks about.
+ *
+ * 🔴 The card says "the device answered on no stored path". That is a claim about
+ * reachability, and it was shown for EVERY failed resume. Measured 2026-08-10 in a tester's
+ * log: `session.resume-path-chosen {"attempts":["<tunnel-address>=19ms"]}` followed by
+ * `status:401` in 8 ms — the path answered perfectly, the refresh token had expired, and
+ * the card underneath said the opposite while offering a path nobody needed.
+ *
+ * So the offer is bound to the one error that means what the sentence says, and nothing
+ * else. This also spares the LAN scan in every case where it cannot help.
+ */
+export const offersPaths = (error: AppError): boolean => error.i18nKey === NO_PATH_ANSWERED
 
 /**
  * "Your device did not answer — but there is one standing in your network. Is it this one?"
@@ -21,9 +36,18 @@ import { WifiIcon } from '../../shared/ui/Icons'
  * is pressed, so what gets stored is what is there at that moment, not what a scan reported
  * seconds earlier.
  */
-export const PathOffer = ({ deviceId }: { readonly deviceId: string }): React.JSX.Element | null => {
+export const PathOffer = ({
+  deviceId,
+  resumeError,
+}: {
+  readonly deviceId: string
+  readonly resumeError: AppError
+}): React.JSX.Element | null => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  // Derived once and used as an effect dependency: `resumeError` is a fresh object on
+  // every render, so depending on it directly would re-run the LAN scan endlessly.
+  const offers = offersPaths(resumeError)
   const [state, setState] = useState<
     | { readonly phase: 'searching' }
     | {
@@ -35,9 +59,12 @@ export const PathOffer = ({ deviceId }: { readonly deviceId: string }): React.JS
     | { readonly phase: 'adding'; readonly host: string }
     | { readonly phase: 'added' }
     | { readonly phase: 'failed'; readonly i18nKey: string }
-  >({ phase: 'searching' })
+    // Lazy, so a failure the card has nothing to say about never even flashes the
+    // "searching …" line on its way to rendering null.
+  >(() => (offers ? { phase: 'searching' } : { phase: 'nothing' }))
 
   useEffect(() => {
+    if (!offers) return
     let cancelled = false
     const run = async (): Promise<void> => {
       const found = await window.zima.findDevicePaths({ deviceId })
@@ -65,7 +92,7 @@ export const PathOffer = ({ deviceId }: { readonly deviceId: string }): React.JS
     return (): void => {
       cancelled = true
     }
-  }, [deviceId])
+  }, [deviceId, offers])
 
   const adopt = async (host: string, port: number): Promise<void> => {
     setState({ phase: 'adding', host })

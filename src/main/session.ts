@@ -1,5 +1,5 @@
 import type { Capabilities, Device, DeviceAddress } from '@shared/domain'
-import { appError, err, isErr, ok, type Result } from '@shared/result'
+import { appError, err, isErr, ok, NO_PATH_ANSWERED, type Result } from '@shared/result'
 import { TokenHolder, login as apiLogin, refresh as apiRefresh, type Tokens } from '@main/zima/auth'
 import { fetchRoutes, request, type DeviceContext } from '@main/zima/client'
 import { deriveCapabilities, parseRoutes, probeZerotier } from '@main/zima/capabilities'
@@ -349,7 +349,7 @@ const chooseResumeAddress = async (device: Device): Promise<Result<DeviceAddress
 
   logger.warn('session.resume-no-path', { deviceId: device.id, attempts })
   return err(
-    appError('timeout', `no stored path answered: ${attempts.join(', ')}`, 'error.noPathAnswered', {
+    appError('timeout', `no stored path answered: ${attempts.join(', ')}`, NO_PATH_ANSWERED, {
       deviceId: device.id,
       paths: attempts.join(', '),
     }),
