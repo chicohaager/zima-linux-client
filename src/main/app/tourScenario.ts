@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
 import { RAW_KEY_SCAN } from './catalogueKeys'
-import { capturePng, sleep } from './scenarioKit'
+import { capturePng, sleep, waitForResumeSettled } from './scenarioKit'
 import type { ScenarioResult } from './scenarios'
 
 /**
@@ -97,10 +97,20 @@ export const runTour = async (window: BrowserWindow, reportPath: string): Promis
   const run = async (script: string): Promise<unknown> =>
     window.webContents.executeJavaScript(script, true)
 
-  // The session is restored automatically at startup; the tour waits for it rather than
-  // signing in, because it has no password — and a tour that logged in would be testing a
-  // path that a returning user never takes.
-  await sleep(3_500)
+  /*
+   * The session is restored automatically at startup; the tour waits for it rather than
+   * signing in, because it has no password — and a tour that logged in would be testing a
+   * path that a returning user never takes.
+   *
+   * 🔴 Waiting for the restore to SETTLE, not sleeping 3.5 s at it. The fixed sleep was
+   * wrong in both directions: too short when the stored host is far away (the tour then
+   * walked an app that was still restoring and blamed the sections), and pure dead time on
+   * every run started from the sign-in scenario, where the session was established
+   * milliseconds earlier — there is nothing left to wait for and it waited anyway.
+   */
+  const resume = await waitForResumeSettled(run)
+  observed['resumePhase'] = resume.phase
+  observed['resumeWaitMs'] = String(resume.elapsedMs)
 
   // Which error phrases can even appear depends on the locale on screen — asked of the
   // running document, not of the environment variable that was meant to set it.
