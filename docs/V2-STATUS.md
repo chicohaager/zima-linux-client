@@ -8,17 +8,24 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 **Zuletzt gefahren, 2026-08-10 — der Stand dieses Commits:**
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 227 Tests · build · build-gate · i18n · privacy
-npm run verify:release ✓ (rc=0)  8 Prüfungen am dist-Verzeichnis (siehe unten)
-i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 204 verfolgte Dateien (Bilder überspringt es — siehe unten)
+npm run verify        ✓ (rc=0)  type-check · lint · 263 Tests · build · build-gate · i18n · privacy
+npm run verify:release ✗ (rc=1)  2 von 8 rot — die Pakete sind ÄLTER als der Code (siehe unten)
+i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
+privacy gate        clean, 214 verfolgte Dateien (Bilder überspringt es — siehe unten)
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix)
 Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus de27002, alle fünf in
-                    einem Lauf am 2026-08-10, 11:47–11:53; Flatpak aus der Zielliste
+                    einem Lauf am 2026-08-10, 11:47–11:53; Flatpak aus der Zielliste.
+                    ⚠ Seitdem sind 9114567 und 6190b46 dazugekommen — die Dateien im
+                    `dist/` zeigen diesen Stand NICHT. Vor der nächsten Weitergabe neu bauen.
 Zweig               auf `origin/v2` hochgeladen (2026-08-10, per `git ls-remote` gegengeprüft)
 Release             v2.0.0-alpha.1 als Pre-Release, 7 Assets; `sha256sum -c` aus dem echten
                     Download grün für alle fünf Pakete (nicht an den lokalen Dateien geprüft)
 ```
+
+Das rote Release-Gate steht hier absichtlich mit seinem Exit-Code. Es meldet genau die Lage,
+für die es gebaut wurde: *„no artefact predates the last build-input commit"* und *„build claims
+name their commit — claims build from de27002, build inputs last changed in 6190b46"*. Ein Gate,
+dessen Rot man wegschreibt, hätte man sich sparen können.
 
 Die Zeile `Pakete` nennt seit dem 2026-08-10 den **Commit**, aus dem gebaut wurde, und
 `npm run verify:release` erzwingt das: eine Bau-Behauptung ohne Commit lässt das Gate rot
