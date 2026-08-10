@@ -3,7 +3,9 @@
 Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwaltung, mit ZeroTier
 eingebaut und Tailscale genutzt, wenn es ohnehin schon läuft.
 
-> **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.1, ein Rewrite.**
+> **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.2, ein Rewrite.**
+> Das zuletzt **veröffentlichte** Paket ist `v2.0.0-alpha.1`; `alpha.2` ist ein Bau für die
+> laufende Testrunde und enthält die Arbeit an den Verbindungswegen (siehe `docs/V2-STATUS.md`).
 > Das installierte Paket ist auf **sechs Distributionen** gestartet worden (Ubuntu 22.04 und 24.04,
 > Debian 12, Fedora 41, Arch, openSUSE Tumbleweed) — in Containern, unter Xvfb, nur x86_64.
 > Auf einem **echten Desktop** ist er auf genau einer Maschine benutzt worden (Ubuntu 24.04, GNOME
