@@ -29,7 +29,17 @@
     "remoteIdHint": "输入设备上显示的远程 ID。连接会自动建立 — 然后照常登录即可。",
     "remoteIdLabel": "远程 ID（16 个字符）",
     "remoteIdConnecting": "正在连接…",
-    "connect": "连接"
+    "connect": "连接",
+    "pathOffer": {
+      "title": "这是您的设备吗？",
+      "explain": "该设备在任何已保存的路径上都没有响应。您的网络中有一台 ZimaOS 设备正在响应 — 如果是同一台，请将其添加为路径。",
+      "add": "添加为路径",
+      "adding": "正在添加 {{host}} …",
+      "added": "已添加路径。",
+      "addedHint": "请重新连接 — 客户端现在会测量两条路径并使用有响应的那条。",
+      "searching": "正在查找连接此设备的其他路径 …",
+      "learned": "已自动识别 {{count}} 条路径。"
+    }
   },
   "capability": {
     "photoLibrary": "照片搜索与分面",

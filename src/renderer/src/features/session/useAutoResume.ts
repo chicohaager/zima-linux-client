@@ -28,7 +28,12 @@ export type ResumeState =
   | { readonly phase: 'done' }
   /** No stored secret — normal for a fresh install, rendered as nothing. */
   | { readonly phase: 'nothing-stored' }
-  | { readonly phase: 'failed'; readonly error: AppError }
+  /**
+   * `deviceId` travels with the failure because the screen needs it: the one useful thing
+   * to offer here is "let me look for another way to reach THIS device", and without the
+   * id the offer would have to guess which device the failure was about.
+   */
+  | { readonly phase: 'failed'; readonly error: AppError; readonly deviceId: string | null }
 
 export const useAutoResume = (): ResumeState => {
   const queryClient = useQueryClient()
@@ -51,7 +56,7 @@ export const useAutoResume = (): ResumeState => {
 
       const devices = await window.zima.listDevices({})
       if (!devices.ok) {
-        setState({ phase: 'failed', error: devices.error })
+        setState({ phase: 'failed', error: devices.error, deviceId: null })
         return
       }
 
@@ -77,7 +82,7 @@ export const useAutoResume = (): ResumeState => {
       setState(
         resumed.error.i18nKey === 'error.signInRequired'
           ? { phase: 'nothing-stored' }
-          : { phase: 'failed', error: resumed.error },
+          : { phase: 'failed', error: resumed.error, deviceId },
       )
     }
 

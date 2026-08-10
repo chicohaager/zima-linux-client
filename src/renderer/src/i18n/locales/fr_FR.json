@@ -29,7 +29,17 @@
     "remoteIdHint": "Saisir la Remote ID affichée sur l’appareil. La connexion est mise en place pour vous — ensuite, connectez-vous comme d’habitude.",
     "remoteIdLabel": "Remote ID (16 caractères)",
     "remoteIdConnecting": "Connexion…",
-    "connect": "Se connecter"
+    "connect": "Se connecter",
+    "pathOffer": {
+      "title": "Est-ce votre appareil ?",
+      "explain": "L’appareil n’a répondu sur aucun chemin enregistré. Un appareil ZimaOS répond dans votre réseau — si c’est le même, ajoutez-le comme chemin.",
+      "add": "Ajouter comme chemin",
+      "adding": "Ajout de {{host}} …",
+      "added": "Chemin ajouté.",
+      "addedHint": "Reconnectez-vous : les deux chemins sont désormais mesurés et celui qui répond est utilisé.",
+      "searching": "Recherche d’autres chemins vers cet appareil …",
+      "learned": "{{count}} chemin reconnu automatiquement."
+    }
   },
   "capability": {
     "photoLibrary": "Recherche de photos et facettes",

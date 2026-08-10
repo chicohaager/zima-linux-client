@@ -29,7 +29,17 @@
     "remoteIdHint": "Digite a Remote ID mostrada no dispositivo. A conexão é preparada para você — depois é só entrar como de costume.",
     "remoteIdLabel": "Remote ID (16 caracteres)",
     "remoteIdConnecting": "Conectando…",
-    "connect": "Conectar"
+    "connect": "Conectar",
+    "pathOffer": {
+      "title": "Este é o seu dispositivo?",
+      "explain": "O dispositivo não respondeu em nenhum caminho salvo. Na sua rede há um dispositivo ZimaOS respondendo — se for o mesmo, adicione-o como caminho.",
+      "add": "Adicionar como caminho",
+      "adding": "Adicionando {{host}} …",
+      "added": "Caminho adicionado.",
+      "addedHint": "Tente conectar novamente — agora os dois caminhos são medidos.",
+      "searching": "Procurando outros caminhos para este dispositivo …",
+      "learned": "{{count}} caminho reconhecido automaticamente."
+    }
   },
   "capability": {
     "photoLibrary": "Busca de fotos e facetas",

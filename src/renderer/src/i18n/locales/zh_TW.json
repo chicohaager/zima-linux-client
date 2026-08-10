@@ -29,7 +29,17 @@
     "remoteIdHint": "輸入裝置上顯示的遠端 ID。連線會自動建立 — 接著照常登入即可。",
     "remoteIdLabel": "遠端 ID（16 個字元）",
     "remoteIdConnecting": "連線中…",
-    "connect": "連線"
+    "connect": "連線",
+    "pathOffer": {
+      "title": "這是您的裝置嗎？",
+      "explain": "該裝置在任何已儲存的路徑上都沒有回應。您的網路中有一台 ZimaOS 裝置正在回應 — 若是同一台，請將其新增為路徑。",
+      "add": "新增為路徑",
+      "adding": "正在新增 {{host}} …",
+      "added": "已新增路徑。",
+      "addedHint": "請重新連線 — 用戶端現在會測量兩條路徑並使用有回應的那條。",
+      "searching": "正在尋找連線此裝置的其他路徑 …",
+      "learned": "已自動辨識 {{count}} 條路徑。"
+    }
   },
   "capability": {
     "photoLibrary": "照片搜尋與分面",

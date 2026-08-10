@@ -29,7 +29,17 @@
     "remoteIdHint": "Die Remote-ID eingeben, die am Gerät angezeigt wird. Die Verbindung wird eingerichtet — danach meldest du dich wie gewohnt an.",
     "remoteIdLabel": "Remote-ID (16 Zeichen)",
     "remoteIdConnecting": "Verbinde…",
-    "connect": "Verbinden"
+    "connect": "Verbinden",
+    "pathOffer": {
+      "title": "Ist das dein Gerät?",
+      "explain": "Das Gerät hat auf keinem gespeicherten Weg geantwortet. In deinem Netz antwortet ein ZimaOS-Gerät — wenn es dasselbe ist, füge es als Weg hinzu.",
+      "add": "Als Weg hinzufügen",
+      "adding": "{{host}} wird hinzugefügt …",
+      "added": "Weg hinzugefügt.",
+      "addedHint": "Verbinde erneut — der Client misst jetzt beide Wege und nimmt den, der antwortet.",
+      "searching": "Suche nach anderen Wegen zu diesem Gerät …",
+      "learned": "{{count}} Weg automatisch erkannt."
+    }
   },
   "capability": {
     "photoLibrary": "Fotosuche & Facetten",

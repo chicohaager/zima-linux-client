@@ -29,7 +29,17 @@
     "remoteIdHint": "Introduceți Remote ID-ul afișat pe dispozitiv. Conexiunea este pregătită automat — apoi autentificați-vă ca de obicei.",
     "remoteIdLabel": "Remote ID (16 caractere)",
     "remoteIdConnecting": "Se conectează…",
-    "connect": "Conectare"
+    "connect": "Conectare",
+    "pathOffer": {
+      "title": "Acesta este dispozitivul dumneavoastră?",
+      "explain": "Dispozitivul nu a răspuns pe nicio cale salvată. În rețea răspunde un dispozitiv ZimaOS — dacă este același, adăugați-l ca o cale.",
+      "add": "Adaugă ca o cale",
+      "adding": "Se adaugă {{host}} …",
+      "added": "Cale adăugată.",
+      "addedHint": "Încercați să vă conectați din nou — acum ambele căi sunt măsurate.",
+      "searching": "Se caută alte căi către acest dispozitiv …",
+      "learned": "{{count}} cale recunoscută automat."
+    }
   },
   "capability": {
     "photoLibrary": "Căutare foto și filtre",

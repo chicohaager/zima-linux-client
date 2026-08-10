@@ -29,7 +29,17 @@
     "remoteIdHint": "Zadejte Remote ID zobrazené na zařízení. Spojení se připraví samo — potom se přihlaste jako obvykle.",
     "remoteIdLabel": "Remote ID (16 znaků)",
     "remoteIdConnecting": "Připojování…",
-    "connect": "Připojit"
+    "connect": "Připojit",
+    "pathOffer": {
+      "title": "Je toto vaše zařízení?",
+      "explain": "Zařízení neodpovědělo na žádné uložené cestě. Ve vaší síti odpovídá zařízení ZimaOS — pokud je to totéž, přidejte je jako cestu.",
+      "add": "Přidat jako cestu",
+      "adding": "Přidávám {{host}} …",
+      "added": "Cesta přidána.",
+      "addedHint": "Zkuste se připojit znovu — klient nyní měří obě cesty a použije tu, která odpovídá.",
+      "searching": "Hledám další způsoby, jak se k zařízení dostat …",
+      "learned": "{{count}} cesta rozpoznána automaticky."
+    }
   },
   "capability": {
     "photoLibrary": "Vyhledávání fotek a filtry",

@@ -29,7 +29,17 @@
     "remoteIdHint": "Voer de Remote ID in die op het apparaat staat. De verbinding wordt voor je opgezet — daarna meld je je gewoon aan.",
     "remoteIdLabel": "Remote ID (16 tekens)",
     "remoteIdConnecting": "Verbinden…",
-    "connect": "Verbinden"
+    "connect": "Verbinden",
+    "pathOffer": {
+      "title": "Is dit uw apparaat?",
+      "explain": "Het apparaat antwoordde op geen enkel opgeslagen pad. In uw netwerk antwoordt een ZimaOS-apparaat — is het hetzelfde, voeg het dan toe als pad.",
+      "add": "Als pad toevoegen",
+      "adding": "{{host}} wordt toegevoegd …",
+      "added": "Pad toegevoegd.",
+      "addedHint": "Probeer opnieuw te verbinden — beide paden worden nu gemeten.",
+      "searching": "Zoeken naar andere paden naar dit apparaat …",
+      "learned": "{{count}} pad automatisch herkend."
+    }
   },
   "capability": {
     "photoLibrary": "Fotozoeken en facetten",
