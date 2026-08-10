@@ -13,8 +13,9 @@ npm run verify:release ✓ (rc=0)  8 Prüfungen am dist-Verzeichnis (siehe unten
 npx playwright test   ✓ 4 von 4 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
 i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
 privacy gate        clean, 215 verfolgte Dateien (Bilder überspringt es — siehe unten)
-Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix) —
-                    Messwert vom 2026-08-09, an alpha.4 NICHT wiederholt
+Distro-Matrix       6 von 6 am AUSGELIEFERTEN alpha.4-Paket, Sandkasten an, 2026-08-10
+                    (`dist/matrix-alpha4/`); jede Zeile mit 399 Zeichen sichtbarem Text.
+                    Die openSUSE-Zeile brauchte dafür erst eine Schriftart — siehe unten
 Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigenmächtigen
                     Zugriff; genau EIN Geräteeintrag; „Verbinden" stellte die Sitzung aus dem
                     gespeicherten Token her — ohne Passwortabfrage, mit wieder geöffnetem
@@ -39,6 +40,22 @@ Die Vorgängerbauten liegen unter `dist/_stale-2026-08-10-de27002/` und
 Dateien aus zwei Läufen unter einer Versionsnummer stehen. Das Release-Gate war vor dem Neubau
 schon einmal **rot** (`rc=1`, „no artefact predates the last build-input commit") und hat damit
 genau die Lage gemeldet, für die es gebaut wurde.
+
+🔴 **Was die openSUSE-Zeile jahrelang gemessen hat, als Merkposten:** Sie meldete `ok: true`
+bei **leerem Bildschirm** (`visibleText: ""`, `navButtons: 8`, `failures: []`). Ursache, am
+2026-08-10 gemessen: nach dem Installationsbefehl dieser Zeile lagen **0 Schriftdateien** im
+Container, bei Fedora **17** — dessen `xorg-x11-server-Xvfb` zieht sie mit, openSUSEs
+`xvfb-run` nicht. Der Screenshot zeigt es unmissverständlich: Layout, Farben und Symbole da,
+jede Beschriftung leer. Die Zeile hat also ihren eigenen Container gemessen, nicht die
+Anwendung — ein negativer Befund an einem Ort, wo die Sache gar nicht geladen war. Mit
+`adwaita-fonts` in der Zeile: **399 Zeichen**, wie überall sonst.
+
+Zwei Dinge sind daran wichtig: (1) Der neue Wächter hätte es gefangen, **hat es in diesem Lauf
+aber nicht**, weil die Matrix das ausgelieferte alpha.4-Paket startet — gebaut aus `4fd04b3`,
+also VOR dem Wächter-Commit `68c68dc`. Die Regel ist erst im nächsten Paket wirksam und bis
+dahin nur durch Unit-Tests gedeckt. (2) Beim Suchen nach der Ursache haben mich meine eigenen
+Prüfbefehle zweimal angelogen (Paketnamen, die es nicht gibt, mit still verschlucktem Fehler).
+Tragend ist deshalb der **Screenshot** plus der Fedora-Vergleich, nicht die einzelne Zählung.
 
 **Was alpha.3 noch nicht konnte, als Merkposten:** Der Client stellte gespeicherte Verbindungen
 beim Start von selbst wieder her. Die Beschwerde galt dem **Ob**, ich hatte sie als Beschwerde

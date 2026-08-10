@@ -34,7 +34,17 @@ ROWS=(
   "debian12|deb|debian:12|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
   "fedora41|rpm|fedora:41|dnf install -y -q /pkg/*.rpm xorg-x11-server-Xvfb"
   "archlinux|pacman|archlinux:latest|pacman -Sy --noconfirm --needed xorg-server-xvfb >/dev/null && pacman -U --noconfirm /pkg/*.pacman"
-  "opensuse|rpm|opensuse/tumbleweed|zypper --non-interactive --no-gpg-checks install --allow-unsigned-rpm /pkg/*.rpm xvfb-run"
+  # 🔴 `adwaita-fonts` is in this row and not in the others because this image has NO font at
+  # all, and its xvfb package pulls none. Measured 2026-08-10 after the exact install command
+  # above: openSUSE 0 font files, Fedora 17 (whose `xorg-x11-server-Xvfb` drags them in).
+  #
+  # The consequence was a report that lied by omission: the window came up, the stylesheet
+  # applied, eight buttons rendered — and `visibleText` was empty, because there was nothing
+  # to draw glyphs with. The screenshot shows it plainly: layout, colours and icons all
+  # there, every label blank. A row that ships no font measures its own container, not the
+  # application. See CLAUDE.md, "ein NEGATIVER Befund an einem Ort, wo die Sache gar nicht
+  # geladen ist, ist kein Befund".
+  "opensuse|rpm|opensuse/tumbleweed|zypper --non-interactive --no-gpg-checks install --allow-unsigned-rpm /pkg/*.rpm xvfb-run adwaita-fonts"
 )
 
 # The binary is installed under a name with a space in it; the launcher on PATH is not.
