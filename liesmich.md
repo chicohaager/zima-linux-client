@@ -3,7 +3,7 @@
 Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwaltung, mit ZeroTier
 eingebaut und Tailscale genutzt, wenn es ohnehin schon läuft.
 
-> **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.3, ein Rewrite.**
+> **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.4, ein Rewrite.**
 > Das zuletzt **veröffentlichte** Paket ist `v2.0.0-alpha.1`; `alpha.2` ist ein Bau für die
 > laufende Testrunde und enthält die Arbeit an den Verbindungswegen (siehe `docs/V2-STATUS.md`).
 > Das installierte Paket ist auf **sechs Distributionen** gestartet worden (Ubuntu 22.04 und 24.04,
@@ -77,6 +77,11 @@ einer leeren Liste: „leer" liest sich wie „kein Gerät gefunden".
   nicht Teil dieses Rewrites.
 - **Keine automatische Aktualisierung.** Eine neue Fassung kommt als neues Paket.
 - **Er reißt den Tunnel nicht an sich.** Siehe Tailscale oben.
+- **Er verbindet nicht von selbst.** Ein gespeichertes Gerät wird erreicht, wenn du auf
+  **Verbinden** drückst, und vorher nicht — beim Start greift nichts nach einem Tunnel. Ein
+  ZeroTier-Beitritt kostet einen Netzwerk-Beitritt, der das DNS der Maschine übernehmen kann,
+  und eine gespeicherte Tailscale-Adresse zu benutzen setzt voraus, dass du diese Verbindung
+  gerade oben haben willst. In welchem Netz du bist, entscheidest du.
 
 ## Installation
 
