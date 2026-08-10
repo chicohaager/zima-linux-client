@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.0-alpha.1 · **Stand:** 2026-08-10
+**Branch:** `v2` · **Version:** 2.0.0-alpha.2 · **Stand:** 2026-08-10
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -13,8 +13,8 @@ npm run verify:release ✓ (rc=0)  8 Prüfungen am dist-Verzeichnis (siehe unten
 i18n gate           clean — 280 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
 privacy gate        clean, 204 verfolgte Dateien (Bilder überspringt es — siehe unten)
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN Paket, Sandkasten an (§ Distro-Start-Matrix)
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 6a7e917, alle fünf in
-                    einem Lauf am 2026-08-10 (Spanne 5,9 min); Flatpak aus der Zielliste
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus de27002, alle fünf in
+                    einem Lauf am 2026-08-10, 11:47–11:53; Flatpak aus der Zielliste
 Zweig               auf `origin/v2` hochgeladen (2026-08-10, per `git ls-remote` gegengeprüft)
 Release             v2.0.0-alpha.1 als Pre-Release, 7 Assets; `sha256sum -c` aus dem echten
                     Download grün für alle fünf Pakete (nicht an den lokalen Dateien geprüft)
