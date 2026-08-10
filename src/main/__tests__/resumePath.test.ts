@@ -116,13 +116,32 @@ describe('resume path selection', () => {
   })
 
   it('keeps priority as the tie-break when latency cannot decide', async () => {
-    probeResults.set(tailscale.host, reachable(tailscale.host, 5))
-    probeResults.set(lan.host, reachable(lan.host, 5))
+    /*
+     * Against `rankReachable`, not through a probe. The first version of this test made two
+     * fakes answer "after 5 ms" and expected the tie-break to decide — but real timers turn
+     * that into 5.1 and 5.3, latency decides, and the test goes red on a later run for no
+     * visible reason. It did exactly that. A property that only holds for EQUAL values
+     * cannot be tested through a stopwatch.
+     */
+    const { rankReachable } = await import('@main/transport/probe')
+    const ranked = rankReachable(
+      [lan, tailscale],
+      [reachable(lan.host, 5), reachable(tailscale.host, 5)],
+    )
 
-    const { selectBestAddress } = await import('@main/transport/probe')
-    const { best } = await selectBestAddress([lan, tailscale])
+    expect(ranked[0]?.host).toBe(tailscale.host)
+  })
 
-    expect(best?.host).toBe(tailscale.host)
+  it('drops unreachable addresses instead of sorting them last', async () => {
+    // "Slowest" and "did not answer" are different things. A list that merely ends in
+    // something unreachable invites a caller to fall back onto it.
+    const { rankReachable } = await import('@main/transport/probe')
+    const ranked = rankReachable(
+      [lan, tailscale],
+      [dead(lan.host), reachable(tailscale.host, 40)],
+    )
+
+    expect(ranked.map((a) => a.host)).toEqual([tailscale.host])
   })
 
   it('reports every path it tried when none answers, with its failure kind', async () => {

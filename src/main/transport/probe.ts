@@ -55,7 +55,25 @@ export const selectBestAddress = async (
   if (addresses.length === 0) return { best: null, results: [] }
 
   const results = await Promise.all(addresses.map((a) => probe(a.host, a.port)))
-  const ranked = addresses
+  return { best: rankReachable(addresses, results)[0] ?? null, results }
+}
+
+/**
+ * The ranking rule, separated from the measuring so it can be tested exactly.
+ *
+ * It was inline until a test tried to pin the tie-break by making two fakes answer "after
+ * 5 ms" — real timers made that 5.1 and 5.3, latency decided, and the test went red on a
+ * later run for no reason anyone could see. A property that only holds for *equal* values
+ * cannot be tested through a stopwatch; it needs the values handed in.
+ *
+ * Unreachable addresses are dropped rather than sorted last: "slowest" and "did not answer"
+ * are different things, and a list that ends in something unreachable invites picking it.
+ */
+export const rankReachable = (
+  addresses: readonly DeviceAddress[],
+  results: readonly ProbeResult[],
+): readonly DeviceAddress[] =>
+  addresses
     .map((address, i) => ({ address, result: results[i] }))
     .filter(
       (entry): entry is { address: DeviceAddress; result: ProbeResult } =>
@@ -65,6 +83,4 @@ export const selectBestAddress = async (
       const byLatency = (a.result.latencyMs ?? Infinity) - (b.result.latencyMs ?? Infinity)
       return byLatency !== 0 ? byLatency : a.address.priority - b.address.priority
     })
-
-  return { best: ranked[0]?.address ?? null, results }
-}
+    .map((entry) => entry.address)
