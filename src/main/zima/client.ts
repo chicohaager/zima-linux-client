@@ -55,6 +55,35 @@ const buildUrl = (
 }
 
 /**
+ * The query parameters that go into an error's context — an explicit list, never the query.
+ *
+ * 🔴 Added 2026-08-11 after a tester's report was undiagnosable from the message it produced.
+ * The screen said `server rejected the path · host=… · path=/v2_1/files/file · status=400`,
+ * and `path` there is the ENDPOINT. The one thing that decides the case — WHICH directory the
+ * device refused — was in the query string and in no error, no log line and no screen. Two
+ * hypotheses stayed open on a report that already contained everything except that.
+ *
+ * `path` is renamed to `target` on the way in, because `path` is taken by the endpoint and two
+ * meanings under one name is how the confusion started.
+ *
+ * An explicit list rather than the whole query: a query can carry user input (paging, sorting,
+ * and one day a term), and this string is read aloud in forum posts. These four are the ones a
+ * files-API rejection turns on, and each of them is a value this client itself chose.
+ */
+const DIAGNOSTIC_QUERY = { path: 'target', sort: 'sort', direction: 'direction', size: 'size' } as const
+
+const diagnostics = (
+  query: RequestOptions['query'],
+): Readonly<Record<string, string>> => {
+  const out: Record<string, string> = {}
+  for (const [key, label] of Object.entries(DIAGNOSTIC_QUERY)) {
+    const value = query?.[key]
+    if (value !== undefined) out[label] = String(value)
+  }
+  return out
+}
+
+/**
  * Performs one request and maps every outcome to a Result.
  *
  * Nothing is swallowed: a non-2xx answer, a body we cannot parse and a transport
@@ -68,7 +97,7 @@ export const request = async <T>(
   opts: RequestOptions = {},
 ): Promise<Result<T>> => {
   const url = buildUrl(host, port, path, opts.query)
-  const context = { host, path, method: opts.method ?? 'GET' }
+  const context = { host, path, method: opts.method ?? 'GET', ...diagnostics(opts.query) }
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? DEFAULT_TIMEOUT_MS)
   /*
@@ -244,7 +273,9 @@ export const fetchBinary = async (
   timeoutMs = 20_000,
 ): Promise<Result<{ bytes: Uint8Array; contentType: string }>> => {
   const url = buildUrl(ctx.host, ctx.port, path, query)
-  const context = { host: ctx.host, path, method: 'GET' }
+  // Same reasoning as in `request`: a rejected thumbnail without the file it was for is a
+  // dead end for whoever reads the report.
+  const context = { host: ctx.host, path, method: 'GET', ...diagnostics(query) }
   try {
     const response = await fetch(url, {
       headers: { authorization: ctx.token },
