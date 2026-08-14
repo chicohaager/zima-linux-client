@@ -47,6 +47,47 @@ const PLACEHOLDER_PNG = Buffer.from(
 /** Requests served, so a test can assert the client really went through this server. */
 const served = []
 
+/**
+ * Gateway routes this replay withholds, set at runtime by `POST /__without`.
+ *
+ * 🔴 Why this exists: the recorded device HAS the photos module, so every test and every
+ * screenshot has only ever seen `hasLibrary === true`. The Photos tab's OTHER half — the
+ * folder grid, which is the whole experience on a device without the module — was covered
+ * by nothing: not the E2E suite, not a unit test, not the by-hand walk on Zorin. The first
+ * person to run it was a tester on 2026-08-11, and he got HTTP 400.
+ *
+ * What is honest about this, and what is not:
+ *
+ *  - REMOVING a route from a recorded route table is a subtraction from a measurement. A
+ *    device without the module does not list `/v2/photos`; `deriveCapabilities` reads exactly
+ *    that list, so the capability set the client computes here is the real one.
+ *  - The 404 below is NOT measured for a missing gateway route. `{"message":"no matching
+ *    operation was found"}` was measured on `/v2/zimaos/sys/hardware`, an implemented service
+ *    asked for an unimplemented operation. It is here so a slip-up is loud rather than
+ *    plausible — and the test asserts the client never asks, which is what makes the guess
+ *    harmless.
+ */
+let withheld = []
+
+const isWithheld = (path) => withheld.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))
+
+/**
+ * The recorded route table minus the withheld routes.
+ *
+ * Fails loudly rather than silently passing the recording through: if nothing was removed
+ * while something was asked for, the test would run against a device that still has the
+ * module and would be green about the wrong world.
+ */
+const withoutWithheldRoutes = (recordedText) => {
+  if (withheld.length === 0) return recordedText
+  const routes = JSON.parse(recordedText)
+  const kept = routes.filter((route) => !isWithheld(route.path))
+  if (kept.length === routes.length) {
+    throw new Error(`asked to withhold ${withheld.join(', ')} but the recorded table has none of them`)
+  }
+  return JSON.stringify(kept)
+}
+
 const credentials = fixture.credentials ?? { username: 'zima', password: 'zima-e2e-password' }
 
 /**
@@ -139,8 +180,35 @@ const server = createServer((req, res) => {
     return
   }
 
+  // Test control: which routes this device shall claim not to have. `[]` restores the
+  // recording. Answers with the state it now holds, so a caller cannot assume it took.
+  //
+  // Above `req.resume()` on purpose: that call consumes the body, and a handler that
+  // registers its `data` listener afterwards reads an empty one.
+  if (path === '/__without') {
+    const chunks = []
+    req.on('data', (chunk) => chunks.push(chunk))
+    req.on('end', () => {
+      try {
+        const wanted = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+        withheld = Array.isArray(wanted) ? wanted.map(String) : []
+      } catch {
+        withheld = []
+      }
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ withheld }))
+    })
+    return
+  }
+
   // Consume the request body; without this a POST with a body can stall.
   req.resume()
+
+  if (isWithheld(path)) {
+    res.writeHead(404, { 'content-type': 'application/json' })
+    res.end(JSON.stringify({ message: 'no matching operation was found' }))
+    return
+  }
 
   if (path.endsWith('/thumbnail') || path.endsWith('/image') || path.includes('/icon')) {
     res.writeHead(200, { 'content-type': 'image/png', 'cache-control': 'no-store' })
@@ -182,7 +250,7 @@ const server = createServer((req, res) => {
   res.writeHead(exchange.status, {
     'content-type': exchange.contentType.length > 0 ? exchange.contentType : 'application/json',
   })
-  res.end(exchange.body.text)
+  res.end(path === '/v1/gateway/routes' ? withoutWithheldRoutes(exchange.body.text) : exchange.body.text)
 })
 
 server.listen(port, '0.0.0.0', () => {

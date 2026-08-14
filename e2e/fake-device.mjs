@@ -64,6 +64,24 @@ export const startFakeDevice = async () => {
   const nonce = `zima-e2e-${process.pid}-${process.hrtime.bigint().toString(36)}`
   const served = async () => (await (await fetch(`http://${FAKE_HOST}/__served`)).json())
 
+  /**
+   * Makes the replayed device claim it does not have these gateway routes.
+   *
+   * The answer is READ BACK rather than assumed: a control call that fails silently would
+   * leave the test running against the full device and passing for the wrong reason.
+   */
+  const without = async (prefixes) => {
+    const response = await fetch(`http://${FAKE_HOST}/__without`, {
+      method: 'POST',
+      body: JSON.stringify(prefixes),
+    })
+    const state = await response.json()
+    const got = JSON.stringify(state.withheld ?? [])
+    if (got !== JSON.stringify(prefixes)) {
+      throw new Error(`the fake did not take the withheld routes: asked ${JSON.stringify(prefixes)}, holds ${got}`)
+    }
+  }
+
   if (await canBindPort80()) {
     const child = spawn(process.execPath, ['e2e/fake-zimaos.mjs'], {
       env: { ...process.env, ZIMA_FIXTURE: FIXTURE, ZIMA_FAKE_NONCE: nonce },
@@ -83,6 +101,7 @@ export const startFakeDevice = async () => {
     return {
       mode: 'direct',
       served,
+      without,
       stop: async () => {
         child.kill('SIGTERM')
       },
@@ -112,6 +131,7 @@ export const startFakeDevice = async () => {
   return {
     mode: 'docker',
     served,
+    without,
     stop: async () => {
       await execFileAsync('docker', ['rm', '-f', CONTAINER]).catch(() => undefined)
     },
