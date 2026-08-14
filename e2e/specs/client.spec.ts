@@ -157,6 +157,64 @@ test('signing in loads files, photos and apps with real content', async () => {
   }
 })
 
+/**
+ * 🔴 The half of the Photos tab that nothing covered.
+ *
+ * `capabilities.ts` promises that browsing and backup do NOT need the photos module — they go
+ * through the files API — so a device without it gets the folder grid. That promise had never
+ * been executed anywhere: the recording HAS `/v2/photos`, so every test, every screenshot and
+ * the by-hand walk on Zorin ran the library mode. A tester on Fedora ran the other half on
+ * 2026-08-11 and got `The device rejects this path (HTTP 400)` instead of his pictures.
+ *
+ * This test does NOT reproduce his 400 — its cause is still unmeasured (his volume, or the
+ * `sort=modified` / `size=300` that only this tab sends). It asserts the promise itself, on
+ * the device sort that was missing from the test world: no module, and pictures on screen.
+ */
+test('a device without the photos module shows the folder grid, not an error', async () => {
+  await fake.without(['/v2/photos'])
+  const before = (await fake.served()).length
+  const launched = await launch()
+  const { page } = launched
+  try {
+    await signIn(page)
+    await expect(page.locator('[data-action="sign-out"]')).toBeVisible({ timeout: 30_000 })
+    await page.click('nav button[data-nav="photos"]')
+
+    // The named explanation, not an empty gallery. This is the part the forum thread was
+    // right about.
+    await expect(page.getByText('Die Fotosuche braucht das Photos-Modul')).toBeVisible()
+
+    // And the part it was wrong about: 38 of the 80 recorded entries are pictures or videos,
+    // so a working folder grid renders tiles. "More than 20" survives a re-recording; zero is
+    // exactly what the reported defect looks like.
+    await expect.poll(async () => page.locator('img').count(), { timeout: 30_000 }).toBeGreaterThan(20)
+
+    const text = await page.locator('body').innerText()
+    expect(text, 'the folder grid reported a rejected path').not.toContain('lehnt diesen Pfad ab')
+    expect(text).not.toContain('Da ist etwas schiefgegangen')
+    expect(text).not.toMatch(RAW_KEY)
+
+    const broken = await page.evaluate(
+      () =>
+        Array.from(document.querySelectorAll('img')).filter(
+          (img) => img.complete && img.naturalWidth === 0,
+        ).length,
+    )
+    expect(broken).toBe(0)
+
+    // What the client asked the device for, from this test's own slice of the log: the files
+    // API yes, the absent module never. Asking a route the gateway does not have would be a
+    // defect the screen might not show — the fake answers those 404 by GUESS, and this
+    // assertion is what keeps the guess from mattering.
+    const mine = (await fake.served()).slice(before)
+    expect(mine).toContain('GET /v2_1/files/file')
+    expect(mine.filter((line) => line.includes('/v2/photos'))).toEqual([])
+  } finally {
+    await fake.without([])
+    await close(launched)
+  }
+})
+
 test('switching the language renders translated text, not keys or English', async () => {
   const launched = await launch()
   const { page } = launched
