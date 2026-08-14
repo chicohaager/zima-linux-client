@@ -5,16 +5,21 @@
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
 
-**Zuletzt gefahren, 2026-08-10 — der Stand dieses Commits:**
+**Zuletzt gefahren, 2026-08-11 — der Stand dieses Commits** (die Zeilen ohne eigenes Datum
+stammen vom Lauf am 2026-08-10 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 287 Tests · build · build-gate · i18n · privacy
+npm run verify        ✓ (rc=0)  type-check · lint · 292 Tests in 34 Dateien · build ·
+                    build-gate · i18n · privacy — gefahren am 2026-08-11
 npm run verify:release ✗ (rc=1)  2 von 8 rot — der Wächter-Fix 68c68dc ist NEUER als die
                     veröffentlichten alpha.4-Pakete (gebaut aus 4fd04b3). Beabsichtigt und
                     stehengelassen: die nächste Fassung trägt ihn, alpha.4 nicht
-npx playwright test   ✓ 4 von 4 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
+npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
+                    (2026-08-11); der fünfte fährt das Gerät OHNE Photos-Modul
 i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 216 verfolgte Dateien (Bilder überspringt es — siehe unten)
+privacy gate        clean, 216 verfolgte Dateien (Bilder überspringt es — siehe unten);
+                    am 2026-08-11 erneut gefahren: clean, 217 Dateien — die eine mehr ist
+                    `probeFailures.test.ts` aus 68c68dc
 Distro-Matrix       6 von 6 am AUSGELIEFERTEN alpha.4-Paket, Sandkasten an, 2026-08-10
                     (`dist/matrix-alpha4/`); jede Zeile mit 399 Zeichen sichtbarem Text.
                     Die openSUSE-Zeile brauchte dafür erst eine Schriftart — siehe unten
@@ -23,6 +28,9 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
                     gespeicherten Token her — ohne Passwortabfrage, mit wieder geöffnetem
                     ZeroTier-Weg —, 38 Gateway-Routen, neun Fähigkeiten `verfügbar`,
                     Dateien/Fotos/Apps benutzt
+Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
+                    angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
+                    offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
 Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 4fd04b3, alle fünf in
                     einem Lauf am 2026-08-10, 15:52–15:58; Flatpak aus der Zielliste.
                     `sha256sum -c SHA256SUMS-2.0.0-alpha.4.txt` → 5× OK
@@ -1917,6 +1925,114 @@ als solche benannt wird: der rote Keyring-Kasten (kein Schlüsselbund; zwei Vers
 Wegwerf-Schlüsselbund in eigener D-Bus-Sitzung und `--password-store=gnome-libsecret` blieben bei
 `basic_text`) und die flachen Farbkacheln der Fotogalerie (die Aufzeichnung liefert
 Platzhalter-Bytes, weil echte Fotos echte wären).
+
+## Fremdbericht Fedora KDE
+
+🟡 alpha.4 als `.rpm` auf echter Hardware — was der Bericht belegt und was nicht.
+
+Am **2026-08-11** hat ein Tester im ZimaSpace-Forum gemeldet, er habe alpha.4 aus dem `.rpm` auf
+seiner **Fedora-KDE-Plasma-Desktop-Arbeitsstation** installiert und die App rund 15 Minuten
+benutzt. Das ist der erste Bericht von **Fedora auf echter Hardware** — und er ist ein
+Forenbeitrag, keine Messung von mir. Was folgt, ist deshalb zweigeteilt.
+
+**Was der Bericht belegt** (aus dem Bildschirmtext, den er zitiert):
+
+| Aussage | Woran sie hängt |
+| --- | --- |
+| Installation aus dem `.rpm` und Start auf Fedora KDE | er beschreibt 15 Minuten Benutzung; ein nicht startender Client hätte nichts anzuzeigen |
+| Der Client war **angemeldet** und hat sein Gerät erreicht | die zweite Meldung ist `forbidden-path` aus `src/main/zima/client.ts:180-182` — sie entsteht nur bei HTTP **400**; ein abgelehnter Token wäre 401 `error.unauthorized` (Zeile 141-142), ein unerreichbares Gerät gar keine Antwort |
+| Sein Gerät hat **kein** Photos-Modul, und der Client sagt das statt eine leere Galerie zu zeigen | `photos.libraryMissing` + `libraryMissingHint`, gesetzt aus `deriveCapabilities` (`src/main/zima/capabilities.ts`), wenn die Gateway-Routen keine `/v2/photos` führen — genau der in Plan § 7.3.1 vorgesehene Ordnermodus |
+
+**Was er nicht belegt** und was auch ich nicht gemessen habe: Fedora-Fassung, Sitzungsart (Wayland
+oder X11), SELinux-Modus, Schlüsselbund (KDE bringt KWallet, nicht GNOMEs), Verhalten nach einem
+Neustart mit gespeicherter Sitzung, arm64. Nichts davon steht im Beitrag, und aus „lief 15
+Minuten" folgt keines davon.
+
+### 🔴 Die zweite Meldung ist nach Codelage KEIN erwartetes Verhalten
+
+Im Forum ist sie als „vorbereitet für die kommende Foto-App" beantwortet worden. Für die **erste**
+Meldung stimmt das. Für die zweite — `The device rejects this path (HTTP 400)` mit
+`path=/v2_1/files/file` — stimmt es nach dem Code **nicht**:
+
+- `capabilities.ts:23-26` sagt ausdrücklich, dass Blättern und Sicherung **nicht** vom
+  Photos-Modul abhängen: beide laufen über die Dateien-API. Ein Gerät ohne Modul soll den
+  Ordnermodus bekommen — und der ist genau das, was hier abgelehnt wurde.
+- Damit sah der Tester im Ordnermodus **keine** Bilder. Das ist kein Vorgriff auf eine kommende
+  App, sondern ein nicht funktionierender Reiter.
+
+**Zwei Unterschiede zwischen den beiden Reitern, gemessen im Quelltext** — beide Bildschirme
+nehmen denselben Wurzelpfad (`volumes[0].path`), aber:
+
+| | Fotos (`PhotosScreen.tsx:48-53` → `photosHandlers.ts:62`) | Dateien (`FilesScreen.tsx:41-59`) |
+| --- | --- | --- |
+| `sort` / `direction` | `modified` / `desc` | `name` / `asc` |
+| `size` | 300 | 500 |
+
+Daraus folgt **keine** Ursache — es sind die Kandidaten, zwischen denen eine Messung entscheiden
+müsste: (a) sein erster Datenträger ist ein Pfad, den `/v2_1/files/file` nicht listet (dann wäre
+auch der Dateien-Reiter betroffen), (b) sein Gerät lehnt `sort=modified` oder `size=300` ab (dann
+nur der Fotos-Reiter). Der geratene Wurzelpfad `'/'` scheidet aus: die Abfrage ist mit
+`enabled: root !== null` gesperrt, das `?? '/'` in Zeile 51 ist toter Code.
+
+**Warum das bis hierher niemandem auffallen konnte — der eigentliche Befund:** der Ordnermodus
+ist auf **keinem** Weg gedeckt. Gemessen am 2026-08-11:
+
+| Weg | Deckt er den Ordnermodus? | Beleg |
+| --- | --- | --- |
+| E2E-Suite und Screenshots | **nein** | das aufgezeichnete Gerät führt `/v2/photos` in seinen Gateway-Routen (`e2e/fixtures/zimaos-session.json`, Zeile 15) — also ist dort immer `hasLibrary === true`, und `grid` läuft mit `enabled: … (folder !== null \|\| !hasLibrary)` gar nicht an; kein Test klickt auf „Zu Ordnern wechseln" |
+| Unit-Tests | **nein** | `grep -rln "photosFolderGrid\|PhotosScreen" src --include="*test*"` → 0 Treffer |
+| Handlauf Zorin 18 | **nein** | dasselbe: mein Gerät hat das Modul, „Fotos benutzt" heißt dort Bibliotheksmodus |
+
+Das ist die Familie „das Fixture baut eine einfachere Welt": die Testwelt kennt nur Geräte **mit**
+Photos-Modul, und genau die andere Sorte hat der Tester. Der erste Mensch, der den Ordnermodus
+überhaupt benutzt hat, ist er — und er hat HTTP 400 gesehen.
+
+**Und ein eigener Befund daneben:** die Fehlerzeile nannte den abgelehnten Pfad gar nicht. Der
+Kontext war `{ host, path, method }`, und `path` ist der **Endpunkt** (`/v2_1/files/file`), nicht
+das angefragte Verzeichnis. Genau die Angabe, die diesen Fall aus der Ferne entscheidbar machen
+würde, fehlte in der Meldung.
+
+### 🟢 Zwei Maßnahmen daraus, beide mit Positivkontrolle
+
+**1. Die Fehlermeldung nennt jetzt, worüber sie redet** (`client.ts`, `DIAGNOSTIC_QUERY`). Vier
+Abfrageparameter wandern in den Kontext jedes Fehlers und jeder Logzeile: `path` → **`target`**
+(umbenannt, weil `path` schon der Endpunkt ist), dazu `sort`, `direction`, `size`. Ausdrücklich
+**nicht** die ganze Abfrage — eine Abfrage kann Nutzereingaben tragen, und diese Zeile wird in
+Foren vorgelesen.
+
+So sieht sie im **laufenden Fenster** aus, abgelesen am 2026-08-11 bei künstlich abgelehnter
+Listung:
+
+```
+Das Gerät lehnt diesen Pfad ab (HTTP 400).
+server rejected the path · host=127.0.0.1 · path=/v2_1/files/file · method=GET ·
+target=/media/ZimaOS-HD · sort=modified · direction=desc · size=300 · status=400
+```
+
+Damit wäre der Bericht des Testers in einem Zug entscheidbar gewesen. Gedeckt von 5 Tests
+(`src/main/zima/__tests__/client.test.ts`), darunter eine **Gegenkontrolle**: ein Abfrageschlüssel
+außerhalb der Liste darf nicht in der Zeile landen — ohne sie wäre „der Kontext ist jetzt reicher"
+auch für eine Fassung wahr, die die ganze Abfrage in einen öffentlich zitierten Text kippt.
+Positivkontrolle: die Erweiterung entfernt → **4 von 5 rot**, die fünfte (`ohne Abfrage kommt
+nichts dazu`) bleibt grün, wie sie soll.
+
+**2. Die Testwelt kennt jetzt beide Gerätesorten.** `POST /__without` im Nachspieler
+(`e2e/fake-zimaos.mjs`) hält Gateway-Routen zurück; `fake.without(['/v2/photos'])` liest die
+Antwort **zurück**, statt sie anzunehmen, und der Nachspieler wirft, wenn in der Aufnahme gar
+nichts zu entfernen war — sonst liefe der Test still gegen das volle Gerät und wäre aus dem
+falschen Grund grün. Der neue E2E-Fall („a device without the photos module shows the folder grid,
+not an error") prüft: benannter Hinweis **und** Kacheln (>20 von 38 aufgezeichneten Bild-/
+Videodateien), keine Pfad-Ablehnung, kein rohes Schlüsselwort, kein kaputtes Bild — und aus dem
+eigenen Abschnitt des Zugriffprotokolls: `GET /v2_1/files/file` ja, `/v2/photos` **nie**.
+
+> ⚠️ Was dieser Test **nicht** ist: eine Reproduktion des Fedora-Fehlers. Dessen Ursache ist
+> weiter ungemessen. Er sichert die Zusage aus `capabilities.ts` an der Gerätesorte, die in der
+> Testwelt fehlte.
+
+Positivkontrolle, gefahren am 2026-08-11: der Nachspieler antwortet auf `sort=modified` mit
+HTTP 400 (also die Hypothese (b) von oben nachgestellt) → der neue Test wird **rot** mit
+`Expected: > 20 / Received: 0` — genau das Bild, das der Tester beschrieben hat. Danach entfernt
+(`grep -c SABOTAGE e2e/fake-zimaos.mjs` → 0) und die Suite wieder 5 von 5 grün.
 
 ## Alt-Stand
 
