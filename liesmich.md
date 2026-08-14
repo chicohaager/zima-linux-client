@@ -13,8 +13,15 @@ eingebaut und Tailscale genutzt, wenn es ohnehin schon läuft.
 > Sitzung und griff von sich aus nach nichts, **Verbinden** stellte die Sitzung aus dem
 > gespeicherten Token ohne Passwortabfrage her, und Dateien, Fotos und Apps liefen über ZeroTier
 > wie über Tailscale.
-> Was das **nicht** abdeckt: Fedora, openSUSE und Arch auf echter Hardware — und damit Wayland auf
-> einem einzigen Treiber, SELinux und jeden Schlüsselbund außer dem von GNOME.
+> Dazu kommt ein **Fremdbericht** (2026-08-11, ZimaSpace-Forum): ein Tester hat alpha.4 aus dem
+> `.rpm` auf einer **Fedora-KDE-Plasma-Arbeitsstation** installiert und rund 15 Minuten benutzt —
+> Start und angemeldeter Gerätezugriff liefen, gemeldet wurde eine Meldung im Fotos-Reiter
+> ([V2-STATUS](docs/V2-STATUS.md#fremdbericht-fedora-kde)).
+> Ein Forenbeitrag ist kein Messprotokoll: Fedora-Fassung, Sitzungsart, SELinux-Modus und
+> Schlüsselbund stehen nicht darin.
+> Was das **nicht** abdeckt: openSUSE und Arch auf echter Hardware, auf Fedora alles, was der
+> Bericht nicht nennt — und damit weiterhin Wayland auf einem einzigen gemessenen Treiber, SELinux
+> und jeden Schlüsselbund außer dem von GNOME.
 > Die 0.9.x-Linie liegt auf `main` und unter [`legacy-0.9/`](legacy-0.9/); gelöscht wurde nichts.
 >
 > Was gebaut und was gemessen ist: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
@@ -217,8 +224,8 @@ bleibt für den Tag, an dem beides erledigt ist.
 
 ```bash
 npm run verify          # Typprüfung · Lint · Tests · Build · Build-Gate · i18n-Gate · Privacy-Gate
-npm test                # 287 Tests in 33 Dateien (2026-08-10)
-npm run test:e2e        # 4 End-to-End-Abläufe im echten Fenster, gegen das aufgezeichnete Gerät
+npm test                # 292 Tests in 34 Dateien (2026-08-11)
+npm run test:e2e        # 5 End-to-End-Abläufe im echten Fenster, gegen das aufgezeichnete Gerät
 npm run screenshots     # die Bilder unten, aus dem aktuellen Build
 npm run verify:build    # liest die GEBAUTEN Dateien: Preload CJS, Sandbox an, CSP ohne unsafe-eval
 npm run verify:i18n     # Vollständigkeit, unbekannte Schlüssel, Platzhalter, „englische Kopie"

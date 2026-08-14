@@ -13,8 +13,16 @@ built in and Tailscale used when it is already there.
 > and reached out to nothing on its own, **Connect** restored the session from the stored token
 > without asking for a password, and files, photos and apps worked over both ZeroTier and
 > Tailscale.
-> What that does **not** cover: Fedora, openSUSE and Arch on real hardware, and therefore
-> Wayland on any driver but one, SELinux, and any keyring but GNOME's.
+> On top of that there is a **third-party report** (2026-08-11, ZimaSpace forum): a tester
+> installed alpha.4 from the `.rpm` on a **Fedora KDE Plasma workstation** and used it for about
+> 15 minutes — it started and reached the device while signed in; one message in the Photos tab
+> was reported
+> ([V2-STATUS, German](docs/V2-STATUS.md#fremdbericht-fedora-kde)).
+> A forum post is not a measurement protocol: the Fedora release, the session type, the SELinux
+> mode and the keyring are not in it.
+> What that does **not** cover: openSUSE and Arch on real hardware, everything the Fedora report
+> does not name, and therefore still Wayland on one measured driver only, SELinux, and any keyring
+> but GNOME's.
 > The 0.9.x line lives on `main` and under [`legacy-0.9/`](legacy-0.9/); nothing was deleted.
 >
 > What is built and what is measured: [`docs/V2-STATUS.md`](docs/V2-STATUS.md)
@@ -274,8 +282,8 @@ Flathub. `npm run package:flatpak` is kept for the day both are dealt with.
 
 ```bash
 npm run verify          # type-check · lint · tests · build · build gate · i18n gate · privacy gate
-npm test                # 287 tests in 33 files (2026-08-10)
-npm run test:e2e        # 4 end-to-end flows in the real window, against the recorded device
+npm test                # 292 tests in 34 files (2026-08-11)
+npm run test:e2e        # 5 end-to-end flows in the real window, against the recorded device
 npm run screenshots     # the pictures above, from the current build
 npm run verify:build    # reads the BUILT files: preload is CJS, sandbox on, CSP without unsafe-eval
 npm run verify:i18n     # completeness, unknown keys, placeholder drift, "English copy" detection
