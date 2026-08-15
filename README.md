@@ -3,9 +3,9 @@
 Desktop client for ZimaOS on Linux — files, photos, apps and device management, with ZeroTier
 built in and Tailscale used when it is already there.
 
-> **This is the `v2` branch: version 2.0.0-alpha.4, a rewrite.**
+> **This is the `v2` branch: version 2.0.0, a rewrite.**
 > The latest **published** package is
-> [`v2.0.0-alpha.4`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.4).
+> [`v2.0.0`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0).
 > The installed package has been started on **nine distributions** (Ubuntu 22.04, 24.04 and
 > 26.04 LTS, Debian 12 and 13, Fedora 41 and 44, Arch, openSUSE Tumbleweed) — in containers,
 > under Xvfb, x86_64 only.
@@ -171,18 +171,18 @@ nobody is working towards it. Should an aarch64 machine ever be at hand, three o
 questions are already answered and only the start would remain to be shown.
 
 The packages live in the
-[**v2.0.0-alpha.4 pre-release**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.4).
+[**release v2.0.0**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0).
 Fetch the installer, the checksums and the one package for your distribution:
 
 ```bash
 cd ~/Downloads
-B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.0-alpha.4
+B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.0
 
-wget $B/install.sh $B/SHA256SUMS-2.0.0-alpha.4.txt          # always these two
+wget $B/install.sh $B/SHA256SUMS-2.0.0.txt          # always these two
 
-wget $B/zima-linux-client_2.0.0-alpha.4_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
-wget $B/zima-linux-client-2.0.0-alpha.4.x86_64.rpm          # Fedora, openSUSE, RHEL derivatives
-wget $B/zima-linux-client-2.0.0-alpha.4.pacman              # Arch, Manjaro
+wget $B/zima-linux-client_2.0.0_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
+wget $B/zima-linux-client-2.0.0.x86_64.rpm          # Fedora, openSUSE, RHEL derivatives
+wget $B/zima-linux-client-2.0.0.pacman              # Arch, Manjaro
 
 chmod +x install.sh && sudo ./install.sh
 ```
@@ -197,27 +197,27 @@ AppArmor profile. It never launches anything: a check that opens a window is not
 By hand instead:
 
 ```bash
-sha256sum -c SHA256SUMS-2.0.0-alpha.4.txt   # OK for the file you downloaded
+sha256sum -c SHA256SUMS-2.0.0.txt   # OK for the file you downloaded
 
 # Debian, Ubuntu, Zorin, Linux Mint, Pop!_OS — apt needs an absolute path or a leading ./
-sudo apt install ~/Downloads/zima-linux-client_2.0.0-alpha.4_amd64.deb
+sudo apt install ~/Downloads/zima-linux-client_2.0.0_amd64.deb
 
 # Fedora
-sudo dnf install ./zima-linux-client-2.0.0-alpha.4.x86_64.rpm
+sudo dnf install ./zima-linux-client-2.0.0.x86_64.rpm
 
 # openSUSE — the package is unsigned, hence the two flags
-sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.0-alpha.4.x86_64.rpm
+sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.0.x86_64.rpm
 
 # Arch, Manjaro
-sudo pacman -U ./zima-linux-client-2.0.0-alpha.4.pacman
+sudo pacman -U ./zima-linux-client-2.0.0.pacman
 ```
 
 **AppImage** — nothing is installed and none of the permissions above are set. GitHub replaces the
 space in the file name with a dot, so it downloads as:
 
 ```bash
-chmod +x ZimaOS.Client-2.0.0-alpha.4.AppImage
-./ZimaOS.Client-2.0.0-alpha.4.AppImage
+chmod +x ZimaOS.Client-2.0.0.AppImage
+./ZimaOS.Client-2.0.0.AppImage
 ```
 
 Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as the entry point.

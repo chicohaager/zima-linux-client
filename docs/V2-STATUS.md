@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.0-alpha.4 · **Stand:** 2026-08-10
+**Branch:** `v2` · **Version:** 2.0.0 · **Stand:** 2026-08-15
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -20,8 +20,8 @@ i18n gate           clean — 292 Schlüssel in en_US; en_US/de_DE 100 %, die ü
                     98 % (287) — die fünf neuen `apps.window.*` liegen zweisprachig vor und
                     fallen sonst auf Englisch zurück; das Tor BERICHTET Abdeckung
 privacy gate        clean, 221 verfolgte Dateien (Bilder überspringt es — siehe unten)
-Distro-Matrix       9 von 9 am AUSGELIEFERTEN Paket, Sandkasten an, 2026-08-15
-                    (`dist/matrix-2026-08-15/`); jede Zeile ok=true, 51 CSS-Regeln,
+Distro-Matrix       9 von 9 am AUSGELIEFERTEN 2.0.0-Paket, Sandkasten an, 2026-08-15
+                    (`dist/matrix-v2.0.0/`); jede Zeile ok=true, 51 CSS-Regeln,
                     399 Zeichen sichtbarem Text, null rohe i18n-Schlüssel.
                     NEU seit heute: Ubuntu 26.04 LTS, Debian 13 (trixie), Fedora 44 —
                     die alten Zeilen hörten bei 24.04 / 12 / 41 auf und maßen damit
@@ -36,16 +36,17 @@ Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-1
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
 Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 5206d46, alle fünf in
                     einem Lauf am 2026-08-15, 09:40–09:47; Flatpak aus der Zielliste.
-                    `sha256sum -c SHA256SUMS-2.0.0-alpha.4.txt` → 5× OK
+                    `sha256sum -c SHA256SUMS-2.0.0.txt` → 5× OK
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen (2026-08-15, per `git ls-remote` gegengeprüft)
-Release             v2.0.0-alpha.4 als Pre-Release, 7 Assets, Tag auf 4fd04b3;
-                    `sha256sum -c` aus dem echten GitHub-Download grün für alle fünf Pakete
-                    (heruntergeladen, nicht an den lokalen Dateien geprüft).
-                    alpha.1 bis alpha.3 bleiben stehen; alpha.2 trägt oben einen
-                    Warnhinweis, weil es „({{paths}})" auf den Bildschirm schrieb
+Release             v2.0.0 — die erste Fassung dieser Linie, die KEIN Pre-Release ist.
+                    Die vier `v2.0.0-alpha.*` bleiben als Pre-Releases stehen; alpha.2 trägt
+                    oben einen Warnhinweis, weil es „({{paths}})" auf den Bildschirm schrieb.
+                    Zur Nummer: „1.0" war gewünscht und wurde verworfen, weil
+                    `dpkg --compare-versions` 1.0.0 KLEINER als 2.0.0~alpha.4 ordnet — die
+                    Tester auf alpha.4 hätten das Update nie angeboten bekommen
 ```
 
 Die Vorgängerbauten liegen unter `dist/_stale-2026-08-10-de27002/` und
