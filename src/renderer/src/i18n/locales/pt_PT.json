@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotos",
-    "libraryMissing": "A pesquisa de fotos necessita do módulo Photos",
-    "libraryMissingHint": "Este dispositivo não tem o módulo Photos registado, pelo que a pesquisa semântica e as facetas não estão disponíveis. Explorar e a cópia funcionam de qualquer forma.",
     "backupForegroundOnly": "A cópia só é executada enquanto esta janela estiver aberta.",
     "video": "Vídeo",
     "loading": "A carregar…",

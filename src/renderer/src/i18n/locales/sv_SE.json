@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Foton",
-    "libraryMissing": "Fotosökning kräver Photos-modulen",
-    "libraryMissingHint": "Denna enhet har ingen registrerad Photos-modul, så semantisk sökning och facetter är otillgängliga. Bläddring och säkerhetskopiering fungerar ändå.",
     "backupForegroundOnly": "Säkerhetskopieringen körs bara medan detta fönster är öppet.",
     "video": "Video",
     "loading": "Läser in…",

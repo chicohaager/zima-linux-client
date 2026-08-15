@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotók",
-    "libraryMissing": "A fotókereséshez a Photos modul kell",
-    "libraryMissingHint": "Ezen az eszközön nincs regisztrálva a Photos modul, ezért a szemantikus keresés és a szűrők nem érhetők el. A böngészés és a mentés ettől függetlenül működik.",
     "backupForegroundOnly": "A mentés csak addig fut, amíg ez az ablak nyitva van.",
     "video": "Videó",
     "loading": "Betöltés…",

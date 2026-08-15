@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Foto",
-    "libraryMissing": "La ricerca foto richiede il modulo Photos",
-    "libraryMissingHint": "Su questo dispositivo non è registrato alcun modulo Photos, quindi la ricerca semantica e i filtri non sono disponibili. Sfogliare ed eseguire il backup funzionano comunque.",
     "backupForegroundOnly": "Il backup viene eseguito solo mentre questa finestra è aperta.",
     "video": "Video",
     "loading": "Caricamento…",

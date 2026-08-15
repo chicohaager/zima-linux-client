@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Photos",
-    "libraryMissing": "La recherche de photos nécessite le module Photos",
-    "libraryMissingHint": "Aucun module Photos n’est enregistré sur cet appareil ; la recherche sémantique et les facettes sont donc indisponibles. La navigation et la sauvegarde fonctionnent malgré tout.",
     "backupForegroundOnly": "La sauvegarde ne fonctionne que si cette fenêtre reste ouverte.",
     "video": "Vidéo",
     "loading": "Chargement…",

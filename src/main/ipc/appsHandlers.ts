@@ -173,7 +173,7 @@ export const registerAppsHandlers = (): void => {
   })
 
   handle(CHANNELS.appsOpenWebUi, async (input) => {
-    const { id, external } = input
+    const { id, external, labels } = input
     const host = session.activeHost()
     if (host === null) {
       return wireError(appError('unauthorized', 'no active device', 'error.signInRequired'))
@@ -199,7 +199,7 @@ export const registerAppsHandlers = (): void => {
       await shell.openExternal(url)
       return ok({ opened: 'browser' as const })
     }
-    openInWindow({ url, title: appsApi.preferredTitle(tile, 'en_us') })
+    openInWindow({ url, title: appsApi.preferredTitle(tile, 'en_us'), labels })
     return ok({ opened: 'window' as const })
   })
 }

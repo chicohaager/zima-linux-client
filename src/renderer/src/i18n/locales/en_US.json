@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Photos",
-    "libraryMissing": "Photo search needs the Photos module",
-    "libraryMissingHint": "This device has no Photos module registered, so semantic search and facets are unavailable. Browsing and backup work regardless.",
     "backupForegroundOnly": "Backup runs only while this window is open.",
     "video": "Video",
     "loading": "Loading…",
@@ -155,7 +153,14 @@
     "openBrowser": "Open in browser",
     "noWebUi": "This app publishes no web interface.",
     "start": "Start",
-    "stop": "Stop"
+    "stop": "Stop",
+    "window": {
+      "connecting": "Connecting to this app…",
+      "failedTitle": "{{title}} did not answer",
+      "failedBody": "This app's web interface could not be loaded.",
+      "reasonLabel": "Reason",
+      "hint": "The app may be stopped, or its port may not be reachable from this computer. Opening it in your browser goes the same way, so a browser that works points at this client instead."
+    }
   },
   "security": {
     "keyringTitle": "Passwords cannot be stored securely",

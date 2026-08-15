@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Bilder",
-    "libraryMissing": "Bildesøk krever Photos-modulen",
-    "libraryMissingHint": "Denne enheten har ingen registrert Photos-modul, så semantisk søk og fasetter er utilgjengelige. Blaing og sikkerhetskopi fungerer likevel.",
     "backupForegroundOnly": "Sikkerhetskopien kjører bare så lenge dette vinduet er åpent.",
     "video": "Video",
     "loading": "Laster…",

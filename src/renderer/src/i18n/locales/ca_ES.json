@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotos",
-    "libraryMissing": "La cerca de fotos necessita el mòdul Photos",
-    "libraryMissingHint": "Aquest dispositiu no té registrat el mòdul Photos, per tant la cerca semàntica i les facetes no estan disponibles. Explorar i la còpia funcionen igualment.",
     "backupForegroundOnly": "La còpia només s’executa mentre aquesta finestra estigui oberta.",
     "video": "Vídeo",
     "loading": "S’està carregant…",

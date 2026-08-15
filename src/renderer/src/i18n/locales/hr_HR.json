@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotografije",
-    "libraryMissing": "Pretraga fotografija zahtijeva modul Photos",
-    "libraryMissingHint": "Na ovom uređaju modul Photos nije registriran, pa semantička pretraga i filtri nisu dostupni. Pregled i sigurnosna kopija ipak rade.",
     "backupForegroundOnly": "Sigurnosna kopija radi samo dok je ovaj prozor otvoren.",
     "video": "Videozapis",
     "loading": "Učitavanje…",
