@@ -2034,6 +2034,120 @@ HTTP 400 (also die Hypothese (b) von oben nachgestellt) → der neue Test wird *
 `Expected: > 20 / Received: 0` — genau das Bild, das der Tester beschrieben hat. Danach entfernt
 (`grep -c SABOTAGE e2e/fake-zimaos.mjs` → 0) und die Suite wieder 5 von 5 grün.
 
+## 🔴 Zweiter Fremdbericht (PikaOS): ein stummes weißes Fenster und ein „Lädt…", das nie endet
+
+Ein Tester im ZimaSpace-Forum, `editon96`, PikaOS, `.deb`. Vier Punkte, alle vier nachgemessen —
+zwei davon waren echte Fehler, und beide treffen **jeden** Nutzer, nicht nur ihn.
+
+### Was er schrieb, und was davon zutrifft
+
+| Sein Punkt | Befund | Beleg |
+|---|---|---|
+| „It also say I need the Photo mudoul but I dont need them" | Zutreffend, und es war **zweimal** dieselbe Aussage: eine Karte im Fotos-Reiter **und** ein gelber Warnkasten in der Fähigkeitenliste, unter einer Zeile, die dieselbe Tatsache schon nüchtern nennt | `PhotosScreen.tsx:119`, `CapabilityList.tsx:105` |
+| „when I try to use an app here it often are only White and dont open the app" | Zutreffend, zwei unabhängige Ursachen — siehe unten | reproduziert, s. u. |
+| Fotos-Reiter in „Daten" integrieren | Technisch gar nicht vorgesehen: `SECTIONS` ist eine Konstante, keine Einstellung blendet etwas aus (Grep negativ, Positivkontrolle über `zima.theme`/`zima.locale` positiv) | `app/sections.ts`, `app/App.tsx:24` |
+| PikaOS, `.deb` | Kein Problem. PikaOS ist **Debian-SID**-basiert; die Matrix fährt Debian **12** als Neuestes | `debian:sid`-Lauf, exit 0, `libasound2t64` + `libgtk-3-0t64` — die richtigen Implementierungen, nicht die OSS-Attrappe |
+
+### 1. Das App-Fenster hatte überhaupt keinen Fehlerpfad
+
+`appWindow.ts` stand auf `void window.loadURL(url)`: das Promise verworfen, kein Zuhörer, kein
+Log, keine Ladeanzeige. Reproduziert gegen das echte Gerät, im ausgelieferten Electron 43.2.0 im
+Container, an einer Kachel mit Status `running` und veröffentlichtem Port:
+
+```
+3ms      did-start-loading
+15ms     did-start-navigation
+21111ms  did-fail-load code=-102 ERR_CONNECTION_REFUSED isMainFrame=true
+21117ms  loadURL REJECTED  Error: ERR_CONNECTION_REFUSED (-102) loading '…:7860/'
+90047ms  document.body.innerText = ""
+```
+
+Einundzwanzig Sekunden nichts, danach ein leeres Fenster für immer. Genau sein Wort: *only White*.
+
+Der Umfang stimmt auch: von 16 App-Kacheln des Testgeräts antworten über LAN 14 mit HTTP 200,
+eine läuft in den Timeout, eine antwortet 401 — bei 16 Kacheln reicht die eine für „often".
+
+🔴 **Drei Messungen haben den Entwurf bestimmt, und alle drei widersprechen der naheliegenden
+Annahme:**
+
+1. **`loadURL` wirft.** Das `void` hat den Bericht weggeworfen, den es schon gab.
+2. **`did-fail-load` feuert nicht immer.** `http://192.0.2.1:8080/` (nicht routbar) wurde nach
+   16 ms mit `ERR_FAILED (-2)` abgelehnt und feuerte **kein einziges Ereignis**. Ein Zuhörer
+   allein hätte diesen Fall für immer stumm gelassen — deshalb sind **beide** Wege verdrahtet
+   und gegen Doppelmeldung abgesichert (im Refused-Fall feuern beide).
+3. **`did-finish-load` feuert auch nach dem Fehlschlag.** Es taugt nicht als Erfolgssignal und
+   wird nicht als eines benutzt.
+
+Neu: eine Verbindungsseite **vor** dem eigentlichen Laden (in der 21-Sekunden-Lücke gibt es kein
+Ereignis, an das man eine Anzeige hängen könnte — sie muss vorher da sein), beide Fehlerwege auf
+eine Fehlerseite mit URL, Chromium-Grund und Rat, ein Log-Eintrag `app-window.load-failed`.
+Bewusst **kein** Zeitgeber, der später eine „dauert zu lange"-Seite einblendet: das Navigieren
+würde den laufenden Ladevorgang abbrechen und eine bloß langsame App genau durch das töten, was
+sie erklären soll.
+
+Die Texte kommen als Parameter aus dem Renderer, weil der Hauptprozess keine Kataloge hat — eine
+fest verdrahtete englische Fehlerseite wäre der einzige Bildschirm dieses Clients, der die
+Sprachwahl ignoriert.
+
+**Beleg am Ende, echte Engine, echtes Gerät, deutsche Oberfläche:**
+
+```
+POSITIVKONTROLLE (Port 8717, App antwortet):
+  [nach 1,5s] "ZimaOS MCP  Enter your API key to access the dashboard. …"   <- Fehlerseite bleibt weg
+
+DER GEMELDETE FALL (Port 7860):
+  [nach 1,5s] "Immich hat nicht geantwortet  Die Weboberfläche dieser App konnte nicht geladen
+               werden.  http://<gerät>:7860/  Grund: ERR_CONNECTION_REFUSED (-102)  Die App ist
+               möglicherweise gestoppt, oder ihr Port ist nicht erreichbar."
+```
+
+Vorher: `""` nach 90 Sekunden. Nachher: die vollständige Erklärung nach 1,5 Sekunden.
+
+### 2. Der Leerzustand des Fotos-Reiters war unerreichbar
+
+Genau eine der beiden Abfragen ist immer abgeschaltet: ohne Modul läuft die Bibliothek nie, im
+Bibliotheks-Modus nie das Ordnerraster. Die Karte fragte `isPending` — und react-query 5.90, die
+Version die dieser Client ausliefert, meldet das für eine **deaktivierte** Abfrage dauerhaft.
+Gegen die echte Bibliothek gemessen:
+
+```
+DEAKTIVIERT -> status=pending isPending=true  isLoading=false fetchStatus=idle
+AKTIV       -> status=success isPending=false isLoading=false      <- Positivkontrolle
+```
+
+Folge: „Lädt…" für immer, sobald das Ergebnis leer war, und `photos.noneHere` **in beiden Modi
+unerreichbar**. Wer Immich benutzt und kein ZimaOS-Photos-Modul hat, traf eine Karte, die nie
+fertig wurde — als weißer Fleck gemeldet. Jetzt `isLoading` (das ist `isPending && isFetching`),
+`volumes` mit einbezogen, damit der Reiter nicht „leer" sagt, bevor er weiß, welcher Ordner
+gemeint ist.
+
+### 3. Die Modul-Hinweise sind weg — der Zustand bleibt sichtbar
+
+Entschieden am 2026-08-15: **Karte weg, Reiter bleibt.** Das Foto-Backup lebt ausschließlich im
+Fotos-Reiter (`BackupPanel`, gerendert aus `PhotosScreen`) und läuft über die Dateien-API, also
+**ohne** Modul — den Reiter auszublenden hätte Nutzern ohne Modul ungefragt Backup und
+Ordner-Modus genommen. Die Badge „Ordner" bleibt: ein Ordnerraster, das als Bibliothek daherkommt,
+wäre der umgekehrte Fehler. Der gelbe Warnkasten in der Fähigkeitenliste fällt ebenfalls weg — die
+Liste führt `photoLibrary` schon als Zeile mit „auf diesem Gerät nicht verfügbar"; einen Zustand
+zu nennen ist die Aufgabe dieser Liste, ihn zu mahnen nicht.
+
+### Gedeckt von
+
+23 neue Zusicherungen in drei Dateien (`appWindowNotice.test.ts` 12, `appWindowWiring.test.ts` 7,
+`PhotosScreen.test.tsx` 4). **Positivkontrolle über alle sieben Reparaturteile**: jede einzeln
+zurückgedreht, jedes Mal vorher belegt dass die Sabotage in der Datei ankam — **7 von 7 werden
+rot**, danach wiederhergestellt und wieder grün. Der E2E-Fall aus `2915601` wurde auf den neuen
+Stand gezogen und selbst gegengeprüft (Zusicherung verfälscht → rot).
+
+Gesamtkette: `npm run verify` exit 0 (Typen, Lint, **315** Tests, Build, i18n, Privacy),
+`npx playwright test` 5 von 5.
+
+> ⚠️ Was hier **nicht** belegt ist: dass `editon96` dieselbe Ursache hatte. Gemessen wurde über
+> **LAN**; der Versuch über die Remote-Access-Adresse war ungültig, weil dort schon die
+> Positivkontrolle (Port 80, die Geräte-UI selbst) in den Timeout lief — diese VM hat die Route
+> nicht. Über Remote-Zugang ist damit **nichts** gemessen. Was unabhängig davon gilt: welche
+> Ursache auch immer vorliegt, das Fenster sagt sie jetzt, statt weiß zu bleiben.
+
 ## Alt-Stand
 
 Der 0.9.23-Code liegt unverändert unter `legacy-0.9/` (per `git mv`, Historie erhalten) und ist
