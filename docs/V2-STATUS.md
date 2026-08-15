@@ -5,24 +5,27 @@
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
 
-**Zuletzt gefahren, 2026-08-11 — der Stand dieses Commits** (die Zeilen ohne eigenes Datum
-stammen vom Lauf am 2026-08-10 und sind seither unverändert):
+**Zuletzt gefahren, 2026-08-15 — der Stand dieses Commits** (die Zeilen ohne eigenes Datum
+stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 292 Tests in 34 Dateien · build ·
-                    build-gate · i18n · privacy — gefahren am 2026-08-11
-npm run verify:release ✗ (rc=1)  2 von 8 rot — der Wächter-Fix 68c68dc ist NEUER als die
-                    veröffentlichten alpha.4-Pakete (gebaut aus 4fd04b3). Beabsichtigt und
-                    stehengelassen: die nächste Fassung trägt ihn, alpha.4 nicht
+npm run verify        ✓ (rc=0)  type-check · lint · 315 Tests in 37 Dateien · build ·
+                    build-gate · i18n · privacy — gefahren am 2026-08-15
+npm run verify:release ✓ (rc=0)  8 von 8 grün — ERSTMALS. Die Pakete sind aus 5206d46,
+                    also NEUER als jede Build-Eingabe; Prüfsummendatei stimmt, Bau-Anspruch
+                    nennt seinen Commit. Vorher stand hier monatelang "2 von 8 rot"
 npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
-                    (2026-08-11); der fünfte fährt das Gerät OHNE Photos-Modul
-i18n gate           clean — 289 Schlüssel in en_US; 28 Sprachen bei 100 %, 0 unvollständig
-privacy gate        clean, 216 verfolgte Dateien (Bilder überspringt es — siehe unten);
-                    am 2026-08-11 erneut gefahren: clean, 217 Dateien — die eine mehr ist
-                    `probeFailures.test.ts` aus 68c68dc
-Distro-Matrix       6 von 6 am AUSGELIEFERTEN alpha.4-Paket, Sandkasten an, 2026-08-10
-                    (`dist/matrix-alpha4/`); jede Zeile mit 399 Zeichen sichtbarem Text.
-                    Die openSUSE-Zeile brauchte dafür erst eine Schriftart — siehe unten
+                    (2026-08-15); der fünfte fährt das Gerät OHNE Photos-Modul
+i18n gate           clean — 292 Schlüssel in en_US; en_US/de_DE 100 %, die übrigen 26 bei
+                    98 % (287) — die fünf neuen `apps.window.*` liegen zweisprachig vor und
+                    fallen sonst auf Englisch zurück; das Tor BERICHTET Abdeckung
+privacy gate        clean, 221 verfolgte Dateien (Bilder überspringt es — siehe unten)
+Distro-Matrix       9 von 9 am AUSGELIEFERTEN Paket, Sandkasten an, 2026-08-15
+                    (`dist/matrix-2026-08-15/`); jede Zeile ok=true, 51 CSS-Regeln,
+                    399 Zeichen sichtbarem Text, null rohe i18n-Schlüssel.
+                    NEU seit heute: Ubuntu 26.04 LTS, Debian 13 (trixie), Fedora 44 —
+                    die alten Zeilen hörten bei 24.04 / 12 / 41 auf und maßen damit
+                    Distributionen, die niemand mehr neu installiert
 Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigenmächtigen
                     Zugriff; genau EIN Geräteeintrag; „Verbinden" stellte die Sitzung aus dem
                     gespeicherten Token her — ohne Passwortabfrage, mit wieder geöffnetem
@@ -31,13 +34,13 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 4fd04b3, alle fünf in
-                    einem Lauf am 2026-08-10, 15:52–15:58; Flatpak aus der Zielliste.
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 5206d46, alle fünf in
+                    einem Lauf am 2026-08-15, 09:40–09:47; Flatpak aus der Zielliste.
                     `sha256sum -c SHA256SUMS-2.0.0-alpha.4.txt` → 5× OK
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
-Zweig               auf `origin/v2` hochgeladen (2026-08-10, per `git ls-remote` gegengeprüft)
+Zweig               auf `origin/v2` hochgeladen (2026-08-15, per `git ls-remote` gegengeprüft)
 Release             v2.0.0-alpha.4 als Pre-Release, 7 Assets, Tag auf 4fd04b3;
                     `sha256sum -c` aus dem echten GitHub-Download grün für alle fünf Pakete
                     (heruntergeladen, nicht an den lokalen Dateien geprüft).
@@ -2147,6 +2150,107 @@ Gesamtkette: `npm run verify` exit 0 (Typen, Lint, **315** Tests, Build, i18n, P
 > Positivkontrolle (Port 80, die Geräte-UI selbst) in den Timeout lief — diese VM hat die Route
 > nicht. Über Remote-Zugang ist damit **nichts** gemessen. Was unabhängig davon gilt: welche
 > Ursache auch immer vorliegt, das Fenster sagt sie jetzt, statt weiß zu bleiben.
+
+## 🟢 Neun statt sechs Distributionen — und das Release-Tor erstmals grün
+
+Am 2026-08-15, nach dem PikaOS-Bericht. Die Frage war „welche Distro fehlt noch für ein Release?",
+und die ehrliche Antwort lautete: **keine, die rot ist — aber die Zeilen messen den falschen
+Jahrgang, und die Pakete sind älter als der Code.**
+
+### Die Matrix hörte bei abgelösten Ausgaben auf
+
+Bis heute fuhr `distro-matrix.sh` Ubuntu 22.04/24.04, Debian 12, Fedora 41, Arch und openSUSE
+Tumbleweed. Ubuntu 24.04, Debian 12 und Fedora 41 sind **allesamt abgelöst**; die Matrix belegte
+also Distributionen, die niemand mehr neu installiert. Genau in dieser Lücke saß der Fremdbericht:
+PikaOS baut auf Debian **SID** auf, und der neueste Debian-Start, den dieses Projekt je gesehen
+hatte, war Debian 12.
+
+Neu je eine Zeile für die aktuellste Ausgabe der Familie — Identität nicht angenommen, sondern aus
+dem Abbild gelesen:
+
+```
+ubuntu:26.04  PRETTY_NAME="Ubuntu 26.04 LTS"   VERSION="26.04 LTS (Resolute Raccoon)"
+debian:13     PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+fedora:44     PRETTY_NAME="Fedora Linux 44 (Container Image)"
+```
+
+Eine Zeile **je Derivat** (Mint, Pop!_OS, Zorin, PikaOS) wäre der falsche Zuschnitt: sie erben ihre
+Bibliotheken von einer Basis. Abgedeckt werden sie, indem die **Basis**-Zeilen aktuell bleiben.
+
+### Das Ergebnis, am neu gebauten Paket
+
+| Zeile | ok | CSS-Regeln | sichtbarer Text | rohe Schlüssel |
+| --- | --- | --- | --- | --- |
+| ubuntu2204 · ubuntu2404 · **ubuntu2604** | true | 51 | 399 Zeichen | 0 |
+| debian12 · **debian13** | true | 51 | 399 Zeichen | 0 |
+| fedora41 · **fedora44** | true | 51 | 399 Zeichen | 0 |
+| archlinux · opensuse | true | 51 | 399 Zeichen | 0 |
+
+**9 von 9**, Sandkasten an, das installierte Paket im echten Pfad, als gewöhnlicher Benutzer.
+`ok=true` allein wäre kein Beleg — genau diese Ampel stand am 2026-08-09 auf einer openSUSE-Zeile
+mit **leerem** Bildschirm grün, weil dem Container jede Schriftart fehlte. Deshalb steht die
+Spalte „sichtbarer Text" daneben, und deshalb ist der Wortlaut der drei neuen Zeilen nachgesehen
+worden statt nur ihre Ampel:
+
+```
+ubuntu2604: 'ZIMAOS\nFiles\nPhotos\nApps\nZ\nDevice\n🌐\nEnglish (US)…'
+debian13:   'ZIMAOS\nFiles\nPhotos\nApps\nZ\nDevice\n🌐\nEnglish (US)…'
+fedora44:   'Passwords cannot be stored securely\n\nThis system provides no keyring…'
+```
+
+Was das für die `Depends` heißt: `libasound2` zog auf Ubuntu 24.04 einmal eine OSS-Attrappe statt
+der echten Bibliothek — sauber installiert, beim Start tot. Auf Ubuntu 26.04 und Debian 13, den
+Basen jenseits des `time_t`-Übergangs, **startet die App**. Das ist die Eigenschaft, um die es
+ging; „installiert sich" hätte sie nicht belegt.
+
+> ⚠️ Was hier **nicht** belegt ist: Debian SID selbst. Dort wurde nur die **Installation**
+> gemessen (`apt-get install -y /pkg.deb` → exit 0, `dpkg -l` zeigt `libasound2t64` und
+> `libgtk-3-0t64`), **kein Start**. PikaOS liegt jenseits von trixie; der Abstand ist jetzt eine
+> Ausgabe statt zweier, aufgehoben ist er nicht.
+
+### Das Release-Tor: erstmals 8 von 8
+
+Vorher stand hier monatelang „2 von 8 rot", und zwar zu Recht: die Pakete waren älter als der
+Code, den sie enthalten sollten.
+
+```
+release gate — 2.0.0-alpha.4, build inputs last changed in 5206d46
+  ok  every configured target produced a file (5 files)
+  ok  no artefact predates the last build-input commit (all newer than 5206d46)
+  ok  artefacts come from one run (spread 6.5 min)
+  ok  no uncommitted build input is newer than the packages
+  ok  checksum file is present and correct (5 entries verified)
+  ok  no document carries a checksum of a file that is not shipped
+  ok  build claims name their commit (matches 5206d46)
+  ok  filenames carry the package.json version (2.0.0-alpha.4)
+release gate: clean
+```
+
+`scripts/` zählt nicht als Build-Eingabe, die Erweiterung der Matrix entwertet den Bau also nicht.
+
+### arm64 ist entschieden, nicht offen
+
+Festgelegt am 2026-08-15: arm64 bleibt unveröffentlicht, und es arbeitet auch niemand darauf hin.
+Drei der vier Fragen sind beantwortet (baut, installiert, ZeroTier läuft mit seinen Rechten); der
+App-Start ist unter `qemu-user` grundsätzlich nicht zu zeigen und bräuchte echte Hardware. In
+README und `liesmich.md` steht das jetzt als Entscheidung statt als „bis dahin" — eine offene
+Aufgabe, an der niemand arbeitet, liest sich sonst wie ein Rückstand.
+
+### Zwei Messfehler an mir selbst, beide vor dem Ergebnis bemerkt
+
+**1. Ein Glob wurde zum Ziel.** `mv dist/*.deb … dist/*SHA256* 2>/dev/null` — **ohne**
+Zielverzeichnis. Bei `mv` ist das letzte Argument das Ziel, also wurde die Prüfsummendatei zum
+Ziel, und `2>/dev/null` verschluckte die Verweigerung: der Befehl sah aus, als hätte er
+gearbeitet. Passiert ist nichts (`mv` bricht bei mehreren Quellen vor jeder Änderung ab, danach
+`sha256sum -c` → 5× OK), bei **einer** Quelle wäre es eine stille Umbenennung gewesen. Konsequenz:
+Ziel benennen statt positionieren (`mv -t`), und `2>/dev/null` gehört nie an einen verändernden
+Befehl.
+
+**2. Ein Dateiname ist kein fertiger Inhalt.** Die Wartebedingung „fünf Artefakte existieren"
+feuerte, während `fpm` den pacman noch schrieb: 8,9 MB statt 96 MB. Wäre die Matrix so gestartet,
+hätten neun Zeilen ein abgeschnittenes Archiv vermessen — und der Fehler hätte wie ein
+Distro-Problem ausgesehen. Beleg für das Gegenteil: `pgrep` zeigte fpm laufend, `stat` die Datei
+wachsend (17 563 648 → 20 267 008). Gewartet wird jetzt auf den **Prozess** und seinen Exit-Code.
 
 ## Alt-Stand
 

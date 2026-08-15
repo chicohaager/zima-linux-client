@@ -6,8 +6,9 @@ eingebaut und Tailscale genutzt, wenn es ohnehin schon läuft.
 > **Das hier ist der Zweig `v2`: Fassung 2.0.0-alpha.4, ein Rewrite.**
 > Das zuletzt **veröffentlichte** Paket ist
 > [`v2.0.0-alpha.4`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.4).
-> Das installierte Paket ist auf **sechs Distributionen** gestartet worden (Ubuntu 22.04 und 24.04,
-> Debian 12, Fedora 41, Arch, openSUSE Tumbleweed) — in Containern, unter Xvfb, nur x86_64.
+> Das installierte Paket ist auf **neun Distributionen** gestartet worden (Ubuntu 22.04, 24.04
+> und 26.04 LTS, Debian 12 und 13, Fedora 41 und 44, Arch, openSUSE Tumbleweed) — in Containern,
+> unter Xvfb, nur x86_64.
 > Auf einem **echten Desktop** ist er auf zwei Maschinen benutzt worden: Ubuntu 24.04 (GNOME auf
 > Wayland) und **Zorin OS 18**, wo alpha.4 von Hand durchgegangen wurde — der Client startete ohne
 > Sitzung und griff von sich aus nach nichts, **Verbinden** stellte die Sitzung aus dem
@@ -69,7 +70,10 @@ einer leeren Liste: „leer" liest sich wie „kein Gerät gefunden".
 
 ### Drumherum
 
-- **28 Sprachen**, vollständig (je 289 Schlüssel). Geprüft sind nur `de_DE`, `en_US` und `en_GB`;
+- **28 Sprachen**, 292 Schlüssel in der Referenz. `en_US` und `de_DE` sind vollständig, die
+  übrigen 26 stehen bei 287 — die fünf `apps.window.*`-Texte vom 2026-08-15 gibt es bislang nur
+  in diesen beiden, sonst fällt die Oberfläche dort auf Englisch zurück; das i18n-Tor erlaubt das
+  und **berichtet** es, statt es zu verdecken. Geprüft sind nur `de_DE`, `en_US` und `en_GB`;
   die anderen 25 sind maschinell übersetzt und stehen im Sprachmenü mit dem Hinweis „ungeprüft".
 - **Hell, dunkel oder dem System folgen** — drei Zustände statt eines Umschalters, damit „dem
   System folgen" erreichbar bleibt.
@@ -99,7 +103,11 @@ Ein arm64-`.deb` lässt sich bauen, installiert sauber auf aarch64, und das mitg
 ZeroTier läuft dort (1.14.2, samt der Rechte, die das Post-Install erteilt). Es fehlt genau das
 Entscheidende: Niemand hat die Anwendung auf arm64 **starten** sehen. Unter Emulation ist das
 nicht zu zeigen — Chromiums Zygote scheitert in `qemu-user` an `clone` —, es braucht also echte
-Hardware. Bis dahin wird arm64 nicht veröffentlicht.
+Hardware.
+
+**Das ist entschieden, keine offene Aufgabe** (2026-08-15): arm64 bleibt unveröffentlicht, und
+es arbeitet auch niemand darauf hin. Sollte je eine aarch64-Maschine danebenstehen, sind drei
+der vier Fragen bereits beantwortet und nur der Start wäre noch zu zeigen.
 
 Die Pakete liegen im
 [**Pre-Release v2.0.0-alpha.4**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.0-alpha.4).
@@ -205,12 +213,22 @@ npm run package:linux     # die fünf Ziele oben auf einmal — Flatpak gehört 
 Die fünf sind auf Ubuntu 24.04 gebaut worden. Fehlende Werkzeuge werden beim Namen genannt, nicht
 verschluckt.
 
-deb, rpm und pacman werden von `scripts/distro-matrix.sh` auf **sechs Distributionen installiert
-und gestartet** — Ubuntu 22.04 und 24.04, Debian 12, Fedora 41, Arch und openSUSE Tumbleweed. Jede
-Zeile installiert das echte Artefakt in den echten Pfad (`/opt/ZimaOS Client/`, Leerzeichen
-inklusive), startet es als gewöhnlicher Benutzer **mit eingeschaltetem Sandkasten** und nimmt den
-Startbericht der App selbst als Beleg. Alle sechs: `ok=true`, 51 CSS-Regeln angewandt, kein roher
-Übersetzungsschlüssel auf dem Schirm, kein Konsolenfehler.
+deb, rpm und pacman werden von `scripts/distro-matrix.sh` auf **neun Distributionen installiert
+und gestartet** — Ubuntu 22.04, 24.04 und 26.04 LTS, Debian 12 und 13, Fedora 41 und 44, Arch und
+openSUSE Tumbleweed. Jede Zeile installiert das echte Artefakt in den echten Pfad
+(`/opt/ZimaOS Client/`, Leerzeichen inklusive), startet es als gewöhnlicher Benutzer **mit
+eingeschaltetem Sandkasten** und nimmt den Startbericht der App selbst als Beleg. Alle neun:
+`ok=true`, 51 CSS-Regeln angewandt, kein roher Übersetzungsschlüssel auf dem Schirm, kein
+Konsolenfehler.
+
+Die jeweils neueste Ausgabe jeder Familie hat seit dem 2026-08-15 eine eigene Zeile. Vorher hörte
+die Matrix bei Ubuntu 24.04, Debian 12 und Fedora 41 auf — allesamt abgelöst —, maß also
+Distributionen, die niemand mehr neu installiert. Die meisten Desktops draußen sind Derivate
+(Mint, Pop!_OS, Zorin, PikaOS); sie erben ihre Bibliotheken von einer Basis, deshalb deckt man sie
+ab, indem man die **Basis**-Zeilen aktuell hält. Dort fällt auch ein Abhängigkeitsfehler auf:
+`Depends: libasound2` löste überall auf und zog auf Ubuntu 24.04 statt der echten Bibliothek eine
+OSS-Attrappe — sauber installiert, beim Start tot. Das sieht nur eine Zeile, die die App
+**startet**.
 
 **Flatpak steht mit Absicht nicht in der Standard-Zielliste.** Bis zum 2026-08-09 stand es darin,
 und dort hat es Schaden angerichtet: `npm run package:linux` brach **an** Flatpak ab — nach

@@ -28,11 +28,32 @@ OUT="${ZIMA_MATRIX_OUT:-${ROOT}/dist/matrix}"
 mkdir -p "${OUT}"
 
 # image | package kind | install command run as root inside the container
+#
+# 🔴 Why the newest release of each family is a row of its own, added 2026-08-15.
+#
+# Until today this matrix stopped at Ubuntu 24.04, Debian 12 and Fedora 41 — and every one of
+# those had been superseded. A tester on PikaOS (Debian SID) reported problems on a base this
+# matrix had never seen; the packages installed there, but nothing had ever STARTED the app on
+# anything newer than Debian 12.
+#
+# The distributions people actually run are mostly derivatives — Mint, Pop!_OS, Zorin, PikaOS
+# — and they inherit their libraries from a base. So the way to cover them is not one row per
+# derivative, it is keeping the BASE rows current. An old base row measures a distribution
+# nobody installs any more.
+#
+# This is also where a dependency error surfaces: `Depends: libasound2` resolved on every
+# Debian target and on Ubuntu 24.04 pulled an OSS shim instead of the real library, because
+# the name had become an empty label after the time_t transition. Installation was green and
+# the app died at startup on a missing symbol. Only a row that STARTS the app catches that,
+# and only on a distribution new enough to have made the rename.
 ROWS=(
   "ubuntu2204|deb|ubuntu:22.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
   "ubuntu2404|deb|ubuntu:24.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
+  "ubuntu2604|deb|ubuntu:26.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
   "debian12|deb|debian:12|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
+  "debian13|deb|debian:13|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
   "fedora41|rpm|fedora:41|dnf install -y -q /pkg/*.rpm xorg-x11-server-Xvfb"
+  "fedora44|rpm|fedora:44|dnf install -y -q /pkg/*.rpm xorg-x11-server-Xvfb"
   "archlinux|pacman|archlinux:latest|pacman -Sy --noconfirm --needed xorg-server-xvfb >/dev/null && pacman -U --noconfirm /pkg/*.pacman"
   # 🔴 `adwaita-fonts` is in this row and not in the others because this image has NO font at
   # all, and its xvfb package pulls none. Measured 2026-08-10 after the exact install command
