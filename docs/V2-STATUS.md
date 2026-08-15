@@ -34,8 +34,8 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 5206d46, alle fünf in
-                    einem Lauf am 2026-08-15, 09:40–09:47; Flatpak aus der Zielliste.
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 59cfee6, alle fünf in
+                    einem Lauf am 2026-08-15, 11:20–11:26; Flatpak aus der Zielliste.
                     `sha256sum -c SHA256SUMS-2.0.0.txt` → 5× OK
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
