@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Photos",
-    "libraryMissing": "Photo search needs the Photos module",
-    "libraryMissingHint": "This device has no Photos module registered, so semantic search and facets are unavailable. Browsing and backup work regardless.",
     "backupForegroundOnly": "Backup runs only while this window is open.",
     "video": "Video",
     "loading": "Loading…",

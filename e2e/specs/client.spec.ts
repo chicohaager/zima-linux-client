@@ -180,9 +180,19 @@ test('a device without the photos module shows the folder grid, not an error', a
     await expect(page.locator('[data-action="sign-out"]')).toBeVisible({ timeout: 30_000 })
     await page.click('nav button[data-nav="photos"]')
 
-    // The named explanation, not an empty gallery. This is the part the forum thread was
-    // right about.
-    await expect(page.getByText('Die Fotosuche braucht das Photos-Modul')).toBeVisible()
+    /*
+     * The mode is stated — and stated ONCE, as what this screen is rather than as what the
+     * device lacks.
+     *
+     * 🔴 This used to assert the card "Die Fotosuche braucht das Photos-Modul". It was
+     * removed on 2026-08-15 after the next tester in the same thread wrote "It also say I
+     * need the Photo mudoul but I dont need them": he backs up to Immich, so a card
+     * announcing a missing ZimaOS dependency met him on every visit to a tab that works
+     * perfectly well without it. The badge stays, because a folder grid presented as a
+     * library would be the other error.
+     */
+    await expect(page.getByText('Ordner', { exact: true })).toBeVisible()
+    await expect(page.getByText('Die Fotosuche braucht das Photos-Modul')).toHaveCount(0)
 
     // And the part it was wrong about: 38 of the 80 recorded entries are pictures or videos,
     // so a working folder grid renders tiles. "More than 20" survives a re-recording; zero is

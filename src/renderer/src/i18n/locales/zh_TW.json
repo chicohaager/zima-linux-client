@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "照片",
-    "libraryMissing": "照片搜尋需要 Photos 模組",
-    "libraryMissingHint": "此裝置未註冊 Photos 模組，因此語意搜尋與分面無法使用。瀏覽與備份仍然可用。",
     "backupForegroundOnly": "備份僅在此視窗開啟時執行。",
     "video": "影片",
     "loading": "載入中…",

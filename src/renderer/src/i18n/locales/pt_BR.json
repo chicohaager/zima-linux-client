@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotos",
-    "libraryMissing": "A busca de fotos precisa do módulo Photos",
-    "libraryMissingHint": "Este dispositivo não tem o módulo Photos registrado, então a busca semântica e as facetas não estão disponíveis. Navegar e fazer backup funcionam mesmo assim.",
     "backupForegroundOnly": "O backup só é executado enquanto esta janela estiver aberta.",
     "video": "Vídeo",
     "loading": "Carregando…",

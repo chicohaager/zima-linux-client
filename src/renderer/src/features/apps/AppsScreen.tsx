@@ -52,9 +52,28 @@ export const AppsScreen = (): React.JSX.Element => {
     },
   })
 
+  /*
+   * The app window's own pages are written here, not in the main process.
+   *
+   * That window renders a third-party page, and when it cannot be reached the user has to
+   * be told so in their own language — the main process has no catalogues, so the text
+   * travels with the request. Interpolated here too, so the main process only escapes it.
+   */
   const open = useMutation({
-    mutationFn: async (params: { id: string; external: boolean }) =>
-      unwrap(await window.zima.openAppWebUi(params)),
+    mutationFn: async (params: { id: string; external: boolean; title: string }) =>
+      unwrap(
+        await window.zima.openAppWebUi({
+          id: params.id,
+          external: params.external,
+          labels: {
+            connecting: t('apps.window.connecting'),
+            failedTitle: t('apps.window.failedTitle', { title: params.title }),
+            failedBody: t('apps.window.failedBody'),
+            reasonLabel: t('apps.window.reasonLabel'),
+            hint: t('apps.window.hint'),
+          },
+        }),
+      ),
   })
 
   // Icons whose URL did not deliver an image. Measured 2026-07-30: two entries in a real
@@ -159,13 +178,13 @@ export const AppsScreen = (): React.JSX.Element => {
               <div className="mt-3 flex flex-wrap gap-2">
                 {app.webUiUrl !== null ? (
                   <>
-                    <Button onClick={() => open.mutate({ id: app.id, external: false })}>
+                    <Button onClick={() => open.mutate({ id: app.id, external: false, title })}>
                       <GridIcon />
                       {t('apps.openHere')}
                     </Button>
                     <Button
                       variant="secondary"
-                      onClick={() => open.mutate({ id: app.id, external: true })}
+                      onClick={() => open.mutate({ id: app.id, external: true, title })}
                     >
                       <ExternalIcon />
                       {t('apps.openBrowser')}

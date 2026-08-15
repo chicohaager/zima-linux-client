@@ -35,6 +35,18 @@ const envelope = <T extends z.ZodTypeAny>(value: T) =>
 /** A device path. Non-empty and absolute — a relative path would resolve server-side. */
 const devicePath = z.string().min(1).startsWith('/')
 
+/**
+ * Text for the app window's own pages. Bounded, because it is rendered into a document:
+ * escaping already stops it being markup, and a length limit stops it being a payload.
+ */
+const appWindowLabels = z.object({
+  connecting: z.string().min(1).max(300),
+  failedTitle: z.string().min(1).max(300),
+  failedBody: z.string().min(1).max(600),
+  reasonLabel: z.string().min(1).max(100),
+  hint: z.string().min(1).max(600),
+})
+
 const zerotierJoinRequest = z.object({
   /** ZeroTier network id: exactly 16 hex characters. Validated here, not on the device. */
   networkId: z.string().regex(/^[0-9a-fA-F]{16}$/),
@@ -218,7 +230,19 @@ export const featureChannelSchemas = {
     response: envelope(z.object({ id: z.string(), running: z.boolean() })),
   },
   [CHANNELS.appsOpenWebUi]: {
-    request: z.object({ id: z.string().min(1), external: z.boolean().default(false) }),
+    request: z.object({
+      id: z.string().min(1),
+      external: z.boolean().default(false),
+      /**
+       * The words the app window shows while it is connecting and when the load fails.
+       *
+       * They travel from the renderer because that is where the catalogues live — the main
+       * process has no i18n at all, and a hard-coded English error page would have been the
+       * one screen in this client that ignores the user's language. Already interpolated
+       * here, so the main process only escapes and inserts.
+       */
+      labels: appWindowLabels,
+    }),
     response: envelope(z.object({ opened: z.enum(['window', 'browser']) })),
   },
 

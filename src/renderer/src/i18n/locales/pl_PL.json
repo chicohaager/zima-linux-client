@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Zdjęcia",
-    "libraryMissing": "Wyszukiwanie zdjęć wymaga modułu Photos",
-    "libraryMissingHint": "To urządzenie nie ma zarejestrowanego modułu Photos, więc wyszukiwanie semantyczne i filtry są niedostępne. Przeglądanie i kopia działają mimo to.",
     "backupForegroundOnly": "Kopia działa tylko wtedy, gdy to okno jest otwarte.",
     "video": "Wideo",
     "loading": "Wczytywanie…",

@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Grianghraif",
-    "libraryMissing": "Teastaíonn an modúl Photos don chuardach grianghraf",
-    "libraryMissingHint": "Níl an modúl Photos cláraithe ar an ngléas seo, mar sin níl cuardach séimeantach ná scagairí ar fáil. Oibríonn brabhsáil agus cúltaca mar sin féin.",
     "backupForegroundOnly": "Ní ritheann an cúltaca ach fad a bhíonn an fhuinneog seo oscailte.",
     "video": "Físeán",
     "loading": "Á lódáil…",

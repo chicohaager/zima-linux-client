@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotografii",
-    "libraryMissing": "Căutarea foto necesită modulul Photos",
-    "libraryMissingHint": "Pe acest dispozitiv nu este înregistrat modulul Photos, deci căutarea semantică și filtrele nu sunt disponibile. Răsfoirea și copia de siguranță funcționează oricum.",
     "backupForegroundOnly": "Copierea rulează doar cât timp această fereastră este deschisă.",
     "video": "Video",
     "loading": "Se încarcă…",

@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotoğraflar",
-    "libraryMissing": "Fotoğraf arama Photos modülünü gerektirir",
-    "libraryMissingHint": "Bu cihazda Photos modülü kayıtlı değil, bu yüzden anlamsal arama ve süzgeçler kullanılamıyor. Göz atma ve yedekleme yine de çalışır.",
     "backupForegroundOnly": "Yedekleme yalnızca bu pencere açıkken çalışır.",
     "video": "Video",
     "loading": "Yükleniyor…",

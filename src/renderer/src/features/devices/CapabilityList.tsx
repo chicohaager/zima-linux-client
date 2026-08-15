@@ -9,6 +9,12 @@ import { Card, Muted } from '../../shared/ui/Card'
  * v1.7.0 build were measured with 35 and 38 gateway routes, and `/v2/photos` existed
  * on only one of them. So this list is derived from the device's own route table, and
  * an absent feature is spelled out rather than hidden.
+ *
+ * 🔴 Spelled out ONCE. A warning-coloured banner used to repeat "this device has no Photos
+ * module" underneath a list that already carries `photoLibrary` as a row reading "not
+ * available on this device". Removed 2026-08-15: the row is an inventory the user asked to
+ * see, the banner was the same fact restated as a defect, and a tester who runs Immich met
+ * it on every visit. Stating an absence is this list's job; nagging about it is not.
  */
 
 /**
@@ -103,17 +109,6 @@ export const CapabilityList = ({ capabilities }: Props): React.JSX.Element => {
         })()}
       </ul>
 
-      {!capabilities.photoLibrary && (
-        <div
-          className="mt-4 rounded-xl p-3 text-sm"
-          style={{ background: 'var(--warning-soft)' }}
-        >
-          <p className="font-medium">{t('photos.libraryMissing')}</p>
-          <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
-            {t('photos.libraryMissingHint')}
-          </p>
-        </div>
-      )}
     </Card>
   )
 }

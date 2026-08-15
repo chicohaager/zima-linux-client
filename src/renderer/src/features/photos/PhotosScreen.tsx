@@ -19,8 +19,14 @@ import { IndexProgress } from './IndexProgress'
  *   Library  (grid from the index, semantic search, index progress) -> needs /v2/photos
  *   Folder   (grid from a directory, thumbnails, backup)            -> files API, always
  *
- * A device without the module gets the folder mode and a named explanation for what is
- * missing — never an empty gallery, which reads as "you have no photos".
+ * A device without the module gets the folder mode — never an empty gallery, which reads as
+ * "you have no photos".
+ *
+ * 🔴 That mode used to come with a card explaining that the Photos module is absent. It was
+ * removed on 2026-08-15 after a tester said "It also say I need the Photo mudoul but I dont
+ * need them": he runs Immich, so the card announced a missing dependency on every single
+ * visit for a feature he will never install. The mode is still stated — the badge below says
+ * "Folder" — but it is stated as what this screen IS, not as what the device lacks.
  */
 export const PhotosScreen = (): React.JSX.Element => {
   const { t } = useTranslation()
@@ -94,6 +100,26 @@ export const PhotosScreen = (): React.JSX.Element => {
   const items = showingSearch ? searchItems : showingFolder ? folderItems : libraryItems
   const up = root === null ? null : parentPath(root)
 
+  /*
+   * 🔴 `isLoading`, not `isPending` — and the difference was a permanent "Loading…".
+   *
+   * Exactly one of `gallery` and `grid` is always switched off: without the module the
+   * gallery never runs, in library mode the folder grid never runs. Measured against
+   * react-query 5.90, which is the version this app ships:
+   *
+   *     disabled -> status=pending isPending=true  isLoading=false fetchStatus=idle
+   *     active   -> status=success isPending=false isLoading=false
+   *
+   * So `isPending` stayed true for ever on the disabled half. The card below therefore said
+   * "Loading…" permanently whenever the result was empty, and the honest empty state —
+   * "No pictures or videos in this folder." — was unreachable in BOTH modes. `isLoading` is
+   * `isPending && isFetching`, which a query that is not running never satisfies.
+   *
+   * `volumes` is in here too: while it is still fetching there is no root yet, and without
+   * it the screen would claim the folder is empty before knowing which folder it means.
+   */
+  const loading = volumes.isLoading || gallery.isLoading || grid.isLoading
+
   return (
     <>
       <SectionTitle>{t('photos.title')}</SectionTitle>
@@ -115,13 +141,6 @@ export const PhotosScreen = (): React.JSX.Element => {
           </Button>
         )}
       </div>
-
-      {!hasLibrary && (
-        <Card className="mb-4">
-          <p className="font-medium">{t('photos.libraryMissing')}</p>
-          <Muted className="mt-1">{t('photos.libraryMissingHint')}</Muted>
-        </Card>
-      )}
 
       {hasLibrary && <IndexProgress />}
 
@@ -238,10 +257,8 @@ export const PhotosScreen = (): React.JSX.Element => {
       {root !== null && <BackupPanel destination={root} />}
 
       <Card>
-        {(gallery.isPending || grid.isPending) && items.length === 0 && (
-          <Muted>{t('photos.loading')}</Muted>
-        )}
-        {items.length === 0 && !gallery.isPending && !grid.isPending && (
+        {loading && items.length === 0 && <Muted>{t('photos.loading')}</Muted>}
+        {items.length === 0 && !loading && (
           <Muted>{showingSearch ? t('photos.noHits') : t('photos.noneHere')}</Muted>
         )}
         {items.length > 0 && (

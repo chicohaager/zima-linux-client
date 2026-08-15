@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotos",
-    "libraryMissing": "Die Fotosuche braucht das Photos-Modul",
-    "libraryMissingHint": "Auf diesem Gerät ist kein Photos-Modul registriert, deshalb fehlen semantische Suche und Facetten. Durchsehen und Backup funktionieren trotzdem.",
     "backupForegroundOnly": "Das Backup läuft nur, solange dieses Fenster offen ist.",
     "video": "Video",
     "loading": "Wird geladen…",
@@ -155,7 +153,14 @@
     "openBrowser": "Im Browser öffnen",
     "noWebUi": "Diese App hat keine Weboberfläche.",
     "start": "Starten",
-    "stop": "Stoppen"
+    "stop": "Stoppen",
+    "window": {
+      "connecting": "Verbindung zu dieser App wird aufgebaut…",
+      "failedTitle": "{{title}} hat nicht geantwortet",
+      "failedBody": "Die Weboberfläche dieser App konnte nicht geladen werden.",
+      "reasonLabel": "Grund",
+      "hint": "Die App ist möglicherweise gestoppt, oder ihr Port ist von diesem Rechner aus nicht erreichbar. Der Browser nimmt denselben Weg — klappt es dort, liegt es an diesem Programm."
+    }
   },
   "security": {
     "keyringTitle": "Passwörter können nicht sicher gespeichert werden",

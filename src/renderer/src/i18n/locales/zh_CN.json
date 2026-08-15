@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "照片",
-    "libraryMissing": "照片搜索需要 Photos 模块",
-    "libraryMissingHint": "此设备未注册 Photos 模块，因此语义搜索和分面不可用。浏览和备份仍然可以使用。",
     "backupForegroundOnly": "备份仅在此窗口打开时运行。",
     "video": "视频",
     "loading": "加载中…",

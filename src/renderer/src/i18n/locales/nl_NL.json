@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Foto’s",
-    "libraryMissing": "Fotozoeken heeft de Photos-module nodig",
-    "libraryMissingHint": "Op dit apparaat is geen Photos-module geregistreerd, dus semantisch zoeken en facetten zijn niet beschikbaar. Doorbladeren en back-up werken wel.",
     "backupForegroundOnly": "De back-up loopt alleen zolang dit venster open staat.",
     "video": "Video",
     "loading": "Laden…",

@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotos",
-    "libraryMissing": "Fotosøgning kræver Photos-modulet",
-    "libraryMissingHint": "Denne enhed har ikke registreret Photos-modulet, så semantisk søgning og facetter er utilgængelige. Gennemsyn og backup fungerer alligevel.",
     "backupForegroundOnly": "Backup kører kun, mens dette vindue er åbent.",
     "video": "Video",
     "loading": "Indlæser…",

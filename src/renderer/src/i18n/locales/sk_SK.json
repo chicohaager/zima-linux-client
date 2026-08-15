@@ -61,8 +61,6 @@
   },
   "photos": {
     "title": "Fotky",
-    "libraryMissing": "Hľadanie fotiek potrebuje modul Photos",
-    "libraryMissingHint": "Na tomto zariadení nie je registrovaný modul Photos, preto nie je dostupné sémantické hľadanie ani filtre. Prehliadanie a záloha fungujú aj tak.",
     "backupForegroundOnly": "Záloha beží iba vtedy, keď je toto okno otvorené.",
     "video": "Video",
     "loading": "Načítava sa…",
