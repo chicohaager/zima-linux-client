@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.0 · **Stand:** 2026-08-15
+**Branch:** `v2` · **Version:** 2.0.1 · **Stand:** 2026-08-31
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -9,8 +9,11 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 315 Tests in 37 Dateien · build ·
-                    build-gate · i18n · privacy — gefahren am 2026-08-15
+npm run verify        ✓ (rc=0)  type-check · lint · 326 Tests in 40 Dateien · build ·
+                    build-gate · i18n · privacy — gefahren am 2026-08-31. Der Exit-Code ist
+                    OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
+                    der Code von `tail` — das Privacy-Gate war in Wahrheit rot (rc=1) mit vier
+                    echten Adressen in neuen Kommentaren
 npm run verify:release ✓ (rc=0)  8 von 8 grün — ERSTMALS. Die Pakete sind aus 5206d46,
                     also NEUER als jede Build-Eingabe; Prüfsummendatei stimmt, Bau-Anspruch
                     nennt seinen Commit. Vorher stand hier monatelang "2 von 8 rot"
@@ -19,7 +22,10 @@ npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnete
 i18n gate           clean — 292 Schlüssel in en_US; en_US/de_DE 100 %, die übrigen 26 bei
                     98 % (287) — die fünf neuen `apps.window.*` liegen zweisprachig vor und
                     fallen sonst auf Englisch zurück; das Tor BERICHTET Abdeckung
-privacy gate        clean, 221 verfolgte Dateien (Bilder überspringt es — siehe unten)
+privacy gate        clean, 224 verfolgte Dateien (Bilder überspringt es — siehe unten).
+                    🔴 Es prüft NUR VERFOLGTE Dateien: drei neue Testdateien waren für das Tor
+                    unsichtbar, bis sie hinzugefügt waren — genau der Moment, in dem eine echte
+                    Adresse ungesehen durchginge. Vor dem Commit `git add -A`, dann prüfen
 Distro-Matrix       9 von 9 am AUSGELIEFERTEN 2.0.0-Paket, Sandkasten an, 2026-08-15
                     (`dist/matrix-v2.0.0/`); jede Zeile ok=true, 51 CSS-Regeln,
                     399 Zeichen sichtbarem Text, null rohe i18n-Schlüssel.
@@ -34,14 +40,25 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 59cfee6, alle fünf in
-                    einem Lauf am 2026-08-15, 11:20–11:26; Flatpak aus der Zielliste.
-                    `sha256sum -c SHA256SUMS-2.0.0.txt` → 5× OK
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 526d5ea, alle fünf in
+                    einem Lauf am 2026-08-31, 10:26–10:29; Flatpak aus der Zielliste.
+                    `sha256sum -c SHA256SUMS-2.0.1.txt` → 5× OK, und die Gegenkontrolle
+                    (eine Prüfsumme verfälscht) meldet GESCHEITERT — die Prüfung kann also
+                    beide Ergebnisse
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen (2026-08-15, per `git ls-remote` gegengeprüft)
-Release             v2.0.0 — die erste Fassung dieser Linie, die KEIN Pre-Release ist.
+Release             v2.0.1 — der Fix für ZimaOS v1.7.1-beta1: gegen diese Firmware konnte
+                    2.0.0 sich ÜBERHAUPT nicht verbinden. `/v1/gateway/routes` verlangt dort
+                    ein Token (außer von 127.0.0.1) und war die Erreichbarkeitssonde — die
+                    vor dem Login läuft und deshalb nie eins hat; und der Access-Aussteller
+                    heißt `zimaos` statt `casaos`, was das (richtige) Pinnen von `iss` zur
+                    Anmeldesperre machte. Belegt im laufenden Fenster: angemeldet, 38
+                    Gateway-Routen, neun Fähigkeiten, Apps-Reiter mit echten Daten.
+                    Die Meldung an IceWhale liegt in `docs/ICEWHALE-NOTE-2026-08-31.md`.
+
+                    v2.0.0 — die erste Fassung dieser Linie, die KEIN Pre-Release ist.
                     Die vier `v2.0.0-alpha.*` bleiben als Pre-Releases stehen; alpha.2 trägt
                     oben einen Warnhinweis, weil es „({{paths}})" auf den Bildschirm schrieb.
                     Zur Nummer: „1.0" war gewünscht und wurde verworfen, weil
