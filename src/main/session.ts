@@ -1,7 +1,7 @@
 import type { Capabilities, Device, DeviceAddress } from '@shared/domain'
 import { appError, err, isErr, ok, NO_PATH_ANSWERED, type Result } from '@shared/result'
 import { TokenHolder, login as apiLogin, refresh as apiRefresh, type Tokens } from '@main/zima/auth'
-import { fetchRoutes, request, type DeviceContext } from '@main/zima/client'
+import { fetchLiveness, fetchRoutes, request, type DeviceContext } from '@main/zima/client'
 import { deriveCapabilities, parseRoutes, probeZerotier } from '@main/zima/capabilities'
 import { BASE, ZT } from '@main/zima/endpoints'
 import * as registry from '@main/devices/registry'
@@ -106,9 +106,18 @@ const refreshZerotierState = async (
 /**
  * Signs in and adopts the device as active.
  *
- * Order matters: capabilities are read first, because they need no credentials and give
- * the user a useful error ("this is not a ZimaOS device") before a password is sent
- * anywhere.
+ * Order matters, and the reason changed on 2026-08-31. It used to read the capability list
+ * first "because it needs no credentials" — true under ZimaOS v1.7.0, false under
+ * v1.7.1-beta1, where `/v1/gateway/routes` answers 401 to everything but the loopback. So
+ * the two jobs that were bundled into that one call are now separate:
+ *
+ *   1. "is this a ZimaOS device at all?" — `fetchLiveness`, credential-free, still BEFORE
+ *      the password is sent anywhere. That was the user-facing point of the old order and
+ *      it is kept.
+ *   2. "what can it do?" — the route table, now AFTER the login and with the token.
+ *
+ * Reading capabilities before the login is no longer possible, and pretending otherwise is
+ * what broke every connection path at once.
  */
 export const signIn = async (params: {
   readonly host: string
@@ -143,18 +152,33 @@ export const signIn = async (params: {
     if (isErr(road)) return road
   }
 
-  const routes = await fetchRoutes(host, port)
-  if (isErr(routes)) return routes
-  const paths = parseRoutes(routes.value)
-  if (paths === null) {
-    return err(
-      appError('malformed-response', 'gateway route table not understood', 'error.notAZimaDevice', { host }),
-    )
-  }
-  const capabilities = deriveCapabilities(paths)
+  // Credential-free, so a wrong host is named as such before a password leaves this machine.
+  const alive = await fetchLiveness(host, port)
+  if (isErr(alive)) return alive
 
   const tokens = await apiLogin(host, port, username, password)
   if (isErr(tokens)) return tokens
+
+  /*
+   * Now, and only now, the capability list — it needs the token since v1.7.1-beta1.
+   *
+   * A failure here does NOT fail the sign-in. The credentials were accepted; refusing the
+   * session over an unreadable capability list would turn "I cannot tell which modules you
+   * have" into "you cannot log in", which is a far larger claim than the evidence supports.
+   * An empty capability set is a named, logged state — and `registry` keeps whatever was
+   * measured on an earlier sign-in rather than overwriting it with nothing.
+   */
+  const routes = await fetchRoutes(host, port, tokens.value.accessToken)
+  const paths = isErr(routes) ? null : parseRoutes(routes.value)
+  if (paths === null) {
+    logger.warn('session.capabilities-unreadable', {
+      host,
+      reason: isErr(routes) ? routes.error.kind : 'route table not understood',
+    })
+  }
+  // `deriveCapabilities([])` rather than a hand-written empty object: one definition of
+  // what a capability set looks like, so a new capability cannot be forgotten here.
+  const capabilities = deriveCapabilities(paths ?? [])
 
   const id = deviceIdFor(params.displayName ?? null, host)
   // The network id is remembered WITH the address, because a remote-id host only exists

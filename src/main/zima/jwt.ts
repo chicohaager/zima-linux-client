@@ -8,6 +8,12 @@ import { appError, err, ok, type Result } from '@shared/result'
  * carries `iss: "casaos"` and lives ~3 h; the refresh token carries `iss: "refresh"`
  * and lives ~7 days — and both are signed with the SAME key.
  *
+ * 🔴 Re-measured 2026-08-31 on v1.7.1-beta1: the ACCESS issuer changed to `"zimaos"`,
+ * the refresh issuer did NOT (still `"refresh"`), and the claim set is unchanged
+ * (`exp, iat, id, iss, nbf, role, username`). Exactly one of the two moved, which is
+ * why both are listed in the map below rather than one being renamed — a device on
+ * older firmware still says `casaos`, and this client talks to both.
+ *
  * 🔴 That last point is why `iss` is pinned here. Anything that checks only the
  * signature and `exp` accepts the long-lived refresh token as a full session. This
  * client must never send a refresh token as a session credential, so the two types are
@@ -32,8 +38,22 @@ export interface TokenClaims {
   readonly issuedAtMs: number
 }
 
+/*
+ * Issuer -> token kind. ADDITIVE by design: every issuer a supported firmware has ever
+ * used stays here.
+ *
+ * `zimaos` was added 2026-08-31 after v1.7.1-beta1 renamed the access issuer. Until then
+ * the login died with `unknown token issuer "zimaos"` — the refusal below doing exactly
+ * what it was written to do, on a name nobody had measured since v1.7.0. Both entries are
+ * kept because the same client also talks to devices that still issue `casaos`, and
+ * replacing rather than adding would just move the outage to those.
+ *
+ * Measured on v1.7.1-beta1: access `iss: "zimaos"`, refresh `iss: "refresh"`.
+ * Measured on v1.7.0:       access `iss: "casaos"`, refresh `iss: "refresh"`.
+ */
 const ISSUER_TO_KIND: Readonly<Record<string, TokenKind>> = {
   casaos: 'access',
+  zimaos: 'access',
   refresh: 'refresh',
 }
 

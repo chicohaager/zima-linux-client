@@ -43,7 +43,23 @@ export const registerIpc = (): void => {
 
   handle(CHANNELS.deviceCapabilities, async (input) => {
     const { host, port } = input
-    const routes = await fetchRoutes(host, port)
+    /*
+     * The token comes from the live session, because `/v1/gateway/routes` requires one since
+     * ZimaOS v1.7.1-beta1 — this handler asked without one and would have answered
+     * "malformed-response" for every device on a current firmware.
+     *
+     * No session means no token, and that is reported as `unauthorized` instead of being
+     * sent anyway: a 401 arriving from the device would be indistinguishable from "this
+     * device is broken", and this handler's whole job is to say what a device can do.
+     */
+    const token = await session.accessToken()
+    if (isErr(token)) {
+      return wireError(
+        appError('unauthorized', 'capabilities need a signed-in session',
+          'error.unauthorized', { host }),
+      )
+    }
+    const routes = await fetchRoutes(host, port, token.value)
     if (isErr(routes)) return toWire(routes)
 
     const paths = parseRoutes(routes.value)

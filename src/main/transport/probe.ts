@@ -1,6 +1,6 @@
 import type { DeviceAddress, ProbeResult } from '@shared/domain'
 import { isOk } from '@shared/result'
-import { fetchRoutes } from '@main/zima/client'
+import { fetchLiveness } from '@main/zima/client'
 
 /**
  * Reachability is measured, never inferred.
@@ -10,6 +10,25 @@ import { fetchRoutes } from '@main/zima/client'
  * from this process, and the three failure shapes stay distinct: 'refused' (someone
  * answered, nothing is listening), 'timeout' (nothing answered — likely dropped by a
  * firewall) and 'unexpected-status' (a service answered, but not ZimaOS).
+ *
+ * 🔴 The endpoint must be one that cannot demand a token, and that is not a detail — it is
+ * the whole correctness of this file. A probe runs before the login by construction, so
+ * against an authenticating endpoint it reports the state of the *authentication* while
+ * claiming to report reachability, and a 401 becomes 'unexpected-status': "a service
+ * answered, but not ZimaOS" — about a ZimaOS device that answered in 282 ms.
+ *
+ * That is not hypothetical. This probe called `fetchRoutes` (`/v1/gateway/routes`) until
+ * 2026-08-31, when ZimaOS v1.7.1-beta1 started requiring a token there. Measured from the
+ * user's own log, with the tunnel demonstrably up:
+ *
+ *     09:19:41 zerotier.joined {"networkId":"…"}
+ *     09:19:41 /v1/gateway/routes status=401 ms=282        ← the path worked
+ *     09:19:41 session.resume-no-path ["<lan>=timeout","<zerotier>=unexpected-status"]
+ *
+ * Every route in `session.ts` funnels through here, so a healthy device became unreachable
+ * on all of them at once, with no way around it in the UI. Nothing in this repository had
+ * changed — which is the point: an endpoint that *may* authenticate is a probe that may
+ * start lying after somebody else's release.
  */
 export const probe = async (
   host: string,
@@ -17,7 +36,7 @@ export const probe = async (
   timeoutMs = 2_500,
 ): Promise<ProbeResult> => {
   const startedAt = performance.now()
-  const result = await fetchRoutes(host, port)
+  const result = await fetchLiveness(host, port)
   const elapsed = Math.round(performance.now() - startedAt)
 
   if (isOk(result)) {

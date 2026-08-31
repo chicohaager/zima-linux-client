@@ -50,8 +50,17 @@ const dead = (host: string, failure: ProbeResult['failure'] = 'timeout'): ProbeR
  * where both paths must be dead, is what exposed it — a case the real network could not
  * satisfy. Without that negative case the suite would have looked rigorous and tested air.
  */
+/*
+ * The probe is mocked at `fetchLiveness`, which is the endpoint it actually calls. Naming
+ * matters here beyond tidiness: while this mock was called `fetchRoutes`, the suite could
+ * not express a device that answers the liveness check and refuses the route table — the
+ * exact device ZimaOS v1.7.1-beta1 produces, and the reason 315 tests stayed green while
+ * every connection path was broken. `fetchRoutes` is kept alongside so a test can make the
+ * two disagree; see the regression test at the bottom of this file.
+ */
 vi.mock('@main/zima/client', () => ({
-  fetchRoutes: async (host: string) => {
+  fetchRoutes: async () => ({ ok: true as const, value: { data: { routes: [] } } }),
+  fetchLiveness: async (host: string) => {
     const planned = probeResults.get(host) ?? dead(host)
     if (planned.reachable && planned.latencyMs !== null) {
       await new Promise((resolve) => setTimeout(resolve, planned.latencyMs ?? 0))
