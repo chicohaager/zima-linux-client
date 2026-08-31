@@ -5,9 +5,19 @@ import { BASE } from './endpoints'
 /**
  * Route table -> capability set.
  *
- * The gateway answers `GET /v1/gateway/routes` over the LAN address without any
- * auth (measured: HTTP 200), which makes it the cheapest and most honest way to
- * learn what a device offers before logging in.
+ * 🔴 Corrected 2026-08-31. This said the gateway answers `GET /v1/gateway/routes` over the
+ * LAN address "without any auth (measured: HTTP 200), which makes it the cheapest and most
+ * honest way to learn what a device offers **before logging in**". The measurement was right
+ * under ZimaOS v1.7.0 and is wrong under v1.7.1-beta1: re-measured from the device against
+ * its own addresses, only `127.0.0.1` still gets 200 — its own LAN IP, its ZeroTier IP and
+ * its Tailscale IP all get 401, and a valid token brings 200 back.
+ *
+ * So capabilities are read AFTER the login, with the token (`session.ts`). The
+ * credential-free question "is this a ZimaOS device at all?" moved to `fetchLiveness`.
+ *
+ * The correction is written here rather than only in the commit because this comment is
+ * what the next reader believes: it is the sentence that made the route table look like a
+ * safe pre-login probe in the first place.
  */
 
 /** Shape of one entry as returned by the gateway. */

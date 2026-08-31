@@ -1,6 +1,6 @@
 import { appError, err, fromUnknown, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
-import { BASE } from './endpoints'
+import { BASE, USERS } from './endpoints'
 import { envelopeIsOk, envelopeToError, isEnvelope, unwrap } from './envelope'
 
 /**
@@ -248,9 +248,64 @@ export const request = async <T>(
   }
 }
 
-/** Reads the gateway route table. Needs no credentials — measured: HTTP 200. */
-export const fetchRoutes = (host: string, port = 80): Promise<Result<unknown>> =>
-  request<unknown>(host, port, `${BASE.gateway}/routes`, { timeoutMs: 4_000 })
+/**
+ * Answers "is a ZimaOS gateway listening here?" without sending credentials.
+ *
+ * 🔴 This exists because `fetchRoutes` used to be the reachability probe, and that was wrong
+ * in a way no test could see: a probe runs BEFORE the login, so it has no token by
+ * construction — and an endpoint that may demand one therefore measures the authentication,
+ * not the reachability. ZimaOS v1.7.1-beta1 made that concrete (see fetchRoutes below).
+ *
+ * `/v1/users/status` was chosen because it is the only endpoint measured to answer without a
+ * token from every interface, and its body reports `initialized` — the "has this device been
+ * set up yet" question, which by its nature must be answerable before anyone has signed in.
+ *
+ * ⚠️ NOT verified: whether the device's own web UI uses it. That would be the stronger
+ * argument — an endpoint ZimaOS itself depends on pre-login cannot start demanding a token —
+ * and it is deliberately not claimed here, because a literal search of the shipped bundle
+ * finds neither this path nor `/v1/users/login` (they are assembled at runtime), so the
+ * search cannot answer the question either way. If this endpoint ever starts requiring a
+ * token, this comment is where to look.
+ *
+ * Measured 2026-08-31 against v1.7.1-beta1 from the device against its own four addresses —
+ * `127.0.0.1`, its LAN IP, its ZeroTier IP and its Tailscale IP — all four HTTP 200,
+ * body `{"success":200,"message":"ok","data":{…,"initialized":true,…}}`, while
+ * `/v1/gateway/routes` answered 401 on three of the same four.
+ *
+ * The payload is deliberately ignored: the question here is whether a ZimaOS gateway
+ * answers, and `identity.ts` is the place that decides *which* device this is.
+ */
+export const fetchLiveness = (host: string, port = 80): Promise<Result<unknown>> =>
+  request<unknown>(host, port, `${BASE.users}${USERS.status}`, { timeoutMs: 4_000 })
+
+/**
+ * Reads the gateway route table — the device's capability list.
+ *
+ * 🔴 Needs a token since ZimaOS v1.7.1-beta1. It said "needs no credentials — measured:
+ * HTTP 200" here until 2026-08-31, which was measured correctly under v1.7.0 and became
+ * false without anything in this repository changing. Re-measured from the device itself:
+ *
+ *     127.0.0.1          routes=200    ← only the loopback stays exempt
+ *     <its own LAN IP>   routes=401    ← its OWN LAN address is not exempt
+ *     <its ZeroTier IP>  routes=401
+ *     <its Tailscale IP> routes=401
+ *
+ * With a valid bearer token: 200, 2195 bytes. With `Authorization: Bearer ungueltig`: 401.
+ * So it is an authentication requirement, not a filter on the source address — which is why
+ * `token` is a parameter here rather than a special case for remote paths.
+ *
+ * Callers must therefore have signed in first. The one caller that could not (the probe)
+ * now uses `fetchLiveness`.
+ */
+export const fetchRoutes = (
+  host: string,
+  port = 80,
+  token?: string,
+): Promise<Result<unknown>> =>
+  request<unknown>(host, port, `${BASE.gateway}/routes`, {
+    timeoutMs: 4_000,
+    ...(token === undefined ? {} : { token }),
+  })
 
 /** An authenticated request against the device in `ctx`. */
 export const authed = <T>(
