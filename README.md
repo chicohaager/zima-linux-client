@@ -313,6 +313,8 @@ npm run verify:privacy  # no LAN addresses, user names or e-mail addresses in tr
                         # the maintainer-identity terms come from scripts/privacy-identity.local
                         # (git-ignored) or ZIMA_PRIVACY_IDENTITY; on a fork set it to `none`
 npm run verify:live     # reads against a real device, with the same parsers the IPC handlers use
+npm run verify:release  # are dist/ artefacts this commit's build? — and lists open issues/PRs
+                        # with their reply state next to the verdict (listed, not judged)
 ```
 
 Check the exit code, not the output: `npm run verify | tail` discards the gate's return value.
