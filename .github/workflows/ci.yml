@@ -12,9 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Node 24 = npm 11, the same major the lock file is written with. npm 10 (Node 22)
+      # reads the bundled dependencies of the optional `@tailwindcss/oxide-wasm32-wasi`
+      # differently and refuses the lock with "Missing: @emnapi/core … from lock file"
+      # (run 35210533029, 2026-09-17). The lock must be read by the npm that wrote it.
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       # One command, one exit code. Deliberately NOT piped into anything: a pipe discards
@@ -35,7 +39,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
 
