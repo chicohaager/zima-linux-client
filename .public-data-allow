@@ -8,3 +8,6 @@ src/main/app/__tests__/relaunchTarget.test.ts:/home/user
 src/main/zerotier/__tests__/diagnosis.test.ts:/home/user
 src/main/app/__tests__/screenshotGuard.test.ts:/home/someone
 scripts/distro-matrix.sh:/home/zima
+#
+# Third-party package-author address carried inside npm metadata (public upstream value, not ours).
+package-lock.json:i@izs.me
