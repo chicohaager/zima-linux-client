@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, statSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, statSync, writeFileSync, rmSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -60,6 +60,11 @@ describe('devices.json permissions', () => {
     mkdirSync(dir, { recursive: true })
     const path = join(dir, 'devices.json')
     writeFileSync(path, '{"devices":[],"activeDeviceId":null}\n', { encoding: 'utf8', mode: 0o664 })
+    // `mode` on create is filtered by the umask: under 022 (GitHub's runners) the file lands
+    // as 644 and the positive control below fails before the feature is even exercised —
+    // found on the first CI run that ever reached the tests (2026-09-17). chmod ignores the
+    // umask, so the starting state is the one the test names, on every machine.
+    chmodSync(path, 0o664)
     expect(modeOf(path)).toBe('664')
 
     const registry = await import('../registry')

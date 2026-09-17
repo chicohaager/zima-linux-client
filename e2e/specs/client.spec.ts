@@ -56,7 +56,12 @@ const launch = async (): Promise<Launched> => {
       '--ozone-platform=x11',
       '--no-sandbox',
     ],
-    env: { ...process.env },
+    // The German interface is what these tests read (see the header), so the language is
+    // set HERE and not inherited from whoever runs the suite. On the maintainer's machine
+    // the host is German and the suite passed for a month; the first CI run that ever
+    // reached it (2026-09-17, en-US runner) failed two specs on German strings — the
+    // suite had been measuring the host's locale, not the app's.
+    env: { ...process.env, LANG: 'de_DE.UTF-8', LC_ALL: 'de_DE.UTF-8', LANGUAGE: 'de_DE:de' },
   })
   const page = await app.firstWindow()
   await page.waitForLoadState('domcontentloaded')
