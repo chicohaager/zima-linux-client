@@ -14,7 +14,7 @@
     "title": "Connect to ZimaOS",
     "subtitle": "Enter your ZimaOS device address",
     "address": "Device Address",
-    "addressPlaceholder": "http://192.168.1.100 or http://zimaos.local",
+    "addressPlaceholder": "http://192.168.0.100 or http://zimaos.local",
     "connect": "Connect",
     "connecting": "Connecting...",
     "success": "Connected successfully",

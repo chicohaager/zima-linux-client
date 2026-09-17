@@ -28,6 +28,7 @@
     "remoteIdTitle": "Ceangail le Remote ID",
     "remoteIdHint": "Cuir isteach an Remote ID atá ar taispeáint ar an ngléas. Cuirtear an ceangal ar bun duit — ansin sínigh isteach mar is gnách.",
     "remoteIdLabel": "Remote ID (16 carachtar)",
+    "remoteIdPortLabel": "Port WebUI",
     "remoteIdConnecting": "Á cheangal…",
     "connect": "Ceangail",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Níor aimsíodh aon zerotier-one — ceann suiteáilte ná ceann a tháinig leis an aip.",
     "zerotierNoStart": "Níor thosaigh an tseirbhís ZeroTier áitiúil.",
     "unexpected-status": "D’fhreagair an gléas le stádas nach rabhthas ag súil leis.",
+    "tls": "Úsáideann an gléas HTTPS, ach níorbh fhéidir a theastas a fhíorú. Eisíonn ZimaOS a theastas don ainm zimaos.local; trí sheoladh IP ní féidir é a sheiceáil.",
+    "not-tls": "Freagraíonn an port seo le HTTP gnáth, ní HTTPS. Is dócha go bhfuil port WebUI an ghléis socraithe ar 443 gan HTTPS.",
     "zerotierNoCapability": "Níl cead ag an tseirbhís ZeroTier áitiúil gléas líonra fíorúil a chruthú. Tá an t-ordú beacht chun é sin a dheonú thíos.",
     "remoteIdUnknown": "Níl aon Remote ID stóráilte don ghléas seo. Sínigh isteach uair amháin trí «Ceangail le Remote ID».",
     "noPathAnswered": "Níor fhreagair aon chosán ceangail stóráilte ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Logáil isteach",
     "host": "Seoladh",
-    "hostPlaceholder": "nas.local nó 192.168.1.100",
+    "hostPlaceholder": "nas.local nó 192.168.0.100",
     "username": "Ainm úsáideora",
     "password": "Pasfhocal",
     "submit": "Logáil isteach",

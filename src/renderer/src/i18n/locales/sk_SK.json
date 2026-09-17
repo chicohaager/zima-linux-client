@@ -28,6 +28,7 @@
     "remoteIdTitle": "Pripojiť cez Remote ID",
     "remoteIdHint": "Zadajte Remote ID zobrazené na zariadení. Spojenie sa pripraví samo — potom sa prihláste ako zvyčajne.",
     "remoteIdLabel": "Remote ID (16 znakov)",
+    "remoteIdPortLabel": "Port WebUI",
     "remoteIdConnecting": "Pripája sa…",
     "connect": "Pripojiť",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Nenašiel sa žiadny zerotier-one — ani nainštalovaný, ani priložený.",
     "zerotierNoStart": "Miestna služba ZeroTier sa nespustila.",
     "unexpected-status": "Zariadenie odpovedalo neočakávaným stavom.",
+    "tls": "Zariadenie používa HTTPS, ale jeho certifikát sa nepodarilo overiť. ZimaOS vydáva certifikát pre meno zimaos.local; cez IP adresu ho nemožno skontrolovať.",
+    "not-tls": "Tento port odpovedá nešifrovaným HTTP, nie HTTPS. Port WebUI zariadenia je pravdepodobne nastavený na 443 bez HTTPS.",
     "zerotierNoCapability": "Miestna služba ZeroTier nesmie vytvoriť virtuálne sieťové zariadenie. Presný príkaz, ktorý to povolí, je nižšie.",
     "remoteIdUnknown": "Pre toto zariadenie nie je uložené žiadne Remote ID. Prihláste sa raz cez «Pripojiť cez Remote ID».",
     "noPathAnswered": "Žiadna uložená cesta pripojenia neodpovedala ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Prihlásenie",
     "host": "Adresa",
-    "hostPlaceholder": "nas.local alebo 192.168.1.100",
+    "hostPlaceholder": "nas.local alebo 192.168.0.100",
     "username": "Používateľské meno",
     "password": "Heslo",
     "submit": "Prihlásiť sa",

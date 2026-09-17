@@ -101,9 +101,9 @@ describe('zima-media://appicon', () => {
   })
 
   it('refuses an icon that redirected into the private network', async () => {
-    // The reason the check exists: a public CDN answering 302 -> http://192.168.1.1/reboot
+    // The reason the check exists: a public CDN answering 302 -> http://192.168.0.1/reboot
     // would otherwise turn this client into a request generator inside the user's LAN.
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(imageResponse('http://192.168.1.1/reboot')))
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(imageResponse('http://192.168.0.1/reboot')))
 
     const response = await iconRequest('https://cdn.jsdelivr.net/gh/x/y.png')
 

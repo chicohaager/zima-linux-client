@@ -47,7 +47,7 @@ export const probeResultSchema = z.object({
   host: z.string(),
   reachable: z.boolean(),
   latencyMs: z.number().nullable(),
-  failure: z.enum(['refused', 'timeout', 'dns', 'unexpected-status']).nullable(),
+  failure: z.enum(['refused', 'timeout', 'dns', 'tls', 'not-tls', 'unexpected-status']).nullable(),
   httpStatus: z.number().nullable(),
 })
 

@@ -28,6 +28,7 @@
     "remoteIdTitle": "透過遠端 ID 連線",
     "remoteIdHint": "輸入裝置上顯示的遠端 ID。連線會自動建立 — 接著照常登入即可。",
     "remoteIdLabel": "遠端 ID（16 個字元）",
+    "remoteIdPortLabel": "WebUI 連接埠",
     "remoteIdConnecting": "連線中…",
     "connect": "連線",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "找不到 zerotier-one — 既沒有安裝的，也沒有隨附的。",
     "zerotierNoStart": "本機 ZeroTier 服務未啟動。",
     "unexpected-status": "裝置回傳了非預期的狀態。",
+    "tls": "裝置使用 HTTPS，但其憑證無法驗證。ZimaOS 為名稱 zimaos.local 簽發憑證，透過 IP 位址無法檢查。",
+    "not-tls": "此連接埠以明文 HTTP 回應，而非 HTTPS。裝置的 WebUI 連接埠可能被設為 443 但未啟用 HTTPS。",
     "zerotierNoCapability": "本機 ZeroTier 服務無權建立虛擬網路裝置。授予該權限的確切指令列於下方。",
     "remoteIdUnknown": "此裝置沒有儲存遠端 ID。請先透過「透過遠端 ID 連線」登入一次。",
     "noPathAnswered": "沒有任何已儲存的連線路徑回應（{{paths}}）。"
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "登入",
     "host": "位址",
-    "hostPlaceholder": "nas.local 或 192.168.1.100",
+    "hostPlaceholder": "nas.local 或 192.168.0.100",
     "username": "使用者名稱",
     "password": "密碼",
     "submit": "登入",

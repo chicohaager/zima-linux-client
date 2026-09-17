@@ -28,6 +28,7 @@
     "remoteIdTitle": "Verbinden via Remote ID",
     "remoteIdHint": "Voer de Remote ID in die op het apparaat staat. De verbinding wordt voor je opgezet — daarna meld je je gewoon aan.",
     "remoteIdLabel": "Remote ID (16 tekens)",
+    "remoteIdPortLabel": "WebUI-poort",
     "remoteIdConnecting": "Verbinden…",
     "connect": "Verbinden",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Er is geen zerotier-one gevonden — niet geïnstalleerd en niet meegeleverd.",
     "zerotierNoStart": "De lokale ZeroTier-dienst is niet gestart.",
     "unexpected-status": "Het apparaat antwoordde met een onverwachte status.",
+    "tls": "Het apparaat gebruikt HTTPS, maar het certificaat kon niet worden geverifieerd. ZimaOS geeft zijn certificaat uit voor de naam zimaos.local; via een IP-adres is het niet te controleren.",
+    "not-tls": "Deze poort antwoordt met onversleuteld HTTP, niet HTTPS. De WebUI-poort van het apparaat staat waarschijnlijk op 443 zonder HTTPS.",
     "zerotierNoCapability": "De lokale ZeroTier-dienst mag geen virtueel netwerkapparaat aanmaken. Het precieze commando om dat toe te staan staat hieronder.",
     "remoteIdUnknown": "Voor dit apparaat is geen Remote ID opgeslagen. Meld je één keer aan via \"Verbinden via Remote ID\".",
     "noPathAnswered": "Geen opgeslagen verbindingspad heeft geantwoord ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Aanmelden",
     "host": "Adres",
-    "hostPlaceholder": "nas.local of 192.168.1.100",
+    "hostPlaceholder": "nas.local of 192.168.0.100",
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
     "submit": "Aanmelden",

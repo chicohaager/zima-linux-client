@@ -42,13 +42,13 @@ describe('reachableIconUrl', () => {
   it('does NOT aim some other private address at the device', () => {
     /*
      * The line this rewrite must not cross. An icon field is written by whoever wrote the
-     * store entry; `http://192.168.1.1/reboot` is the router, not this app's icon. Because
+     * store entry; `http://192.168.0.1/reboot` is the router, not this app's icon. Because
      * the port does not match the app's published one, it stays untouched — and therefore
      * stays refused by the media policy — instead of being redirected onto the device,
      * which is the one host that policy exempts.
      */
-    expect(reachableIconUrl('http://192.168.1.1/reboot', 8086, TUNNEL)).toBe(
-      'http://192.168.1.1/reboot',
+    expect(reachableIconUrl('http://192.168.0.1/reboot', 8086, TUNNEL)).toBe(
+      'http://192.168.0.1/reboot',
     )
     expect(reachableIconUrl('http://192.168.0.1:9997/admin', 8086, TUNNEL)).toBe(
       'http://192.168.0.1:9997/admin',

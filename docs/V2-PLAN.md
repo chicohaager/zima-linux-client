@@ -53,7 +53,7 @@ Offline-Cache für Apps. Vorhanden sind Connect/ZeroTier, SMB-Mounts, Apps-Liste
 
 **Privatdaten-Prüfung des Repos** (Projektregel „Weitergebbares enthält keine privaten Daten"):
 ein `grep` über RFC-1918-Adressbereiche, Maintainer-Kennungen und private Domains liefert
-21 Treffer — **alle unkritisch**: generische Beispiele (`192.168.1.100`), ZeroTier-Bereich
+21 Treffer — **alle unkritisch**: generische Beispiele (`192.168.0.100`), ZeroTier-Bereich
 `10.147.14.x`, Test-Fixtures, der öffentliche BuyMeACoffee-Slug und die bewusst öffentliche
 Maintainer-Adresse. Keine private Adresse und kein Host aus einem echten Heimnetz im Repo.
 Diese Prüfung wird in v2 als CI-Gate verdrahtet (Suchmuster im CI-Skript, nicht in der Doku).

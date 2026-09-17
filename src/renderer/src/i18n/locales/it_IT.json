@@ -28,6 +28,7 @@
     "remoteIdTitle": "Connetti tramite Remote ID",
     "remoteIdHint": "Inserisci il Remote ID mostrato sul dispositivo. La connessione viene preparata da sola — poi accedi come al solito.",
     "remoteIdLabel": "Remote ID (16 caratteri)",
+    "remoteIdPortLabel": "Porta WebUI",
     "remoteIdConnecting": "Connessione…",
     "connect": "Connetti",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Nessun zerotier-one trovato — né installato né incluso.",
     "zerotierNoStart": "Il servizio ZeroTier locale non è partito.",
     "unexpected-status": "Il dispositivo ha risposto con uno stato inatteso.",
+    "tls": "Il dispositivo usa HTTPS, ma il suo certificato non è verificabile. ZimaOS emette il certificato per il nome zimaos.local; tramite un indirizzo IP non può essere controllato.",
+    "not-tls": "Questa porta risponde in HTTP in chiaro, non HTTPS. Probabilmente la porta WebUI del dispositivo è impostata su 443 senza HTTPS.",
     "zerotierNoCapability": "Il servizio ZeroTier locale non può creare un dispositivo di rete virtuale. Il comando esatto per concederlo è qui sotto.",
     "remoteIdUnknown": "Per questo dispositivo non è salvato alcun Remote ID. Accedi una volta tramite «Connetti tramite Remote ID».",
     "noPathAnswered": "Nessun percorso di connessione salvato ha risposto ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Accedi",
     "host": "Indirizzo",
-    "hostPlaceholder": "nas.local o 192.168.1.100",
+    "hostPlaceholder": "nas.local o 192.168.0.100",
     "username": "Nome utente",
     "password": "Password",
     "submit": "Accedi",

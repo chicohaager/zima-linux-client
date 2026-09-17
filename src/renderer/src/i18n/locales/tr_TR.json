@@ -28,6 +28,7 @@
     "remoteIdTitle": "Remote ID ile bağlan",
     "remoteIdHint": "Cihazda görünen Remote ID’yi girin. Bağlantı sizin için kurulur — ardından her zamanki gibi oturum açın.",
     "remoteIdLabel": "Remote ID (16 karakter)",
+    "remoteIdPortLabel": "WebUI portu",
     "remoteIdConnecting": "Bağlanıyor…",
     "connect": "Bağlan",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Hiçbir zerotier-one bulunamadı — ne kurulu ne de birlikte gelen.",
     "zerotierNoStart": "Yerel ZeroTier hizmeti başlamadı.",
     "unexpected-status": "Cihaz beklenmedik bir durumla yanıt verdi.",
+    "tls": "Cihaz HTTPS kullanıyor ancak sertifikası doğrulanamadı. ZimaOS sertifikasını zimaos.local adı için verir; bir IP adresi üzerinden kontrol edilemez.",
+    "not-tls": "Bu port HTTPS değil, düz HTTP ile yanıt veriyor. Cihazın WebUI portu muhtemelen HTTPS olmadan 443 olarak ayarlanmış.",
     "zerotierNoCapability": "Yerel ZeroTier hizmetinin sanal ağ aygıtı oluşturmasına izin yok. Bunu vermek için gereken tam komut aşağıda.",
     "remoteIdUnknown": "Bu cihaz için kayıtlı bir Remote ID yok. Bir kez «Remote ID ile bağlan» üzerinden oturum açın.",
     "noPathAnswered": "Kayıtlı hiçbir bağlantı yolu yanıt vermedi ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Oturum aç",
     "host": "Adres",
-    "hostPlaceholder": "nas.local veya 192.168.1.100",
+    "hostPlaceholder": "nas.local veya 192.168.0.100",
     "username": "Kullanıcı adı",
     "password": "Şifre",
     "submit": "Oturum aç",

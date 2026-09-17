@@ -28,6 +28,7 @@
     "remoteIdTitle": "Csatlakozás Remote ID-vel",
     "remoteIdHint": "Adja meg az eszközön látható Remote ID-t. A kapcsolatot a program készíti elő — utána a szokásos módon jelentkezzen be.",
     "remoteIdLabel": "Remote ID (16 karakter)",
+    "remoteIdPortLabel": "WebUI-port",
     "remoteIdConnecting": "Csatlakozás…",
     "connect": "Csatlakozás",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Nem található zerotier-one — sem telepítve, sem mellékelve.",
     "zerotierNoStart": "A helyi ZeroTier szolgáltatás nem indult el.",
     "unexpected-status": "Az eszköz váratlan állapottal válaszolt.",
+    "tls": "Az eszköz HTTPS-t használ, de a tanúsítványát nem sikerült ellenőrizni. A ZimaOS a zimaos.local névre állítja ki a tanúsítványát; IP-címen keresztül nem ellenőrizhető.",
+    "not-tls": "Ez a port titkosítatlan HTTP-vel válaszol, nem HTTPS-sel. Az eszköz WebUI-portja valószínűleg 443-ra van állítva HTTPS nélkül.",
     "zerotierNoCapability": "A helyi ZeroTier szolgáltatás nem hozhat létre virtuális hálózati eszközt. A pontos parancs, amivel ez engedélyezhető, alább látható.",
     "remoteIdUnknown": "Ehhez az eszközhöz nincs Remote ID mentve. Jelentkezzen be egyszer a «Csatlakozás Remote ID-vel» ponton keresztül.",
     "noPathAnswered": "Egyik mentett kapcsolati útvonal sem válaszolt ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Bejelentkezés",
     "host": "Cím",
-    "hostPlaceholder": "nas.local vagy 192.168.1.100",
+    "hostPlaceholder": "nas.local vagy 192.168.0.100",
     "username": "Felhasználónév",
     "password": "Jelszó",
     "submit": "Bejelentkezés",

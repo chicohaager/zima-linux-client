@@ -28,6 +28,7 @@
     "remoteIdTitle": "Подключиться по Remote ID",
     "remoteIdHint": "Введите Remote ID, показанный на устройстве. Соединение будет настроено автоматически — затем войдите как обычно.",
     "remoteIdLabel": "Remote ID (16 символов)",
+    "remoteIdPortLabel": "Порт WebUI",
     "remoteIdConnecting": "Подключение…",
     "connect": "Подключиться",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "zerotier-one не найден — ни установленный, ни поставляемый с программой.",
     "zerotierNoStart": "Локальная служба ZeroTier не запустилась.",
     "unexpected-status": "Устройство ответило неожиданным статусом.",
+    "tls": "Устройство использует HTTPS, но его сертификат не удалось проверить. ZimaOS выпускает сертификат для имени zimaos.local; по IP-адресу его проверить нельзя.",
+    "not-tls": "Этот порт отвечает обычным HTTP, а не HTTPS. Вероятно, порт WebUI устройства установлен на 443 без HTTPS.",
     "zerotierNoCapability": "Локальной службе ZeroTier не разрешено создавать виртуальное сетевое устройство. Точная команда для выдачи права приведена ниже.",
     "remoteIdUnknown": "Для этого устройства не сохранён Remote ID. Войдите один раз через «Подключиться по Remote ID».",
     "noPathAnswered": "Ни один сохранённый путь подключения не ответил ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Вход",
     "host": "Адрес",
-    "hostPlaceholder": "nas.local или 192.168.1.100",
+    "hostPlaceholder": "nas.local или 192.168.0.100",
     "username": "Имя пользователя",
     "password": "Пароль",
     "submit": "Войти",

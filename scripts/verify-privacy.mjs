@@ -7,11 +7,51 @@
  * quotes its own search terms defeats the check it is describing.
  *
  * Runs over tracked files only, and skips the legacy tree plus this file itself.
+ *
+ * The maintainer-identity rule is the one exception to "patterns live here": its search
+ * terms ARE the private data, so a tracked script that spelled them out would be the leak it
+ * guards against (found 2026-09-17 by the machine-wide scanner, which blocked the push). The
+ * terms come from outside the repository — `scripts/privacy-identity.local` (git-ignored,
+ * one regex source per line, `#` comments) or the environment variable
+ * `ZIMA_PRIVACY_IDENTITY` (regex sources separated by `|||`). If neither is present the gate
+ * says so and FAILS, because a rule that silently checks nothing is worse than none; set
+ * `ZIMA_PRIVACY_IDENTITY=none` to opt out explicitly (a fork's CI, for example), which is
+ * printed as a warning and never as "clean".
  */
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 
 const SELF = 'scripts/verify-privacy.mjs'
+const IDENTITY_FILE = 'scripts/privacy-identity.local'
+
+/** Regex sources for the identity rule, from the environment or the local file — never from here. */
+const identitySources = () => {
+  const fromEnv = process.env['ZIMA_PRIVACY_IDENTITY']
+  if (fromEnv === 'none') return { sources: [], origin: 'opted out via ZIMA_PRIVACY_IDENTITY=none' }
+  if (fromEnv !== undefined && fromEnv.length > 0) {
+    return { sources: fromEnv.split('|||').map((s) => s.trim()).filter((s) => s.length > 0), origin: 'environment' }
+  }
+  if (existsSync(IDENTITY_FILE)) {
+    const sources = readFileSync(IDENTITY_FILE, 'utf8')
+      .split('\n')
+      .map((line) => line.replace(/\s+#.*$/, '').trim())
+      .filter((line) => line.length > 0 && !line.startsWith('#'))
+    return { sources, origin: IDENTITY_FILE }
+  }
+  return null
+}
+
+const identity = identitySources()
+if (identity === null) {
+  console.error(
+    `privacy gate: the maintainer-identity rule is NOT configured — create ${IDENTITY_FILE} ` +
+      '(one regex source per line) or set ZIMA_PRIVACY_IDENTITY; ZIMA_PRIVACY_IDENTITY=none opts out explicitly.',
+  )
+  process.exit(1)
+}
+if (identity.sources.length === 0) {
+  console.warn('privacy gate: WARNING — maintainer-identity rule skipped (' + identity.origin + ')')
+}
 
 /** Each rule: what it looks for, and which known-harmless forms are allowed. */
 const RULES = [
@@ -19,15 +59,18 @@ const RULES = [
     name: 'RFC1918 address',
     pattern: /\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})\b/g,
     // Documentation examples and the ZeroTier range are fine; a real home address is not.
+    // 2026-09-17: the placeholder examples moved from 192.168.1.x to 192.168.0.x — the
+    // former is the maintainer's own LAN range, and an example address inside one's own
+    // network is a leak wearing a placeholder's clothes. The two dead allowances went with it.
     // The last one is the single 172.16/12 representative used by the fixture scrubber's
     // canary — an exact value, not the range, so the rule keeps its teeth everywhere else.
-    allow: [/^192\.168\.1\.100$/, /^192\.168\.1\.1$/, /^192\.168\.0\.\d+$/, /^10\.147\.\d+\.\d+$/, /^192\.168\.50\.50$/, /^10\.0\.0\.1$/, /^192\.168\.1\.256$/, /^172\.20\.1\.9$/],
+    allow: [/^192\.168\.0\.\d+$/, /^10\.147\.\d+\.\d+$/, /^192\.168\.50\.50$/, /^10\.0\.0\.1$/, /^192\.168\.1\.256$/, /^172\.20\.1\.9$/],
     /*
      * One file, by path, because its SUBJECT is these addresses: `urlPolicy.test.ts` asserts
      * that RFC1918 targets are refused, and it cannot do that without naming one of each
      * range. Scoped to the path rather than widened by value — a value-level allowance for
      * `10.*` would switch the rule off everywhere, which is how this gate was already broken
-     * once (`/^holgi$/i` in the identity rule, an exception exactly as wide as its pattern).
+     * once (a value-level allowance in the identity rule, exactly as wide as its pattern).
      * The literals in there are canonical range representatives, not addresses from anyone's
      * network.
      */
@@ -53,23 +96,16 @@ const RULES = [
   {
     name: 'maintainer identity',
     /*
-     * The trailing \b used to sit right after the name, so the rule matched "Holgi" and
-     * missed "Holgis" — German puts the genitive -s straight onto the name, and that is how
-     * it actually occurs in these documents. Measured 2026-07-31: the gate reported clean
-     * while "Holgis Wunsch" stood in a tracked doc. A name check has to survive inflection,
-     * so the word may continue after the name.
+     * The pattern is assembled from outside the repository (see the header). Two lessons
+     * are baked into how the sources are written there, and belong here so they survive:
+     * the name must be allowed to CONTINUE after the match — German puts the genitive -s
+     * straight onto a name, and the gate once reported clean while the inflected form stood
+     * in a tracked doc (2026-07-31); and there is NO value-level allowance, on purpose: the
+     * list once held an exception exactly as wide as the pattern, which disabled the rule
+     * while it reported "clean". Where the name is deliberate (funding slug, package author,
+     * licence) the exemption is a path in allowFiles, never a value.
      */
-    pattern: /\b(?:holgi\w*|holger[._-]?kuehn)\b/gi,
-    /**
-     * NO value-level allowance here, on purpose.
-     *
-     * This list used to contain /^holgi$/i — an exception exactly as wide as the pattern,
-     * which silently disabled the whole rule: the gate reported "clean" while the name sat
-     * in a tracked doc, and it could never have reported anything else. An allowance must
-     * be narrower than the thing it excuses, otherwise it is a deletion wearing a
-     * whitelist's clothes. Where the maintainer name is deliberate (funding slug, package
-     * author, licence) the exemption belongs in allowFiles, which is scoped to a path.
-     */
+    pattern: new RegExp(identity.sources.length === 0 ? '(?!)' : `\\b(?:${identity.sources.join('|')})\\b`, 'gi'),
     allowFiles: ['package.json', 'README.md', 'liesmich.md', 'LICENSE'],
   },
   {
@@ -132,7 +168,10 @@ for (const file of trackedFiles()) {
 }
 
 if (findings.length === 0) {
-  console.log(`privacy gate: clean (${trackedFiles().length} tracked files checked)`)
+  // A skipped identity rule is said on the clean line too, so a log excerpt cannot read as
+  // "everything checked" when one rule checked nothing.
+  const skipped = identity.sources.length === 0 ? ' — maintainer-identity rule SKIPPED' : ''
+  console.log(`privacy gate: clean (${trackedFiles().length} tracked files checked)${skipped}`)
   process.exit(0)
 }
 

@@ -28,6 +28,7 @@
     "remoteIdTitle": "Poveži se putem Remote ID-a",
     "remoteIdHint": "Unesite Remote ID prikazan na uređaju. Veza se priprema sama — zatim se prijavite kao i inače.",
     "remoteIdLabel": "Remote ID (16 znakova)",
+    "remoteIdPortLabel": "WebUI port",
     "remoteIdConnecting": "Povezivanje…",
     "connect": "Poveži se",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Nije pronađen nijedan zerotier-one — ni instaliran ni priložen.",
     "zerotierNoStart": "Lokalna ZeroTier usluga nije se pokrenula.",
     "unexpected-status": "Uređaj je odgovorio neočekivanim statusom.",
+    "tls": "Uređaj koristi HTTPS, ali njegov certifikat nije bilo moguće provjeriti. ZimaOS izdaje certifikat za ime zimaos.local; preko IP adrese ne može se provjeriti.",
+    "not-tls": "Ovaj port odgovara običnim HTTP-om, ne HTTPS-om. WebUI port uređaja vjerojatno je postavljen na 443 bez HTTPS-a.",
     "zerotierNoCapability": "Lokalna ZeroTier usluga ne smije stvoriti virtualni mrežni uređaj. Točna naredba koja to dopušta nalazi se ispod.",
     "remoteIdUnknown": "Za ovaj uređaj nije spremljen nijedan Remote ID. Prijavite se jednom putem «Poveži se putem Remote ID-a».",
     "noPathAnswered": "Nijedan spremljeni put veze nije odgovorio ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Prijava",
     "host": "Adresa",
-    "hostPlaceholder": "nas.local ili 192.168.1.100",
+    "hostPlaceholder": "nas.local ili 192.168.0.100",
     "username": "Korisničko ime",
     "password": "Zaporka",
     "submit": "Prijavi se",

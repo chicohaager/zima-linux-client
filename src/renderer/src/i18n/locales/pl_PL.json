@@ -28,6 +28,7 @@
     "remoteIdTitle": "Połącz przez Remote ID",
     "remoteIdHint": "Wpisz Remote ID wyświetlone na urządzeniu. Połączenie zostanie przygotowane automatycznie — potem zaloguj się jak zwykle.",
     "remoteIdLabel": "Remote ID (16 znaków)",
+    "remoteIdPortLabel": "Port WebUI",
     "remoteIdConnecting": "Łączenie…",
     "connect": "Połącz",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Nie znaleziono zerotier-one — ani zainstalowanego, ani dołączonego.",
     "zerotierNoStart": "Lokalna usługa ZeroTier nie wystartowała.",
     "unexpected-status": "Urządzenie odpowiedziało nieoczekiwanym statusem.",
+    "tls": "Urządzenie używa HTTPS, ale nie udało się zweryfikować jego certyfikatu. ZimaOS wystawia certyfikat dla nazwy zimaos.local; przez adres IP nie można go sprawdzić.",
+    "not-tls": "Ten port odpowiada zwykłym HTTP, nie HTTPS. Port WebUI urządzenia jest prawdopodobnie ustawiony na 443 bez HTTPS.",
     "zerotierNoCapability": "Lokalna usługa ZeroTier nie ma prawa tworzyć wirtualnego urządzenia sieciowego. Dokładne polecenie, które to nadaje, znajduje się poniżej.",
     "remoteIdUnknown": "Dla tego urządzenia nie zapisano żadnego Remote ID. Zaloguj się raz przez «Połącz przez Remote ID».",
     "noPathAnswered": "Żadna zapisana ścieżka połączenia nie odpowiedziała ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Zaloguj się",
     "host": "Adres",
-    "hostPlaceholder": "nas.local lub 192.168.1.100",
+    "hostPlaceholder": "nas.local lub 192.168.0.100",
     "username": "Nazwa użytkownika",
     "password": "Hasło",
     "submit": "Zaloguj się",

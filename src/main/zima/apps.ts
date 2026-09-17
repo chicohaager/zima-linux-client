@@ -53,7 +53,7 @@ const port = (value: string | number | null | undefined): number | null => {
  *
  * **Only when the port matches the app's own published port.** That is what makes this a
  * rewrite of *this app's* icon rather than a general redirect of any private address onto
- * the device — an icon field saying `http://192.168.1.1/reboot` (the router) keeps pointing
+ * the device — an icon field saying `http://192.168.0.1/reboot` (the router) keeps pointing
  * at the router and stays refused, instead of being aimed at the device.
  *
  * Verified over the tunnel before this was written: both rewritten URLs answer 200 with

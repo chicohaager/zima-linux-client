@@ -44,8 +44,11 @@ export const probe = async (
   }
 
   const kind = result.error.kind
+  // Every transport-level cause keeps its own name. 'tls' and 'not-tls' were folded into
+  // 'unexpected-status' until 2026-09-17, which told a user whose device announced port
+  // 443 that it "answered with an unexpected status" — it had never answered at all.
   const failure =
-    kind === 'refused' || kind === 'timeout' || kind === 'dns'
+    kind === 'refused' || kind === 'timeout' || kind === 'dns' || kind === 'tls' || kind === 'not-tls'
       ? kind
       : 'unexpected-status'
   const status = result.error.context?.status

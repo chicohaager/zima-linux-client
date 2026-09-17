@@ -28,6 +28,7 @@
     "remoteIdTitle": "Conectare prin Remote ID",
     "remoteIdHint": "Introduceți Remote ID-ul afișat pe dispozitiv. Conexiunea este pregătită automat — apoi autentificați-vă ca de obicei.",
     "remoteIdLabel": "Remote ID (16 caractere)",
+    "remoteIdPortLabel": "Port WebUI",
     "remoteIdConnecting": "Se conectează…",
     "connect": "Conectare",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Nu s-a găsit niciun zerotier-one — nici instalat, nici livrat.",
     "zerotierNoStart": "Serviciul ZeroTier local nu a pornit.",
     "unexpected-status": "Dispozitivul a răspuns cu o stare neașteptată.",
+    "tls": "Dispozitivul folosește HTTPS, dar certificatul său nu a putut fi verificat. ZimaOS emite certificatul pentru numele zimaos.local; printr-o adresă IP nu poate fi verificat.",
+    "not-tls": "Acest port răspunde cu HTTP necriptat, nu HTTPS. Portul WebUI al dispozitivului este probabil setat la 443 fără HTTPS.",
     "zerotierNoCapability": "Serviciul ZeroTier local nu are voie să creeze un dispozitiv de rețea virtual. Comanda exactă pentru a acorda acest drept este mai jos.",
     "remoteIdUnknown": "Pentru acest dispozitiv nu este salvat niciun Remote ID. Autentificați-vă o dată prin «Conectare prin Remote ID».",
     "noPathAnswered": "Nicio cale de conexiune salvată nu a răspuns ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Autentificare",
     "host": "Adresă",
-    "hostPlaceholder": "nas.local sau 192.168.1.100",
+    "hostPlaceholder": "nas.local sau 192.168.0.100",
     "username": "Nume de utilizator",
     "password": "Parolă",
     "submit": "Autentificare",

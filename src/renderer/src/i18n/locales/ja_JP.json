@@ -28,6 +28,7 @@
     "remoteIdTitle": "リモート ID で接続",
     "remoteIdHint": "デバイスに表示されているリモート ID を入力してください。接続は自動で用意されます — そのあとはいつも通りサインインしてください。",
     "remoteIdLabel": "リモート ID（16 文字）",
+    "remoteIdPortLabel": "WebUI ポート",
     "remoteIdConnecting": "接続中…",
     "connect": "接続",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "zerotier-one が見つかりません — インストール済みのものも同梱のものもありません。",
     "zerotierNoStart": "ローカルの ZeroTier サービスが起動しませんでした。",
     "unexpected-status": "デバイスが予期しないステータスを返しました。",
+    "tls": "デバイスは HTTPS を使用していますが、証明書を検証できませんでした。ZimaOS は zimaos.local という名前に対して証明書を発行するため、IP アドレス経由では検証できません。",
+    "not-tls": "このポートは HTTPS ではなく平文の HTTP で応答しています。デバイスの WebUI ポートが HTTPS なしで 443 に設定されている可能性があります。",
     "zerotierNoCapability": "ローカルの ZeroTier サービスには仮想ネットワークデバイスを作成する権限がありません。付与するための正確なコマンドは以下です。",
     "remoteIdUnknown": "このデバイスにはリモート ID が保存されていません。一度「リモート ID で接続」からサインインしてください。",
     "noPathAnswered": "保存された接続経路のどれも応答しませんでした（{{paths}}）。"
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "サインイン",
     "host": "アドレス",
-    "hostPlaceholder": "nas.local または 192.168.1.100",
+    "hostPlaceholder": "nas.local または 192.168.0.100",
     "username": "ユーザー名",
     "password": "パスワード",
     "submit": "サインイン",

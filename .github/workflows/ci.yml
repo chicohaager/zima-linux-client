@@ -19,7 +19,14 @@ jobs:
       - run: npm ci
       # One command, one exit code. Deliberately NOT piped into anything: a pipe discards
       # the gate's status and makes a red run look green.
+      #
+      # The privacy gate's maintainer-identity terms are not in the repository (they ARE the
+      # private data). The maintainer's CI supplies them as a secret; a fork without it opts
+      # out explicitly — the gate then prints a WARNING and says "SKIPPED" on its clean line,
+      # it never reports the rule as checked.
       - run: npm run verify
+        env:
+          ZIMA_PRIVACY_IDENTITY: ${{ secrets.ZIMA_PRIVACY_IDENTITY || 'none' }}
 
   e2e:
     name: End-to-end against a replayed device

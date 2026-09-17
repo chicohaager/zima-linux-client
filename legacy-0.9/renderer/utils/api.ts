@@ -55,7 +55,7 @@ function isLocalIP(ip: string): boolean {
  * @returns Full API URL
  *
  * @example
- * buildAPIUrl('192.168.1.100', '/api/status')  // → http://192.168.1.100/api/status
+ * buildAPIUrl('192.168.0.100', '/api/status')  // → http://192.168.0.100/api/status
  * buildAPIUrl('172.23.45.67', '/api/status')   // → https://172.23.45.67/api/status
  */
 export function buildAPIUrl(ip: string, path: string, forceHTTP?: boolean): string {

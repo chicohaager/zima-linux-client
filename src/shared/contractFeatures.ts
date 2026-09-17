@@ -291,7 +291,15 @@ export const featureChannelSchemas = {
   },
 
   [CHANNELS.connectRemoteId]: {
-    request: z.object({ remoteId: z.string().min(1).max(32) }),
+    request: z.object({
+      remoteId: z.string().min(1).max(32),
+      /**
+       * The device's WebUI port inside the tunnel. ZimaOS lets the user move it ("WebUI
+       * Port"), and over ZeroTier there is no mDNS to read it from — so the user says it.
+       * Measured 2026-09-17: a tester on 443 got `refused` because this was fixed at 80.
+       */
+      port: z.number().int().min(1).max(65535).default(80),
+    }),
     response: envelope(
       z.object({
         host: z.string(),

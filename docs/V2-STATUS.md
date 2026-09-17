@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.1 · **Stand:** 2026-08-31
+**Branch:** `v2` · **Version:** 2.0.1 · **Stand:** 2026-09-17
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -9,8 +9,9 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 326 Tests in 40 Dateien · build ·
-                    build-gate · i18n · privacy — gefahren am 2026-08-31. Der Exit-Code ist
+npm run verify        ✓ (rc=0)  type-check · lint · 356 Tests in 44 Dateien · build ·
+                    build-gate · i18n · privacy — gefahren am 2026-09-17 (vorher 326/40 am
+                    2026-08-31). Der Exit-Code ist
                     OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
                     der Code von `tail` — das Privacy-Gate war in Wahrheit rot (rc=1) mit vier
                     echten Adressen in neuen Kommentaren
@@ -2269,6 +2270,59 @@ feuerte, während `fpm` den pacman noch schrieb: 8,9 MB statt 96 MB. Wäre die M
 hätten neun Zeilen ein abgeschnittenes Archiv vermessen — und der Fehler hätte wie ein
 Distro-Problem ausgesehen. Beleg für das Gegenteil: `pgrep` zeigte fpm laufend, `stat` die Datei
 wachsend (17 563 648 → 20 267 008). Gewartet wird jetzt auf den **Prozess** und seinen Exit-Code.
+
+## Dritter Fremdbericht (Ubuntu, Client 2.0.1): WebUI-Port 443 ohne HTTPS — der Port ist eine Adresse, kein Protokoll
+
+Ein Tester im Discord, Ubuntu, 2.0.1 (Log: `app.ready {"version":"2.0.1"}`, 106 Zeilen vom
+10.–17.09.). Zwei Bilder: die LAN-Kachel `…:443 · os=ZimaOS` mit „The device answered with an
+unexpected status", und Remote ID mit „refused · no candidate answered · candidates=1".
+
+**Was das Log sagt, in Reihenfolge:** am 10.09. 17:27–18:45 lief 2.0.1 bei ihm über LAN
+(`session.signed-in kind=lan`, Dateien, Apps, Downloads). Um 22:15 meldet die gespeicherte
+Adresse (Port 80) `refused`; danach findet der Scan das Gerät wieder, aber `/v1/users/status`
+endet mit `fetch failed`; Remote ID tritt bei (`zerotier.joined`) und sondiert die aus der Netzroute
+abgeleitete `.1`-Adresse → `fetch failed`. Seine Auskunft: **WebUI-Port auf 443 gestellt, HTTPS aus.**
+
+**Gemessen auf .143 (v1.7.1), KB §56.7:** ZimaOS hat die Einstellung „WebUI Port", und
+`/usr/bin/zimaos` schreibt sie in `/etc/avahi/services/zimaos.service`
+(`route/core.updateAvahiServiceFile`). HTTPS-Einschalten dagegen ändert mDNS **nicht** (bleibt
+80) und lässt 80 offen. Klartext an einen TLS-Port antwortet der Gateway mit
+`400 Client sent an HTTP request to an HTTPS server.` Der Client machte aus `:443` `https://`
+(`client.ts:39`) und sprach TLS gegen Klartext (`ERR_SSL_PACKET_LENGTH_TOO_LONG`, lokal
+gemessen); der Remote-ID-Weg sondierte fest Port 80.
+
+**Erste Erklärung war falsch — und gemessen:** „HTTPS an" erklärte die Symptome nicht (mDNS
+bleibt 80, 80 bleibt offen); der Tester widersprach, die Messung auf .143 bestätigte ihn.
+Memory `feedback-a-port-number-is-not-a-scheme`.
+
+**Entscheidung des Maintainers:** ein geänderter Standardport ist kein Client-Fehler — trotzdem
+robust gemacht:
+
+- `tls` / `not-tls` als eigene Fehlerarten (`result.ts`, `probe.ts`), Texte in 28 Locales;
+  vorher fielen alle TLS-Codes in `default → internal → "unexpected status"`.
+- Das Schema kommt vom Gerät, nicht vom Port (`client.ts`): jeder Port beginnt als HTTP; nur
+  Go's 400-Antwort schaltet `host:port` auf HTTPS um, einmal wiederholt, prozessweit gemerkt.
+- Remote-ID-Formular mit Feld „WebUI port" (Standard 80) — Vertrag, Handler, Strategie.
+- `zima.request-failed` loggt `kind` und den Code statt nur „fetch failed" (14 solcher Zeilen
+  in seinem Log, keine sagte, welcher Fehler).
+
+**Belege:** `scheme.test.ts` 8 (Sabotage „443 ⇒ https": 2 rot), `probeTls.test.ts` 3,
+`remoteIdPort.test.ts` 8, `remoteIdHandler.test.ts` 1 (Sabotage Handler ohne Port: 1 rot),
+`result.test.ts` +6 (Sabotage: 5 rot); Formular in der gebauten App per Playwright bedient
+(443 ⇒ Connect aktiv, 70000 ⇒ gesperrt). Nicht end-to-end gegen sein Gerät gemessen.
+
+**Nebenbefunde aus seinem Log, offen:** `/v2_1/files/file … sort=modified size=300 → 400`
+(15×) — zweiter Zeuge für Hypothese (b) des Fedora-Berichts; `POST …/unapp/stop → 400` (7×,
+158 Bytes) — ungeklärt, braucht ZimaOS-Version und Antwort-Body.
+
+**Beim Push gefunden, mitbehoben:** das maschinenweite Publication-Gate sperrte mit 63 BLOCK —
+Beispieladressen aus dem LAN-Bereich des Maintainers in 37 Dateien (jetzt aus `192.168.0.0/24`,
+das niemandem hier gehört), erfundene Heimatpfade in Tests (pfadgebunden in `.public-data-allow`), und
+der Login-Name als Suchmuster **im Privacy-Gate selbst** — der Regeltext verstieß gegen seine
+Regel. Die Identitätsmuster liegen jetzt außerhalb des Repos (`scripts/privacy-identity.local`,
+git-ignoriert, oder `ZIMA_PRIVACY_IDENTITY`; CI bekommt sie als Secret, ein Fork setzt `none`).
+Fehlen sie, ist das Gate **rot** mit Ansage; bei Opt-out steht „SKIPPED" auf der Clean-Zeile.
+Kontrollen: Genitivform in getrackter Datei ⇒ 1 finding; ohne Datei ⇒ rc=1; `none` ⇒ WARNING.
 
 ## Alt-Stand
 

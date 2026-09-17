@@ -28,6 +28,7 @@
     "remoteIdTitle": "Forbind via Remote ID",
     "remoteIdHint": "Indtast det Remote ID, der vises på enheden. Forbindelsen sættes op for dig — derefter logger du ind som sædvanlig.",
     "remoteIdLabel": "Remote ID (16 tegn)",
+    "remoteIdPortLabel": "WebUI-port",
     "remoteIdConnecting": "Forbinder…",
     "connect": "Forbind",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "Ingen zerotier-one blev fundet — hverken installeret eller medleveret.",
     "zerotierNoStart": "Den lokale ZeroTier-tjeneste startede ikke.",
     "unexpected-status": "Enheden svarede med en uventet status.",
+    "tls": "Enheden bruger HTTPS, men dens certifikat kunne ikke verificeres. ZimaOS udsteder sit certifikat til navnet zimaos.local; via en IP-adresse kan det ikke kontrolleres.",
+    "not-tls": "Denne port svarer med ukrypteret HTTP, ikke HTTPS. Enhedens WebUI-port er sandsynligvis sat til 443 uden HTTPS.",
     "zerotierNoCapability": "Den lokale ZeroTier-tjeneste må ikke oprette en virtuel netværksenhed. Den præcise kommando til at give lov står nedenfor.",
     "remoteIdUnknown": "Der er intet Remote ID gemt for denne enhed. Log ind én gang via «Forbind via Remote ID».",
     "noPathAnswered": "Ingen gemt forbindelsesvej svarede ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Log ind",
     "host": "Adresse",
-    "hostPlaceholder": "nas.local eller 192.168.1.100",
+    "hostPlaceholder": "nas.local eller 192.168.0.100",
     "username": "Brugernavn",
     "password": "Adgangskode",
     "submit": "Log ind",

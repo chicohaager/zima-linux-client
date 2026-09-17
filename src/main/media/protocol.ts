@@ -123,7 +123,7 @@ const handle = async (request: Request): Promise<Response> => {
       /*
        * 🔴 Added 2026-07-31 during the pre-package review. Until then any http(s) URL was
        * fetched, and the URL comes from a store entry anyone can write: `http://127.0.0.1:…`
-       * or `http://192.168.1.1/reboot` in an icon field turned this client into a request
+       * or `http://192.168.0.1/reboot` in an icon field turned this client into a request
        * generator inside the user's own network — reaching exactly what a remote attacker
        * cannot. The device's own host stays exempt; see `urlPolicy.ts` for the rule and for
        * the limit it does not cover.

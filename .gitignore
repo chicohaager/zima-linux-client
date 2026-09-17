@@ -84,3 +84,4 @@ scenario-report*.json
 # Playwright
 test-results/
 playwright-report/
+scripts/privacy-identity.local

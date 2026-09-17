@@ -28,6 +28,7 @@
     "remoteIdTitle": "Connecta mitjançant Remote ID",
     "remoteIdHint": "Introdueix la Remote ID que es mostra al dispositiu. La connexió es prepara sola; després inicia la sessió com sempre.",
     "remoteIdLabel": "Remote ID (16 caràcters)",
+    "remoteIdPortLabel": "Port de la WebUI",
     "remoteIdConnecting": "S’està connectant…",
     "connect": "Connecta",
     "pathOffer": {
@@ -200,6 +201,8 @@
     "zerotierMissing": "No s’ha trobat cap zerotier-one: ni instal·lat ni inclòs.",
     "zerotierNoStart": "El servei local de ZeroTier no s’ha iniciat.",
     "unexpected-status": "El dispositiu ha respost amb un estat inesperat.",
+    "tls": "El dispositiu utilitza HTTPS, però no s’ha pogut verificar el seu certificat. ZimaOS emet el certificat per al nom zimaos.local; a través d’una adreça IP no es pot comprovar.",
+    "not-tls": "Aquest port respon amb HTTP en clar, no HTTPS. Probablement el port de la WebUI del dispositiu està configurat a 443 sense HTTPS.",
     "zerotierNoCapability": "El servei local de ZeroTier no té permís per crear un dispositiu de xarxa virtual. L’ordre exacta per concedir-lo és a sota.",
     "remoteIdUnknown": "Per a aquest dispositiu no hi ha cap Remote ID desada. Inicia la sessió un cop mitjançant «Connecta mitjançant Remote ID».",
     "noPathAnswered": "Cap camí de connexió desat no ha respost ({{paths}})."
@@ -217,7 +220,7 @@
   "signIn": {
     "title": "Inicia la sessió",
     "host": "Adreça",
-    "hostPlaceholder": "nas.local o 192.168.1.100",
+    "hostPlaceholder": "nas.local o 192.168.0.100",
     "username": "Nom d’usuari",
     "password": "Contrasenya",
     "submit": "Inicia la sessió",
