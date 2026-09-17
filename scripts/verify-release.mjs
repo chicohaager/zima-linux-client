@@ -631,6 +631,43 @@ if (process.argv.includes("--self-test")) {
   process.exit(selfTest());
 }
 
+/**
+ * What the tracker holds at the moment of a release — listed, not judged.
+ *
+ * On 2026-08-31 v2.0.1 fixed the 2.0.0 probe bug in the morning; at 18:18 a tester filed
+ * issue #16 describing exactly that bug against 2.0.0, and it sat unanswered for 17 days.
+ * The release notes named the fix; nobody looked at the tracker next to them. So the gate
+ * prints every open issue and PR here, with the number of comments and who wrote the last
+ * one — an unanswered report is visible as "0 comments" or "last: <reporter>".
+ *
+ * This never changes the exit code (a tracker is not a property of the artefacts), and it
+ * never fails silently: if `gh` is missing or offline, that is said in the same place.
+ */
+const listTracker = () => {
+  const run = (args) =>
+    execFileSync("gh", args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  try {
+    const owner = run(["repo", "view", "--json", "owner", "-q", ".owner.login"]).trim();
+    const issues = JSON.parse(
+      run(["issue", "list", "--state", "open", "--json", "number,title,comments,author,createdAt"]),
+    );
+    const prs = JSON.parse(run(["pr", "list", "--state", "open", "--json", "number,title,comments,author,createdAt"]));
+    const line = (kind, it) => {
+      const last = it.comments.at(-1)?.author?.login;
+      const reply = it.comments.length === 0 ? "0 comments" : `last: ${last}`;
+      const flag = it.comments.length === 0 || last === it.author.login ? "  ← unanswered" : "";
+      return `  ${kind} #${it.number}  ${it.createdAt.slice(0, 10)}  ${it.title.slice(0, 60)}  (${reply})${flag}`;
+    };
+    console.log(`\ntracker at release time (${owner}, listed, not judged):`);
+    const all = [...issues.map((i) => line("issue", i)), ...prs.map((p) => line("pr   ", p))];
+    console.log(all.length ? all.join("\n") : "  nothing open");
+  } catch (cause) {
+    console.log(
+      `\ntracker at release time: could not be listed — ${cause instanceof Error ? cause.message.split("\n")[0] : String(cause)}`,
+    );
+  }
+};
+
 const ctx = buildRealContext(root);
 const results = CHECKS.map((c) => c(ctx));
 
@@ -642,6 +679,7 @@ for (const r of results) {
     `  ${r.ok ? "ok  " : "FAIL"}  ${r.label}${r.detail ? ` (${r.detail})` : ""}`,
   );
 }
+listTracker();
 const failed = results.filter((r) => !r.ok);
 console.log(
   `\n${failed.length === 0 ? "release gate: clean" : `release gate: ${failed.length} FAILED`}`,
