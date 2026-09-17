@@ -2315,6 +2315,19 @@ robust gemacht:
 (15×) — zweiter Zeuge für Hypothese (b) des Fedora-Berichts; `POST …/unapp/stop → 400` (7×,
 158 Bytes) — ungeklärt, braucht ZimaOS-Version und Antwort-Body.
 
+**CI — zum ersten Mal grün (Lauf 35211306023, 2026-09-17, Commit b4ad8e9).** Sie war seit dem
+14.08. in sechs Läufen rot, jeder nach 10–15 s, und niemand hatte hineingesehen: `package-lock.json`
+lag seit dem 0.9-Erstcommit in `.gitignore`, `setup-node` mit `cache: npm` bricht ohne sie ab.
+Dahinter lagen drei weitere Wände, jede erst sichtbar, als die vorige fiel: (1) npm 11.19
+(Runner) verweigerte die von npm 11.6 geschriebene Lock — reproduziert mit `npx npm@11.19.0 ci`
+in einem leeren Verzeichnis, Lock neu geschrieben, beide Versionen installieren daraus;
+(2) `persistence.test.ts` legte die Ausgangsdatei mit `mode: 0o664` an, die umask 022 des
+Runners machte 644 daraus — jetzt `chmodSync`; (3) die E2E-Spec las deutsche Sätze und nahm die
+Sprache vom Host — der Launch-Helfer setzt sie jetzt selbst (lokal `LANG=C`: 5/5, ohne die
+Zeile 3/5). Beide Tests waren einen Monat grün, weil sie auf einer Maschine liefen. Die
+Identitätsregel des Privacy-Gates läuft in CI mit „SKIPPED", bis das Secret
+`ZIMA_PRIVACY_IDENTITY` gesetzt ist.
+
 **Beim Push gefunden, mitbehoben:** das maschinenweite Publication-Gate sperrte mit 63 BLOCK —
 Beispieladressen aus dem LAN-Bereich des Maintainers in 37 Dateien (jetzt aus `192.168.0.0/24`,
 das niemandem hier gehört), erfundene Heimatpfade in Tests (pfadgebunden in `.public-data-allow`), und
