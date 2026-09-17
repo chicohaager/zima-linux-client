@@ -105,7 +105,14 @@ reports the device's state.
 - **Connect by IP address** — for devices the scan does not reach.
 - **Connect by Remote ID** — the device's ZeroTier network ID. Joining the network, deriving the
   device address and probing it happens in one step; the ZeroTier part is machinery, not a step
-  you perform by hand.
+  you perform by hand. If you moved the device's WebUI port away from 80, enter it next to the
+  Remote ID — over the tunnel there is no mDNS to read it from.
+
+The scheme is never guessed from the port. A device on port 443 is addressed as plain HTTP
+first; only the device's own answer that the port speaks TLS (`400 Client sent an HTTP request
+to an HTTPS server.`) switches that host and port to HTTPS. A certificate that cannot be
+verified, or a port that turns out not to speak TLS, is reported as exactly that — not as an
+"unexpected status".
 
 Every candidate address — discovered, typed or derived — goes through the same probe, and the
 result carries a measured latency. A named reason comes back instead of an empty list, because
@@ -303,6 +310,8 @@ npm run screenshots     # the pictures above, from the current build
 npm run verify:build    # reads the BUILT files: preload is CJS, sandbox on, CSP without unsafe-eval
 npm run verify:i18n     # completeness, unknown keys, placeholder drift, "English copy" detection
 npm run verify:privacy  # no LAN addresses, user names or e-mail addresses in tracked files
+                        # the maintainer-identity terms come from scripts/privacy-identity.local
+                        # (git-ignored) or ZIMA_PRIVACY_IDENTITY; on a fork set it to `none`
 npm run verify:live     # reads against a real device, with the same parsers the IPC handlers use
 ```
 

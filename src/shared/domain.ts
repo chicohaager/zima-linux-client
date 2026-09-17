@@ -262,7 +262,7 @@ export interface ProbeResult {
    * listening, 'timeout' means nothing answered at all (a firewall may be
    * dropping). Collapsing them into "offline" hides which problem to fix.
    */
-  readonly failure: 'refused' | 'timeout' | 'dns' | 'unexpected-status' | null
+  readonly failure: 'refused' | 'timeout' | 'dns' | 'tls' | 'not-tls' | 'unexpected-status' | null
   readonly httpStatus: number | null
 }
 

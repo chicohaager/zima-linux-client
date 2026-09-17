@@ -32,6 +32,37 @@ describe('fromUnknown', () => {
     expect(fromUnknown(Object.assign(new Error('x'), { code })).kind).toBe(expected)
   })
 
+  /**
+   * TLS failures get their own kinds. Until 2026-09-17 every one of these fell through to
+   * `internal`, which the probe then reported as 'unexpected-status' — a user whose device
+   * announced port 443 read "the device answered with an unexpected status" about a device
+   * that had never completed a handshake.
+   *
+   * The shape is the one Node really produces (measured against ZimaOS v1.7.1 with HTTPS on,
+   * and against a clear-text port addressed as https://): a TypeError "fetch failed" whose
+   * `cause` carries the code.
+   */
+  it.each([
+    ['UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'tls', 'error.tls'],
+    ['DEPTH_ZERO_SELF_SIGNED_CERT', 'tls', 'error.tls'],
+    ['ERR_TLS_CERT_ALTNAME_INVALID', 'tls', 'error.tls'],
+    ['ERR_SSL_PACKET_LENGTH_TOO_LONG', 'not-tls', 'error.not-tls'],
+    ['ERR_SSL_WRONG_VERSION_NUMBER', 'not-tls', 'error.not-tls'],
+  ] as const)('maps the fetch failure carrying %s to %s', (code, kind, i18nKey) => {
+    const wrapped = new TypeError('fetch failed', { cause: Object.assign(new Error('x'), { code }) })
+    const mapped = fromUnknown(wrapped)
+    expect(mapped.kind).toBe(kind)
+    expect(mapped.i18nKey).toBe(i18nKey)
+    expect(mapped.message).toContain(code)
+  })
+
+  // Positive control for the block above: an unknown code still lands in `internal`, so
+  // the cases above pass because of their own branch, not because everything does.
+  it('still treats an unknown code as internal', () => {
+    const wrapped = new TypeError('fetch failed', { cause: Object.assign(new Error('x'), { code: 'ERR_SOMETHING_NEW' }) })
+    expect(fromUnknown(wrapped).kind).toBe('internal')
+  })
+
   // A port on the WHATWG blocked list makes fetch fail with a bare "bad port"
   // without opening a socket. Reporting that as a transport failure would blame the
   // device for our own invalid input.

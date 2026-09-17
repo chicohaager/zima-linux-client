@@ -46,8 +46,8 @@ export const registerNetworkHandlers = (): void => {
    * read as "no device there".
    */
   handle(CHANNELS.connectRemoteId, async (input) => {
-    const { remoteId } = input
-    const outcome = await remoteIdStrategy(remoteId)
+    const { remoteId, port } = input
+    const outcome = await remoteIdStrategy(remoteId, port)
     if (outcome.unavailableReason !== null) {
       return wireError(
         appError('capability-missing', outcome.unavailableReason, 'error.strategyUnavailable', {

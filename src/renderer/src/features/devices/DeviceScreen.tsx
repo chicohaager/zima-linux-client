@@ -43,6 +43,11 @@ export const DeviceScreen = (): React.JSX.Element => {
   const [target, setTarget] = useState<SignInTarget | null>(null)
   const [remoteOpen, setRemoteOpen] = useState(false)
   const [remoteId, setRemoteId] = useState('')
+  // Text, not number: an empty or half-typed field must stay representable. Validated on submit.
+  const [remotePort, setRemotePort] = useState('80')
+  const remotePortNumber = /^\d{1,5}$/.test(remotePort.trim()) ? Number(remotePort.trim()) : NaN
+  const remotePortValid = Number.isInteger(remotePortNumber) && remotePortNumber >= 1 && remotePortNumber <= 65535
+  const remoteIdValid = /^[0-9a-fA-F]{16}$/.test(remoteId.trim())
   const [found, setFound] = useState<readonly { device: DiscoveredDevice; probe: ProbeResult }[] | null>(
     null,
   )
@@ -101,10 +106,12 @@ export const DeviceScreen = (): React.JSX.Element => {
   // derivation and the probe all happen behind this single mutation, because none of them
   // is a decision the user makes.
   const remote = useMutation({
-    mutationFn: async (id: string) => unwrap(await window.zima.connectRemoteId({ remoteId: id })),
+    mutationFn: async (input: { id: string; port: number }) =>
+      unwrap(await window.zima.connectRemoteId({ remoteId: input.id, port: input.port })),
     onSuccess: (result) => {
       setRemoteOpen(false)
       setRemoteId('')
+      setRemotePort('80')
       setTarget({
         host: result.host,
         port: result.port,
@@ -273,7 +280,9 @@ export const DeviceScreen = (): React.JSX.Element => {
             className="mt-3 flex flex-wrap items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault()
-              if (/^[0-9a-fA-F]{16}$/.test(remoteId.trim())) remote.mutate(remoteId.trim())
+              if (remoteIdValid && remotePortValid) {
+                remote.mutate({ id: remoteId.trim(), port: remotePortNumber })
+              }
             }}
           >
             <div className="min-w-56 flex-1">
@@ -285,9 +294,18 @@ export const DeviceScreen = (): React.JSX.Element => {
                 placeholder="0123456789abcdef"
               />
             </div>
+            <div className="w-28">
+              <Field
+                name="remotePort"
+                label={t('device.remoteIdPortLabel')}
+                value={remotePort}
+                onChange={setRemotePort}
+                placeholder="80"
+              />
+            </div>
             <Button
               type="submit"
-              disabled={remote.isPending || !/^[0-9a-fA-F]{16}$/.test(remoteId.trim())}
+              disabled={remote.isPending || !remoteIdValid || !remotePortValid}
             >
               {remote.isPending ? t('device.remoteIdConnecting') : t('device.connect')}
             </Button>
@@ -310,7 +328,7 @@ export const DeviceScreen = (): React.JSX.Element => {
               ) : provision.data.capable === true ? (
                 <>
                   <Muted className="mb-2">{t('zerotier.capable')}</Muted>
-                  <Button onClick={() => remote.mutate(remoteId.trim())}>
+                  <Button onClick={() => remote.mutate({ id: remoteId.trim(), port: remotePortValid ? remotePortNumber : 80 })}>
                     {t('zerotier.recheck')}
                   </Button>
                 </>
@@ -335,7 +353,7 @@ export const DeviceScreen = (): React.JSX.Element => {
                     >
                       {copied ? t('zerotier.copied') : t('zerotier.copy')}
                     </Button>
-                    <Button onClick={() => remote.mutate(remoteId.trim())} disabled={remote.isPending}>
+                    <Button onClick={() => remote.mutate({ id: remoteId.trim(), port: remotePortValid ? remotePortNumber : 80 })} disabled={remote.isPending}>
                       {t('zerotier.recheck')}
                     </Button>
                   </div>

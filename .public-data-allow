@@ -1,0 +1,10 @@
+# Exemptions for ~/.claude/bin/check-public-data.py — one per file, never a bare value.
+# Rule: only INVENTED values may stand here. Nothing from the maintainer's own hosts,
+# networks, login or home is ever listed; those get anonymised in place.
+#
+# Generic home paths used as test fixtures / container build paths. None names a person.
+legacy-0.9/main/utils/__tests__/sanitize.test.ts:/home/user
+src/main/app/__tests__/relaunchTarget.test.ts:/home/user
+src/main/zerotier/__tests__/diagnosis.test.ts:/home/user
+src/main/app/__tests__/screenshotGuard.test.ts:/home/someone
+scripts/distro-matrix.sh:/home/zima

@@ -29,6 +29,20 @@ export type AppErrorKind =
   | 'timeout'
   | 'dns'
   | 'unexpected-status'
+  /**
+   * The TLS handshake completed a connection but the certificate could not be verified —
+   * ZimaOS ships one issued by its own `ZimaOS-CA` for `DNS:zimaos.local`, so over an IP
+   * address Node rejects it (measured 2026-09-17 against v1.7.1 with HTTPS on:
+   * `UNABLE_TO_VERIFY_LEAF_SIGNATURE`). Distinct from `unexpected-status`: the device never
+   * answered, and the advice ("trust the CA / use the name") is different.
+   */
+  | 'tls'
+  /**
+   * We spoke TLS to a port that answers in plain HTTP. ZimaOS lets the user move its WebUI
+   * to any port, and 443 is a natural pick — a client that infers the scheme from the port
+   * then handshakes against clear text. Measured: `ERR_SSL_PACKET_LENGTH_TOO_LONG`.
+   */
+  | 'not-tls'
   | 'malformed-response'
   | 'unauthorized'
   /** Wrong username or password. ZimaOS answers HTTP 400 for this, not 401. */
@@ -126,6 +140,20 @@ export const fromUnknown = (cause: unknown, context?: AppError['context']): AppE
   }
 
   switch (code) {
+    // Certificate rejected. These are OpenSSL verify codes as Node surfaces them; until
+    // 2026-09-17 they fell to `default` and reached the user as "unexpected status".
+    case 'UNABLE_TO_VERIFY_LEAF_SIGNATURE':
+    case 'DEPTH_ZERO_SELF_SIGNED_CERT':
+    case 'SELF_SIGNED_CERT_IN_CHAIN':
+    case 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY':
+    case 'CERT_HAS_EXPIRED':
+    case 'ERR_TLS_CERT_ALTNAME_INVALID':
+      return appError('tls', `certificate not verifiable (${code})`, 'error.tls', context, cause)
+    // The peer is not speaking TLS at all: a clear-text HTTP port addressed as https://.
+    case 'ERR_SSL_PACKET_LENGTH_TOO_LONG':
+    case 'ERR_SSL_WRONG_VERSION_NUMBER':
+    case 'ERR_SSL_HTTP_REQUEST':
+      return appError('not-tls', `port answers in plain HTTP, not TLS (${code})`, 'error.not-tls', context, cause)
     case 'ECONNREFUSED':
       return appError('refused', 'connection refused', 'error.refused', context, cause)
     case 'ETIMEDOUT':

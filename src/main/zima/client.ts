@@ -35,9 +35,41 @@ export interface DeviceContext {
 
 const DEFAULT_TIMEOUT_MS = 8_000
 
-export const baseUrl = (host: string, port = 80): string => {
-  const scheme = port === 443 ? 'https' : 'http'
-  const authority = port === 80 || port === 443 ? host : `${host}:${port}`
+export type Scheme = 'http' | 'https'
+
+/**
+ * Which scheme a `host:port` speaks — learned from the device, never inferred from the port.
+ *
+ * 🔴 Until 2026-09-17 this file said `port === 443 ? 'https' : 'http'`. ZimaOS lets the user
+ * move its WebUI to any port ("WebUI Port" in Settings) and writes that port into its mDNS
+ * announcement. A tester chose 443 — with HTTPS off. The client saw `:443`, spoke TLS to a
+ * clear-text port, and told him "the device answered with an unexpected status" about a
+ * device that was fine (client 2.0.1, ZimaOS v1.7.1). A port number is an address; the
+ * protocol is a separate fact, and only the device can tell it.
+ *
+ * Every port starts as plain HTTP. If the device answers a clear-text request with Go's
+ * `400 Client sent an HTTP request to an HTTPS server.` (measured against the ZimaOS
+ * gateway with HTTPS on, 2026-09-17), the pair is remembered as `https` and the request is
+ * repeated once. A process-wide map, keyed by host and port: the fact belongs to the
+ * device, not to any single request or session.
+ */
+const schemes = new Map<string, Scheme>()
+const schemeKey = (host: string, port: number): string => `${host}:${port}`
+export const schemeFor = (host: string, port: number): Scheme => schemes.get(schemeKey(host, port)) ?? 'http'
+export const rememberScheme = (host: string, port: number, scheme: Scheme): void => {
+  schemes.set(schemeKey(host, port), scheme)
+}
+/** Test seam: the map is module state, and one test must not inherit another's device. */
+export const forgetSchemes = (): void => schemes.clear()
+
+/** Go's net/http answer when a TLS listener receives clear text — the only upgrade signal. */
+const PLAINTEXT_TO_TLS_SERVER = /HTTP request to an HTTPS server/i
+
+export const baseUrl = (host: string, port = 80, scheme: Scheme = schemeFor(host, port)): string => {
+  // Only the scheme's own default port may be left out of the authority: `http://host:443`
+  // must keep its port, or the URL silently becomes port 80.
+  const defaultPort = scheme === 'https' ? 443 : 80
+  const authority = port === defaultPort ? host : `${host}:${port}`
   return `${scheme}://${authority}`
 }
 
@@ -203,6 +235,15 @@ export const request = async <T>(
       )
     }
 
+    // The device speaks TLS on this port and we did not. Remember that for the pair and
+    // repeat exactly once; on the second pass `schemeFor` is already `https`, so this branch
+    // cannot recurse further.
+    if (response.status === 400 && schemeFor(host, port) === 'http' && PLAINTEXT_TO_TLS_SERVER.test(text)) {
+      rememberScheme(host, port, 'https')
+      logger.info('zima.scheme-upgraded', { host, port, path })
+      return request<T>(host, port, path, opts)
+    }
+
     // No envelope and a bare 400: this is the files API's "invalid path" case, kept as
     // its own kind so the UI can say the server refuses the path instead of blaming
     // the user's input.
@@ -237,12 +278,18 @@ export const request = async <T>(
     // A timeout costs the full 8 s and then react-query tries again — the single most
     // expensive thing that can happen behind a "loading" label, and until now it left no
     // trace at all.
+    // The classified error, not the outer message. Node's fetch says "fetch failed" for a
+    // refused port, a TLS handshake against clear text and an unverifiable certificate
+    // alike — a tester's log carried 14 such lines on 2026-09-17 and not one of them said
+    // which. `kind` and the mapped message (which names the code) do.
+    const mapped = fromUnknown(cause, context)
     logger.warn('zima.request-failed', {
       ...context,
       ms: elapsed(),
-      reason: (cause instanceof Error ? cause.message : String(cause)).slice(0, 200),
+      kind: mapped.kind,
+      reason: mapped.message.slice(0, 200),
     })
-    return err(fromUnknown(cause, context))
+    return err(mapped)
   } finally {
     clearTimeout(timer)
   }
