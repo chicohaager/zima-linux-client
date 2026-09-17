@@ -1,10 +1,10 @@
-import { readFileSync, writeFileSync, rmSync, mkdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app, safeStorage } from 'electron'
 import { appError, err, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import { writePrivateJson } from '@main/storage/privateFile'
-import { readStatus } from './store'
+import { consentPath, hasPlaintextConsent, readStatus } from './store'
 
 /**
  * Stores the refresh token per device — and refuses to do so silently when the system
@@ -21,10 +21,8 @@ import { readStatus } from './store'
  */
 
 const FILE = 'credentials.json'
-const CONSENT = 'plaintext-consent'
 
 const filePath = (): string => join(app.getPath('userData'), FILE)
-const consentPath = (): string => join(app.getPath('userData'), CONSENT)
 
 interface StoredEntry {
   /** base64 of the safeStorage ciphertext. */
@@ -57,9 +55,7 @@ const writeStore = (store: Store): Result<void> => {
   }
 }
 
-/** Has the user accepted storing secrets on a machine without a keyring? */
-export const hasPlaintextConsent = (): boolean => existsSync(consentPath())
-
+/** Remembers "store anyway" for this machine, or forgets it again ("ask every time"). */
 export const setPlaintextConsent = (granted: boolean): void => {
   try {
     if (granted) {

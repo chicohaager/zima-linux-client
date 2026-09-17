@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { WarningIcon } from '../../shared/ui/Icons'
 import { Button } from '../../shared/ui/Controls'
@@ -10,10 +11,17 @@ import { Button } from '../../shared/ui/Controls'
  * encrypts with a hardcoded plaintext password and reports the backend as `basic_text`.
  * A fallback that passes the check hides the problem instead of making it harmless, so
  * the main process refuses to write until the user has answered this question.
+ *
+ * And once answered, the panel steps aside. "Store anyway" is remembered by the main
+ * process and comes back in the status; "ask every time" is exactly that — asked again at
+ * the next start, so it is remembered here, for this window only. Until 2026-09-17 the
+ * panel rendered on `plaintextRisk` alone and both buttons left it standing: a decision
+ * with no visible effect, on every machine without a keyring, for good.
  */
 export const KeyringBanner = (): React.JSX.Element | null => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const [askedThisSession, setAskedThisSession] = useState(false)
 
   const status = useQuery({
     queryKey: ['secrets', 'status'],
@@ -31,12 +39,14 @@ export const KeyringBanner = (): React.JSX.Element | null => {
       if (!response.ok) throw response.error
       return response.value
     },
-    onSuccess: async () => {
+    onSuccess: async (_value, granted) => {
+      if (!granted) setAskedThisSession(true)
       await queryClient.invalidateQueries({ queryKey: ['secrets'] })
     },
   })
 
   if (status.data === undefined || !status.data.plaintextRisk) return null
+  if (status.data.plaintextConsent || askedThisSession) return null
 
   return (
     <div
