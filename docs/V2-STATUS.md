@@ -9,7 +9,7 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 356 Tests in 44 Dateien · build ·
+npm run verify        ✓ (rc=0)  type-check · lint · 360 Tests in 45 Dateien · build ·
                     build-gate · i18n · privacy — gefahren am 2026-09-17 (vorher 326/40 am
                     2026-08-31). Der Exit-Code ist
                     OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
@@ -2336,6 +2336,38 @@ Regel. Die Identitätsmuster liegen jetzt außerhalb des Repos (`scripts/privacy
 git-ignoriert, oder `ZIMA_PRIVACY_IDENTITY`; CI bekommt sie als Secret, ein Fork setzt `none`).
 Fehlen sie, ist das Gate **rot** mit Ansage; bei Opt-out steht „SKIPPED" auf der Clean-Zeile.
 Kontrollen: Genitivform in getrackter Datei ⇒ 1 finding; ohne Datei ⇒ rc=1; `none` ⇒ WARNING.
+
+## Der Keyring-Balken blieb nach der Antwort stehen — beide Knöpfe ohne sichtbare Wirkung
+
+**Gefunden 2026-09-17 beim Erneuern der README-Screenshots**, nicht durch einen Test. Die sieben
+Bilder vom 2026-08-09 trugen alle den roten Balken „Passwords cannot be stored securely" — obwohl
+`scripts/screenshots.mjs` vor dem ersten Bild ausdrücklich „Ask every time" klickt. Der Klick war
+ein Echo: `readStatus()` (`src/main/secrets/store.ts`) berechnete `plaintextRisk` allein aus dem
+Backend, und `KeyringBanner.tsx` blendete allein nach `plaintextRisk`. „Store anyway" schrieb die
+Einwilligungsdatei, „Ask every time" löschte sie — am Bild änderte keines von beiden etwas, auf
+jedem Rechner ohne Schlüsselbund, dauerhaft. Die README hatte den Balken seit August als „wahr"
+begründet, statt zu fragen, warum er nach der Antwort noch da ist.
+
+**Behoben, additiv im Vertrag:** `SecretStoreStatus` trägt jetzt `plaintextConsent` (die Datei,
+die „Store anyway" hinterlässt; Lesen wandert nach `store.ts`, weil `credentials.ts` `store.ts`
+schon importiert). Der Balken geht bei `plaintextConsent === true` (kommt über den Refetch nach
+der Mutation zurück) und nach „Ask every time" für dieses Fenster — beim nächsten Start wird
+wieder gefragt, genau was der Knopf verspricht.
+
+**Belegt:** `src/renderer/src/features/settings/__tests__/KeyringBanner.test.tsx`, vier Fälle —
+erscheint bei Risiko; bleibt weg bei früherer Einwilligung; geht nach „Store anyway"; geht nach
+„Ask every time" bei **unverändertem** Status (der Fall, der die Sitzungs-Erinnerung trägt).
+Sabotage (Ausblendezeile entfernt): 3 von 4 rot. Beim ersten Durchgang blieb der Fall „bleibt
+weg bei früherer Einwilligung" unter Sabotage **grün** — die Zusicherung lief zwischen Aufruf und
+Render; jetzt wartet er auf `getQueryState(...).status === 'success'`. Danach
+`npm run build && npm run screenshots`: sieben Bilder ohne Balken, jedes angesehen, Wächter
+still (PATH ohne Tailscale, leeres HOME). `npm run verify` rc=0, 360 Tests in 45 Dateien.
+
+**README und liesmich neu geschrieben** (2026-09-17): Release-Verweis auf v2.0.1 und dessen
+Asset-Namen (`gh release view v2.0.1`), Testzahl 360/45, i18n 295 Schlüssel (`verify:i18n`),
+Remote-ID-Port-Feld und „Ist das dein Gerät?" erwähnt, Distro-Matrix mit Datum und Version
+(2.0.0, 2026-08-15) statt als Gegenwart, Screenshots vom selben Tag. 400 → 290 Zeilen; alles,
+was nur Erzählung war, steht weiter hier im Statusbericht.
 
 ## Alt-Stand
 

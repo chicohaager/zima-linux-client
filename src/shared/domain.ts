@@ -330,6 +330,12 @@ export interface SecretStoreStatus {
   readonly encryptionAvailable: boolean
   /** True when storing credentials would not actually protect them. */
   readonly plaintextRisk: boolean
+  /**
+   * True once the user has accepted that risk for this machine ("store anyway").
+   * The banner reads this: a warning that stays after the answer is one nobody can act
+   * on — measured 2026-09-17, both buttons left the panel exactly where it was.
+   */
+  readonly plaintextConsent: boolean
 }
 
 export const SUPPORTED_LOCALES = [

@@ -69,6 +69,7 @@ export const secretStoreStatusSchema = z.object({
   ]),
   encryptionAvailable: z.boolean(),
   plaintextRisk: z.boolean(),
+  plaintextConsent: z.boolean(),
 })
 
 export const appErrorSchema = z.object({

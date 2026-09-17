@@ -1,4 +1,6 @@
-import { safeStorage } from 'electron'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { app, safeStorage } from 'electron'
 import type { SecretBackend, SecretStoreStatus } from '@shared/domain'
 
 /**
@@ -28,6 +30,14 @@ const BACKENDS: readonly SecretBackend[] = [
 const asBackend = (value: string): SecretBackend =>
   (BACKENDS as readonly string[]).includes(value) ? (value as SecretBackend) : 'unknown'
 
+const CONSENT = 'plaintext-consent'
+
+/** Where "store anyway" is remembered — a file, so it survives restarts and can be removed. */
+export const consentPath = (): string => join(app.getPath('userData'), CONSENT)
+
+/** Has the user accepted storing secrets on a machine without a keyring? */
+export const hasPlaintextConsent = (): boolean => existsSync(consentPath())
+
 export const readStatus = (): SecretStoreStatus => {
   const encryptionAvailable = safeStorage.isEncryptionAvailable()
   const backend =
@@ -39,5 +49,8 @@ export const readStatus = (): SecretStoreStatus => {
     // The whole point of this module: say out loud when "encrypted" would be a lie.
     plaintextRisk:
       !encryptionAvailable || backend === 'basic_text' || backend === 'unknown',
+    // And say when the user has answered, so the warning can step aside — the status
+    // is what the banner renders, and a status that ignores the answer keeps warning.
+    plaintextConsent: hasPlaintextConsent(),
   }
 }
