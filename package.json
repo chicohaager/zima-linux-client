@@ -131,7 +131,8 @@
         "libgbm1",
         "libcap2-bin"
       ],
-      "afterInstall": "build/linux-after-install.sh"
+      "afterInstall": "build/linux-after-install.sh",
+      "afterRemove": "build/linux-after-remove.sh"
     },
     "rpm": {
       "fpm": [
@@ -150,7 +151,8 @@
         "libgbm.so.1()(64bit)",
         "/usr/sbin/setcap"
       ],
-      "afterInstall": "build/linux-after-install.sh"
+      "afterInstall": "build/linux-after-install.sh",
+      "afterRemove": "build/linux-after-remove.sh"
     },
     "pacman": {
       "depends": [
@@ -172,7 +174,8 @@
       "fpm": [
         "--after-upgrade=build/pacman-after-upgrade.sh"
       ],
-      "afterInstall": "build/linux-after-install.sh"
+      "afterInstall": "build/linux-after-install.sh",
+      "afterRemove": "build/linux-after-remove.sh"
     }
   }
 }
