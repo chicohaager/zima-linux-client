@@ -2369,6 +2369,47 @@ Remote-ID-Port-Feld und „Ist das dein Gerät?" erwähnt, Distro-Matrix mit Dat
 (2.0.0, 2026-08-15) statt als Gegenwart, Screenshots vom selben Tag. 400 → 290 Zeilen; alles,
 was nur Erzählung war, steht weiter hier im Statusbericht.
 
+## Vierter Fremdbericht (CachyOS, Client 2.0.1): pacman vergisst beim Upgrade, was es beim Installieren tat
+
+**2026-09-18.** Ein Tester auf CachyOS meldete zweierlei: `sudo pacman -U zima-linux-client-2.0.1.pacman`
+„doesn't find packages", und nach gelungener Installation scheiterte Remote ID mit dem Hinweis, die
+eigene ZeroTier-Kopie unter `~/.local/lib/…` brauche `CAP_NET_ADMIN`.
+
+**Erster Teil, gemessen am Release-Artefakt** (`gh release download v2.0.1`, `sha256sum -c` OK):
+alle 14 `depend`-Einträge lösen auf Arch **und** auf `cachyos/cachyos:latest` auf (`pacman -Sp` je
+einzeln; Negativkontrolle `gibtesnicht-xyz` → `target not found`), `pacman -U` rc=0, 0 Fehlerzeilen,
+`/usr/bin/zima-linux-client` gesetzt, `chrome-sandbox` 4755, `ldd` ohne „not found". Die einzige
+pacman-Ausgabe, die zur Meldung passt, ist `could not find or read package` — die Datei liegt nicht
+im Verzeichnis, aus dem das Kommando läuft (reproduziert mit `cd / && pacman -U <dateiname>`).
+
+**Zweiter Teil — ein echter Fehler im Paket, nicht in seiner Maschine.** Das `.INSTALL` des
+pacman-Pakets trug `post_install` und `post_remove`, **kein `post_upgrade`**: fpm schreibt die
+Funktion nur, wenn es `--after-upgrade` bekommt, und electron-builder reicht nur `--after-install`
+und `--after-remove` durch (`FpmTarget.js:152–154`). Ein zweites `pacman -U` über die bestehende
+Installation — Reinstall oder das nächste Update — packt `zerotier-one` neu aus (Capabilities sind
+nicht Teil des Pakets) und läuft danach **nichts**:
+
+```
+1. Install:   getcap …/zerotier/x64/zerotier-one → cap_net_bind_service,cap_net_admin,cap_net_raw=eip   chrome-sandbox 4755
+2. pacman -U: getcap → 0 Zeilen                                                                         chrome-sandbox 755
+```
+
+Die erste Zeile kostet die Remote-ID-Route, die zweite auf Rechnern ohne unprivilegierte
+User-Namespaces **jeden Start** (Chromium bricht ab, Exit 133). Ob der Tester genau das getan hat,
+ist nicht messbar — vom Ergebnis hätte es jeder pacman-Nutzer beim Update 2.0.1 → 2.0.2 getroffen.
+deb (Ubuntu 24.04, `apt-get install --reinstall`) und rpm (Fedora, `dnf reinstall`) haben die Lücke
+nicht: beide führen ihren Post-Install auch beim Reinstall aus, `granted CAP_NET_ADMIN` je einmal im
+Log, 4755 bleibt.
+
+**Behoben:** `build/pacman-after-upgrade.sh` mit genau einer Anweisung, `post_install "$@"` — fpm
+fügt sie in dieselbe `.INSTALL` ein, in der das makro-substituierte `post_install` steht, die Pfade
+bleiben an einer Stelle. Verdrahtet über `build.pacman.fpm: ["--after-upgrade=…"]`. Test in
+`afterInstallScript.test.ts` (Sabotage: fpm-Zeile entfernt → rot). Am neu gebauten Paket auf
+CachyOS gemessen: Release 2.0.1 → neues Paket (Upgrade-Pfad) und neues → neues (Reinstall) —
+jeweils `granted CAP_NET_ADMIN` im Log, `getcap` 1 Zeile, 4755, Symlink da; `pacman -R` räumt
+sauber ab. Ausgeliefert wird das erst mit dem nächsten Release; bis dahin hilft dem Tester der in
+der App vorgesehene Weg (Knopf „Prepare set-up", dann die angezeigte `sudo setcap`-Zeile).
+
 ## Alt-Stand
 
 Der 0.9.23-Code liegt unverändert unter `legacy-0.9/` (per `git mv`, Historie erhalten) und ist

@@ -3,8 +3,8 @@
 Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwaltung, mit
 eingebautem ZeroTier und Tailscale, wenn es schon da ist.
 
-> **Branch `v2` · Version 2.0.1 · aktuelles Release
-> [`v2.0.1`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.1) (2026-08-31)**
+> **Branch `v2` · Version 2.0.2 · aktuelles Release
+> [`v2.0.2`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.2) (2026-09-18)**
 > — eine Neuentwicklung des Clients. Die 0.9.x-Linie lebt auf `main` und unter
 > [`legacy-0.9/`](legacy-0.9/); nichts wurde gelöscht.
 >
@@ -140,18 +140,18 @@ installiert, aber niemand hat die Anwendung auf arm64 starten sehen — unter Em
 das nicht zeigen. Das ist eine getroffene Entscheidung, keine offene Aufgabe.)
 
 Die Pakete liegen im
-[**Release v2.0.1**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.1).
+[**Release v2.0.2**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.2).
 Installer, Prüfsummen und das eine Paket für deine Distribution holen:
 
 ```bash
 cd ~/Downloads
-B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.1
+B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.2
 
-wget $B/install.sh $B/SHA256SUMS-2.0.1.txt          # immer diese beiden
+wget $B/install.sh $B/SHA256SUMS-2.0.2.txt          # immer diese beiden
 
-wget $B/zima-linux-client_2.0.1_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
-wget $B/zima-linux-client-2.0.1.x86_64.rpm          # Fedora, openSUSE, RHEL-Abkömmlinge
-wget $B/zima-linux-client-2.0.1.pacman              # Arch, Manjaro
+wget $B/zima-linux-client_2.0.2_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
+wget $B/zima-linux-client-2.0.2.x86_64.rpm          # Fedora, openSUSE, RHEL-Abkömmlinge
+wget $B/zima-linux-client-2.0.2.pacman              # Arch, Manjaro
 
 chmod +x install.sh && sudo ./install.sh
 ```
@@ -165,27 +165,27 @@ braucht kein sudo, `--repair` behebt, was behebbar ist, `--uninstall` entfernt.
 Von Hand stattdessen:
 
 ```bash
-sha256sum -c SHA256SUMS-2.0.1.txt   # OK für die heruntergeladene Datei
+sha256sum -c SHA256SUMS-2.0.2.txt   # OK für die heruntergeladene Datei
 
 # Debian, Ubuntu, Zorin, Linux Mint, Pop!_OS — apt braucht einen absoluten Pfad oder ./
-sudo apt install ~/Downloads/zima-linux-client_2.0.1_amd64.deb
+sudo apt install ~/Downloads/zima-linux-client_2.0.2_amd64.deb
 
 # Fedora
-sudo dnf install ./zima-linux-client-2.0.1.x86_64.rpm
+sudo dnf install ./zima-linux-client-2.0.2.x86_64.rpm
 
 # openSUSE — das Paket ist unsigniert, daher die zwei Flags
-sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.1.x86_64.rpm
+sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.2.x86_64.rpm
 
 # Arch, Manjaro
-sudo pacman -U ./zima-linux-client-2.0.1.pacman
+sudo pacman -U ./zima-linux-client-2.0.2.pacman
 ```
 
 **AppImage** — nichts wird installiert, keine der Rechte oben werden gesetzt. GitHub ersetzt das
 Leerzeichen im Dateinamen durch einen Punkt, heruntergeladen heißt sie also:
 
 ```bash
-chmod +x ZimaOS.Client-2.0.1.AppImage
-./ZimaOS.Client-2.0.1.AppImage
+chmod +x ZimaOS.Client-2.0.2.AppImage
+./ZimaOS.Client-2.0.2.AppImage
 ```
 
 Installiert wird nach `/opt/ZimaOS Client/`, mit `/usr/bin/zima-linux-client` als Einstieg.
