@@ -41,16 +41,21 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 526d5ea, alle fünf in
-                    einem Lauf am 2026-08-31, 10:26–10:29; Flatpak aus der Zielliste.
-                    `sha256sum -c SHA256SUMS-2.0.1.txt` → 5× OK, und die Gegenkontrolle
-                    (eine Prüfsumme verfälscht) meldet GESCHEITERT — die Prüfung kann also
-                    beide Ergebnisse
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 30edae9, alle fünf in
+                    einem Lauf am 2026-09-18, 13:02–13:06; Flatpak aus der Zielliste.
+                    `sha256sum -c SHA256SUMS-2.0.2.txt` → 5× OK. Distro-Matrix am gebauten
+                    Paket 9/9 — jetzt mit zweiter Installation über die erste: Capability
+                    (getcap 1 Zeile), Sandbox-Modus und Launcher nach dem Reinstall auf
+                    allen neun Zeilen vorhanden, Start mit Sandbox überall ok
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen (2026-08-15, per `git ls-remote` gegengeprüft)
-Release             v2.0.1 — der Fix für ZimaOS v1.7.1-beta1: gegen diese Firmware konnte
+Release             v2.0.2 — zwei Fehler in den Paketskripten, beide auf dem Update-Pfad:
+                    pacman ohne post_upgrade (Capability und SUID-Sandbox nach jedem
+                    Reinstall weg), rpm mit einem after-remove, das beim Upgrade den
+                    Launcher löschte. Beide vom neuen Reinstall-Schritt der Matrix gedeckt.
+                    Davor v2.0.1 — der Fix für ZimaOS v1.7.1-beta1: gegen diese Firmware konnte
                     2.0.0 sich ÜBERHAUPT nicht verbinden. `/v1/gateway/routes` verlangt dort
                     ein Token (außer von 127.0.0.1) und war die Erreichbarkeitssonde — die
                     vor dem Login läuft und deshalb nie eins hat; und der Access-Aussteller
