@@ -71,3 +71,28 @@ describe('build/linux-after-install.sh', () => {
     expect(ours.trimEnd().endsWith('exit 0')).toBe(true)
   })
 })
+
+/**
+ * pacman runs `post_install` on the FIRST install only; a reinstall or upgrade calls
+ * `post_upgrade`, which fpm writes only when handed `--after-upgrade`. Measured 2026-09-18 on
+ * CachyOS with the 2.0.1 release package: the second `pacman -U` left zerotier-one without
+ * CAP_NET_ADMIN and chrome-sandbox at 0755 — the Remote-ID route gone, and every start gone on
+ * a machine without user namespaces. dpkg and rpm run their post-install on upgrade as well.
+ */
+describe('pacman upgrade hook', () => {
+  const HOOK = 'build/pacman-after-upgrade.sh'
+  const config = JSON.parse(readFileSync('package.json', 'utf8')) as {
+    build: { pacman: { fpm?: string[] } }
+  }
+
+  it('is passed to fpm for the pacman target', () => {
+    expect(config.build.pacman.fpm ?? []).toContain(`--after-upgrade=${HOOK}`)
+  })
+
+  it('re-runs the macro-substituted post_install instead of duplicating it', () => {
+    expect(existsSync(HOOK), `${HOOK} not found`).toBe(true)
+    // One instruction, no second copy of any path: the paths live in linux-after-install.sh
+    // and are substituted by electron-builder there — this file is pasted in raw.
+    expect(instructions(readFileSync(HOOK, 'utf8'))).toEqual(['post_install "$@"'])
+  })
+})

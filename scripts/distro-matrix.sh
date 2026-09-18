@@ -27,7 +27,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="${ZIMA_MATRIX_OUT:-${ROOT}/dist/matrix}"
 mkdir -p "${OUT}"
 
-# image | package kind | install command run as root inside the container
+# image | package kind | install command run as root inside the container | the SAME package
+# installed again over the first (apt and dnf need --reinstall / reinstall, or they do nothing)
 #
 # 🔴 Why the newest release of each family is a row of its own, added 2026-08-15.
 #
@@ -47,14 +48,14 @@ mkdir -p "${OUT}"
 # the app died at startup on a missing symbol. Only a row that STARTS the app catches that,
 # and only on a distribution new enough to have made the rename.
 ROWS=(
-  "ubuntu2204|deb|ubuntu:22.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
-  "ubuntu2404|deb|ubuntu:24.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
-  "ubuntu2604|deb|ubuntu:26.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
-  "debian12|deb|debian:12|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
-  "debian13|deb|debian:13|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb"
-  "fedora41|rpm|fedora:41|dnf install -y -q /pkg/*.rpm xorg-x11-server-Xvfb"
-  "fedora44|rpm|fedora:44|dnf install -y -q /pkg/*.rpm xorg-x11-server-Xvfb"
-  "archlinux|pacman|archlinux:latest|pacman -Sy --noconfirm --needed xorg-server-xvfb >/dev/null && pacman -U --noconfirm /pkg/*.pacman"
+  "ubuntu2204|deb|ubuntu:22.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb|apt-get install -y -qq --reinstall /pkg/*.deb"
+  "ubuntu2404|deb|ubuntu:24.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb|apt-get install -y -qq --reinstall /pkg/*.deb"
+  "ubuntu2604|deb|ubuntu:26.04|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb|apt-get install -y -qq --reinstall /pkg/*.deb"
+  "debian12|deb|debian:12|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb|apt-get install -y -qq --reinstall /pkg/*.deb"
+  "debian13|deb|debian:13|apt-get update -qq && apt-get install -y -qq /pkg/*.deb xvfb|apt-get install -y -qq --reinstall /pkg/*.deb"
+  "fedora41|rpm|fedora:41|dnf install -y -q /pkg/*.rpm xorg-x11-server-Xvfb|dnf reinstall -y -q /pkg/*.rpm"
+  "fedora44|rpm|fedora:44|dnf install -y -q /pkg/*.rpm xorg-x11-server-Xvfb|dnf reinstall -y -q /pkg/*.rpm"
+  "archlinux|pacman|archlinux:latest|pacman -Sy --noconfirm --needed xorg-server-xvfb >/dev/null && pacman -U --noconfirm /pkg/*.pacman|pacman -U --noconfirm /pkg/*.pacman"
   # 🔴 `adwaita-fonts` is in this row and not in the others because this image has NO font at
   # all, and its xvfb package pulls none. Measured 2026-08-10 after the exact install command
   # above: openSUSE 0 font files, Fedora 17 (whose `xorg-x11-server-Xvfb` drags them in).
@@ -65,14 +66,14 @@ ROWS=(
   # there, every label blank. A row that ships no font measures its own container, not the
   # application. See CLAUDE.md, "ein NEGATIVER Befund an einem Ort, wo die Sache gar nicht
   # geladen ist, ist kein Befund".
-  "opensuse|rpm|opensuse/tumbleweed|zypper --non-interactive --no-gpg-checks install --allow-unsigned-rpm /pkg/*.rpm xvfb-run adwaita-fonts"
+  "opensuse|rpm|opensuse/tumbleweed|zypper --non-interactive --no-gpg-checks install --allow-unsigned-rpm /pkg/*.rpm xvfb-run adwaita-fonts|zypper --non-interactive --no-gpg-checks install --force --allow-unsigned-rpm /pkg/*.rpm"
 )
 
 # The binary is installed under a name with a space in it; the launcher on PATH is not.
 LAUNCHER="/usr/bin/zima-linux-client"
 
 run_row() {
-  local name="$1" kind="$2" image="$3" install="$4"
+  local name="$1" kind="$2" image="$3" install="$4" reinstall="$5"
   local pkgdir report
   pkgdir="$(mktemp -d)"
   report="${OUT}/${name}.json"
@@ -135,6 +136,18 @@ run_row() {
         echo 'NO chrome-sandbox'
       fi
 
+      # 🔴 A second install OVER the first, added 2026-09-18. Every proof this matrix had
+      # produced was a first install; pacman runs a different hook (post_upgrade) on the
+      # path users actually live on — the next update — and 2.0.1 had none: the second
+      # \`pacman -U\` re-extracted zerotier-one without its capability and left
+      # chrome-sandbox at 0755. Measured on CachyOS from a tester's Remote-ID failure.
+      # So the two properties the post-install script owns are read back after the second
+      # install as well, as numbers a later regression can be compared against.
+      echo '--- install again (upgrade/reinstall path) ---'
+      ${reinstall} >/dev/null 2>&1 || { echo 'REINSTALL FAILED'; ${reinstall}; exit 91; }
+      ZT='/opt/ZimaOS Client/resources/zerotier/x64/zerotier-one'
+      echo \"after reinstall: zerotier getcap lines=\$(getcap \"\$ZT\" 2>/dev/null | wc -l) chrome-sandbox mode=\$(stat -c %a '/opt/ZimaOS Client/chrome-sandbox')\"
+
       echo '--- start (sandbox ON — the path users get) ---'
       su zima -c \"ZIMA_VERIFY_STARTUP=/out/${name}.json xvfb-run -a ${LAUNCHER}\" \
         || echo \"app exited \$?\"
@@ -172,11 +185,11 @@ run_row() {
 
 wanted=("$@")
 for row in "${ROWS[@]}"; do
-  IFS='|' read -r name kind image install <<<"${row}"
+  IFS='|' read -r name kind image install reinstall <<<"${row}"
   if [ ${#wanted[@]} -gt 0 ]; then
     case " ${wanted[*]} " in *" ${name} "*) ;; *) continue ;; esac
   fi
-  run_row "${name}" "${kind}" "${image}" "${install}"
+  run_row "${name}" "${kind}" "${image}" "${install}" "${reinstall}"
 done
 
 echo "reports in ${OUT}"
