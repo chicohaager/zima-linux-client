@@ -2410,6 +2410,31 @@ jeweils `granted CAP_NET_ADMIN` im Log, `getcap` 1 Zeile, 4755, Symlink da; `pac
 sauber ab. Ausgeliefert wird das erst mit dem nächsten Release; bis dahin hilft dem Tester der in
 der App vorgesehene Weg (Knopf „Prepare set-up", dann die angezeigte `sudo setcap`-Zeile).
 
+### Zweiter Fund derselben Familie, gefunden vom neuen Matrix-Schritt: rpm verliert beim Upgrade den Launcher
+
+Die Distro-Matrix installiert seit heute jedes Paket ein zweites Mal (je Zeile mit eigenem
+Reinstall-Kommando — `apt-get install` und `dnf install` fassen eine schon installierte Version
+sonst gar nicht an, und eine Ablesung danach hätte die Erstinstallation gemessen). Erster Lauf am
+2.0.2-Bau: fünf deb-Zeilen und Arch grün; **Fedora 41, Fedora 44 und openSUSE** nach dem Reinstall
+ohne Startbeleg. Im Log: `/usr/bin/zima-linux-client: No such file or directory`, mit und ohne
+Sandbox — vor dem Reinstall zeigte der Link auf `/etc/alternatives/zima-linux-client`.
+
+Ursache im Scriptlet lesbar (`rpm -qp --scripts`, `postuninstall` Zeile 174–175): die
+electron-builder-Vorlage `after-remove.tpl` ruft `update-alternatives --remove` ohne Blick auf
+`$1`. rpm führt beim Upgrade das `%post` des **neuen** Pakets vor dem `%postun` des **alten** aus
+und übergibt diesem `$1=1` („eine Instanz bleibt"); der Aufruf lief also zuletzt und nahm den
+Launcher mit. Bei dpkg ist die Reihenfolge umgekehrt (altes postrm, dann neues postinst), deshalb
+dort grün; pacman ruft `post_remove` beim Upgrade gar nicht. Unbemerkt geblieben, weil der
+`.desktop`-Eintrag direkt auf `/opt` zeigt — das Menü ging weiter, nur der Name auf PATH fehlte.
+
+**Behoben:** `build/linux-after-remove.sh` — die Vorlage wörtlich, davor ein Wächter: `upgrade`
+(dpkg) oder eine ganze Zahl ≥ 1 (rpm) ⇒ `exit 0`; leer, `0`, `remove`, `purge` und pacmans
+Versionsstring (`2.0.2-1`, auch `21.0-1`) laufen durch — alle neun Formen von Hand gefahren.
+Verdrahtet als `afterRemove` für deb, rpm, pacman; Test verlangt Verdrahtung, jede Zeile der
+Vorlage und den Wächter **vor** dem `--remove` (gemessen auf Anweisungszeilen — der erste
+Entwurf des Tests fand die Erwähnung im Kopfkommentar). Sabotage (Wächter raus): rot.
+Die Matrix liest jetzt auch den Launcher nach dem Reinstall ab.
+
 ## Alt-Stand
 
 Der 0.9.23-Code liegt unverändert unter `legacy-0.9/` (per `git mv`, Historie erhalten) und ist

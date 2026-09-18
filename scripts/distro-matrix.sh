@@ -143,10 +143,13 @@ run_row() {
       # chrome-sandbox at 0755. Measured on CachyOS from a tester's Remote-ID failure.
       # So the two properties the post-install script owns are read back after the second
       # install as well, as numbers a later regression can be compared against.
+      # The launcher too: rpm runs the OLD package's %postun after the NEW %post, and the
+      # stock after-remove template deleted the alternatives link on every upgrade — found by
+      # this very step on Fedora 41/44 and openSUSE the day it was added.
       echo '--- install again (upgrade/reinstall path) ---'
       ${reinstall} >/dev/null 2>&1 || { echo 'REINSTALL FAILED'; ${reinstall}; exit 91; }
       ZT='/opt/ZimaOS Client/resources/zerotier/x64/zerotier-one'
-      echo \"after reinstall: zerotier getcap lines=\$(getcap \"\$ZT\" 2>/dev/null | wc -l) chrome-sandbox mode=\$(stat -c %a '/opt/ZimaOS Client/chrome-sandbox')\"
+      echo \"after reinstall: zerotier getcap lines=\$(getcap \"\$ZT\" 2>/dev/null | wc -l) chrome-sandbox mode=\$(stat -c %a '/opt/ZimaOS Client/chrome-sandbox') launcher=\$(readlink -f ${LAUNCHER} 2>/dev/null || echo MISSING)\"
 
       echo '--- start (sandbox ON — the path users get) ---'
       su zima -c \"ZIMA_VERIFY_STARTUP=/out/${name}.json xvfb-run -a ${LAUNCHER}\" \

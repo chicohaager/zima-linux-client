@@ -96,3 +96,48 @@ describe('pacman upgrade hook', () => {
     expect(instructions(readFileSync(HOOK, 'utf8'))).toEqual(['post_install "$@"'])
   })
 })
+
+/**
+ * `build/linux-after-remove.sh` replaces the stock after-remove template by the same
+ * mechanism. It exists for one guard: rpm runs the OLD package's %postun after the NEW
+ * package's %post on every upgrade and passes `$1=1`; the stock template ignores that and its
+ * `update-alternatives --remove` deleted the launcher on Fedora 41/44 and openSUSE — measured
+ * 2026-09-18 by the distro matrix's reinstall step.
+ */
+describe('build/linux-after-remove.sh', () => {
+  const OUR_REMOVE = 'build/linux-after-remove.sh'
+  const STOCK_REMOVE = 'node_modules/app-builder-lib/templates/linux/after-remove.tpl'
+  const config = JSON.parse(readFileSync('package.json', 'utf8')) as {
+    build: Record<string, { afterRemove?: string }>
+  }
+
+  it('is wired into deb, rpm and pacman', () => {
+    for (const target of ['deb', 'rpm', 'pacman']) {
+      expect(config.build[target]?.afterRemove, target).toBe(OUR_REMOVE)
+    }
+  })
+
+  it('carries every instruction of the stock after-remove template', () => {
+    expect(existsSync(STOCK_REMOVE), `${STOCK_REMOVE} not found`).toBe(true)
+    const ours = readFileSync(OUR_REMOVE, 'utf8')
+    const stock = instructions(readFileSync(STOCK_REMOVE, 'utf8'))
+    expect(stock.length).toBeGreaterThan(8)
+    const missing = stock.filter((line) => !ours.includes(line))
+    expect(missing, `stock template lines absent from ${OUR_REMOVE}`).toEqual([])
+  })
+
+  it('skips the removal on an upgrade, before the stock part', () => {
+    const ours = readFileSync(OUR_REMOVE, 'utf8')
+    // Measured on the instruction lines, not the raw text: the header comment mentions
+    // `update-alternatives --remove` too, and the first draft of this test found that one.
+    const lines = instructions(ours)
+    const guardAt = lines.findIndex((line) => line.startsWith('upgrade) exit 0'))
+    const removeAt = lines.findIndex((line) => line.startsWith('update-alternatives --remove'))
+    expect(guardAt).toBeGreaterThan(-1)
+    expect(removeAt).toBeGreaterThan(-1)
+    expect(guardAt).toBeLessThan(removeAt)
+    // rpm's signal is an integer count, dpkg's is the word; a version string must NOT match.
+    expect(ours).toMatch(/\[ "\$ARG" -ge 1 \]/)
+    expect(ours).toMatch(/\*\[!0-9\]\*\)/)
+  })
+})
