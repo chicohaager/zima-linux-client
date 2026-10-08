@@ -283,6 +283,22 @@ const checkVersionAgreement = (ctx) => {
   };
 };
 
+/**
+ * 9 — no artefact name contains a space. Added 2026-10-08: GitHub renames a space to a dot on
+ * upload, so `SHA256SUMS-2.0.2.txt` named `ZimaOS Client-2.0.2.AppImage` while every user
+ * downloaded `ZimaOS.Client-2.0.2.AppImage`. Measured on the published release: `sha256sum -c`
+ * → "FAILED open or read" for the AppImage, and with `--ignore-missing` it was skipped
+ * silently — the only file that could never be verified looked verified.
+ */
+const checkNoSpaceInNames = (ctx) => {
+  const spaced = ctx.expected.filter((n) => /\s/.test(n));
+  return {
+    ok: spaced.length === 0,
+    label: "artefact names survive the upload unchanged (no spaces)",
+    detail: spaced.length ? `renamed on upload: ${spaced.join(", ")}` : "none",
+  };
+};
+
 const CHECKS = [
   checkArtefactsPresent,
   checkNewerThanCode,
@@ -292,6 +308,7 @@ const CHECKS = [
   checkNoStrayChecksums,
   checkBuildClaimNamesCommit,
   checkVersionAgreement,
+  checkNoSpaceInNames,
 ];
 
 // --- context from the real repository -----------------------------------------------------
@@ -308,7 +325,11 @@ const buildRealContext = (root) => {
     rpm: `zima-linux-client-${version}.x86_64.rpm`,
     pacman: `zima-linux-client-${version}.pacman`,
     "tar.gz": `zima-linux-client-${version}.tar.gz`,
-    AppImage: `${product}-${version}.AppImage`,
+    // `build.appImage.artifactName` when set (2.0.3: no space — GitHub renames a space to a
+    // dot on upload, and the checksum file then names a file nobody downloaded).
+    AppImage: pkg.build.appImage?.artifactName
+      ? pkg.build.appImage.artifactName.replace("${version}", version).replace("${ext}", "AppImage")
+      : `${product}-${version}.AppImage`,
   };
   const expected = targets.map((t) => {
     if (!nameFor[t])
@@ -569,6 +590,14 @@ const selfTest = () => {
     checkVersionAgreement,
     (ctx) => {
       ctx.expected = ["app_0.9.9_amd64.deb"];
+    },
+  );
+
+  expectRed(
+    "an artefact name with a space is caught",
+    checkNoSpaceInNames,
+    (ctx) => {
+      ctx.expected = ["App Name-1.0.0.AppImage"];
     },
   );
 
