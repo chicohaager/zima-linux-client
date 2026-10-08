@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.1 · **Stand:** 2026-09-17
+**Branch:** `v2` · **Version:** 2.0.3 · **Stand:** 2026-10-08
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -9,17 +9,20 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 360 Tests in 45 Dateien · build ·
-                    build-gate · i18n · privacy — gefahren am 2026-09-17 (vorher 326/40 am
-                    2026-08-31). Der Exit-Code ist
+npm run verify        ✓ (rc=0)  type-check · lint · 397 Tests in 49 Dateien · build ·
+                    build-gate · i18n · privacy — gefahren am 2026-10-08 (vorher 360/45 am
+                    2026-09-17). Ein Lauf am selben Tag war rot (7 Zeitüberschreitungen,
+                    481 s Sammelzeit statt ~6 s), fünf Wiederholungen grün — Ursache
+                    ungemessen. Der Exit-Code ist
                     OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
                     der Code von `tail` — das Privacy-Gate war in Wahrheit rot (rc=1) mit vier
                     echten Adressen in neuen Kommentaren
-npm run verify:release ✓ (rc=0)  8 von 8 grün — ERSTMALS. Die Pakete sind aus 5206d46,
+npm run verify:release ✓ (rc=0)  8 von 8 grün am 2026-10-08 für 2.0.3: Pakete aus 5364a01,
                     also NEUER als jede Build-Eingabe; Prüfsummendatei stimmt, Bau-Anspruch
                     nennt seinen Commit. Vorher stand hier monatelang "2 von 8 rot"
 npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
-                    (2026-08-15); der fünfte fährt das Gerät OHNE Photos-Modul
+                    (2026-10-08); der fünfte fährt das Gerät OHNE Photos-Modul, der dritte
+                    prüft seit heute die Foto-Kacheln auf dem Fotos-Bildschirm
 i18n gate           clean — 292 Schlüssel in en_US; en_US/de_DE 100 %, die übrigen 26 bei
                     98 % (287) — die fünf neuen `apps.window.*` liegen zweisprachig vor und
                     fallen sonst auf Englisch zurück; das Tor BERICHTET Abdeckung
@@ -41,17 +44,28 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 30edae9, alle fünf in
-                    einem Lauf am 2026-09-18, 13:02–13:06; Flatpak aus der Zielliste.
-                    `sha256sum -c SHA256SUMS-2.0.2.txt` → 5× OK. Distro-Matrix am gebauten
-                    Paket 9/9 — jetzt mit zweiter Installation über die erste: Capability
-                    (getcap 1 Zeile), Sandbox-Modus und Launcher nach dem Reinstall auf
-                    allen neun Zeilen vorhanden, Start mit Sandbox überall ok
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 5364a01, alle fünf in
+                    einem Lauf am 2026-10-08, 09:35–09:39; Electron 43.7.9 aus dem
+                    ausgepackten deb gelesen (`strings` → `Electron/43.7.9`).
+                    `sha256sum -c SHA256SUMS-2.0.3.txt` → 5× OK. Distro-Matrix am gebauten
+                    Paket 9/9 mit Reinstall-Schritt: getcap 1 Zeile, Launcher vorhanden,
+                    Start mit Sandbox überall ok; chrome-sandbox 0755, weil die Container
+                    unprivilegierte User-Namespaces erlauben (`unshare --user` → 0) — der
+                    4755-Zweig läuft dort nicht. 2.0.2-Pakete: `dist/_stale-2026-10-08-pre-2.0.3/`,
+                    2.0.2-Matrix: `dist/matrix-v2.0.2/`. Das AppImage startete ohne FUSE
+                    (`APPIMAGE_EXTRACT_AND_RUN=1`) erst im zweiten Anlauf: das Wayland-Urteil
+                    gilt je Electron-Version, der erste Start unter 43.7.9 malte nie, der
+                    zweite wechselte selbst auf X11 (`platform.relaunch-on-x11`, ok)
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen (2026-08-15, per `git ls-remote` gegengeprüft)
-Release             v2.0.2 — zwei Fehler in den Paketskripten, beide auf dem Update-Pfad:
+Release             v2.0.3 — GEBAUT und geprüft (2026-10-08), NICHT veröffentlicht: kein
+                    Push, kein GitHub-Release; README/liesmich verweisen weiter auf v2.0.2.
+                    Inhalt: Anpassung an ZimaOS 1.8.0-beta2 (opaker Refresh-Token, neue
+                    Photos-API, Vorschauen), Rückschreiben jeder Token-Erneuerung, App-Titel,
+                    Electron 43.2.0 → 43.7.9 (vier High-Advisories der Laufzeit).
+                    Davor v2.0.2 — zwei Fehler in den Paketskripten, beide auf dem Update-Pfad:
                     pacman ohne post_upgrade (Capability und SUID-Sandbox nach jedem
                     Reinstall weg), rpm mit einem after-remove, das beim Upgrade den
                     Launcher löschte. Beide vom neuen Reinstall-Schritt der Matrix gedeckt.

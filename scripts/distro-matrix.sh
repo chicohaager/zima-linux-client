@@ -146,8 +146,8 @@ run_row() {
       # The launcher too: rpm runs the OLD package's %postun after the NEW %post, and the
       # stock after-remove template deleted the alternatives link on every upgrade — found by
       # this very step on Fedora 41/44 and openSUSE the day it was added.
-      # `readlink -e`, not `-f`: -f prints a MISSING path unchanged with exit 0, so the
-      # `|| echo MISSING` could never fire — measured the same day on the 2.0.1 -> 2.0.2 rpm
+      # \`readlink -e\`, not \`-f\`: -f prints a MISSING path unchanged with exit 0, so the
+      # \`|| echo MISSING\` could never fire — measured the same day on the 2.0.1 -> 2.0.2 rpm
       # upgrade, which really had lost the launcher and still printed a path.
       echo '--- install again (upgrade/reinstall path) ---'
       ${reinstall} >/dev/null 2>&1 || { echo 'REINSTALL FAILED'; ${reinstall}; exit 91; }
