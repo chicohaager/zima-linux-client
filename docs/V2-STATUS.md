@@ -66,9 +66,11 @@ Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 1b7efa
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
-Zweig               auf `origin/v2` hochgeladen (2026-08-15, per `git ls-remote` gegengeprüft)
-Release             v2.0.3 — GEBAUT und geprüft (2026-10-08), NICHT veröffentlicht: kein
-                    Push, kein GitHub-Release; README/liesmich verweisen weiter auf v2.0.2.
+Zweig               auf `origin/v2` hochgeladen (2026-10-08, per `git ls-remote` gegengeprüft)
+Release             v2.0.3 — veröffentlicht 2026-10-08 (Tag auf 1b7efab, „Latest“). Von außen
+                    gegengeprüft: alle sieben Dateien frisch heruntergeladen, `sha256sum -c`
+                    ohne --ignore-missing → 5× OK (erstmals inklusive AppImage), install.sh
+                    gleich dem Repo, jeder Download-Link der README antwortet.
                     Inhalt: Anpassung an ZimaOS 1.8.0-beta2 (opaker Refresh-Token, neue
                     Photos-API, Vorschauen), Rückschreiben jeder Token-Erneuerung, App-Titel,
                     Electron 43.2.0 → 43.7.9 (vier High-Advisories der Laufzeit).
