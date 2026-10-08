@@ -114,6 +114,9 @@
       "synopsis": "Desktop client for ZimaOS",
       "description": "Files, photos, apps and device management for ZimaOS devices — over LAN, direct IP or Remote ID."
     },
+    "appImage": {
+      "artifactName": "ZimaOS.Client-${version}.${ext}"
+    },
     "deb": {
       "maintainer": "Holger Kühn <zima-client@virtual-services.info>",
       "priority": "optional",
