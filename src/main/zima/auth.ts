@@ -1,7 +1,14 @@
 import { appError, err, isErr, ok, type Result } from '@shared/result'
 import { BASE, USERS } from './endpoints'
 import { request } from './client'
-import { decodeClaims, needsRenewal, requireKind, type TokenClaims } from './jwt'
+import {
+  decodeClaims,
+  needsRenewal,
+  readRefreshToken,
+  requireKind,
+  type RefreshCredential,
+  type TokenClaims,
+} from './jwt'
 
 /**
  * Login and token renewal.
@@ -19,7 +26,7 @@ export interface Tokens {
   readonly accessToken: string
   readonly refreshToken: string
   readonly access: TokenClaims
-  readonly refresh: TokenClaims
+  readonly refresh: RefreshCredential
 }
 
 interface LoginPayload {
@@ -71,14 +78,13 @@ const readRefreshTokens = (payload: unknown): Result<{ access: string; refresh: 
 const buildTokens = (access: string, refresh: string): Result<Tokens> => {
   const accessClaims = decodeClaims(access)
   if (isErr(accessClaims)) return accessClaims
-  const refreshClaims = decodeClaims(refresh)
-  if (isErr(refreshClaims)) return refreshClaims
 
-  // Pin the issuers: a server that hands back two access tokens, or swaps them, must
-  // not silently produce a session that cannot be renewed.
+  // Pin the kinds: a server that hands back two access tokens, or swaps them, must
+  // not silently produce a session that cannot be renewed. The refresh half may be a
+  // JWT (up to 1.8.0-beta1) or opaque (1.8.0-beta2) — see `readRefreshToken`.
   const asAccess = requireKind(accessClaims.value, 'access')
   if (isErr(asAccess)) return asAccess
-  const asRefresh = requireKind(refreshClaims.value, 'refresh')
+  const asRefresh = readRefreshToken(refresh)
   if (isErr(asRefresh)) return asRefresh
 
   return ok({
@@ -138,6 +144,13 @@ export class TokenHolder {
     private readonly host: string,
     private readonly port: number,
     private readonly now: () => number = () => Date.now(),
+    /**
+     * Called with every pair a renewal produced. The device rotates the refresh token on
+     * each renewal and, on 1.8.0-beta2, treats a replay of a spent one after ~30 s as reuse
+     * and revokes the whole family (measured 2026-10-08) — so the new token has to reach
+     * the keyring, not only this object.
+     */
+    private readonly onRenewed: (tokens: Tokens) => void = () => {},
   ) {}
 
   adopt(tokens: Tokens): void {
@@ -164,8 +177,11 @@ export class TokenHolder {
     }
 
     // The refresh token itself can be expired — then renewal is pointless and the user
-    // has to sign in again. Saying that plainly beats a retry loop.
-    if (needsRenewal(tokens.refresh, this.now(), 0)) {
+    // has to sign in again. Saying that plainly beats a retry loop. An opaque token
+    // (1.8.0-beta2) has no readable expiry: then the device decides, and a rejection
+    // drops the session in `renewOnce` exactly like an expired JWT would.
+    const refreshExpiresAtMs = tokens.refresh.expiresAtMs
+    if (refreshExpiresAtMs !== null && refreshExpiresAtMs <= this.now()) {
       this.clear()
       return err(
         appError('unauthorized', 'refresh token expired, sign-in required', 'error.sessionExpired'),
@@ -187,6 +203,7 @@ export class TokenHolder {
         return result
       }
       this.tokens = result.value
+      this.onRenewed(result.value)
       return result
     })
 

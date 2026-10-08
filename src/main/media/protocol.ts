@@ -1,7 +1,7 @@
 import { protocol } from 'electron'
 import { isErr } from '@shared/result'
 import { logger } from '@main/logging/logger'
-import { fetchBinary } from '@main/zima/client'
+import { fetchBinary, type DeviceContext } from '@main/zima/client'
 import { BASE, FILES, PHOTOS } from '@main/zima/endpoints'
 import * as session from '@main/session'
 import { iconFetchAllowed, redirectAllowed } from './urlPolicy'
@@ -21,9 +21,10 @@ import { iconFetchAllowed, redirectAllowed } from './urlPolicy'
  * this handler adds the token, fetches the bytes and streams them back. The renderer sees
  * an opaque URL and nothing else.
  *
- * Three hosts, three sources:
+ * Four hosts, four sources:
  *   zima-media://thumbnail/<b64url path>  files API thumbnail — works on every device
  *   zima-media://photo/<b64url path>      photos-module thumbnail (better crops, needs module)
+ *   zima-media://preview/<b64url id:path> photos library tile — 1.8 preview by id, then the two above
  *   zima-media://appicon/<b64url url>     an app icon, fetched credential-free and capped
  */
 
@@ -205,6 +206,8 @@ const handle = async (request: Request): Promise<Response> => {
     return new Response(bytes, { status: 200, headers: { 'content-type': contentType } })
   }
 
+  if (kind === 'preview') return servePreview(ctx.value, target)
+
   const usePhotosModule = kind === 'photo'
   const path = usePhotosModule ? `${BASE.photos}${PHOTOS.thumbnail}` : `${BASE.files}${FILES.thumbnail}`
   const query = usePhotosModule
@@ -229,6 +232,65 @@ const handle = async (request: Request): Promise<Response> => {
   })
 }
 
+const thumbnailResponse = (bytes: { bytes: Uint8Array; contentType: string }): Response =>
+  new Response(bytes.bytes, {
+    status: 200,
+    headers: { 'content-type': bytes.contentType, 'cache-control': 'private, max-age=3600' },
+  })
+
+/**
+ * Hosts whose photos module has shown it predates the preview endpoint: a preview answered
+ * non-2xx while the old thumbnail for the same tile answered 200. Only that pair counts —
+ * a single missing preview on a 1.8 device is a missing preview, not an old device.
+ */
+const legacyPhotoHosts = new Set<string>()
+
+const ASSET_ID = /^\d{1,32}$/
+
+/**
+ * A photos-library tile.
+ *
+ * 1.8.0-beta2 serves previews by asset id (`/v2/photos/preview/<id>_320.webp`) and answers
+ * the older `/v2/photos/thumbnail` with 404 — measured 2026-10-08. Older firmware has only
+ * the latter. So: preview first, then the old module thumbnail, then the files thumbnail,
+ * which works on every device. Each step is a real request; nothing is guessed from a
+ * version string.
+ */
+const servePreview = async (ctx: DeviceContext, target: string): Promise<Response> => {
+  const colon = target.indexOf(':')
+  const assetId = colon > 0 ? target.slice(0, colon) : ''
+  const path = colon > 0 ? target.slice(colon + 1) : ''
+  if (!ASSET_ID.test(assetId) || path.length === 0) return notFound('malformed preview reference')
+
+  if (!legacyPhotoHosts.has(ctx.host)) {
+    const preview = await fetchBinary(ctx, `${BASE.photos}${PHOTOS.preview}/${assetId}_320.webp`, {})
+    if (!isErr(preview)) return thumbnailResponse(preview.value)
+  }
+
+  const legacy = await fetchBinary(ctx, `${BASE.photos}${PHOTOS.thumbnail}`, {
+    path,
+    width: 320,
+    height: 320,
+    scene: 'photo',
+    format: 'jpeg',
+    mode: 'best',
+  })
+  if (!isErr(legacy)) {
+    if (!legacyPhotoHosts.has(ctx.host)) {
+      legacyPhotoHosts.add(ctx.host)
+      logger.info('media.photo-preview-legacy-host', { reason: 'preview failed, thumbnail answered' })
+    }
+    return thumbnailResponse(legacy.value)
+  }
+
+  const files = await fetchBinary(ctx, `${BASE.files}${FILES.thumbnail}`, { path })
+  if (isErr(files)) {
+    logger.info('media.unavailable', { kind: 'preview', error: files.error.kind })
+    return notFound(`thumbnail unavailable: ${files.error.kind}`)
+  }
+  return thumbnailResponse(files.value)
+}
+
 export const registerMediaProtocol = (): void => {
   protocol.handle(MEDIA_SCHEME, (request) =>
     handle(request).catch((cause: unknown) => {
@@ -241,7 +303,7 @@ export const registerMediaProtocol = (): void => {
 }
 
 /** Builds a renderer-safe URL for a device path. */
-export const mediaUrl = (kind: 'thumbnail' | 'photo' | 'appicon', target: string): string => {
+export const mediaUrl = (kind: 'thumbnail' | 'photo' | 'preview' | 'appicon', target: string): string => {
   const encoded = Buffer.from(target, 'utf8')
     .toString('base64')
     .replaceAll('+', '-')

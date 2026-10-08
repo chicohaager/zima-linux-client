@@ -2,7 +2,9 @@ import { z } from 'zod'
 import type { PhotoAsset, PhotoHit, PhotoIndexProgress, PhotoPage } from '@shared/domain'
 import { appError, err, isErr, ok, type Result } from '@shared/result'
 import { authed, type DeviceContext } from './client'
+import { logger } from '@main/logging/logger'
 import { BASE, PHOTOS } from './endpoints'
+import { fromTaskTree, taskSchema } from './photoTasks'
 
 /**
  * The photos module — the half of the Photos section that needs `/v2/photos`.
@@ -31,7 +33,7 @@ const parse = <S extends z.ZodTypeAny>(
       )
 }
 
-/** live: `{asset:{file_id,path,width,height,capture_ts,media_type,is_favorite,…}}` */
+/** live (≤ 1.8.0-beta1): `{asset:{file_id,path,width,height,capture_ts,media_type,is_favorite,…}}` */
 const assetSchema = z.looseObject({
   file_id: z.string(),
   path: z.string(),
@@ -42,13 +44,36 @@ const assetSchema = z.looseObject({
   is_favorite: z.boolean().optional(),
 })
 
+/**
+ * live 2026-10-08 on 1.8.0-beta2: a stream item is flat, and its `path` is RELATIVE to the
+ * source folder named by `source_id` — `{id, source_id, path, ts, w?, h?, media_type?,
+ * blurhash?, metadata_ready, time_source}`. `media_type` is present only on videos
+ * (`"video"`), `w`/`h` only once the metadata is read. Measured over the whole stream of a
+ * real library of 106: 95 images with w/h and no `media_type`, 11 videos with
+ * `media_type: "video"` and no w/h.
+ */
+const flatItemSchema = z.looseObject({
+  id: z.string(),
+  source_id: z.string(),
+  path: z.string(),
+  ts: z.number().optional(),
+  w: z.number().optional(),
+  h: z.number().optional(),
+  media_type: z.string().optional(),
+})
+
 const streamSchema = z.looseObject({
-  items: z
-    .array(z.looseObject({ asset: assetSchema.nullable().optional() }))
-    .nullable()
-    .optional(),
+  items: z.array(z.unknown()).nullable().optional(),
   total: z.number().optional(),
   next_cursor: z.string().nullable().optional(),
+})
+
+/** live 2026-10-08 on 1.8.0-beta2: `{items:[{id, path, mount_path, status, available, …}]}` */
+const sourcesSchema = z.looseObject({
+  items: z
+    .array(z.looseObject({ id: z.string(), path: z.string() }))
+    .nullable()
+    .optional(),
 })
 
 const toAsset = (raw: z.infer<typeof assetSchema>): PhotoAsset => ({
@@ -62,11 +87,39 @@ const toAsset = (raw: z.infer<typeof assetSchema>): PhotoAsset => ({
   isFavorite: raw.is_favorite ?? false,
 })
 
+const fromFlatItem = (raw: z.infer<typeof flatItemSchema>, root: string): PhotoAsset => ({
+  fileId: raw.id,
+  // The absolute device path, as everything downstream (files thumbnail, download, the
+  // folder view) expects. Measured: `<source.path>/<item.path>` renders through the files
+  // thumbnail endpoint with 200, the bare relative path answers 400.
+  path: `${root.replace(/\/+$/, '')}/${raw.path.replace(/^\/+/, '')}`,
+  width: raw.w ?? 0,
+  height: raw.h ?? 0,
+  // `ts` is seconds, like `capture_ts` before it.
+  captureTsMs: (raw.ts ?? 0) * 1_000,
+  mediaType: raw.media_type ?? 'img',
+  // Not part of the stream item any more; favourites have their own endpoint now.
+  isFavorite: false,
+})
+
+/** Source id -> absolute folder. Only asked for when the stream speaks the flat form. */
+const readSources = async (ctx: DeviceContext): Promise<Result<ReadonlyMap<string, string>>> => {
+  const answer = await authed<unknown>(ctx, `${BASE.photos}${PHOTOS.sources}`)
+  if (isErr(answer)) return answer
+  const parsed = parse(sourcesSchema, answer.value, 'photo sources')
+  if (isErr(parsed)) return parsed
+  return ok(new Map((parsed.value.items ?? []).map((source) => [source.id, source.path])))
+}
+
 /**
  * One page of the gallery.
  *
  * `cursor` continues a previous page. Passing an offset instead would silently restart at
  * the beginning, which reads as "the gallery only has 50 photos".
+ *
+ * Two item forms are read, the nested one up to 1.8.0-beta1 and the flat one of
+ * 1.8.0-beta2. An item in neither form is NOT dropped quietly: that is exactly how the
+ * beta2 change first showed up — "0 assets of 106", a full library rendered as an empty one.
  */
 export const galleryPage = async (
   ctx: DeviceContext,
@@ -91,10 +144,52 @@ export const galleryPage = async (
   const parsed = parse(streamSchema, answer.value, 'gallery stream')
   if (isErr(parsed)) return parsed
 
-  const assets = (parsed.value.items ?? [])
-    .map((item) => item.asset)
-    .filter((asset): asset is z.infer<typeof assetSchema> => asset !== null && asset !== undefined)
-    .map(toAsset)
+  const items = parsed.value.items ?? []
+  const nested: PhotoAsset[] = []
+  const flat: z.infer<typeof flatItemSchema>[] = []
+  let unrecognised = 0
+  for (const item of items) {
+    const asNested = z.looseObject({ asset: assetSchema }).safeParse(item)
+    if (asNested.success) {
+      nested.push(toAsset(asNested.data.asset))
+      continue
+    }
+    const asFlat = flatItemSchema.safeParse(item)
+    if (asFlat.success) {
+      flat.push(asFlat.data)
+      continue
+    }
+    unrecognised += 1
+  }
+
+  const resolved: PhotoAsset[] = []
+  let unresolved = 0
+  if (flat.length > 0) {
+    const sources = await readSources(ctx)
+    if (isErr(sources)) return sources
+    for (const item of flat) {
+      const root = sources.value.get(item.source_id)
+      if (root === undefined) unresolved += 1
+      else resolved.push(fromFlatItem(item, root))
+    }
+  }
+
+  const assets = [...nested, ...resolved]
+  const missing = unrecognised + unresolved
+  if (missing > 0 && assets.length === 0) {
+    return err(
+      appError(
+        'malformed-response',
+        `gallery stream: ${unrecognised} of ${items.length} items in an unrecognised shape, ` +
+          `${unresolved} with an unknown source`,
+        'error.malformedResponse',
+        { where: 'gallery stream', unrecognised, unresolved },
+      ),
+    )
+  }
+  if (missing > 0) {
+    logger.warn('photos.stream-items-skipped', { unrecognised, unresolved, shown: assets.length })
+  }
   return ok({
     assets,
     total: parsed.value.total ?? assets.length,
@@ -134,6 +229,8 @@ const progressSchema = z.looseObject({
     )
     .nullable()
     .optional(),
+  /** 1.8.0-beta2: the whole progress is a task tree instead of the counters above. */
+  tasks: z.array(taskSchema).nullable().optional(),
 })
 
 /**
@@ -151,6 +248,9 @@ export const readProgress = async (
   const parsed = parse(progressSchema, answer.value, 'photo index progress')
   if (isErr(parsed)) return parsed
   const raw = parsed.value
+  if (raw.tasks !== undefined && raw.tasks !== null) {
+    return ok(fromTaskTree(raw.status ?? 'unknown', raw.tasks))
+  }
   return ok({
     status: raw.status ?? 'unknown',
     totalImages: raw.total_images ?? 0,

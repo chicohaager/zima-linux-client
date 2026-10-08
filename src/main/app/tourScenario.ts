@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
 import { RAW_KEY_SCAN } from './catalogueKeys'
-import { capturePng, sleep, waitForResumeSettled } from './scenarioKit'
+import { capturePng, FILL, pollUntil, sleep, waitForResumeSettled } from './scenarioKit'
 import type { ScenarioResult } from './scenarios'
 
 /**
@@ -165,5 +165,70 @@ export const runTour = async (window: BrowserWindow, reportPath: string): Promis
     )
   }
 
+  await photoSearchStep(window, reportPath, run, observed, failures)
+
   return { name: 'tour', ok: failures.length === 0, observed, failures }
+}
+
+/** Submits the photo search form; the submit button is disabled while the search runs. */
+const SUBMIT_PHOTO_SEARCH = `(() => {
+  const input = document.querySelector('input[name="photoQuery"]')
+  const form = input ? input.closest('form') : null
+  if (!form) return 'missing-form'
+  form.requestSubmit()
+  return 'ok'
+})()`
+/*
+ * Settled = the answer is ON SCREEN: the result view adds a second button (reset) to the form,
+ * and the submit button is enabled again. "Submit enabled" alone is also true in the moment
+ * before the search starts, so on its own it would end the wait before it began.
+ */
+const PHOTO_SEARCH_SETTLED = `(() => {
+  const form = document.querySelector('input[name="photoQuery"]')?.closest('form')
+  const submit = form?.querySelector('button[type="submit"]')
+  return form !== null && form !== undefined && form.querySelectorAll('button').length >= 2 &&
+    submit !== null && submit !== undefined && !submit.disabled
+})()`
+
+/**
+ * Optional: types `ZIMA_VERIFY_PHOTO_QUERY` into the photo search and reports what the result
+ * grid RENDERED — tiles and broken tiles.
+ *
+ * Added 2026-10-08 for ZimaOS 1.8.0-beta2, where search tiles moved to a new preview
+ * endpoint. A search is a request the recorded device cannot answer meaningfully, so the step
+ * only runs when asked for; the default tour stays what it was.
+ */
+const photoSearchStep = async (
+  window: BrowserWindow,
+  reportPath: string,
+  run: (script: string) => Promise<unknown>,
+  observed: Record<string, string>,
+  failures: string[],
+): Promise<void> => {
+  const query = (process.env['ZIMA_VERIFY_PHOTO_QUERY'] ?? '').trim()
+  if (query.length === 0) return
+  observed['search.query'] = query
+  if (String(await run(CLICK_NAV('photos'))).startsWith('missing')) {
+    failures.push('search: navigation button for "photos" not found')
+    return
+  }
+  await sleep(1_500)
+  const filled = String(await run(FILL('photoQuery', query)))
+  const submitted = filled === 'ok' ? String(await run(SUBMIT_PHOTO_SEARCH)) : filled
+  observed['search.submit'] = submitted
+  if (submitted !== 'ok') {
+    failures.push(`search: could not submit (${submitted})`)
+    return
+  }
+  const settled = await pollUntil(async () => Boolean(await run(PHOTO_SEARCH_SETTLED)), 30_000, 500)
+  observed['search.waitMs'] = String(settled.elapsedMs)
+  if (!settled.ok) {
+    failures.push('search: no answer within 30 s')
+    return
+  }
+  await sleep(2_000)
+  const look = (await run(INSPECT)) as Observation
+  observed['search.counts'] = `images=${look.images} broken=${look.brokenImages}`
+  if (look.brokenImages > 0) failures.push(`search: ${look.brokenImages} result tile(s) failed to load`)
+  observed['search.screenshot'] = await capturePng(window, join(dirname(reportPath), 'tour-search.png'))
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { preferredTitle } from '@shared/appTitle'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card, Muted, SectionTitle } from '../../shared/ui/Card'
 import { Badge, Button, ErrorNote } from '../../shared/ui/Controls'
@@ -134,7 +135,7 @@ export const AppsScreen = (): React.JSX.Element => {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {(apps.data?.apps ?? []).map((app) => {
-          const title = app.title[locale] ?? app.title['custom'] ?? app.title['en_us'] ?? app.name
+          const title = preferredTitle(app, locale)
           const running = app.status === 'running'
           return (
             <Card key={app.id}>
@@ -168,7 +169,9 @@ export const AppsScreen = (): React.JSX.Element => {
                       {t(`apps.status.${running ? 'running' : 'stopped'}`)}
                     </Badge>
                     {app.port !== null && <Badge>{t('apps.port', { port: app.port })}</Badge>}
-                    {app.installStatus !== 'finished' && app.installStatus !== 'unknown' && (
+                    {/* Settled: `finished` up to 1.8.0-beta1, `completed` on 1.8.0-beta2
+                        (measured 2026-10-08, 18 of 20 apps) — anything else is news. */}
+                    {!['finished', 'completed', 'unknown'].includes(app.installStatus) && (
                       <Badge>{app.installStatus}</Badge>
                     )}
                   </div>

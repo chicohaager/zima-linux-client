@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { mediaUrl } from '@shared/media'
+import { mediaUrl, photoPreviewUrl } from '@shared/media'
 import { formatDateTime } from '../../shared/lib/format'
 
 export interface GridItem {
@@ -7,6 +7,15 @@ export interface GridItem {
   readonly name: string
   readonly capturedMs: number
   readonly isVideo: boolean
+  /** The photos module's asset id, when the tile came from the library or a search. */
+  readonly assetId?: string
+}
+
+const tileSource = (item: GridItem, useLibraryThumbnails: boolean): string => {
+  if (!useLibraryThumbnails) return mediaUrl('thumbnail', item.path)
+  return item.assetId !== undefined && item.assetId.length > 0
+    ? photoPreviewUrl(item.assetId, item.path)
+    : mediaUrl('photo', item.path)
 }
 
 /**
@@ -39,7 +48,7 @@ export const PhotoGrid = ({
           title={`${item.name}${item.capturedMs > 0 ? ` · ${formatDateTime(item.capturedMs, i18n.language)}` : ''}`}
         >
           <img
-            src={mediaUrl(useLibraryThumbnails ? 'photo' : 'thumbnail', item.path)}
+            src={tileSource(item, useLibraryThumbnails)}
             alt={item.name}
             loading="lazy"
             className="size-full object-cover"

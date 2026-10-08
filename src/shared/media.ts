@@ -13,7 +13,7 @@
 
 export const MEDIA_SCHEME = 'zima-media'
 
-export type MediaKind = 'thumbnail' | 'photo' | 'appicon'
+export type MediaKind = 'thumbnail' | 'photo' | 'preview' | 'appicon'
 
 /**
  * base64url of a UTF-8 string, using only APIs that exist in both Node and Chromium.
@@ -30,6 +30,14 @@ const base64url = (text: string): string => {
 /** A renderer-safe URL for a device path (or, for `appicon`, a device-served icon URL). */
 export const mediaUrl = (kind: MediaKind, target: string): string =>
   `${MEDIA_SCHEME}://${kind}/${base64url(target)}`
+
+/**
+ * A photos-library tile: the asset id for the 1.8.0-beta2 preview endpoint, plus the
+ * absolute path for the endpoints older firmware has. `<id>:<path>` — the id is digits
+ * only, so the first colon is unambiguous even in a path that contains one.
+ */
+export const photoPreviewUrl = (assetId: string, path: string): string =>
+  mediaUrl('preview', `${assetId}:${path}`)
 
 /**
  * Extensions the thumbnail endpoint can render.

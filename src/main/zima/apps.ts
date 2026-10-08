@@ -25,6 +25,8 @@ const appSchema = z.looseObject({
   icon: z.string().nullable().optional(),
   status: z.string().nullable().optional(),
   install_status: z.string().nullable().optional(),
+  /** 1.8.0-beta2 (measured 2026-10-08): `install_status` is gone, `installation.status` is `completed`. */
+  installation: z.looseObject({ status: z.string().nullable().optional() }).nullable().optional(),
   port: z.union([z.string(), z.number()]).nullable().optional(),
   scheme: z.string().nullable().optional(),
   index: z.string().nullable().optional(),
@@ -92,30 +94,15 @@ const toTile = (raw: z.infer<typeof appSchema>, deviceHost: string): AppTile => 
   // `reachableIconUrl` documents.
   iconUrl: reachableIconUrl(raw.icon ?? '', port(raw.port), deviceHost),
   status: raw.status ?? 'unknown',
-  installStatus: raw.install_status ?? 'unknown',
+  installStatus: raw.install_status ?? raw.installation?.status ?? 'unknown',
   port: port(raw.port),
   scheme: raw.scheme ?? 'http',
   index: raw.index ?? '/',
   appType: raw.app_type ?? '',
 })
 
-/**
- * Picks the title for a locale.
- *
- * Order: the user's exact locale (`de_de`), then a custom name the owner set on the device,
- * then English, then the container name. Never an empty string — an app tile with no label
- * is unusable, and the container name is a real fact rather than a placeholder.
- */
-export const preferredTitle = (tile: AppTile, locale: string): string => {
-  const key = locale.toLowerCase().replace('-', '_')
-  return (
-    tile.title[key] ??
-    tile.title['custom'] ??
-    tile.title['en_us'] ??
-    Object.values(tile.title)[0] ??
-    tile.name
-  )
-}
+/** Shared with the renderer, which used to carry its own diverging copy. */
+export { preferredTitle } from '@shared/appTitle'
 
 export const listApps = async (ctx: DeviceContext): Promise<Result<readonly AppTile[]>> => {
   const answer = await authed<unknown>(ctx, `${BASE.appManagement}${APPS.installedList}`)

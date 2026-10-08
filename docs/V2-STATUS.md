@@ -2444,3 +2444,62 @@ Die Matrix liest jetzt auch den Launcher nach dem Reinstall ab.
 
 Der 0.9.23-Code liegt unverändert unter `legacy-0.9/` (per `git mv`, Historie erhalten) und ist
 auf `main` weiter baubar. Es wurde nichts gelöscht.
+
+## 🔴 ZimaOS 1.8.0-beta2: Anmeldung tot, Fotos leer — vier Anpassungen (2026-10-08)
+
+Gemessen gegen .143 (`/etc/os-release`: `ZimaOS v1.8.0-beta2`) über Tailscale, im echten Fenster
+(`ZIMA_VERIFY_SCENARIO=tailscale-signin:<adresse>`) und mit `npm run verify:live`. Das
+ZimaOS-Wissen dazu steht in `~/dev/ZIMAOS-KNOWLEDGE.md` §74.
+
+| Befund vor der Änderung | Ursache (gemessen) | Änderung |
+|---|---|---|
+| Anmeldung scheitert nach 30 s mit „Anmeldung erforderlich oder Sitzung abgelaufen.“, kein Request im Log | `refresh_token` ist kein JWT mehr, sondern opak (43 Zeichen base64url, 1 Segment); `decodeClaims` verlangt 3 Segmente | `readRefreshToken` (`src/main/zima/jwt.ts`): JWT mit `iss: refresh` **oder** opak; Access-JWT an Refresh-Stelle bleibt abgelehnt; Ablauf eines opaken Tokens `null` — das Gerät entscheidet |
+| Fotos: „0 von 0 indexiert“, Galerie leer bei `total: 106`, Suche gesperrt „nicht verfügbar“ | Stream-Einträge flach mit quellen-relativem Pfad; `/progress` als Aufgabenbaum; Suche antwortet ohne VLM | `galleryPage` liest beide Formen, löst Pfade über `/v2/photos/sources` auf, **meldet unlesbare Einträge laut** statt still 0; `photoTasks.ts` liest den Baum, Suche bereit = `stage:nn` abgeschlossen |
+| Vorschauen der Bibliothek und der Suche | `/v2/photos/thumbnail` → 404 | neue Medienart `zima-media://preview/<id:pfad>`: `/v2/photos/preview/<id>_320.webp`, Rückfall alter Thumbnail → Dateien-Thumbnail; ein Host, der sich als alt erweist, wird nicht wieder nach Vorschauen gefragt |
+| App-Kachel ohne Namen (`newt`), `Open WebUI` als `open-webui-ollama` | `title.custom = ""` lief durch `??`; der Renderer hatte eine **eigene Kopie** der Titelwahl ohne Rückfall auf `en_US` | `src/shared/appTitle.ts`, von Haupt- und Renderer-Prozess benutzt; `installation.status: completed` gilt wie `finished` |
+
+**Belege nach der Änderung (2026-10-08):**
+
+```
+Anmeldung im echten Fenster   ok, 500 ms, gespeichert als <tailnet-adresse>|80|tailscale
+Rundgang                      Gerät 15 Karten · Dateien 91 Zeilen, 36 Bilder · Fotos 106 Bilder,
+                              0 kaputt · Apps 20 Karten, 15 Icons · 0 Konsolenfehler
+Fotosuche „person“            25 Treffer in 9 ms, 25 Vorschauen, 0 kaputt (ZIMA_VERIFY_PHOTO_QUERY)
+App-Kacheln ohne Titel        vorher 1, nachher 0
+npm run verify:live           31 Proben, 0 nicht sendbar, 0 unerwartete Status
+npm test                      393 von 394 — rot nur probeFailures.test.ts (behoben im Nachgang, siehe unten)
+type-check · lint · build · build-gate · i18n · privacy   grün (lint: 3 alte max-lines-Warnungen)
+npx playwright test           5 von 5 gegen das aufgezeichnete 1.7-Gerät — der Altweg geht weiter
+```
+
+Gegenproben: die neuen Tests gegen den alten Code gefahren — Auth 2 rot, Fotos 6 von 9 rot (die drei
+grünen prüfen den Altbestand), Titel 3 von 4 rot.
+
+**Nachgang am selben Tag — die drei offenen Punkte untersucht:**
+
+1. **Refresh-Token, der „nach der Rotation gültig blieb“ — mein erster Befund war falsch.** Mit eigener
+   Testsitzung gemessen: Ein zweiter Refresh mit dem alten Token liefert bis 25 s **denselben** Nachfolger
+   (idempotent), ab 35 s 401 — und danach ist auch der Nachfolger tot (Kontrolle ohne Replay: 200). ZimaOS
+   widerruft bei Wiederverwendung die ganze Familie. Daraus ein **echter Client-Fehler**: Die stille
+   Erneuerung mitten in der Sitzung (alle ~3 h, `TokenHolder.renewOnce`) behielt den neuen Token nur im
+   Speicher; im Schlüsselbund blieb der verbrauchte. Nächster Start → 401, eine zweite laufende Instanz
+   verlöre ihre Sitzung mit. Bei der Wiederaufnahme wurde zudem erst nach Identitäts- und ZeroTier-Abfrage
+   gespeichert. Behoben: `TokenHolder` meldet jede Erneuerung (`onRenewed`), `session.ts` speichert sofort
+   (`persistRefreshToken`, `holderFor`). Test `src/main/__tests__/refreshPersistence.test.ts` — gegen den
+   alten Stand 2 von 3 rot. Live: zwei Wiederaufnahmen im Abstand von 50 s, beide 31/31 Proben ok.
+2. **`probeFailures.test.ts` rot seit 2026-09-18:** Der Test las `dist/matrix/opensuse.json`, ein
+   gitignortes Bauartefakt. Der leere Bericht vom 2026-08-09 existiert nirgends mehr (alle vier Kopien in
+   `dist/matrix*` tragen 399 Zeichen Text). Jetzt mit den im Testkopf wörtlich festgehaltenen Werten als
+   eingechecktem Fixture; Gegenprobe (Leer-Prüfung im Startwächter abgeschaltet) → 4 rot.
+3. **Vorschau-Rückfall bei älterer Firmware:** Kein Gerät unter 1.8 erreichbar (`.147` „No route to host“,
+   `.143`/`.184` beta2). Belegt über die 1.7-Aufzeichnung der E2E-Suite: Der Test prüft jetzt kaputte Bilder
+   **auf dem Fotos-Bildschirm** (vorher erst auf Apps, wo die Kacheln nicht mehr im DOM sind) und über das
+   Serverprotokoll, dass `/v2/photos/thumbnail` bedient wurde (>10 Abrufe). Gegenprobe Altweg sabotiert → 0,
+   rot. Nicht gemessen: was ein echtes 1.7-Gerät auf `/v2/photos/preview/…` antwortet — die Kette fällt bei
+   jedem Nicht-2xx zurück. Aus dem Code abgeleitet, nicht gemessen: Auf alter Firmware kostet die erste Seite
+   bis zu einen Fehlversuch je Kachel, weil die Kacheln parallel laden, bevor der Host als alt vermerkt ist.
+
+```
+npm run verify   ✓ rc=0 am Stück — 397 Tests in 49 Dateien, build, build-gate, i18n, privacy
+npx playwright test   ✓ 5 von 5
+```

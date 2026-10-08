@@ -42,6 +42,23 @@ export interface SessionSummary {
   readonly capabilities: Capabilities | null
 }
 
+/**
+ * Writes a refresh token to the keyring. A failure does not fail the session — it works, it
+ * just will not survive a restart — but it is logged, because a spent token left in the
+ * keyring is what turns the next start into a sign-in on 1.8.0-beta2.
+ */
+const persistRefreshToken = (deviceId: string, refreshToken: string): Result<void> => {
+  const saved = credentials.saveRefreshToken(deviceId, refreshToken)
+  if (isErr(saved)) logger.warn('session.refresh-token-not-persisted', { deviceId, kind: saved.error.kind })
+  return saved
+}
+
+/** A token holder whose renewals are persisted for this device. */
+const holderFor = (deviceId: string, host: string, port: number): TokenHolder =>
+  new TokenHolder(host, port, undefined, (tokens) => {
+    persistRefreshToken(deviceId, tokens.refreshToken)
+  })
+
 const summarise = (session: ActiveSession): Result<SessionSummary> => {
   const tokens = session.tokens.current()
   if (tokens === null) {
@@ -212,7 +229,7 @@ export const signIn = async (params: {
     logger.info('session.device-code-unavailable', { host, kind: identity.error.kind })
   }
 
-  const holder = new TokenHolder(host, port)
+  const holder = holderFor(id, host, port)
   holder.adopt(tokens.value)
   active = { device: stored.value, address, tokens: holder, username }
 
@@ -225,10 +242,7 @@ export const signIn = async (params: {
   // Persisting the refresh token can legitimately fail on a machine without a keyring.
   // That must not fail the sign-in — the session works, it just will not survive a
   // restart. The UI is told, so the user can decide.
-  const saved = credentials.saveRefreshToken(id, tokens.value.refreshToken)
-  if (isErr(saved)) {
-    logger.warn('session.refresh-token-not-persisted', { id, kind: saved.error.kind })
-  }
+  const saved = persistRefreshToken(id, tokens.value.refreshToken)
 
   logger.info('session.signed-in', {
     id,
@@ -395,12 +409,15 @@ export const resume = async (deviceId: string): Promise<Result<SessionSummary>> 
   const address = await chooseResumeAddress(device)
   if (isErr(address)) return address
 
-  const holder = new TokenHolder(address.value.host, address.value.port)
+  const holder = holderFor(deviceId, address.value.host, address.value.port)
   // Adopt a tokens object that only has the refresh half, then force a renewal. This is
   // the one place where a refresh token legitimately becomes a session — and it goes
   // through the same iss-pinned path as everything else.
   const renewed = await renewFromRefreshToken(holder, address.value, stored.value)
   if (isErr(renewed)) return renewed
+  // Saved at once: the stored token is spent from this moment on, and anything below —
+  // identity, ZeroTier probe — can fail or be cut short by a crash.
+  persistRefreshToken(deviceId, renewed.value.refreshToken)
 
   active = { device, address: address.value, tokens: holder, username: renewed.value.access.username }
 
@@ -422,9 +439,6 @@ export const resume = async (deviceId: string): Promise<Result<SessionSummary>> 
   // Same probe as on sign-in. Without it a resumed session would show ZeroTier as
   // 'noch nicht geprüft' forever, which is a different claim from the measured one.
   await refreshZerotierState(deviceId, address.value.host, address.value.port, holder)
-
-  const saved = credentials.saveRefreshToken(deviceId, renewed.value.refreshToken)
-  if (isErr(saved)) logger.warn('session.refresh-token-not-persisted', { deviceId })
 
   return summarise(active)
 }
