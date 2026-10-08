@@ -1,4 +1,4 @@
-import { appError, err, ok, type Result } from '@shared/result'
+import { appError, err, isErr, ok, type Result } from '@shared/result'
 
 /**
  * Reads the claims of a ZimaOS token.
@@ -119,6 +119,51 @@ export const decodeClaims = (token: string): Result<TokenClaims> => {
  */
 export const needsRenewal = (claims: TokenClaims, nowMs: number, skewMs = 120_000): boolean =>
   claims.expiresAtMs - skewMs <= nowMs
+
+/**
+ * What the client knows about its renewal credential.
+ *
+ * `expiresAtMs` is `null` when the token does not say: an opaque token carries no claims,
+ * and a guessed date would turn "unknown" into a local refusal the device never made.
+ */
+export interface RefreshCredential {
+  readonly kind: 'refresh'
+  readonly format: 'jwt' | 'opaque'
+  readonly expiresAtMs: number | null
+}
+
+/*
+ * 🔴 Measured 2026-10-08 on ZimaOS 1.8.0-beta2: `refresh_token` is no longer a JWT but an
+ * opaque 43-character base64url string (one segment), from login and from every renewal.
+ * Up to 1.8.0-beta1 it was a JWT with `iss: "refresh"`. Both forms are accepted — additive,
+ * like the issuer map: this client also talks to devices on older firmware.
+ *
+ * The form check is deliberately loose on length (a measured 43 is a value, not a contract)
+ * and strict on shape: base64url only and no dot, so a JWT of any issuer can never pass as
+ * opaque and the "access token in the refresh slot" refusal below still holds.
+ */
+const OPAQUE_REFRESH = /^[A-Za-z0-9_-]{32,512}$/
+
+/** Reads the refresh half of a token pair: a refresh JWT, or an opaque token. */
+export const readRefreshToken = (token: string): Result<RefreshCredential> => {
+  if (token.includes('.')) {
+    const claims = decodeClaims(token)
+    if (isErr(claims)) return claims
+    const asRefresh = requireKind(claims.value, 'refresh')
+    if (isErr(asRefresh)) return asRefresh
+    return ok({ kind: 'refresh', format: 'jwt', expiresAtMs: asRefresh.value.expiresAtMs })
+  }
+  if (OPAQUE_REFRESH.test(token)) {
+    return ok({ kind: 'refresh', format: 'opaque', expiresAtMs: null })
+  }
+  return err(
+    appError(
+      'unauthorized',
+      `refresh token is neither a JWT nor an opaque token (${token.length} characters)`,
+      'error.unauthorized',
+    ),
+  )
+}
 
 /** Rejects a token that is not of the expected kind. */
 export const requireKind = (claims: TokenClaims, expected: TokenKind): Result<TokenClaims> =>

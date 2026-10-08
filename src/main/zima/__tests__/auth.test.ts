@@ -224,3 +224,106 @@ describe('TokenHolder', () => {
     expect(holder.current()).toBeNull()
   })
 })
+
+/*
+ * ZimaOS 1.8.0-beta2 no longer issues the refresh token as a JWT. Measured 2026-10-08 on a
+ * 1.8.0-beta2 device: login and refresh still answer in the shapes above and the access token
+ * is still an ES256 JWT with `iss: "zimaos"` (now with a `kid` header), but `refresh_token` is
+ * an opaque 43-character base64url string — one segment, no claims, no readable expiry. It
+ * rotates on every renewal and the next one is opaque again.
+ *
+ * The client used to decode both halves as JWTs, so every sign-in against beta2 ended in
+ * `token has 1 segments, expected 3` and the UI said "sign-in required" right after the
+ * device had accepted the password. The value below is made up; only its form is measured.
+ */
+const OPAQUE_REFRESH = 'q3Vb0xK9mZ2rT7eW1nH5sL8cY4uJ6pA0dF3gR9tE2wQ'
+
+const beta2Login = (accessOffsetMs: number) =>
+  envelope({
+    token: {
+      access_token: makeTokens(accessOffsetMs).access_token,
+      refresh_token: OPAQUE_REFRESH,
+      expires_at: sec(NOW + accessOffsetMs),
+    },
+  })
+
+describe('ZimaOS 1.8.0-beta2 — opaque refresh token', () => {
+  it('signs in when the refresh token is opaque', async () => {
+    const { login } = await import('../auth')
+    fetchMock.mockResolvedValue(jsonResponse(beta2Login(3 * 3_600_000)))
+
+    const result = await login('device.local', 80, 'owner', 'secret')
+
+    expect(isOk(result)).toBe(true)
+    if (!isOk(result)) return
+    expect(result.value.refreshToken).toBe(OPAQUE_REFRESH)
+    expect(result.value.refresh.kind).toBe('refresh')
+    // Nothing in the token says when it expires; inventing a date would be a guess.
+    expect(result.value.refresh.expiresAtMs).toBeNull()
+  })
+
+  it('renews with an opaque refresh token and adopts the rotated one', async () => {
+    const { TokenHolder, login } = await import('../auth')
+    fetchMock.mockResolvedValue(jsonResponse(beta2Login(60_000)))
+    const initial = await login('device.local', 80, 'owner', 'secret')
+    if (!isOk(initial)) throw new Error('setup failed')
+
+    // Eight days later the access token is long gone. With no readable expiry on the refresh
+    // token, the device — not a local guess — decides whether it is still good.
+    const holder = new TokenHolder('device.local', 80, () => NOW + 8 * 86_400_000)
+    holder.adopt(initial.value)
+    fetchMock.mockClear()
+    const rotated = 'Zp8mN2vB6xC1kL4jH7gF0dS3aQ9wE5rT2yU8iO1pL6k'
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        envelope({
+          access_token: makeTokens(3 * 3_600_000).access_token,
+          refresh_token: rotated,
+          expires_at: sec(NOW + 3 * 3_600_000),
+        }),
+      ),
+    )
+
+    const access = await holder.accessToken()
+
+    expect(isOk(access)).toBe(true)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const sent = JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body)) as {
+      refresh_token: string
+    }
+    expect(sent.refresh_token).toBe(OPAQUE_REFRESH)
+    expect(holder.current()?.refreshToken).toBe(rotated)
+  })
+
+  it('still refuses an access token handed back in the refresh position', async () => {
+    // The property the issuer check exists for must survive the opaque format: a JWT that
+    // says it is an access token is never accepted as the renewal credential.
+    const { login } = await import('../auth')
+    const access = makeTokens(3 * 3_600_000).access_token
+    fetchMock.mockResolvedValue(
+      jsonResponse(envelope({ token: { access_token: access, refresh_token: access } })),
+    )
+
+    const result = await login('device.local', 80, 'owner', 'secret')
+
+    expect(isErr(result) && result.error.message).toContain('expected a refresh token')
+  })
+
+  it.each([
+    ['empty', ''],
+    ['too short to be a credential', 'abc123'],
+    ['characters outside base64url', 'q3Vb0xK9mZ2rT7eW1nH5sL8c Y4uJ6pA0dF3gR9tE2w'],
+    ['two segments', 'q3Vb0xK9mZ2rT7eW1nH5.sL8cY4uJ6pA0dF3gR9tE2wQ'],
+  ])('refuses a refresh token that is %s', async (_label, value) => {
+    const { login } = await import('../auth')
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        envelope({ token: { access_token: makeTokens(3_600_000).access_token, refresh_token: value } }),
+      ),
+    )
+
+    const result = await login('device.local', 80, 'owner', 'secret')
+
+    expect(isErr(result)).toBe(true)
+  })
+})

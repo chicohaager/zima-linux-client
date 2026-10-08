@@ -273,8 +273,21 @@ export const PHOTOS = {
   galleryStream: '/gallery/stream',
   /** live+kb: query media_types,lang,locale -> facet buckets with a cover asset each */
   galleryFacets: '/gallery/facets',
-  /** kb: query path,width,height,scene,format,mode — answers binary JPEG, not JSON */
+  /**
+   * kb: query path,width,height,scene,format,mode — answers binary JPEG, not JSON.
+   * 🔴 live 2026-10-08 on 1.8.0-beta2: **404** — replaced by `preview` below. Kept for
+   * devices on older firmware.
+   */
   thumbnail: '/thumbnail',
+  /**
+   * live 2026-10-08 on 1.8.0-beta2, read off the device's own web UI and measured:
+   * `GET /preview/<asset id>_<size>.webp` -> 200 image/webp (320: 9–22 KB), 401 without a
+   * token. Works for images and videos alike. The asset id is the stream item's `id`, which
+   * is also a search hit's `file_id` (30 of 30 hits matched).
+   */
+  preview: '/preview',
+  /** live 2026-10-08 on 1.8.0-beta2: source folders; a stream item's path is relative to one */
+  sources: '/sources',
   /** live: index progress, shown in the UI so "0 hits" cannot be mistaken for a bug */
   progress: '/progress',
   /** kb: which source folders are indexed */

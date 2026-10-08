@@ -1,5 +1,3 @@
-import { readFileSync, existsSync } from 'node:fs'
-import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { MIN_VISIBLE_CHARS, probeFailures, type ProbeResult } from '../startupVerification'
 
@@ -85,23 +83,26 @@ describe('probeFailures', () => {
 })
 
 describe('the report that started this', () => {
-  const path = join(process.cwd(), 'dist/matrix/opensuse.json')
+  /*
+   * 🔴 Pinned here on 2026-10-08. This test used to READ `dist/matrix/opensuse.json` — a
+   * gitignored build artifact that every matrix run overwrites. The blank report of
+   * 2026-08-09 was gone by 2026-08-10 (every later copy in `dist/matrix-*` carries 399
+   * characters of text), so from then on the test either skipped (file absent) or failed
+   * (file present and healthy) — red since the run of 2026-09-18, for reasons that had
+   * nothing to do with the verifier.
+   *
+   * The fields the original report recorded are the ones quoted at the top of this file:
+   * `ok: true, navButtons: 8, visibleText: "", failures: []`. The rest of the probe was not
+   * kept and comes from HEALTHY — which is the point: everything that WAS measured looked fine.
+   */
+  const report = { ...HEALTHY, navButtons: 8, visibleText: '', ok: true, failures: [] as string[] }
 
-  it.skipIf(!existsSync(path))(
-    'would now fail instead of passing',
-    () => {
-      const report = JSON.parse(readFileSync(path, 'utf8')) as ProbeResult & {
-        ok: boolean
-        failures: string[]
-      }
+  it('would now fail instead of passing', () => {
+    // What the run recorded at the time: a pass.
+    expect(report.ok).toBe(true)
+    expect(report.failures).toEqual([])
 
-      // What the run recorded at the time: a pass.
-      expect(report.ok).toBe(true)
-      expect(report.failures).toEqual([])
-
-      // What the same numbers produce today.
-      const failures = probeFailures(report, [])
-      expect(failures.join(' ')).toContain('no text at all')
-    },
-  )
+    // What the same numbers produce today.
+    expect(probeFailures(report, []).join(' ')).toContain('no text at all')
+  })
 })

@@ -81,6 +81,7 @@ export const PhotosScreen = (): React.JSX.Element => {
     name: basename(asset.path),
     capturedMs: asset.captureTsMs,
     isVideo: asset.mediaType !== 'img',
+    assetId: asset.fileId,
   }))
   const folderItems: readonly GridItem[] = (grid.data?.entries ?? []).map((entry) => ({
     path: entry.path,
@@ -93,6 +94,7 @@ export const PhotosScreen = (): React.JSX.Element => {
     name: hit.name,
     capturedMs: 0,
     isVideo: hit.type !== 'img',
+    assetId: hit.fileId,
   }))
 
   const showingSearch = search.data !== undefined

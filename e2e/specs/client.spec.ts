@@ -124,8 +124,37 @@ test('signing in loads files, photos and apps with real content', async () => {
     // would render.
     await expect.poll(async () => page.locator('li').count(), { timeout: 30_000 }).toBeGreaterThan(10)
 
+    const servedBeforePhotos = (await fake.served()).length
     await page.click('nav button[data-nav="photos"]')
     await expect.poll(async () => page.locator('img').count(), { timeout: 30_000 }).toBeGreaterThan(10)
+
+    /*
+     * The library tiles on a device that predates the 1.8.0-beta2 preview endpoint. Checked
+     * HERE, on the photos screen: the broken-image count further down runs on the apps screen,
+     * where these tiles are no longer in the document — so it could never have seen them.
+     * The recording is a 1.7 device; it has no `/v2/photos/preview`, and every tile must end
+     * up served by the old module thumbnail instead.
+     */
+    // Settled = enough tiles have finished. Not "every <img> complete": the tiles are
+    // `loading="lazy"`, and one below the fold is never fetched, so it stays incomplete forever.
+    await expect
+      .poll(
+        async () =>
+          page.evaluate(
+            () => Array.from(document.querySelectorAll('img')).filter((img) => img.complete).length,
+          ),
+        { timeout: 30_000 },
+      )
+      .toBeGreaterThan(10)
+    const brokenTiles = await page.evaluate(
+      () =>
+        Array.from(document.querySelectorAll('img')).filter(
+          (img) => img.complete && img.naturalWidth === 0,
+        ).length,
+    )
+    expect(brokenTiles).toBe(0)
+    const photoRequests = (await fake.served()).slice(servedBeforePhotos)
+    expect(photoRequests.filter((line) => line.startsWith('GET /v2/photos/thumbnail')).length).toBeGreaterThan(10)
 
     await page.click('nav button[data-nav="apps"]')
     await expect.poll(async () => page.locator('section').count(), { timeout: 30_000 }).toBeGreaterThan(5)

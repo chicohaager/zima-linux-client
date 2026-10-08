@@ -212,6 +212,13 @@ const PHOTOS_PROBES: readonly Probe[] = [
     asks: 'index progress, so "0 hits" can be explained instead of looking like a bug',
   },
   {
+    id: 'photos.sources',
+    method: 'GET',
+    path: photos(PHOTOS.sources),
+    requires: 'photos',
+    asks: 'source folders — on 1.8.0-beta2 a stream item path is relative to one of them',
+  },
+  {
     id: 'photos.gallery-stream',
     method: 'GET',
     path: photos(PHOTOS.galleryStream),
