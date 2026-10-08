@@ -17,7 +17,7 @@ npm run verify        ✓ (rc=0)  type-check · lint · 397 Tests in 49 Dateien 
                     OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
                     der Code von `tail` — das Privacy-Gate war in Wahrheit rot (rc=1) mit vier
                     echten Adressen in neuen Kommentaren
-npm run verify:release ✓ (rc=0)  8 von 8 grün am 2026-10-08 für 2.0.3: Pakete aus 5364a01,
+npm run verify:release ✓ (rc=0)  9 von 9 grün am 2026-10-08 für 2.0.3: Pakete aus 1b7efab,
                     also NEUER als jede Build-Eingabe; Prüfsummendatei stimmt, Bau-Anspruch
                     nennt seinen Commit. Vorher stand hier monatelang "2 von 8 rot"
 npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
@@ -44,15 +44,22 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 5364a01, alle fünf in
-                    einem Lauf am 2026-10-08, 09:35–09:39; Electron 43.7.9 aus dem
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 1b7efab, alle fünf in
+                    einem Lauf am 2026-10-08, 10:03–10:10; Electron 43.7.9 aus dem
                     ausgepackten deb gelesen (`strings` → `Electron/43.7.9`).
                     `sha256sum -c SHA256SUMS-2.0.3.txt` → 5× OK. Distro-Matrix am gebauten
                     Paket 9/9 mit Reinstall-Schritt: getcap 1 Zeile, Launcher vorhanden,
                     Start mit Sandbox überall ok; chrome-sandbox 0755, weil die Container
                     unprivilegierte User-Namespaces erlauben (`unshare --user` → 0) — der
                     4755-Zweig läuft dort nicht. 2.0.2-Pakete: `dist/_stale-2026-10-08-pre-2.0.3/`,
-                    2.0.2-Matrix: `dist/matrix-v2.0.2/`. Das AppImage startete ohne FUSE
+                    2.0.2-Matrix: `dist/matrix-v2.0.2/`. Der erste 2.0.3-Bau (09:35, AppImage
+                    noch mit Leerzeichen im Namen) liegt in `dist/_stale-2026-10-08-2.0.3-space/`,
+                    seine Matrix in `dist/matrix-2.0.3-space/`. 🔴 Neu ab 2.0.3: das AppImage
+                    heißt `ZimaOS.Client-<version>.AppImage`. Gemessen am veröffentlichten
+                    v2.0.2: die Prüfsummendatei nannte den Namen mit Leerzeichen, GitHub lieferte
+                    ihn mit Punkt aus — `sha256sum -c` konnte das AppImage nie prüfen, mit
+                    `--ignore-missing` übersprang es dasselbe still. Release-Tor Regel 9 sperrt
+                    Leerzeichen jetzt. Das AppImage startete ohne FUSE
                     (`APPIMAGE_EXTRACT_AND_RUN=1`) erst im zweiten Anlauf: das Wayland-Urteil
                     gilt je Electron-Version, der erste Start unter 43.7.9 malte nie, der
                     zweite wechselte selbst auf X11 (`platform.relaunch-on-x11`, ok)
