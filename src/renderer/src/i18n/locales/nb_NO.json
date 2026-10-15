@@ -77,6 +77,7 @@
     "switchToFolder": "Bla i en mappe",
     "switchToLibrary": "Tilbake til biblioteket",
     "countSummary": "{{shown}} av {{total}} vist",
+    "loadMore": "Last inn flere",
     "indexed": "{{processed}} av {{total}} indeksert",
     "pending": "{{count}} gjenstår",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Pågående operasjoner",
     "tasksHint": "Kopiering og flytting kjører på enheten, så de fortsetter også når dette vinduet er opptatt.",
     "countSummary": "{{shown}} av {{total}} oppføringer vist",
+    "loadMore": "Last inn flere",
     "sortedBy": "sortert etter {{field}}",
     "changeSort": "endre",
     "ascending": "stigende",

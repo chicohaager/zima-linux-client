@@ -77,6 +77,7 @@
     "switchToFolder": "Ordner durchsehen",
     "switchToLibrary": "Zurück zur Bibliothek",
     "countSummary": "{{shown}} von {{total}} angezeigt",
+    "loadMore": "Weitere laden",
     "indexed": "{{processed}} von {{total}} indexiert",
     "pending": "{{count}} offen",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Laufende Vorgänge",
     "tasksHint": "Kopieren und Verschieben laufen auf dem Gerät und gehen weiter, auch wenn dieses Fenster beschäftigt ist.",
     "countSummary": "{{shown}} von {{total}} Einträgen angezeigt",
+    "loadMore": "Weitere laden",
     "sortedBy": "sortiert nach {{field}}",
     "changeSort": "ändern",
     "ascending": "aufsteigend",

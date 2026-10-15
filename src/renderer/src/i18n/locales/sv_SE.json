@@ -77,6 +77,7 @@
     "switchToFolder": "Bläddra i en mapp",
     "switchToLibrary": "Tillbaka till biblioteket",
     "countSummary": "{{shown}} av {{total}} visas",
+    "loadMore": "Läs in fler",
     "indexed": "{{processed}} av {{total}} indexerade",
     "pending": "{{count}} återstår",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Pågående åtgärder",
     "tasksHint": "Kopiering och flyttning körs på enheten, så de fortsätter även när det här fönstret är upptaget.",
     "countSummary": "{{shown}} av {{total}} poster visas",
+    "loadMore": "Läs in fler",
     "sortedBy": "sorterat efter {{field}}",
     "changeSort": "ändra",
     "ascending": "stigande",

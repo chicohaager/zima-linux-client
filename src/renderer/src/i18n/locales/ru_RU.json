@@ -77,6 +77,7 @@
     "switchToFolder": "Просмотреть папку",
     "switchToLibrary": "Назад в библиотеку",
     "countSummary": "показано {{shown}} из {{total}}",
+    "loadMore": "Загрузить ещё",
     "indexed": "{{processed}} из {{total}} проиндексировано",
     "pending": "осталось {{count}}",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Текущие операции",
     "tasksHint": "Копирование и перемещение выполняются на устройстве, поэтому продолжаются, даже когда это окно занято.",
     "countSummary": "показано {{shown}} из {{total}} записей",
+    "loadMore": "Загрузить ещё",
     "sortedBy": "сортировка по {{field}}",
     "changeSort": "изменить",
     "ascending": "по возрастанию",

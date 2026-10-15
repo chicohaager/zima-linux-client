@@ -72,7 +72,51 @@ const parse = <S extends z.ZodTypeAny>(
 }
 
 export type SortField = 'name' | 'size' | 'modified'
+
+/**
+ * 🔴 The UI's field name is not the API's. `sort=modified` is refused by the validator —
+ * measured 2026-10-15 on device A (ZimaOS v1.8.0) and device B, every path, every size:
+ *
+ *     400 {"message":"parameter \"sort\" in query has an error: value is not one of the
+ *          allowed values [\"date\",\"name\",\"size\",\"format\"]"}
+ *
+ * That was the "server rejected the path · sort=modified · size=300" testers sent since
+ * August: the folder mode of Photos and the "modified" order of Files failed on every visit.
+ */
+const API_SORT: Readonly<Record<SortField, 'name' | 'size' | 'date'>> = {
+  name: 'name',
+  size: 'size',
+  modified: 'date',
+}
 export type SortDirection = 'asc' | 'desc'
+
+/**
+ * Every entry of a directory, page by page, up to `max`.
+ *
+ * For callers that need the whole folder — the backup's duplicate check, the search walk —
+ * and used to read only page one: 1 000 and 500 entries, with the rest silently absent.
+ * `truncated` says so out loud when `max` stops the walk.
+ */
+export const listEveryEntry = async (
+  ctx: DeviceContext,
+  params: { readonly path: string; readonly pageSize?: number; readonly max?: number },
+): Promise<Result<{ readonly entries: readonly ZimaFile[]; readonly total: number; readonly truncated: boolean }>> => {
+  const pageSize = params.pageSize ?? 500
+  const max = params.max ?? 100_000
+  const entries: ZimaFile[] = []
+  let total = 0
+  for (let index = 1; ; index += 1) {
+    const page = await listDirectory(ctx, { path: params.path, index, size: pageSize })
+    if (isErr(page)) return page
+    total = page.value.total
+    entries.push(...page.value.entries)
+    if (entries.length >= max) return ok({ entries: entries.slice(0, max), total, truncated: true })
+    // An empty page ends the walk even if `all` claims more: a directory that shrinks while
+    // it is read must not turn this into an endless loop.
+    if (page.value.entries.length === 0 || entries.length >= total) break
+  }
+  return ok({ entries, total, truncated: false })
+}
 
 /**
  * One page of a directory.
@@ -95,7 +139,7 @@ export const listDirectory = async (
       path: params.path,
       index: params.index ?? 1,
       size: params.size ?? 200,
-      sort: params.sort ?? 'name',
+      sort: API_SORT[params.sort ?? 'name'],
       direction: params.direction ?? 'asc',
     },
   })
@@ -109,7 +153,16 @@ export const listDirectory = async (
     // fine HERE and only here: the request succeeded and the folder really is empty. A
     // missing path is a 404 and never reaches this line.
     entries: (parsed.value.content ?? []).map(toFile),
-    total: parsed.value.total,
+    /*
+     * 🔴 `all`, not `total`. Measured 2026-10-15 on device A (v1.8.0), three directories, pages of 40:
+     *
+     *     107-entry folder   index=1 → total=40 all=107   index=3 → total=27 all=107
+     *     /DATA                index=1 → total=40 all=96
+     *
+     * `total` is the length of THIS page. Every caller read it as the size of the directory,
+     * so "is there more?" was never true and the count line said "40 of 40".
+     */
+    total: parsed.value.all,
     index: parsed.value.index,
     size: parsed.value.size,
   })
@@ -146,7 +199,7 @@ export const searchDirectory = async (
   while (queue.length > 0) {
     const next = queue.shift()
     if (next === undefined) break
-    const page = await listDirectory(ctx, { path: next.path, size: 500 })
+    const page = await listEveryEntry(ctx, { path: next.path, max: maxEntries - scanned + 1 })
     if (isErr(page)) {
       // A folder we may not read must not abort the whole search, but it must not be
       // silently skipped either — 'forbidden-path' and 'not-found' are expected while

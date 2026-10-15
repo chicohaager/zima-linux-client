@@ -77,6 +77,7 @@
     "switchToFolder": "Brabhsáil fillteán",
     "switchToLibrary": "Ar ais go dtí an leabharlann",
     "countSummary": "{{shown}} as {{total}} á dtaispeáint",
+    "loadMore": "Lódáil tuilleadh",
     "indexed": "{{processed}} as {{total}} innéacsaithe",
     "pending": "{{count}} fágtha",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Oibríochtaí ar siúl",
     "tasksHint": "Ritheann cóipeáil agus bogadh ar an ngléas, mar sin leanann siad ar aghaidh fiú nuair atá an fhuinneog seo gnóthach.",
     "countSummary": "{{shown}} as {{total}} iontráil á dtaispeáint",
+    "loadMore": "Lódáil tuilleadh",
     "sortedBy": "sórtáilte de réir {{field}}",
     "changeSort": "athraigh",
     "ascending": "ardaitheach",

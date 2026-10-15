@@ -77,6 +77,7 @@
     "switchToFolder": "Procházet složku",
     "switchToLibrary": "Zpět do knihovny",
     "countSummary": "{{shown}} z {{total}} zobrazeno",
+    "loadMore": "Načíst další",
     "indexed": "{{processed}} z {{total}} zaindexováno",
     "pending": "{{count}} čeká",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Probíhající operace",
     "tasksHint": "Kopírování a přesouvání běží na zařízení, takže pokračují i když je toto okno zaneprázdněné.",
     "countSummary": "{{shown}} z {{total}} položek zobrazeno",
+    "loadMore": "Načíst další",
     "sortedBy": "seřazeno podle {{field}}",
     "changeSort": "změnit",
     "ascending": "vzestupně",

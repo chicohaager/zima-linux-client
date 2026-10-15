@@ -1,4 +1,12 @@
-import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query'
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type InfiniteData,
+  type UseInfiniteQueryResult,
+  type UseQueryResult,
+} from '@tanstack/react-query'
 import type { ResponseOf } from '@shared/contract'
 import { unwrap } from '../../shared/lib/ipc'
 
@@ -33,13 +41,32 @@ export const useDirectory = (
   path: string | null,
   sort: 'name' | 'size' | 'modified',
   direction: 'asc' | 'desc',
-): UseQueryResult<Listing> =>
-  useQuery({
+): UseInfiniteQueryResult<Listing> =>
+  useInfiniteQuery({
     queryKey: ['files', 'list', path, sort, direction],
-    queryFn: async () =>
-      unwrap(await window.zima.listFiles({ path: path ?? '', index: 1, size: 500, sort, direction })),
+    queryFn: async ({ pageParam }) =>
+      unwrap(
+        await window.zima.listFiles({ path: path ?? '', index: pageParam, size: PAGE, sort, direction }),
+      ),
+    initialPageParam: 1,
+    /*
+     * 🔴 Until 2026-10-15 only page one was ever fetched: a folder of 1 200 files showed 500.
+     * `total` is the size of the whole directory (the API's `all`, see files.ts); `index`
+     * is a 1-based page number — measured on device A, index=2,size=10 → entries 10..19.
+     */
+    getNextPageParam: (last, _all, lastIndex) => (lastIndex * PAGE < last.total ? lastIndex + 1 : undefined),
+    // The screen keeps reading one listing; the pages are merged here, not at every use.
+    select: (data: InfiniteData<Listing, number>): Listing => {
+      const first = data.pages[0]
+      return {
+        ...(first as Listing),
+        entries: data.pages.flatMap((page) => page.entries),
+      }
+    },
     enabled: path !== null,
   })
+
+const PAGE = 500
 
 export const usePins = (): UseQueryResult<Pins> =>
   useQuery({ queryKey: ['files', 'pins'], queryFn: async () => unwrap(await window.zima.listPins({})) })

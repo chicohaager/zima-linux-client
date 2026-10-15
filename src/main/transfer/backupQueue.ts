@@ -5,7 +5,7 @@ import { isVisualName } from '@shared/media'
 import { isErr, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import type { DeviceContext } from '@main/zima/client'
-import { listDirectory } from '@main/zima/files'
+import { listEveryEntry } from '@main/zima/files'
 import { uploadFile } from './upload'
 
 /**
@@ -145,12 +145,13 @@ const scan = async (
  * One listing instead of one request per file: with 5000 photos the per-file variant makes
  * 5000 round trips before the first byte is uploaded.
  */
-const existingIndex = async (
+export const existingIndex = async (
   ctx: DeviceContext,
   destination: string,
 ): Promise<Map<string, number>> => {
   const index = new Map<string, number>()
-  const page = await listDirectory(ctx, { path: destination, size: 1_000 })
+  // Every page: with one page of 1 000, file 1 001 onward was never recognised as present.
+  const page = await listEveryEntry(ctx, { path: destination })
   if (isErr(page)) {
     // A destination we cannot list is not a reason to stop: it may simply not exist yet. The
     // consequence is that nothing can be recognised as a duplicate, which is the safe

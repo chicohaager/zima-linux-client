@@ -2526,3 +2526,31 @@ grünen prüfen den Altbestand), Titel 3 von 4 rot.
 npm run verify   ✓ rc=0 am Stück — 397 Tests in 49 Dateien, build, build-gate, i18n, privacy
 npx playwright test   ✓ 5 von 5
 ```
+
+## 2026-10-15 — Ordnermodus und Dateilisten: Ursache der Tester-400 gemessen, Paging repariert (ZimaOS v1.8.0 auf Gerät A)
+
+**Hypothese (b) des Fedora-Berichts ist bestätigt.** Der Validator der Datei-API lehnt `sort=modified` ab — gemessen auf Gerät A (v1.8.0)
+und Gerät B, jeder Pfad, jede Seitengröße:
+`400 {"message":"parameter \"sort\" in query has an error: value is not one of the allowed values [\"date\",\"name\",\"size\",\"format\"]"}`.
+Der Fotos-Ordnermodus schickte immer `modified` und scheiterte darum bei jedem Besuch; der Dateien-Reiter nur bei Sortierung „geändert“.
+`files.ts` übersetzt jetzt `modified → date` (`API_SORT`). Ob ältere Firmware `modified` annahm, ist unbekannt.
+
+**Die Meldung „Das Gerät lehnt diesen Pfad ab“ war falsch adressiert.** Eine 400 des Validators (`parameter "…" in … has an error`) wird jetzt als
+`parameters` gemeldet, mit dem Satz des Geräts als Detail; ein nacktes `invalid path` bleibt `forbidden-path` (Gegenfall-Test).
+
+**`total` ist nicht die Ordnergröße.** Gemessen: `total` = Länge der gelieferten Seite, `all` = Einträge im Ordner (107er-Ordner, Seiten à 40:
+total 40/40/27, all 107). Jeder Aufrufer las `total`. Folgen bis heute: Fotos-Ordnermodus max. 300, Dateien-Reiter max. 500, Suche max. 500 je Ordner,
+Backup-Abgleich max. 1 000 Dateien im Ziel — der Rest fehlte still, und die Zählzeile sagte „40 von 40“. Jetzt: `DirectoryPage.total = all`,
+`listEveryEntry` liest alle Seiten (Backup, Suche), Fotos und Dateien laden per „Weitere laden“ nach; Fotos-Bibliothek ebenso über `next_cursor`.
+
+**Belege:** `npm run verify` 411/411, Build-/i18n-/Privacy-Tor sauber; 9 neue Tests am alten Code rot (Gegenfälle grün). Live im Dev-Client gegen Gerät A:
+Bibliothek mit Seitengröße 50 → 50/100/106 von 106, Knopf verschwindet; Ordnermodus `/media/ZimaOS-HD` mit Seitengröße 40 → 3/36/41 von 96, 41 Bilder
+am Gerät mit derselben Endungsliste gezählt (Testgrößen danach auf 120/300 zurückgestellt). Dateien-Reiter `/DATA`: „96 von 96“. Nicht live geklickt:
+Sortierung „geändert“ im Dateien-Reiter, Backup und Suche (nur Unit-Tests).
+
+**Offen:** Die Fotos-Ordner-Zählzeile zählt Bilder gegen alle Einträge (Ordner, Nicht-Bilder): „41 von 96“. Ohne Verbindung zeigt Fotos „In diesem
+Ordner liegen keine Bilder oder Videos“ statt eines Hinweises auf die fehlende Verbindung.
+
+**Start auf dieser Maschine:** aus einer `systemd-run --user`-Unit bricht Electron ab (`FATAL setuid_sandbox_host`; Kernel: `profile="unprivileged_userns"
+… capname="sys_admin"` DENIED). Aus dem VS-Code-Terminal läuft es, weil dort das Profil `snap.code.code` gilt (`ALLOWED`). Der Satz oben „funktioniert
+auf dieser Maschine“ gilt also nur für Starts aus diesem Terminal.
