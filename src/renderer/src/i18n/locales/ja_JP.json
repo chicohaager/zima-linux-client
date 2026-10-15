@@ -77,6 +77,7 @@
     "switchToFolder": "フォルダーを見る",
     "switchToLibrary": "ライブラリに戻る",
     "countSummary": "{{total}} 件中 {{shown}} 件を表示",
+    "loadMore": "さらに読み込む",
     "indexed": "{{total}} 件中 {{processed}} 件を索引化",
     "pending": "残り {{count}} 件",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "実行中の操作",
     "tasksHint": "コピーと移動はデバイス上で実行されるため、このウィンドウが忙しくても続きます。",
     "countSummary": "{{total}} 件中 {{shown}} 件を表示",
+    "loadMore": "さらに読み込む",
     "sortedBy": "{{field}} で並べ替え",
     "changeSort": "変更",
     "ascending": "昇順",

@@ -77,6 +77,7 @@
     "switchToFolder": "Przeglądaj folder",
     "switchToLibrary": "Wróć do biblioteki",
     "countSummary": "{{shown}} z {{total}} pokazanych",
+    "loadMore": "Wczytaj więcej",
     "indexed": "{{processed}} z {{total}} zindeksowanych",
     "pending": "{{count}} oczekuje",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Trwające operacje",
     "tasksHint": "Kopiowanie i przenoszenie działają na urządzeniu, więc trwają dalej, nawet gdy to okno jest zajęte.",
     "countSummary": "{{shown}} z {{total}} pozycji pokazanych",
+    "loadMore": "Wczytaj więcej",
     "sortedBy": "posortowane wg {{field}}",
     "changeSort": "zmień",
     "ascending": "rosnąco",

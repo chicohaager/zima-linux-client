@@ -77,6 +77,7 @@
     "switchToFolder": "Een map doorbladeren",
     "switchToLibrary": "Terug naar de bibliotheek",
     "countSummary": "{{shown}} van {{total}} getoond",
+    "loadMore": "Meer laden",
     "indexed": "{{processed}} van {{total}} geïndexeerd",
     "pending": "nog {{count}} te gaan",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Lopende bewerkingen",
     "tasksHint": "Kopiëren en verplaatsen gebeuren op het apparaat en gaan dus door, ook als dit venster bezig is.",
     "countSummary": "{{shown}} van {{total}} items getoond",
+    "loadMore": "Meer laden",
     "sortedBy": "gesorteerd op {{field}}",
     "changeSort": "wijzigen",
     "ascending": "oplopend",

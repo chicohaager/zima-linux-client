@@ -77,6 +77,7 @@
     "switchToFolder": "浏览文件夹",
     "switchToLibrary": "返回图库",
     "countSummary": "已显示 {{shown}}/{{total}}",
+    "loadMore": "加载更多",
     "indexed": "已索引 {{processed}}/{{total}}",
     "pending": "还剩 {{count}} 个",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "正在进行的操作",
     "tasksHint": "复制和移动在设备上运行，因此即使此窗口正忙也会继续。",
     "countSummary": "已显示 {{shown}}/{{total}} 个条目",
+    "loadMore": "加载更多",
     "sortedBy": "按{{field}}排序",
     "changeSort": "更改",
     "ascending": "升序",

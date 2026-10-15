@@ -244,6 +244,28 @@ export const request = async <T>(
       return request<T>(host, port, path, opts)
     }
 
+    /*
+     * A 400 from the request validator names the parameter it refused — measured 2026-10-15:
+     * `parameter "sort" in query has an error: value is not one of the allowed values […]`.
+     * Reported as "the device rejects this path" for two months, which sent every reader to
+     * the directory instead of to the parameter. The device's own sentence goes into the
+     * message; it contains only the parameter name and the allowed values, nothing the user
+     * typed.
+     */
+    const validatorMessage = (body as { message?: unknown } | null)?.message
+    if (
+      response.status === 400 &&
+      typeof validatorMessage === 'string' &&
+      /^parameter "[^"]+" in (query|path|header|body) has an error/.test(validatorMessage)
+    ) {
+      return err(
+        appError('parameters', validatorMessage.slice(0, 300), 'error.parameters', {
+          ...context,
+          status: 400,
+        }),
+      )
+    }
+
     // No envelope and a bare 400: this is the files API's "invalid path" case, kept as
     // its own kind so the UI can say the server refuses the path instead of blaming
     // the user's input.

@@ -77,6 +77,7 @@
     "switchToFolder": "Bir klasöre göz at",
     "switchToLibrary": "Kitaplığa dön",
     "countSummary": "{{total}} içinden {{shown}} gösteriliyor",
+    "loadMore": "Daha fazla yükle",
     "indexed": "{{total}} içinden {{processed}} dizinlendi",
     "pending": "{{count}} bekliyor",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Süren işlemler",
     "tasksHint": "Kopyalama ve taşıma cihazda çalışır, bu yüzden bu pencere meşgulken bile devam eder.",
     "countSummary": "{{total}} kayıttan {{shown}} tanesi gösteriliyor",
+    "loadMore": "Daha fazla yükle",
     "sortedBy": "{{field}} ölçütüne göre sıralı",
     "changeSort": "değiştir",
     "ascending": "artan",

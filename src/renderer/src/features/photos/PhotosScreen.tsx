@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
 import { isVideoName } from '@shared/media'
 import { Card, Muted, Pill, SectionTitle } from '../../shared/ui/Card'
 import { Badge, Button, ErrorNote } from '../../shared/ui/Controls'
@@ -28,6 +28,9 @@ import { IndexProgress } from './IndexProgress'
  * visit for a feature he will never install. The mode is still stated — the badge below says
  * "Folder" — but it is stated as what this screen IS, not as what the device lacks.
  */
+const GALLERY_PAGE = 120
+const FOLDER_PAGE = 300
+
 export const PhotosScreen = (): React.JSX.Element => {
   const { t } = useTranslation()
   const [folder, setFolder] = useState<string | null>(null)
@@ -45,18 +48,40 @@ export const PhotosScreen = (): React.JSX.Element => {
   })
   const root = folder ?? volumes.data?.[0]?.path ?? null
 
-  const gallery = useQuery({
+  /*
+   * 🔴 Both grids are paged, and until 2026-10-15 only the first page was ever asked for:
+   * a library of 2 000 pictures showed 120 and said "120 of 2000 shown", with no way to the
+   * rest. Measured on device A (ZimaOS v1.8.0): the stream honours `limit` and continues by
+   * `next_cursor` (11 pages of 10 = 106 distinct ids = `total`); the files API's `index` is
+   * a 1-based PAGE number, not an offset (index=2,size=10 -> entries 10..19).
+   */
+  const gallery = useInfiniteQuery({
     queryKey: ['photos', 'gallery'],
-    queryFn: async () => unwrap(await window.zima.photoGallery({ limit: 120, cursor: null })),
+    queryFn: async ({ pageParam }) =>
+      unwrap(await window.zima.photoGallery({ limit: GALLERY_PAGE, cursor: pageParam })),
+    initialPageParam: null as string | null,
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
     enabled: hasLibrary && folder === null,
   })
 
-  const grid = useQuery({
+  const grid = useInfiniteQuery({
     queryKey: ['photos', 'folder', root],
-    queryFn: async () =>
-      unwrap(await window.zima.photoFolderGrid({ path: root ?? '/', index: 1, size: 300 })),
+    queryFn: async ({ pageParam }) =>
+      unwrap(
+        await window.zima.photoFolderGrid({ path: root ?? '/', index: pageParam, size: FOLDER_PAGE }),
+      ),
+    initialPageParam: 1,
+    // `total` counts every entry of the directory (folders and non-pictures included), so
+    // it is the right measure for "is there another page", not for "how many pictures".
+    getNextPageParam: (last, _all, lastIndex) =>
+      lastIndex * FOLDER_PAGE < last.total ? lastIndex + 1 : undefined,
     enabled: root !== null && (folder !== null || !hasLibrary),
   })
+  const galleryAssets = gallery.data?.pages.flatMap((page) => page.assets) ?? []
+  const galleryTotal = gallery.data?.pages[0]?.total
+  const gridEntries = grid.data?.pages.flatMap((page) => page.entries) ?? []
+  const gridFolders = grid.data?.pages.flatMap((page) => page.folders) ?? []
+  const gridTotal = grid.data?.pages[0]?.total
 
   // The semantic index state, read for one reason: a search over a missing vision model
   // answers 200 with zero hits, which renders as "nothing found" — a statement about the
@@ -76,14 +101,14 @@ export const PhotosScreen = (): React.JSX.Element => {
   const gridError = asAppError(grid.error)
   const searchError = asAppError(search.error)
 
-  const libraryItems: readonly GridItem[] = (gallery.data?.assets ?? []).map((asset) => ({
+  const libraryItems: readonly GridItem[] = galleryAssets.map((asset) => ({
     path: asset.path,
     name: basename(asset.path),
     capturedMs: asset.captureTsMs,
     isVideo: asset.mediaType !== 'img',
     assetId: asset.fileId,
   }))
-  const folderItems: readonly GridItem[] = (grid.data?.entries ?? []).map((entry) => ({
+  const folderItems: readonly GridItem[] = gridEntries.map((entry) => ({
     path: entry.path,
     name: entry.name,
     capturedMs: entry.modifiedMs,
@@ -101,6 +126,7 @@ export const PhotosScreen = (): React.JSX.Element => {
   const showingFolder = folder !== null || !hasLibrary
   const items = showingSearch ? searchItems : showingFolder ? folderItems : libraryItems
   const up = root === null ? null : parentPath(root)
+  const pager = showingFolder ? grid : gallery
 
   /*
    * 🔴 `isLoading`, not `isPending` — and the difference was a permanent "Loading…".
@@ -227,10 +253,10 @@ export const PhotosScreen = (): React.JSX.Element => {
         </Pill>
       )}
 
-      {showingFolder && (grid.data?.folders ?? []).length > 0 && !showingSearch && (
+      {showingFolder && gridFolders.length > 0 && !showingSearch && (
         <Card className="mb-4">
           <div className="flex flex-wrap gap-2">
-            {(grid.data?.folders ?? []).map((entry) => (
+            {gridFolders.map((entry) => (
               <Button key={entry.path} variant="secondary" onClick={() => setFolder(entry.path)}>
                 <FolderIcon />
                 {entry.name}
@@ -260,7 +286,9 @@ export const PhotosScreen = (): React.JSX.Element => {
 
       <Card>
         {loading && items.length === 0 && <Muted>{t('photos.loading')}</Muted>}
-        {items.length === 0 && !loading && (
+        {/* Not under an error: "no pictures here" next to "the device refused" is two
+            contradicting statements, and only the error is true. */}
+        {items.length === 0 && !loading && (showingSearch ? searchError : showingFolder ? gridError : galleryError) === null && (
           <Muted>{showingSearch ? t('photos.noHits') : t('photos.noneHere')}</Muted>
         )}
         {items.length > 0 && (
@@ -277,10 +305,20 @@ export const PhotosScreen = (): React.JSX.Element => {
               total: showingSearch
                 ? search.data.total
                 : showingFolder
-                  ? (grid.data?.total ?? items.length)
-                  : (gallery.data?.total ?? items.length),
+                  ? (gridTotal ?? items.length)
+                  : (galleryTotal ?? items.length),
             })}
           </Muted>
+        )}
+        {!showingSearch && pager.hasNextPage && (
+          <Button
+            variant="secondary"
+            className="mt-3"
+            disabled={pager.isFetchingNextPage}
+            onClick={() => void pager.fetchNextPage()}
+          >
+            {pager.isFetchingNextPage ? t('photos.loading') : t('photos.loadMore')}
+          </Button>
         )}
       </Card>
     </>

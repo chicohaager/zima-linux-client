@@ -17,6 +17,7 @@ import {
 import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 import { breadcrumbs, parentPath } from '../../shared/lib/format'
 import { FileList, type Entry } from './FileList'
+import { ListingFooter } from './ListingFooter'
 import { TaskList } from './TaskList'
 import { TrashPanel } from './TrashPanel'
 import { useDirectory, useFileActions, useSearch, useTasks } from './useFiles'
@@ -330,14 +331,7 @@ export const FilesScreen = (): React.JSX.Element => {
           <FileList entries={entries} selected={selected} onToggle={toggle} onOpen={open} />
         )}
 
-        {listing.data !== undefined && search.result === undefined && (
-          <Muted className="mt-3">
-            {t('files.countSummary', {
-              shown: listing.data.entries.length,
-              total: listing.data.total,
-            })}
-          </Muted>
-        )}
+        {search.result === undefined && <ListingFooter listing={listing} />}
       </Card>
     </>
   )

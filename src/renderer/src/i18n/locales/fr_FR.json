@@ -77,6 +77,7 @@
     "switchToFolder": "Parcourir un dossier",
     "switchToLibrary": "Retour à la bibliothèque",
     "countSummary": "{{shown}} sur {{total}} affichés",
+    "loadMore": "Charger plus",
     "indexed": "{{processed}} sur {{total}} indexés",
     "pending": "{{count}} en attente",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Opérations en cours",
     "tasksHint": "La copie et le déplacement s’exécutent sur l’appareil ; ils continuent donc même quand cette fenêtre est occupée.",
     "countSummary": "{{shown}} entrées sur {{total}} affichées",
+    "loadMore": "Charger plus",
     "sortedBy": "trié par {{field}}",
     "changeSort": "modifier",
     "ascending": "croissant",

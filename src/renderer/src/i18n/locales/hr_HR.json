@@ -77,6 +77,7 @@
     "switchToFolder": "Pregledaj mapu",
     "switchToLibrary": "Natrag u zbirku",
     "countSummary": "prikazano {{shown}} od {{total}}",
+    "loadMore": "Učitaj još",
     "indexed": "{{processed}} od {{total}} indeksirano",
     "pending": "{{count}} na čekanju",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Radnje u tijeku",
     "tasksHint": "Kopiranje i premještanje rade na uređaju, pa se nastavljaju i kad je ovaj prozor zauzet.",
     "countSummary": "prikazano {{shown}} od {{total}} stavki",
+    "loadMore": "Učitaj još",
     "sortedBy": "poredano po {{field}}",
     "changeSort": "promijeni",
     "ascending": "uzlazno",

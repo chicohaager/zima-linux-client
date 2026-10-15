@@ -77,6 +77,7 @@
     "switchToFolder": "ഒരു ഫോൾഡർ പരിശോധിക്കുക",
     "switchToLibrary": "ലൈബ്രറിയിലേക്ക് മടങ്ങുക",
     "countSummary": "{{total}}-ൽ {{shown}} കാണിക്കുന്നു",
+    "loadMore": "കൂടുതൽ ലോഡ് ചെയ്യുക",
     "indexed": "{{total}}-ൽ {{processed}} സൂചികപ്പെടുത്തി",
     "pending": "{{count}} ബാക്കി",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "നടക്കുന്ന പ്രവർത്തനങ്ങൾ",
     "tasksHint": "പകർത്തലും നീക്കലും ഉപകരണത്തിലാണ് നടക്കുന്നത്; അതിനാൽ ഈ വിൻഡോ തിരക്കിലായാലും അവ തുടരും.",
     "countSummary": "{{total}} എൻട്രികളിൽ {{shown}} കാണിക്കുന്നു",
+    "loadMore": "കൂടുതൽ ലോഡ് ചെയ്യുക",
     "sortedBy": "{{field}} അനുസരിച്ച് ക്രമീകരിച്ചു",
     "changeSort": "മാറ്റുക",
     "ascending": "ആരോഹണം",

@@ -77,6 +77,7 @@
     "switchToFolder": "Browse a folder",
     "switchToLibrary": "Back to the library",
     "countSummary": "{{shown}} of {{total}} shown",
+    "loadMore": "Load more",
     "indexed": "{{processed}} of {{total}} indexed",
     "pending": "{{count}} pending",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Running operations",
     "tasksHint": "Copying and moving run on the device, so they continue even when this window is busy.",
     "countSummary": "{{shown}} of {{total}} entries shown",
+    "loadMore": "Load more",
     "sortedBy": "sorted by {{field}}",
     "changeSort": "change",
     "ascending": "ascending",

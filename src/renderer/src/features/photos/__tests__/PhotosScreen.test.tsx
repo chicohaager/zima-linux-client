@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PhotosScreen } from '../PhotosScreen'
 
@@ -116,5 +116,98 @@ describe('PhotosScreen with the Photos module', () => {
     // folder half would look complete.
     await waitFor(() => expect(screen.getByText('photos.noneHere')).toBeTruthy())
     expect(screen.queryByText('photos.loading')).toBeNull()
+  })
+})
+
+/**
+ * 🔴 Paging — until 2026-10-15 both grids asked for page one and stopped. A library of
+ * 2 000 pictures showed 120 and said "120 of 2000 shown", with nothing to reach the rest.
+ * The fixtures copy the measured contracts of device A (ZimaOS v1.8.0): the gallery continues
+ * by `next_cursor`, the files API by a 1-based page `index`.
+ */
+const asset = (n: number): Record<string, unknown> => ({
+  fileId: `id${n}`,
+  path: `/media/sda/Photos/p${n}.jpg`,
+  width: 1,
+  height: 1,
+  captureTsMs: 0,
+  mediaType: 'img',
+  isFavorite: false,
+})
+const entry = (n: number): Record<string, unknown> => ({
+  path: `/DATA/f${n}.jpg`,
+  name: `f${n}.jpg`,
+  modifiedMs: 0,
+})
+
+describe('PhotosScreen paging', () => {
+  it('library: follows next_cursor on "load more" and appends, then hides the button', async () => {
+    const calls: Array<{ limit: number; cursor: string | null }> = []
+    install({
+      currentSession: async () => ({ ok: true, value: { capabilities: { photoLibrary: true } } }),
+      photoGallery: async (input: { limit: number; cursor: string | null }) => {
+        calls.push(input)
+        return input.cursor === null
+          ? { ok: true, value: { assets: [asset(1), asset(2)], total: 3, nextCursor: 'c2' } }
+          : { ok: true, value: { assets: [asset(3)], total: 3, nextCursor: null } }
+      },
+    })
+    draw()
+    await waitFor(() => expect(screen.getByAltText('p2.jpg')).toBeTruthy())
+    expect(screen.queryByAltText('p3.jpg')).toBeNull()
+    fireEvent.click(screen.getByText('photos.loadMore'))
+    await waitFor(() => expect(screen.getByAltText('p3.jpg')).toBeTruthy())
+    // The first page is still there — appended, not replaced.
+    expect(screen.getByAltText('p1.jpg')).toBeTruthy()
+    expect(calls.map((c) => c.cursor)).toEqual([null, 'c2'])
+    expect(screen.queryByText('photos.loadMore')).toBeNull()
+  })
+
+  it('library: no button when the device says there is no further page', async () => {
+    install({
+      currentSession: async () => ({ ok: true, value: { capabilities: { photoLibrary: true } } }),
+      photoGallery: async () => ({ ok: true, value: { assets: [asset(1)], total: 1, nextCursor: null } }),
+    })
+    draw()
+    await waitFor(() => expect(screen.getByAltText('p1.jpg')).toBeTruthy())
+    expect(screen.queryByText('photos.loadMore')).toBeNull()
+  })
+
+  it('folder: asks for page index 2 while index*size < total, and stops at the last page', async () => {
+    const indices: number[] = []
+    install({
+      photoFolderGrid: async (input: { index: number; size: number }) => {
+        indices.push(input.index)
+        // 301 entries in the directory, page size 300: exactly one more page exists.
+        return input.index === 1
+          ? { ok: true, value: { path: '/DATA', entries: [entry(1)], folders: [], total: 301 } }
+          : { ok: true, value: { path: '/DATA', entries: [entry(2)], folders: [], total: 301 } }
+      },
+    })
+    draw()
+    await waitFor(() => expect(screen.getByAltText('f1.jpg')).toBeTruthy())
+    fireEvent.click(screen.getByText('photos.loadMore'))
+    await waitFor(() => expect(screen.getByAltText('f2.jpg')).toBeTruthy())
+    expect(indices).toEqual([1, 2])
+    expect(screen.queryByText('photos.loadMore')).toBeNull()
+  })
+})
+
+describe('PhotosScreen with a failing grid', () => {
+  it('shows the error and NOT "no pictures here" — only one of the two is true', async () => {
+    install({
+      photoFolderGrid: async () => ({
+        ok: false,
+        error: {
+          kind: 'parameters',
+          message: 'parameter "sort" in query has an error',
+          i18nKey: 'error.parameters',
+          context: { status: 400 },
+        },
+      }),
+    })
+    draw()
+    await waitFor(() => expect(screen.getByText(/error\.parameters/)).toBeTruthy())
+    expect(screen.queryByText('photos.noneHere')).toBeNull()
   })
 })

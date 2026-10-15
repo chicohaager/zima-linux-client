@@ -77,6 +77,7 @@
     "switchToFolder": "Percorrer uma pasta",
     "switchToLibrary": "Voltar à biblioteca",
     "countSummary": "{{shown}} de {{total}} apresentados",
+    "loadMore": "Carregar mais",
     "indexed": "{{processed}} de {{total}} indexados",
     "pending": "{{count}} pendentes",
     "indexStatus": {
@@ -126,6 +127,7 @@
     "tasks": "Operações em curso",
     "tasksHint": "Copiar e mover são executados no dispositivo, por isso continuam mesmo quando esta janela está ocupada.",
     "countSummary": "{{shown}} de {{total}} entradas apresentadas",
+    "loadMore": "Carregar mais",
     "sortedBy": "ordenado por {{field}}",
     "changeSort": "alterar",
     "ascending": "ascendente",
