@@ -16,6 +16,7 @@ import {
   checkNoStrayChecksums,
   checkOneRun,
   checkVersionAgreement,
+  manifestBuildChange,
   sha256,
 } from "./release-checks.mjs";
 
@@ -63,7 +64,7 @@ export const selfTest = () => {
       codeCommit: "abc1234",
       codeCommitTime: now - 3600,
       dirtyBuildInputs: [],
-      packageBuildFieldsChanged: false,
+      manifestsChanged: {},
       maxSpreadMinutes: 60,
     };
     mutate?.(ctx, dist, docs);
@@ -221,7 +222,7 @@ export const selfTest = () => {
     checkNoNewerUncommittedInput,
     (ctx) => {
       ctx.dirtyBuildInputs = ["package.json"];
-      ctx.packageBuildFieldsChanged = false;
+      ctx.manifestsChanged = { "package.json": false };
     },
   );
   expectRed(
@@ -229,9 +230,70 @@ export const selfTest = () => {
     checkNoNewerUncommittedInput,
     (ctx) => {
       ctx.dirtyBuildInputs = ["package.json"];
-      ctx.packageBuildFieldsChanged = true;
+      ctx.manifestsChanged = { "package.json": true };
     },
   );
+  expectRed(
+    "package-lock.json edited in a build-relevant way",
+    checkNoNewerUncommittedInput,
+    (ctx) => {
+      ctx.dirtyBuildInputs = ["package-lock.json"];
+      ctx.manifestsChanged = { "package-lock.json": true };
+    },
+  );
+
+  /*
+   * Which manifest edits change the packaged bytes. Shapes copied from this repository's
+   * own package.json and package-lock.json (lockfileVersion 3). The Electron cases are the
+   * reason this exists: until 2026-10-16 an Electron bump did not count (see release-checks).
+   */
+  const pkgBase = {
+    version: "1.0.0",
+    main: "out/main/index.js",
+    scripts: { test: "vitest run" },
+    dependencies: { i18next: "^25.0.0" },
+    devDependencies: { electron: "^43.7.9", "electron-builder": "^26.0.0", vitest: "^4.1.0" },
+    build: { appId: "x" },
+  };
+  const lockBase = {
+    lockfileVersion: 3,
+    packages: {
+      "": { name: "x" },
+      "node_modules/i18next": { version: "25.0.0" },
+      "node_modules/electron": { version: "43.7.9", dev: true },
+      "node_modules/vitest": { version: "4.1.0", dev: true },
+      "node_modules/vitest/node_modules/tinypool": { version: "2.1.1", dev: true },
+    },
+  };
+  const edit = (base, change) => {
+    const copy = JSON.parse(JSON.stringify(base));
+    change(copy);
+    return copy;
+  };
+  const manifestCase = (name, file, base, change, expected) => {
+    const got = manifestBuildChange(file, base, edit(base, change));
+    results.push({
+      name: `${expected ? "counts" : "must NOT count"}: ${name}`,
+      ok: got === expected,
+      detail: `manifestBuildChange returned ${got}`,
+    });
+  };
+  manifestCase("package.json: electron bumped (a devDependency)", "package.json", pkgBase,
+    (p) => { p.devDependencies.electron = "^43.8.0"; }, true);
+  manifestCase("package.json: electron-builder bumped", "package.json", pkgBase,
+    (p) => { p.devDependencies["electron-builder"] = "^26.1.0"; }, true);
+  manifestCase("package.json: a runtime dependency bumped", "package.json", pkgBase,
+    (p) => { p.dependencies.i18next = "^25.1.0"; }, true);
+  manifestCase("package.json: vitest bumped", "package.json", pkgBase,
+    (p) => { p.devDependencies.vitest = "^5.0.0"; }, false);
+  manifestCase("package.json: only `scripts` edited", "package.json", pkgBase,
+    (p) => { p.scripts.lint = "eslint ."; }, false);
+  manifestCase("lockfile: electron resolved to a new version", "package-lock.json", lockBase,
+    (l) => { l.packages["node_modules/electron"].version = "43.8.0"; }, true);
+  manifestCase("lockfile: a shipped package resolved anew", "package-lock.json", lockBase,
+    (l) => { l.packages["node_modules/i18next"].version = "25.0.1"; }, true);
+  manifestCase("lockfile: a dev-only nested package resolved anew", "package-lock.json", lockBase,
+    (l) => { l.packages["node_modules/vitest/node_modules/tinypool"].version = "2.1.2"; }, false);
   expectGreen(
     "a document quoting a checksum that IS shipped",
     checkNoStrayChecksums,

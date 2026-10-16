@@ -3,7 +3,7 @@
 Desktop-Client für ZimaOS unter Linux — Dateien, Fotos, Apps und Geräteverwaltung, mit
 eingebautem ZeroTier und Tailscale, wenn es schon da ist.
 
-> **Branch `v2` · Version 2.0.3 · aktuelles Release
+> **Branch `v2` · Version 2.0.4 (noch nicht veröffentlicht) · aktuelles Release
 > [`v2.0.3`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.3) (2026-10-08)**
 > — eine Neuentwicklung des Clients. Die 0.9.x-Linie lebt auf
 > [`main`](https://github.com/chicohaager/zima-linux-client/tree/main) und im Tag

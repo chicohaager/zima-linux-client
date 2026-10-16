@@ -34,7 +34,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { BUILD_INPUTS, CHECKS, git } from "./release-checks.mjs";
+import { BUILD_INPUTS, CHECKS, MANIFESTS, git, manifestBuildChange } from "./release-checks.mjs";
 import { selfTest } from "./release-selftest.mjs";
 
 // --- context from the real repository -----------------------------------------------------
@@ -66,7 +66,6 @@ const buildRealContext = (root) => {
   });
 
   const inputs = BUILD_INPUTS.filter((p) => existsSync(join(root, p)));
-  const BUILD_FIELDS = ["version", "main", "dependencies", "build"];
 
   /**
    * The newest commit that can have changed the packaged bytes.
@@ -86,16 +85,16 @@ const buildRealContext = (root) => {
         .split("\n")
         .filter(Boolean)
         .filter((f) => inputs.some((i) => f === i || f.startsWith(`${i}/`)));
-      if (touched.some((f) => f !== "package.json")) return { h, t: Number(t) };
+      if (touched.some((f) => !MANIFESTS.includes(f))) return { h, t: Number(t) };
       try {
-        const now = JSON.parse(git(["show", `${h}:package.json`], root));
-        const before = JSON.parse(git(["show", `${h}^:package.json`], root));
-        if (
-          BUILD_FIELDS.some(
-            (f) => JSON.stringify(now[f]) !== JSON.stringify(before[f]),
-          )
-        )
-          return { h, t: Number(t) };
+        const relevant = touched.some((f) =>
+          manifestBuildChange(
+            f,
+            JSON.parse(git(["show", `${h}^:${f}`], root)),
+            JSON.parse(git(["show", `${h}:${f}`], root)),
+          ),
+        );
+        if (relevant) return { h, t: Number(t) };
       } catch {
         return { h, t: Number(t) }; // cannot compare (root commit) — treat as build-relevant
       }
@@ -112,17 +111,18 @@ const buildRealContext = (root) => {
     .map((l) => l.slice(3).trim())
     .filter((p) => inputs.some((i) => p === i || p.startsWith(`${i}/`)));
 
-  // Same field list as above: only these can change the packaged bytes.
-  let packageBuildFieldsChanged = false;
-  try {
-    const committed = JSON.parse(
-      git(["show", `${codeCommit}:package.json`], root),
-    );
-    packageBuildFieldsChanged = BUILD_FIELDS.some(
-      (f) => JSON.stringify(pkg[f]) !== JSON.stringify(committed[f]),
-    );
-  } catch {
-    packageBuildFieldsChanged = true; // cannot read the committed side — assume the worst
+  // Same rule as above: only a build-relevant difference makes an edited manifest count.
+  const manifestsChanged = {};
+  for (const f of MANIFESTS) {
+    try {
+      manifestsChanged[f] = manifestBuildChange(
+        f,
+        JSON.parse(git(["show", `HEAD:${f}`], root)),
+        JSON.parse(readFileSync(join(root, f), "utf8")),
+      );
+    } catch {
+      manifestsChanged[f] = true; // cannot read one side — assume the worst
+    }
   }
 
   return {
@@ -136,7 +136,7 @@ const buildRealContext = (root) => {
     codeCommit,
     codeCommitTime,
     dirtyBuildInputs,
-    packageBuildFieldsChanged,
+    manifestsChanged,
     maxSpreadMinutes: 60,
   };
 };
