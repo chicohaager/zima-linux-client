@@ -18,10 +18,50 @@ export const git = (args, cwd) =>
 export const BUILD_INPUTS = [
   "src",
   "package.json",
+  "package-lock.json",
   "electron.vite.config.ts",
   "build",
   "bin",
 ];
+
+/**
+ * What in the two manifests can change the packaged bytes.
+ *
+ * 🔴 `electron` and `electron-builder` are devDependencies by convention, yet the first IS the
+ * shipped runtime and the second writes the package. Until 2026-10-16 only `version`, `main`,
+ * `dependencies` and `build` counted and the lockfile was no build input at all: the bump
+ * to Electron 43.8.0 (4156169) was invisible, and packages still carrying 43.7.9 would have
+ * passed as current. Test tools (vitest and the like) still do not count — a gate that demands
+ * a 100 MB rebuild for a test-runner bump gets switched off.
+ */
+export const BUILD_FIELDS = ["version", "main", "dependencies", "build"];
+export const BUILD_DEV_DEPENDENCIES = ["electron", "electron-builder"];
+
+export const packageBuildView = (pkg) => ({
+  ...Object.fromEntries(BUILD_FIELDS.map((f) => [f, pkg[f] ?? null])),
+  devDependencies: Object.fromEntries(
+    BUILD_DEV_DEPENDENCIES.map((d) => [d, pkg.devDependencies?.[d] ?? null]),
+  ),
+});
+
+/** Installed versions of everything shipped (not dev-only) plus the two build devDependencies. */
+export const lockBuildView = (lock) => {
+  const out = {};
+  for (const [path, entry] of Object.entries(lock.packages ?? {})) {
+    if (path === "") continue;
+    const name = path.slice(path.lastIndexOf("node_modules/") + "node_modules/".length);
+    if (entry.dev !== true || BUILD_DEV_DEPENDENCIES.includes(name)) out[path] = entry.version ?? null;
+  }
+  return out;
+};
+
+/** True when `file` (package.json or package-lock.json) differs in a build-relevant way. */
+export const manifestBuildChange = (file, before, after) => {
+  const view = file === "package-lock.json" ? lockBuildView : packageBuildView;
+  return JSON.stringify(view(before)) !== JSON.stringify(view(after));
+};
+
+export const MANIFESTS = ["package.json", "package-lock.json"];
 
 export const sha256 = (path) => {
   const h = hash("sha256");
@@ -110,7 +150,7 @@ export const checkNoNewerUncommittedInput = (ctx) => {
     .filter((p) => existsSync(p))
     .reduce((min, p) => Math.min(min, statSync(p).mtimeMs), Infinity);
   const ahead = ctx.dirtyBuildInputs.filter((p) => {
-    if (p === "package.json") return ctx.packageBuildFieldsChanged;
+    if (MANIFESTS.includes(p)) return ctx.manifestsChanged[p] === true;
     const full = join(ctx.root, p);
     return existsSync(full) && statSync(full).mtimeMs > oldest;
   });

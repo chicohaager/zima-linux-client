@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.3 · **Stand:** 2026-10-16
+**Branch:** `v2` · **Version:** 2.0.4 (gebaut, nicht veröffentlicht) · **Stand:** 2026-10-16
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -18,14 +18,14 @@ npm run verify        ✓ (rc=0)  type-check · lint (0 Warnungen) · 420 Tests 
                     OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
                     der Code von `tail` — das Privacy-Gate war in Wahrheit rot (rc=1) mit vier
                     echten Adressen in neuen Kommentaren
-npm run verify:release ✗ (rc=1)  seit 2026-10-15 rot, 2 von 9 (am 2026-10-16 vor dem Commit
-                    3, die dritte zählte die noch nicht committeten Dateien): die Pakete
-                    in dist/ stammen aus 1b7efab (2.0.3, veröffentlicht); 8e087f0 und der
-                    Lint-Umbau haben Dateien unter src/ geändert — ohne neues Paket ist
-                    der Bau-Anspruch damit alt. Gilt fürs NÄCHSTE Release, nicht für 2.0.3.
-                    Am 2026-10-08 waren es 9 von 9 grün. Vorher stand hier monatelang "2 von 8 rot"
+npm run verify:release ✓ (rc=0)  9 von 9 am 2026-10-16 gegen die 2.0.4-Pakete aus 4156169;
+                    Selbsttest 26/26. Am selben Tag eine Lücke des Tors geschlossen: ein
+                    Electron-Sprung (devDependency) und das Lockfile zählten nicht als
+                    Bau-Eingabe — das Tor nannte bebb192 statt 4156169 und hätte die
+                    verworfenen 43.7.9-Pakete als aktuell durchgelassen. Davor seit
+                    2026-10-15 rot (2 von 9, Pakete aus 1b7efab)
 npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
-                    (2026-10-08); der fünfte fährt das Gerät OHNE Photos-Modul, der dritte
+                    (2026-10-16, vorher 2026-10-08); der fünfte fährt das Gerät OHNE Photos-Modul, der dritte
                     prüft seit heute die Foto-Kacheln auf dem Fotos-Bildschirm
 i18n gate           clean — 298 Schlüssel in en_US, alle 28 Kataloge 100 % (2026-10-16; vorher
                     26 bei 293, die fünf `apps.window.*` fehlten). Seit 2026-10-16 FORDERT
@@ -50,25 +50,26 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 1b7efab, alle fünf in
-                    einem Lauf am 2026-10-08, 10:03–10:10; Electron 43.7.9 aus dem
-                    ausgepackten deb gelesen (`strings` → `Electron/43.7.9`).
-                    `sha256sum -c SHA256SUMS-2.0.3.txt` → 5× OK. Distro-Matrix am gebauten
-                    Paket 9/9 mit Reinstall-Schritt: getcap 1 Zeile, Launcher vorhanden,
-                    Start mit Sandbox überall ok; chrome-sandbox 0755, weil die Container
-                    unprivilegierte User-Namespaces erlauben (`unshare --user` → 0) — der
-                    4755-Zweig läuft dort nicht. 2.0.2-Pakete: `dist/_stale-2026-10-08-pre-2.0.3/`,
-                    2.0.2-Matrix: `dist/matrix-v2.0.2/`. Der erste 2.0.3-Bau (09:35, AppImage
-                    noch mit Leerzeichen im Namen) liegt in `dist/_stale-2026-10-08-2.0.3-space/`,
-                    seine Matrix in `dist/matrix-2.0.3-space/`. 🔴 Neu ab 2.0.3: das AppImage
-                    heißt `ZimaOS.Client-<version>.AppImage`. Gemessen am veröffentlichten
-                    v2.0.2: die Prüfsummendatei nannte den Namen mit Leerzeichen, GitHub lieferte
-                    ihn mit Punkt aus — `sha256sum -c` konnte das AppImage nie prüfen, mit
-                    `--ignore-missing` übersprang es dasselbe still. Release-Tor Regel 9 sperrt
-                    Leerzeichen jetzt. Das AppImage startete ohne FUSE
-                    (`APPIMAGE_EXTRACT_AND_RUN=1`) erst im zweiten Anlauf: das Wayland-Urteil
-                    gilt je Electron-Version, der erste Start unter 43.7.9 malte nie, der
-                    zweite wechselte selbst auf X11 (`platform.relaunch-on-x11`, ok)
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 4156169 (2.0.4), alle
+                    fünf in einem Lauf am 2026-10-16, 20:10–20:15; Electron 43.8.0 aus dem
+                    ausgepackten deb gelesen (`strings` → `Electron/43.8.0`, `dpkg-deb -f`
+                    → Version 2.0.4). `sha256sum -c SHA256SUMS-2.0.4.txt` → 5× OK.
+                    Distro-Matrix am gebauten Paket 9/9 mit Reinstall-Schritt: getcap 1 Zeile,
+                    Launcher vorhanden, chrome-sandbox 0755, Start mit Sandbox überall ok=true,
+                    51 CSS-Regeln, failures=[] (`dist/matrix/`). In der openSUSE-Zeile 24
+                    Meldungen „GLX is not present“ (GPU-Prozess beendet sich im Container);
+                    Fenster trotzdem gezeichnet, Screenshot gleich dem 2.0.3-Lauf — ob die
+                    Meldungen 2.0.3 schon hatte, ist offen (Log damals nicht aufbewahrt).
+                    Kästchen statt Symbol vor „English (US)“ in den Container-Screenshots:
+                    schon im 2.0.3-Lauf identisch (fehlende Schrift im Container).
+                    AppImage auf dieser Maschine (`APPIMAGE_EXTRACT_AND_RUN=1`,
+                    `ZIMA_VERIFY_STARTUP`): ok=true, 2.0.4, Electron 43.8.0, 51 CSS-Regeln.
+                    E2E `npx playwright test` 5/5 am selben Tag.
+                    Ein erster 2.0.4-Bau mit Electron 43.7.9 (20:02–20:07, aus bebb192) liegt
+                    samt abgebrochener Teil-Matrix in `dist/_stale-2026-10-16-2.0.4-electron-43.7.9/`
+                    — verworfen, weil 43.7.11/43.8.0 Chromium-/V8-Korrekturen übernehmen.
+                    2.0.3-Pakete: `dist/_stale-2026-10-16-pre-2.0.4/`, 2.0.3-Matrix:
+                    `dist/matrix-v2.0.3/`.
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
@@ -2631,3 +2632,29 @@ den Namen des veröffentlichten 2.0.3 und anderem Inhalt. Neubau zusammen mit de
 - *Privacy:* prüft jetzt auch neue, nicht ignorierte Dateien. Beleg: nicht verfolgte Probedatei mit einer
   RFC1918-Adresse → altes Tor rc=0 „clean (245 tracked files checked)“, neues rc=1 mit dem Fund; Datei gelöscht → rc=0.
 - `npm run verify` rc=0 (420 Tests), `npx eslint .` rc=0.
+
+## 2026-10-16 — 2.0.4 gebaut: Electron 43.8.0, und das Release-Tor sah Electron nicht
+
+**Version 2.0.4** (`bebb192`), Inhalt seit 2.0.3: vollständige Ordnerlisten (`6dddb1d`), Fotos-Zählzeile und
+Remote-ID-Karte (`b5aeca7`), 28 Sprachen vollständig (`1d0a29e`). Noch nicht veröffentlicht.
+
+**Electron 43.7.9 → 43.8.0** (`4156169`). Für 43.7.9 ist keine Electron-Meldung offen: alle 69 Meldungen per
+`gh api repos/electron/electron/security-advisories` gelesen, 13 mit einer 43er-Korrektur, keine nach 43.7.9.
+43.7.11 und 43.8.0 übernehmen aber „Backported fixes from upstream ANGLE, Chromium, PDFium and V8“ (#54899,
+#55032) — Chromium-Lücken erscheinen nicht als Electron-Meldung, die Abwesenheit einer Meldung belegt dort nichts.
+Ein erster 2.0.4-Bau mit 43.7.9 ist deshalb verworfen (Ablage siehe Statustabelle).
+
+**`npm audit`:** `--omit=dev` meldet 0 — misst aber Electron nicht, weil Electron eine devDependency ist; eine Zahl,
+die die ausgelieferte Laufzeit nicht enthält. Voll: 12 Funde, nach `npm audit fix` ohne Versionssprung 11
+(brace-expansion „high“ behoben); alle in Test- und Bauwerkzeugen (vitest/tinypool, sprintf-js über
+electron-builder). Am Artefakt geprüft: `asar list` des gebauten Pakets enthält keins der Audit-Pakete
+(Positivkontrolle: `i18next`, `electron-updater` sind gelistet). Offen: tinypool „critical“ braucht Vitest 5
+(Major-Sprung), sprintf-js hat keinen Fix außer einem Rückschritt von electron-builder.
+
+**🔴 Release-Tor: Electron war keine Bau-Eingabe.** Gezählt wurden aus `package.json` nur `version`, `main`,
+`dependencies`, `build`; `package-lock.json` gar nicht. Der Electron-Sprung galt als „baut nichts neu“ — gemessen:
+das Tor nannte `bebb192` als letzte Bau-Eingabe, nicht `4156169`. Jetzt zählen zusätzlich `electron` und
+`electron-builder` aus den devDependencies und im Lockfile die Versionen aller ausgelieferten Pakete plus dieser
+beiden; Testwerkzeuge weiterhin nicht. Neun neue Selbsttest-Fälle (Electron, electron-builder, Laufzeit-Abhängigkeit
+zählen; vitest, `scripts`, verschachteltes Dev-Paket nicht); Sabotage „electron aus der Liste“ → 2 rot, Sabotage
+„dev-Kennzeichen ignoriert“ → 1 rot. Danach am echten Repo: `build inputs last changed in 4156169`, 9/9.
