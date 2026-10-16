@@ -5,8 +5,9 @@ built in and Tailscale used when it is already there.
 
 > **Branch `v2` · version 2.0.3 · latest release
 > [`v2.0.3`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.3) (2026-10-08)**
-> — a rewrite of the client. The 0.9.x line lives on `main` and under
-> [`legacy-0.9/`](legacy-0.9/); nothing was deleted.
+> — a rewrite of the client. The 0.9.x line lives on
+> [`main`](https://github.com/chicohaager/zima-linux-client/tree/main) and in the tag
+> [`v0.9.23`](https://github.com/chicohaager/zima-linux-client/tree/v0.9.23).
 >
 > What is built and what is measured, with the command behind each claim:
 > [`docs/V2-STATUS.md`](docs/V2-STATUS.md) (German). Deutsche Fassung dieser Datei:

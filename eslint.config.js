@@ -10,7 +10,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
  *  - no silent failure: an empty catch or a swallowed error is a defect, so it errors
  */
 export default tseslint.config(
-  { ignores: ['out/**', 'dist/**', 'node_modules/**', 'legacy-0.9/**', 'bin/**'] },
+  { ignores: ['out/**', 'dist/**', 'node_modules/**', 'bin/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

@@ -16,7 +16,7 @@ import { reachableIconUrl } from '@main/zima/apps'
 
 // The tunnel address this client is actually talking to, and the device's own LAN address.
 const TUNNEL = '10.147.20.5'
-const LAN = '192.168.0.143'
+const LAN = '192.168.0.42'
 
 describe('reachableIconUrl', () => {
   it('points an app-hosted icon at the address this client is actually using', () => {

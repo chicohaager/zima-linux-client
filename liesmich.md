@@ -5,8 +5,9 @@ eingebautem ZeroTier und Tailscale, wenn es schon da ist.
 
 > **Branch `v2` · Version 2.0.3 · aktuelles Release
 > [`v2.0.3`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.3) (2026-10-08)**
-> — eine Neuentwicklung des Clients. Die 0.9.x-Linie lebt auf `main` und unter
-> [`legacy-0.9/`](legacy-0.9/); nichts wurde gelöscht.
+> — eine Neuentwicklung des Clients. Die 0.9.x-Linie lebt auf
+> [`main`](https://github.com/chicohaager/zima-linux-client/tree/main) und im Tag
+> [`v0.9.23`](https://github.com/chicohaager/zima-linux-client/tree/v0.9.23).
 >
 > Was gebaut und was gemessen ist, mit dem Kommando hinter jeder Aussage:
 > [`docs/V2-STATUS.md`](docs/V2-STATUS.md). English version of this file:
