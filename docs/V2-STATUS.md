@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.3 · **Stand:** 2026-10-08
+**Branch:** `v2` · **Version:** 2.0.3 · **Stand:** 2026-10-16
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -9,17 +9,21 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint · 397 Tests in 49 Dateien · build ·
-                    build-gate · i18n · privacy — gefahren am 2026-10-08 (vorher 360/45 am
-                    2026-09-17). Ein Lauf am selben Tag war rot (7 Zeitüberschreitungen,
-                    481 s Sammelzeit statt ~6 s), fünf Wiederholungen grün — Ursache
+npm run verify        ✓ (rc=0)  type-check · lint (0 Warnungen) · 416 Tests in 52 Dateien ·
+                    build · build-gate · i18n · privacy — gefahren am 2026-10-16 (vorher
+                    397/49 am 2026-10-08, 360/45 am 2026-09-17). Am 2026-10-08 war ein
+                    Lauf rot (7 Zeitüberschreitungen, 481 s Sammelzeit statt ~6 s),
+                    fünf Wiederholungen grün — Ursache
                     ungemessen. Der Exit-Code ist
                     OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
                     der Code von `tail` — das Privacy-Gate war in Wahrheit rot (rc=1) mit vier
                     echten Adressen in neuen Kommentaren
-npm run verify:release ✓ (rc=0)  9 von 9 grün am 2026-10-08 für 2.0.3: Pakete aus 1b7efab,
-                    also NEUER als jede Build-Eingabe; Prüfsummendatei stimmt, Bau-Anspruch
-                    nennt seinen Commit. Vorher stand hier monatelang "2 von 8 rot"
+npm run verify:release ✗ (rc=1)  seit 2026-10-15 rot, 2 von 9 (am 2026-10-16 vor dem Commit
+                    3, die dritte zählte die noch nicht committeten Dateien): die Pakete
+                    in dist/ stammen aus 1b7efab (2.0.3, veröffentlicht); 8e087f0 und der
+                    Lint-Umbau haben Dateien unter src/ geändert — ohne neues Paket ist
+                    der Bau-Anspruch damit alt. Gilt fürs NÄCHSTE Release, nicht für 2.0.3.
+                    Am 2026-10-08 waren es 9 von 9 grün. Vorher stand hier monatelang "2 von 8 rot"
 npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
                     (2026-10-08); der fünfte fährt das Gerät OHNE Photos-Modul, der dritte
                     prüft seit heute die Foto-Kacheln auf dem Fotos-Bildschirm
@@ -2473,6 +2477,29 @@ von keinem Build, Test oder Paket gelesen und ist am 2026-10-15 entfernt worden,
 Diese fünf benutzte nur der 0.9-Code; die v2-Pakete nehmen `build/linux-after-install.sh`,
 und `extraResources` packt nur `icon.png` und `bin/zerotier/` ein. Vorher geprüft: `git ls-remote origin` zeigt Tag `v0.9.23` = `22ddb3c`
 und `main` = `3608a14`.
+
+## Lint: drei `max-lines`-Warnungen aufgelöst (2026-10-16)
+
+`npm run lint` meldete seit Wochen 3 Warnungen (Regel `max-lines`, 300 Zeilen ohne Leer- und
+Kommentarzeilen). Jede Datei hatte eine Naht; verschoben ist nur, nichts umgeschrieben:
+
+| vorher | jetzt |
+| --- | --- |
+| `scripts/verify-release.mjs` (563) | `release-checks.mjs` (9 Prüfungen + Helfer), `release-selftest.mjs`, `verify-release.mjs` (Kontext, Tracker, Hauptlauf) |
+| `src/main/app/startupVerification.ts` (327) | `startupProbe.ts` (`PROBE`, `ProbeResult`, `probeFailures`) — reine Logik, ohne Electron |
+| `src/renderer/src/features/devices/DeviceScreen.tsx` (326) | `RemoteIdCard.tsx` mit eigenem Zustand, `signInTarget.ts` |
+
+Belege: `npx eslint .` 0 `max-lines`-Treffer; `npm run verify` rc=0 (416 Tests). Selbsttest des
+Release-Tors vorher/nachher per `diff` byte-gleich, Sabotage einer ausgelagerten Prüfung → rot.
+Neu `RemoteIdCard.test.tsx` (5 Tests) — vorher renderte kein Test diese Karte; zwei Sabotagen
+(Kleinschreibung der ID, `kind`-Prüfung) jeweils rot; die zweite blieb zuerst grün, weil der
+Gegenfall eine andere Meldung hatte, jetzt gleiche Meldung mit anderem `kind`. Startprüfung im
+echten Fenster (`ZIMA_VERIFY_STARTUP`): `ok: true`, 51 CSS-Regeln, Gerätemaske mit „Über
+Remote-ID verbinden“ im Screenshot. Nicht gefahren: das `remote-id`-Szenario (braucht eine
+echte Remote-ID und tritt einem Netz bei).
+
+Eine Verhaltensänderung: Schließen der Remote-ID-Karte leert jetzt ID und Port, weil die Karte
+beim Zuklappen ausgehängt wird; vorher blieb die Eingabe bis zum nächsten Aufklappen stehen.
 
 ## 🔴 ZimaOS 1.8.0-beta2: Anmeldung tot, Fotos leer — vier Anpassungen (2026-10-08)
 
