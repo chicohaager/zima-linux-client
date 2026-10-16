@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MIN_VISIBLE_CHARS, probeFailures, type ProbeResult } from '../startupVerification'
+import { MIN_VISIBLE_CHARS, probeFailures, type ProbeResult } from '../startupProbe'
 
 /**
  * What the start-up verifier is allowed to call "fine".
