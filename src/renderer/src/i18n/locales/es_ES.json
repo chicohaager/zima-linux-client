@@ -157,7 +157,14 @@
     "openBrowser": "Abrir en el navegador",
     "noWebUi": "Esta aplicación no publica ninguna interfaz web.",
     "start": "Iniciar",
-    "stop": "Detener"
+    "stop": "Detener",
+    "window": {
+      "connecting": "Conectando con esta aplicación…",
+      "failedTitle": "{{title}} no ha respondido",
+      "failedBody": "No se ha podido cargar la interfaz web de esta aplicación.",
+      "reasonLabel": "Motivo",
+      "hint": "Puede que la aplicación esté detenida o que su puerto no sea accesible desde este equipo. El navegador sigue el mismo camino: si allí funciona, el problema está en este cliente."
+    }
   },
   "security": {
     "keyringTitle": "Las contraseñas no se pueden guardar de forma segura",

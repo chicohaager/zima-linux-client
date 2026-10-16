@@ -157,7 +157,14 @@
     "openBrowser": "Tarayıcıda aç",
     "noWebUi": "Bu uygulama bir web arayüzü yayımlamıyor.",
     "start": "Başlat",
-    "stop": "Durdur"
+    "stop": "Durdur",
+    "window": {
+      "connecting": "Bu uygulamaya bağlanılıyor…",
+      "failedTitle": "{{title}} yanıt vermedi",
+      "failedBody": "Bu uygulamanın web arayüzü yüklenemedi.",
+      "reasonLabel": "Neden",
+      "hint": "Uygulama durdurulmuş olabilir ya da bağlantı noktasına bu bilgisayardan erişilemiyor olabilir. Tarayıcı da aynı yolu kullanır — orada çalışıyorsa sorun bu istemcidedir."
+    }
   },
   "security": {
     "keyringTitle": "Şifreler güvenli biçimde saklanamıyor",

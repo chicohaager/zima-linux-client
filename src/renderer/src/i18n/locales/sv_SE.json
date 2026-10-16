@@ -157,7 +157,14 @@
     "openBrowser": "Öppna i webbläsaren",
     "noWebUi": "Den här appen publicerar inget webbgränssnitt.",
     "start": "Starta",
-    "stop": "Stoppa"
+    "stop": "Stoppa",
+    "window": {
+      "connecting": "Ansluter till appen…",
+      "failedTitle": "{{title}} svarade inte",
+      "failedBody": "Appens webbgränssnitt kunde inte läsas in.",
+      "reasonLabel": "Orsak",
+      "hint": "Appen kan vara stoppad, eller så går dess port inte att nå från den här datorn. Webbläsaren tar samma väg — fungerar det där ligger felet i den här klienten."
+    }
   },
   "security": {
     "keyringTitle": "Lösenord kan inte lagras säkert",

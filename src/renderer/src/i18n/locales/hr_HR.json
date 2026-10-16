@@ -157,7 +157,14 @@
     "openBrowser": "Otvori u pregledniku",
     "noWebUi": "Ova aplikacija ne objavljuje web sučelje.",
     "start": "Pokreni",
-    "stop": "Zaustavi"
+    "stop": "Zaustavi",
+    "window": {
+      "connecting": "Povezivanje s ovom aplikacijom…",
+      "failedTitle": "{{title}} nije odgovorila",
+      "failedBody": "Web-sučelje ove aplikacije nije se moglo učitati.",
+      "reasonLabel": "Razlog",
+      "hint": "Aplikacija je možda zaustavljena ili njezin priključak nije dostupan s ovog računala. Preglednik ide istim putem — ako ondje radi, problem je u ovom klijentu."
+    }
   },
   "security": {
     "keyringTitle": "Zaporke nije moguće sigurno pohraniti",

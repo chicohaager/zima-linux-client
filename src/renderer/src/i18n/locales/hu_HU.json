@@ -157,7 +157,14 @@
     "openBrowser": "Megnyitás böngészőben",
     "noWebUi": "Ez az alkalmazás nem tesz közzé webes felületet.",
     "start": "Indítás",
-    "stop": "Leállítás"
+    "stop": "Leállítás",
+    "window": {
+      "connecting": "Kapcsolódás ehhez az alkalmazáshoz…",
+      "failedTitle": "{{title}} nem válaszolt",
+      "failedBody": "Az alkalmazás webes felülete nem tölthető be.",
+      "reasonLabel": "Ok",
+      "hint": "Lehet, hogy az alkalmazás le van állítva, vagy a portja nem érhető el erről a számítógépről. A böngésző ugyanazt az utat járja — ha ott működik, a hiba ebben a kliensben van."
+    }
   },
   "security": {
     "keyringTitle": "A jelszavak nem tárolhatók biztonságosan",

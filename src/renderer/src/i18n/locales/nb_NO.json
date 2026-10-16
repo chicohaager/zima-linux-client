@@ -157,7 +157,14 @@
     "openBrowser": "Åpne i nettleser",
     "noWebUi": "Denne appen publiserer ikke noe nettgrensesnitt.",
     "start": "Start",
-    "stop": "Stopp"
+    "stop": "Stopp",
+    "window": {
+      "connecting": "Kobler til denne appen…",
+      "failedTitle": "{{title}} svarte ikke",
+      "failedBody": "Webgrensesnittet til denne appen kunne ikke lastes inn.",
+      "reasonLabel": "Årsak",
+      "hint": "Appen kan være stoppet, eller porten kan være utilgjengelig fra denne datamaskinen. Nettleseren går samme vei — fungerer det der, ligger feilen i denne klienten."
+    }
   },
   "security": {
     "keyringTitle": "Passord kan ikke lagres sikkert",
