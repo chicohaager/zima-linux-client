@@ -77,6 +77,7 @@
     "switchToFolder": "Gennemse en mappe",
     "switchToLibrary": "Tilbage til biblioteket",
     "countSummary": "{{shown}} af {{total}} vist",
+    "folderCountSummary": "Billeder og videoer: {{pictures}} · {{read}} af {{total}} poster læst",
     "loadMore": "Indlæs flere",
     "indexed": "{{processed}} af {{total}} indekseret",
     "pending": "{{count}} mangler",

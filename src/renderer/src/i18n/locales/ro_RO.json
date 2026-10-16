@@ -77,6 +77,7 @@
     "switchToFolder": "Răsfoiește un dosar",
     "switchToLibrary": "Înapoi la bibliotecă",
     "countSummary": "{{shown}} din {{total}} afișate",
+    "folderCountSummary": "Imagini și videoclipuri: {{pictures}} · {{read}} din {{total}} intrări citite",
     "loadMore": "Încarcă mai multe",
     "indexed": "{{processed}} din {{total}} indexate",
     "pending": "{{count}} în așteptare",

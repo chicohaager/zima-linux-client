@@ -221,14 +221,17 @@ export const DeviceScreen = (): React.JSX.Element => {
         </Button>
       </div>
 
-      {remoteOpen && (
+      {/* Hidden, not unmounted: closing the card keeps what was typed into it, as it did
+          while this state still lived in DeviceScreen (decided 2026-10-16). The card's own
+          success path still empties the fields. */}
+      <div hidden={!remoteOpen}>
         <RemoteIdCard
           onConnected={(next) => {
             setRemoteOpen(false)
             setTarget(next)
           }}
         />
-      )}
+      </div>
 
       {scanError !== null && <ErrorNote message={errorMessage(t, scanError)} />}
 

@@ -77,6 +77,7 @@
     "switchToFolder": "Prehliadať priečinok",
     "switchToLibrary": "Späť do knižnice",
     "countSummary": "{{shown}} z {{total}} zobrazených",
+    "folderCountSummary": "Obrázky a videá: {{pictures}} · načítaných {{read}} z {{total}} položiek",
     "loadMore": "Načítať ďalšie",
     "indexed": "{{processed}} z {{total}} zaindexovaných",
     "pending": "{{count}} čaká",

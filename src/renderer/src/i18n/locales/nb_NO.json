@@ -77,6 +77,7 @@
     "switchToFolder": "Bla i en mappe",
     "switchToLibrary": "Tilbake til biblioteket",
     "countSummary": "{{shown}} av {{total}} vist",
+    "folderCountSummary": "Bilder og videoer: {{pictures}} · {{read}} av {{total}} oppføringer lest",
     "loadMore": "Last inn flere",
     "indexed": "{{processed}} av {{total}} indeksert",
     "pending": "{{count}} gjenstår",

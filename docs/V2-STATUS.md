@@ -9,9 +9,9 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint (0 Warnungen) · 416 Tests in 52 Dateien ·
+npm run verify        ✓ (rc=0)  type-check · lint (0 Warnungen) · 420 Tests in 53 Dateien ·
                     build · build-gate · i18n · privacy — gefahren am 2026-10-16 (vorher
-                    397/49 am 2026-10-08, 360/45 am 2026-09-17). Am 2026-10-08 war ein
+                    416/52 am selben Tag, 397/49 am 2026-10-08, 360/45 am 2026-09-17). Am 2026-10-08 war ein
                     Lauf rot (7 Zeitüberschreitungen, 481 s Sammelzeit statt ~6 s),
                     fünf Wiederholungen grün — Ursache
                     ungemessen. Der Exit-Code ist
@@ -27,10 +27,10 @@ npm run verify:release ✗ (rc=1)  seit 2026-10-15 rot, 2 von 9 (am 2026-10-16 v
 npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
                     (2026-10-08); der fünfte fährt das Gerät OHNE Photos-Modul, der dritte
                     prüft seit heute die Foto-Kacheln auf dem Fotos-Bildschirm
-i18n gate           clean — 292 Schlüssel in en_US; en_US/de_DE 100 %, die übrigen 26 bei
-                    98 % (287) — die fünf neuen `apps.window.*` liegen zweisprachig vor und
+i18n gate           clean — 298 Schlüssel in en_US (2026-10-16); en_US/de_DE 100 %, die übrigen 26 bei
+                    98 % (293) — die fünf neuen `apps.window.*` liegen zweisprachig vor und
                     fallen sonst auf Englisch zurück; das Tor BERICHTET Abdeckung
-privacy gate        clean, 224 verfolgte Dateien (Bilder überspringt es — siehe unten).
+privacy gate        clean, 244 verfolgte Dateien (2026-10-16) (Bilder überspringt es — siehe unten).
                     🔴 Es prüft NUR VERFOLGTE Dateien: drei neue Testdateien waren für das Tor
                     unsichtbar, bis sie hinzugefügt waren — genau der Moment, in dem eine echte
                     Adresse ungesehen durchginge. Vor dem Commit `git add -A`, dann prüfen
@@ -2498,8 +2498,9 @@ echten Fenster (`ZIMA_VERIFY_STARTUP`): `ok: true`, 51 CSS-Regeln, Gerätemaske 
 Remote-ID verbinden“ im Screenshot. Nicht gefahren: das `remote-id`-Szenario (braucht eine
 echte Remote-ID und tritt einem Netz bei).
 
-Eine Verhaltensänderung: Schließen der Remote-ID-Karte leert jetzt ID und Port, weil die Karte
-beim Zuklappen ausgehängt wird; vorher blieb die Eingabe bis zum nächsten Aufklappen stehen.
+Eine Verhaltensänderung: Schließen der Remote-ID-Karte leerte ID und Port, weil die Karte
+beim Zuklappen ausgehängt wurde; vorher blieb die Eingabe bis zum nächsten Aufklappen stehen.
+**Am selben Tag zurückgenommen** (Entscheidung: das alte Verhalten behalten) — siehe den letzten Abschnitt.
 
 ## 🔴 ZimaOS 1.8.0-beta2: Anmeldung tot, Fotos leer — vier Anpassungen (2026-10-08)
 
@@ -2581,9 +2582,37 @@ Bibliothek mit Seitengröße 50 → 50/100/106 von 106, Knopf verschwindet; Ordn
 am Gerät mit derselben Endungsliste gezählt (Testgrößen danach auf 120/300 zurückgestellt). Dateien-Reiter `/DATA`: „96 von 96“. Nicht live geklickt:
 Sortierung „geändert“ im Dateien-Reiter, Backup und Suche (nur Unit-Tests).
 
-**Offen:** Die Fotos-Ordner-Zählzeile zählt Bilder gegen alle Einträge (Ordner, Nicht-Bilder): „41 von 96“. Ohne Verbindung zeigt Fotos „In diesem
-Ordner liegen keine Bilder oder Videos“ statt eines Hinweises auf die fehlende Verbindung.
+**Offen (erledigt 2026-10-16, siehe letzter Abschnitt):** Die Fotos-Ordner-Zählzeile zählt Bilder gegen alle Einträge (Ordner, Nicht-Bilder): „41 von 96“. Ohne Verbindung zeigt Fotos „In diesem
+Ordner liegen keine Bilder oder Videos“ statt eines Hinweises auf die fehlende Verbindung — das bleibt so (Entscheidung 2026-10-16).
 
 **Start auf dieser Maschine:** aus einer `systemd-run --user`-Unit bricht Electron ab (`FATAL setuid_sandbox_host`; Kernel: `profile="unprivileged_userns"
 … capname="sys_admin"` DENIED). Aus dem VS-Code-Terminal läuft es, weil dort das Profil `snap.code.code` gilt (`ALLOWED`). Der Satz oben „funktioniert
 auf dieser Maschine“ gilt also nur für Starts aus diesem Terminal.
+
+## 2026-10-16 — Remote-ID-Karte behält die Eingabe, Fotos-Ordner zählt in einer Einheit
+
+**Remote-ID-Karte.** Seit `5dd8198` wurde die Karte beim Zuklappen ausgehängt und verlor ID und Port. Jetzt bleibt sie
+eingehängt und wird mit `hidden` verborgen (`DeviceScreen.tsx`); das Leeren nach erfolgreichem Verbinden bleibt.
+Test `DeviceScreenRemoteToggle.test.tsx`: am alten Code rot (`expected '' to be '0123456789abcdef'`), Sabotage
+(`hidden` entfernt) macht beide Fälle rot. jsdom prüft nur das Attribut, deshalb im echten Fenster per CDP:
+zugeklappt `display: none`, `checkVisibility() = false`, Höhe 0; aufgeklappt Höhe 42; ID und Port nach
+Zu-/Aufklappen unverändert.
+
+**Fotos-Ordner-Zählzeile.** Zähler und Nenner hatten verschiedene Einheiten: `shown` = Bilder, `total` = `all` des
+Verzeichnisses (Ordner und Nicht-Bilder eingeschlossen). Neuer Schlüssel `photos.folderCountSummary` nennt beide
+Größen getrennt — „Bilder und Videos: 41 · 97 von 97 Einträgen gelesen“ — in allen 28 Katalogen (25 davon
+`reviewed: false` wie der Rest). Dazu: Enthält die erste Seite keine Bilder, aber es folgen weitere Einträge, steht
+nicht mehr „keine Bilder“, sondern die Zählzeile mit „Weitere laden“. Zwei neue Tests, am alten Code rot. Live im
+Dev-Client gegen Gerät A (über Tailscale, gespeichertes Token): Ordnermodus `/media/ZimaOS-HD` →
+„Bilder und Videos: 41 · 97 von 97 Einträgen gelesen“, kein „keine Bilder“; Bibliothek unverändert
+„106 von 106 angezeigt“. Nicht live: der Fall „gelesen < gesamt“ (Ordner mit über 300 Einträgen) — nur Unit-Test.
+Ohne Verbindung bleibt „keine Bilder“ (Entscheidung).
+
+**Testerunterlagen.** Die acht Dateien (`TESTER*.md`, `TESTPROTOKOLL.*`, `TEST-PROTOCOL-EN.*`, `START-HIER/HERE.txt`)
+stehen auf `2.0.0-alpha.1` und tragen jetzt einen Hinweis „historisch, Stand 2026-08-01“. Sie sind per
+`.gitignore` nicht im Repository; die Änderung liegt nur auf der Arbeitsmaschine.
+
+**Pakete:** nicht neu gebaut. `package.json` steht auf 2.0.3; ein Neubau unter dieser Nummer erzeugte Dateien mit
+den Namen des veröffentlichten 2.0.3 und anderem Inhalt. Neubau zusammen mit der nächsten Versionsnummer.
+
+**Belege:** `npm run verify` rc=0, 420 Tests in 53 Dateien; `npx eslint .` rc=0.

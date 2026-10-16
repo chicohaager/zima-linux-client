@@ -77,6 +77,7 @@
     "switchToFolder": "Een map doorbladeren",
     "switchToLibrary": "Terug naar de bibliotheek",
     "countSummary": "{{shown}} van {{total}} getoond",
+    "folderCountSummary": "Afbeeldingen en video's: {{pictures}} · {{read}} van {{total}} items gelezen",
     "loadMore": "Meer laden",
     "indexed": "{{processed}} van {{total}} geïndexeerd",
     "pending": "nog {{count}} te gaan",

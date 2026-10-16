@@ -24,7 +24,9 @@ import { PhotosScreen } from '../PhotosScreen'
  * green before the fix too, because the bug never touched the non-empty case.
  */
 
-const t = (key: string): string => key
+// Values appended after the key, so a test can tell WHICH numbers a line was given.
+const t = (key: string, values?: Record<string, unknown>): string =>
+  values === undefined ? key : `${key} ${JSON.stringify(values)}`
 
 vi.mock('react-i18next', () => ({
   // Keys rather than translations: the identity is stable across all 28 catalogues, and
@@ -97,9 +99,52 @@ describe('PhotosScreen without the Photos module', () => {
     // Waited on the POSITIVE fact. "noneHere is absent" is true a millisecond after render
     // as well, while the card still says "Loading…" — a condition that is satisfied before
     // the thing under test has happened proves nothing.
-    await waitFor(() => expect(screen.getByText('photos.countSummary')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText(/^photos\.folderCountSummary /)).toBeTruthy())
     expect(screen.queryByText('photos.noneHere')).toBeNull()
     expect(screen.queryByText('photos.loading')).toBeNull()
+  })
+
+  /*
+   * 🔴 Two units in one fraction. `total` is every entry of the directory (folders and
+   * non-pictures too), `shown` was the pictures — measured on device A, /media/ZimaOS-HD:
+   * "41 of 96 shown" with all 96 entries read and 41 pictures among them. Read as "55 more
+   * pictures to come", which there were not. The line now names both quantities.
+   */
+  it('folder: counts pictures and read entries separately, never one against the other', async () => {
+    install({
+      photoFolderGrid: async () => ({
+        ok: true,
+        value: {
+          entries: [{ path: '/DATA/a.jpg', name: 'a.jpg', modifiedMs: 0 }],
+          folders: [{ path: '/DATA/sub', name: 'sub' }],
+          total: 3,
+        },
+      }),
+    })
+    draw()
+    await waitFor(() =>
+      expect(
+        screen.getByText('photos.folderCountSummary {"pictures":1,"read":3,"total":3}'),
+      ).toBeTruthy(),
+    )
+    expect(screen.queryByText(/^photos\.countSummary/)).toBeNull()
+  })
+
+  it('folder: a first page without pictures is not "no pictures here" while entries remain', async () => {
+    install({
+      photoFolderGrid: async () => ({
+        ok: true,
+        value: { path: '/DATA', entries: [], folders: [], total: 301 },
+      }),
+    })
+    draw()
+    await waitFor(() =>
+      expect(
+        screen.getByText('photos.folderCountSummary {"pictures":0,"read":300,"total":301}'),
+      ).toBeTruthy(),
+    )
+    expect(screen.queryByText('photos.noneHere')).toBeNull()
+    expect(screen.getByText('photos.loadMore')).toBeTruthy()
   })
 })
 
