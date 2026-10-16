@@ -787,7 +787,7 @@ Aus der Benutzung als verkehrt gemeldet, zu Recht.
 | --- | --- | --- |
 | Was ist die Remote-ID? | die **ZeroTier-Netzwerk-ID** des Geräts (16 Hex) | das Gerät meldet sie selbst in `GET /v2/zimaos/zt/info` |
 | Wo ist das Gerät in diesem Netz? | die erste Host-Adresse der Netz-Route (`<x.y>.0.0/16` → `<x.y>.0.1`) | das Gerät nennt in derselben Antwort genau diese `ip` |
-| Stimmt das mit dem Alt-Client überein? | ja | `legacy-0.9/main/zerotier/manager.ts` leitet unabhängig dieselbe Adresse ab |
+| Stimmt das mit dem Alt-Client überein? | ja | `src/main/zerotier/manager.ts` im Tag `v0.9.23` (damals als `legacy-0.9/main/zerotier/manager.ts` im Baum) leitet unabhängig dieselbe Adresse ab |
 
 Zwei unabhängige Quellen sagen dasselbe — und die Adresse bleibt trotzdem ein **Kandidat**:
 Sie geht durch dieselbe Probe wie ein mDNS-Treffer oder eine getippte IP. Das Gerät kann man
@@ -2465,8 +2465,14 @@ Die Matrix liest jetzt auch den Launcher nach dem Reinstall ab.
 
 ## Alt-Stand
 
-Der 0.9.23-Code liegt unverändert unter `legacy-0.9/` (per `git mv`, Historie erhalten) und ist
-auf `main` weiter baubar. Es wurde nichts gelöscht.
+Der 0.9.23-Code liegt auf `main` und im Tag `v0.9.23` (Commit `22ddb3c`), dort weiter baubar.
+Auf `v2` lag bis 2026-10-15 eine Kopie unter `legacy-0.9/` (64 Dateien, per `git mv`). Sie wurde
+von keinem Build, Test oder Paket gelesen und ist am 2026-10-15 entfernt worden, zusammen mit
+`zima-zerotier.service` und `com.zimaos.zerotier.policy` aus dem Wurzelverzeichnis sowie
+`resources/postinst.sh`, `resources/debian-postinst.sh` und `resources/zima-zerotier.service`.
+Diese fünf benutzte nur der 0.9-Code; die v2-Pakete nehmen `build/linux-after-install.sh`,
+und `extraResources` packt nur `icon.png` und `bin/zerotier/` ein. Vorher geprüft: `git ls-remote origin` zeigt Tag `v0.9.23` = `22ddb3c`
+und `main` = `3608a14`.
 
 ## 🔴 ZimaOS 1.8.0-beta2: Anmeldung tot, Fotos leer — vier Anpassungen (2026-10-08)
 

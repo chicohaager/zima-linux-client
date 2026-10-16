@@ -6,7 +6,7 @@
  * patterns live here, in the script, and not in prose next to it — a document that
  * quotes its own search terms defeats the check it is describing.
  *
- * Runs over tracked files only, and skips the legacy tree plus this file itself.
+ * Runs over tracked files only, and skips this file itself.
  *
  * The maintainer-identity rule is the one exception to "patterns live here": its search
  * terms ARE the private data, so a tracked script that spelled them out would be the leak it
@@ -75,6 +75,16 @@ const RULES = [
      * network.
      */
     allowFiles: ['src/main/media/__tests__/urlPolicy.test.ts'],
+    /*
+     * `.public-data-allow` (the machine-wide scanner's list) must repeat those four values,
+     * each pinned to urlPolicy.test.ts. Allowed as exactly those LINES, not as a file: a
+     * file-wide skip was tried first (2026-10-15) and let `192.168.1.x` through unseen.
+     */
+    allowLines: {
+      '.public-data-allow': [
+        /^src\/main\/media\/__tests__\/urlPolicy\.test\.ts:(192\.168\.77\.10|192\.168\.99\.1|10\.0\.0\.5|172\.16\.4\.4)$/,
+      ],
+    },
   },
   {
     /*
@@ -122,6 +132,11 @@ const RULES = [
     pattern: /\bvirtual-services\.info\b/g,
     // The maintainer contact is deliberately public in packaging metadata.
     allowFiles: ['package.json', 'resources/copyright'],
+    // The machine-wide scanner's list repeats the maintainer address pinned to those same two
+    // files (2026-10-15) — exactly these lines; the bare domain anywhere else in it still fails.
+    allowLines: {
+      '.public-data-allow': [/^(package\.json|resources\/copyright):zima-client@virtual-services\.info$/],
+    },
   },
   {
     name: 'tailscale CGNAT address',
@@ -143,7 +158,7 @@ const trackedFiles = () =>
   execFileSync('git', ['ls-files'], { encoding: 'utf8' })
     .split('\n')
     .filter((f) => f.length > 0)
-    .filter((f) => !f.startsWith('legacy-0.9/') && f !== SELF)
+    .filter((f) => f !== SELF)
     .filter((f) => !/\.(png|jpg|jpeg|gif|webp|ico|pdf|zip|so|node)$/i.test(f))
     .filter((f) => !f.startsWith('bin/'))
 
@@ -162,6 +177,8 @@ for (const file of trackedFiles()) {
       const value = match[0]
       if (rule.allow?.some((a) => a.test(value))) continue
       const line = content.slice(0, match.index).split('\n').length
+      const text = content.split('\n')[line - 1] ?? ''
+      if (rule.allowLines?.[file]?.some((a) => a.test(text))) continue
       findings.push({ file, line, rule: rule.name, value })
     }
   }

@@ -3,7 +3,6 @@
 # networks, login or home is ever listed; those get anonymised in place.
 #
 # Generic home paths used as test fixtures / container build paths. None names a person.
-legacy-0.9/main/utils/__tests__/sanitize.test.ts:/home/user
 src/main/app/__tests__/relaunchTarget.test.ts:/home/user
 src/main/zerotier/__tests__/diagnosis.test.ts:/home/user
 src/main/app/__tests__/screenshotGuard.test.ts:/home/someone
@@ -11,3 +10,83 @@ scripts/distro-matrix.sh:/home/zima
 #
 # Third-party package-author address carried inside npm metadata (public upstream value, not ours).
 package-lock.json:i@izs.me
+#
+# Third-party ZeroTier binaries (bundled, used by daemon.ts/provision.ts): the upstream build machine's cargo
+# registry path and OpenSSL/glibc author addresses compiled into them. Not ours; checked 2026-10-15 with `strings`.
+bin/zerotier/arm64/zerotier-cli:appro@openssl.org
+bin/zerotier/arm64/zerotier-cli:keld@dkuug.dk
+bin/zerotier/arm64/zerotier-cli:/home/me
+bin/zerotier/arm64/zerotier-cli:/home/m
+bin/zerotier/arm64/zerotier-one:appro@openssl.org
+bin/zerotier/arm64/zerotier-one:keld@dkuug.dk
+bin/zerotier/arm64/zerotier-one:/home/me
+bin/zerotier/arm64/zerotier-one:/home/m
+bin/zerotier/x64/zerotier-cli:appro@openssl.org
+bin/zerotier/x64/zerotier-cli:/home/me
+bin/zerotier/x64/zerotier-cli:keld@dkuug.dk
+bin/zerotier/x64/zerotier-one:appro@openssl.org
+bin/zerotier/x64/zerotier-one:/home/me
+bin/zerotier/x64/zerotier-one:keld@dkuug.dk
+#
+# UI input placeholder "nas.local or 192.168.0.100" — an invented example address shown to users.
+src/renderer/src/i18n/locales/ca_ES.json:192.168.0.100
+src/renderer/src/i18n/locales/cs_CZ.json:192.168.0.100
+src/renderer/src/i18n/locales/da_DK.json:192.168.0.100
+src/renderer/src/i18n/locales/de_DE.json:192.168.0.100
+src/renderer/src/i18n/locales/el_GR.json:192.168.0.100
+src/renderer/src/i18n/locales/en_GB.json:192.168.0.100
+src/renderer/src/i18n/locales/en_US.json:192.168.0.100
+src/renderer/src/i18n/locales/es_ES.json:192.168.0.100
+src/renderer/src/i18n/locales/fr_FR.json:192.168.0.100
+src/renderer/src/i18n/locales/ga_IE.json:192.168.0.100
+src/renderer/src/i18n/locales/hr_HR.json:192.168.0.100
+src/renderer/src/i18n/locales/hu_HU.json:192.168.0.100
+src/renderer/src/i18n/locales/it_IT.json:192.168.0.100
+src/renderer/src/i18n/locales/ja_JP.json:192.168.0.100
+src/renderer/src/i18n/locales/ko_KR.json:192.168.0.100
+src/renderer/src/i18n/locales/ml_IN.json:192.168.0.100
+src/renderer/src/i18n/locales/nb_NO.json:192.168.0.100
+src/renderer/src/i18n/locales/nl_NL.json:192.168.0.100
+src/renderer/src/i18n/locales/pl_PL.json:192.168.0.100
+src/renderer/src/i18n/locales/pt_BR.json:192.168.0.100
+src/renderer/src/i18n/locales/pt_PT.json:192.168.0.100
+src/renderer/src/i18n/locales/ro_RO.json:192.168.0.100
+src/renderer/src/i18n/locales/ru_RU.json:192.168.0.100
+src/renderer/src/i18n/locales/sk_SK.json:192.168.0.100
+src/renderer/src/i18n/locales/sv_SE.json:192.168.0.100
+src/renderer/src/i18n/locales/tr_TR.json:192.168.0.100
+src/renderer/src/i18n/locales/zh_CN.json:192.168.0.100
+src/renderer/src/i18n/locales/zh_TW.json:192.168.0.100
+#
+# Invented test addresses: private ranges where the test needs LAN semantics (URL policy, icon rewriting,
+# scrubbing), ZeroTier's default 10.147.0.0/16 range for tunnel cases. None is one of the maintainer's
+# hosts — measured 2026-10-15: the maintainer's ZeroTier address is in another range.
+e2e/scrub-fixture.mjs:nobody@example.invalid
+e2e/scrub-fixture.mjs:192.168.0.5
+e2e/scrub-fixture.mjs:10.0.0.1
+e2e/scrub-fixture.mjs:172.20.1.9
+e2e/scrub-fixture.mjs:a.b@example.com
+src/main/__tests__/resumePath.test.ts:10.147.18.5
+src/main/devices/__tests__/ordering.test.ts:10.147.17.9
+src/main/ipc/__tests__/appsFirstPaint.test.ts:10.147.20.5
+src/main/media/__tests__/appicon.test.ts:10.0.0.1
+src/main/media/__tests__/appicon.test.ts:192.168.0.1
+src/main/media/__tests__/urlPolicy.test.ts:192.168.77.10
+src/main/media/__tests__/urlPolicy.test.ts:192.168.99.1
+src/main/media/__tests__/urlPolicy.test.ts:10.0.0.5
+src/main/media/__tests__/urlPolicy.test.ts:172.16.4.4
+src/main/zima/__tests__/appIcons.test.ts:10.147.20.5
+src/main/zima/__tests__/appIcons.test.ts:192.168.0.42
+src/main/zima/__tests__/appIcons.test.ts:192.168.0.1
+src/main/zima/__tests__/capabilities.test.ts:10.147.17.9
+src/main/zima/__tests__/envelope.test.ts:10.0.0.1
+#
+# Examples in comments and planning docs: the router address in an SSRF explanation, a generic LAN example.
+docs/V2-PLAN.md:192.168.0.100
+src/main/media/protocol.ts:192.168.0.1
+src/main/zima/apps.ts:192.168.0.1
+#
+# Maintainer contact required by the .deb/.rpm metadata — published on purpose; the repo's own
+# privacy gate allows it in exactly these two files (scripts/verify-privacy.mjs, rule allowFiles).
+package.json:zima-client@virtual-services.info
+resources/copyright:zima-client@virtual-services.info
