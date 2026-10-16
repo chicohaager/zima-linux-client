@@ -157,7 +157,14 @@
     "openBrowser": "Abrir no navegador",
     "noWebUi": "Esta aplicação não publica qualquer interface web.",
     "start": "Iniciar",
-    "stop": "Parar"
+    "stop": "Parar",
+    "window": {
+      "connecting": "A ligar a esta aplicação…",
+      "failedTitle": "{{title}} não respondeu",
+      "failedBody": "Não foi possível carregar a interface web desta aplicação.",
+      "reasonLabel": "Motivo",
+      "hint": "A aplicação pode estar parada ou a porta pode não estar acessível a partir deste computador. O navegador segue o mesmo caminho — se funcionar lá, o problema está neste cliente."
+    }
   },
   "security": {
     "keyringTitle": "As palavras-passe não podem ser guardadas em segurança",

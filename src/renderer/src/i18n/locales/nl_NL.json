@@ -157,7 +157,14 @@
     "openBrowser": "In browser openen",
     "noWebUi": "Deze app publiceert geen webinterface.",
     "start": "Starten",
-    "stop": "Stoppen"
+    "stop": "Stoppen",
+    "window": {
+      "connecting": "Verbinden met deze app…",
+      "failedTitle": "{{title}} reageerde niet",
+      "failedBody": "De webinterface van deze app kon niet worden geladen.",
+      "reasonLabel": "Reden",
+      "hint": "De app is mogelijk gestopt, of de poort is vanaf deze computer niet bereikbaar. De browser neemt dezelfde weg — werkt het daar wel, dan ligt het aan deze client."
+    }
   },
   "security": {
     "keyringTitle": "Wachtwoorden kunnen niet veilig worden opgeslagen",

@@ -157,7 +157,14 @@
     "openBrowser": "Otvoriť v prehliadači",
     "noWebUi": "Táto aplikácia nezverejňuje žiadne webové rozhranie.",
     "start": "Spustiť",
-    "stop": "Zastaviť"
+    "stop": "Zastaviť",
+    "window": {
+      "connecting": "Pripája sa k tejto aplikácii…",
+      "failedTitle": "{{title}} neodpovedala",
+      "failedBody": "Webové rozhranie tejto aplikácie sa nepodarilo načítať.",
+      "reasonLabel": "Dôvod",
+      "hint": "Aplikácia je možno zastavená alebo jej port nie je z tohto počítača dostupný. Prehliadač ide rovnakou cestou — ak v ňom funguje, chyba je v tomto klientovi."
+    }
   },
   "security": {
     "keyringTitle": "Heslá nie je možné bezpečne uložiť",

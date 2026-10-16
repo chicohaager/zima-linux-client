@@ -157,7 +157,14 @@
     "openBrowser": "Obre al navegador",
     "noWebUi": "Aquesta aplicació no publica cap interfície web.",
     "start": "Inicia",
-    "stop": "Atura"
+    "stop": "Atura",
+    "window": {
+      "connecting": "Connectant amb aquesta aplicació…",
+      "failedTitle": "{{title}} no ha respost",
+      "failedBody": "No s'ha pogut carregar la interfície web d'aquesta aplicació.",
+      "reasonLabel": "Motiu",
+      "hint": "Pot ser que l'aplicació estigui aturada o que el seu port no sigui accessible des d'aquest ordinador. El navegador fa el mateix camí: si allà funciona, el problema és d'aquest client."
+    }
   },
   "security": {
     "keyringTitle": "Les contrasenyes no es poden desar amb seguretat",

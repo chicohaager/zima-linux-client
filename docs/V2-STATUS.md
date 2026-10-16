@@ -27,13 +27,15 @@ npm run verify:release ✗ (rc=1)  seit 2026-10-15 rot, 2 von 9 (am 2026-10-16 v
 npx playwright test   ✓ 5 von 5 E2E im echten Fenster gegen ein aufgezeichnetes Gerät
                     (2026-10-08); der fünfte fährt das Gerät OHNE Photos-Modul, der dritte
                     prüft seit heute die Foto-Kacheln auf dem Fotos-Bildschirm
-i18n gate           clean — 298 Schlüssel in en_US (2026-10-16); en_US/de_DE 100 %, die übrigen 26 bei
-                    98 % (293) — die fünf neuen `apps.window.*` liegen zweisprachig vor und
-                    fallen sonst auf Englisch zurück; das Tor BERICHTET Abdeckung
-privacy gate        clean, 244 verfolgte Dateien (2026-10-16) (Bilder überspringt es — siehe unten).
-                    🔴 Es prüft NUR VERFOLGTE Dateien: drei neue Testdateien waren für das Tor
-                    unsichtbar, bis sie hinzugefügt waren — genau der Moment, in dem eine echte
-                    Adresse ungesehen durchginge. Vor dem Commit `git add -A`, dann prüfen
+i18n gate           clean — 298 Schlüssel in en_US, alle 28 Kataloge 100 % (2026-10-16; vorher
+                    26 bei 293, die fünf `apps.window.*` fehlten). Seit 2026-10-16 FORDERT
+                    das Tor Vollständigkeit: ein fehlender Schlüssel ist ein Fehler, nicht
+                    mehr nur eine Zeile im Bericht
+privacy gate        clean, 245 verfolgte + 0 neue Dateien (2026-10-16) (Bilder überspringt es — siehe unten).
+                    Prüft seit 2026-10-16 auch neue, nicht ignorierte Dateien (`git ls-files
+                    --others --exclude-standard`); vorher nur verfolgte — drei neue Testdateien
+                    und am 2026-10-16 ein neuer Test mit dem Namen des Maintainers waren bis
+                    zum `git add` unsichtbar. Ignorierte Dateien prüft es weiterhin nicht
 Distro-Matrix       9 von 9 am AUSGELIEFERTEN 2.0.0-Paket, Sandkasten an, 2026-08-15
                     (`dist/matrix-v2.0.0/`); jede Zeile ok=true, 51 CSS-Regeln,
                     399 Zeichen sichtbarem Text, null rohe i18n-Schlüssel.
@@ -2616,3 +2618,16 @@ stehen auf `2.0.0-alpha.1` und tragen jetzt einen Hinweis „historisch, Stand 2
 den Namen des veröffentlichten 2.0.3 und anderem Inhalt. Neubau zusammen mit der nächsten Versionsnummer.
 
 **Belege:** `npm run verify` rc=0, 420 Tests in 53 Dateien; `npx eslint .` rc=0.
+
+**Nachtrag, selber Tag — zwei Tore geschärft.**
+- *i18n:* Die fünf `apps.window.*`-Texte (Fenster einer App, die nicht antwortet) fehlten in 26 Katalogen und
+  erschienen dort auf Englisch; jetzt in allen 28 (25 davon `reviewed: false` wie der Rest). Das Tor meldete das als
+  „clean“, weil es Abdeckung nur berichtete. Jetzt ist ein fehlender Schlüssel ein Fehler. Dabei ein zweiter Fehler:
+  die Zeile rundete (297/298 → „100%“), und die Kopfzeile zählte „100%“-Zeilen — mit einem fehlenden Schlüssel stand
+  dort „28 locale(s) at 100%“. Jetzt abgerundet und aus den Zahlen gezählt. Beleg: Kopie von `fr_FR` ohne
+  `apps.window.hint` → altes Tor rc=0 „28 at 100%“; neues Tor rc=1 `FAIL fr_FR: key "apps.window.hint" is missing`,
+  Zeile „99%“; zurückgesetzt rc=0. Nicht im Fenster angesehen: die neuen Übersetzungen selbst (das Fenster erscheint
+  nur, wenn eine App nicht antwortet).
+- *Privacy:* prüft jetzt auch neue, nicht ignorierte Dateien. Beleg: nicht verfolgte Probedatei mit einer
+  RFC1918-Adresse → altes Tor rc=0 „clean (245 tracked files checked)“, neues rc=1 mit dem Fund; Datei gelöscht → rc=0.
+- `npm run verify` rc=0 (420 Tests), `npx eslint .` rc=0.

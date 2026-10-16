@@ -157,7 +157,14 @@
     "openBrowser": "在瀏覽器中開啟",
     "noWebUi": "此應用程式沒有發布網頁介面。",
     "start": "啟動",
-    "stop": "停止"
+    "stop": "停止",
+    "window": {
+      "connecting": "正在連線至此應用程式…",
+      "failedTitle": "{{title}} 沒有回應",
+      "failedBody": "無法載入此應用程式的網頁介面。",
+      "reasonLabel": "原因",
+      "hint": "此應用程式可能已停止，或從這台電腦無法連到它的連接埠。瀏覽器走的是同一條路徑——如果在瀏覽器中可以開啟，問題就出在本用戶端。"
+    }
   },
   "security": {
     "keyringTitle": "無法安全儲存密碼",

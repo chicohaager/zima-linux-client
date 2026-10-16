@@ -157,7 +157,14 @@
     "openBrowser": "Otwórz w przeglądarce",
     "noWebUi": "Ta aplikacja nie udostępnia interfejsu webowego.",
     "start": "Uruchom",
-    "stop": "Zatrzymaj"
+    "stop": "Zatrzymaj",
+    "window": {
+      "connecting": "Łączenie z tą aplikacją…",
+      "failedTitle": "{{title}} nie odpowiedziała",
+      "failedBody": "Nie udało się wczytać interfejsu WWW tej aplikacji.",
+      "reasonLabel": "Powód",
+      "hint": "Aplikacja może być zatrzymana albo jej port może być nieosiągalny z tego komputera. Przeglądarka idzie tą samą drogą — jeśli tam działa, problem leży w tym kliencie."
+    }
   },
   "security": {
     "keyringTitle": "Haseł nie można bezpiecznie zapisać",

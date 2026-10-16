@@ -157,7 +157,14 @@
     "openBrowser": "Åbn i browser",
     "noWebUi": "Denne app udgiver ingen webgrænseflade.",
     "start": "Start",
-    "stop": "Stop"
+    "stop": "Stop",
+    "window": {
+      "connecting": "Forbinder til denne app…",
+      "failedTitle": "{{title}} svarede ikke",
+      "failedBody": "Denne apps webgrænseflade kunne ikke indlæses.",
+      "reasonLabel": "Årsag",
+      "hint": "Appen er måske stoppet, eller dens port kan ikke nås fra denne computer. Browseren går samme vej — virker det dér, ligger fejlen i denne klient."
+    }
   },
   "security": {
     "keyringTitle": "Adgangskoder kan ikke gemmes sikkert",

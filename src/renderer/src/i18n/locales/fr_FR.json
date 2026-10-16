@@ -157,7 +157,14 @@
     "openBrowser": "Ouvrir dans le navigateur",
     "noWebUi": "Cette application ne publie aucune interface web.",
     "start": "Démarrer",
-    "stop": "Arrêter"
+    "stop": "Arrêter",
+    "window": {
+      "connecting": "Connexion à cette application…",
+      "failedTitle": "{{title}} n'a pas répondu",
+      "failedBody": "L'interface web de cette application n'a pas pu être chargée.",
+      "reasonLabel": "Raison",
+      "hint": "L'application est peut-être arrêtée, ou son port n'est pas joignable depuis cet ordinateur. Le navigateur emprunte le même chemin : si cela fonctionne là, le problème vient de ce client."
+    }
   },
   "security": {
     "keyringTitle": "Les mots de passe ne peuvent pas être stockés en sécurité",

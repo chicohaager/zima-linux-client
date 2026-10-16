@@ -157,7 +157,14 @@
     "openBrowser": "Deschide în browser",
     "noWebUi": "Această aplicație nu publică nicio interfață web.",
     "start": "Pornește",
-    "stop": "Oprește"
+    "stop": "Oprește",
+    "window": {
+      "connecting": "Se conectează la această aplicație…",
+      "failedTitle": "{{title}} nu a răspuns",
+      "failedBody": "Interfața web a acestei aplicații nu a putut fi încărcată.",
+      "reasonLabel": "Motiv",
+      "hint": "Este posibil ca aplicația să fie oprită sau ca portul ei să nu fie accesibil de pe acest computer. Browserul urmează același drum — dacă acolo funcționează, problema este la acest client."
+    }
   },
   "security": {
     "keyringTitle": "Parolele nu pot fi stocate în siguranță",

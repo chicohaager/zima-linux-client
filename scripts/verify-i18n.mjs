@@ -7,9 +7,14 @@
  *    nobody looked at
  *  - a locale file that claims a language but is really a copy of English
  *
- * Coverage is REPORTED per locale rather than demanded to be 100%, because "translated" is
- * work in progress. What IS demanded: no unknown keys, no locale file missing entirely,
- * and no placeholder mismatch — a lost `{{count}}` renders as literal text to the user.
+ * Demanded: every key of the reference in every locale, no unknown keys, no locale file
+ * missing entirely, and no placeholder mismatch — a lost `{{count}}` renders as literal text
+ * to the user.
+ *
+ * 🔴 Coverage used to be REPORTED rather than demanded, while the translations were work in
+ * progress. Once all 28 were complete, that let five new `apps.window.*` keys sit in English
+ * in 26 catalogues for weeks with the gate saying "clean" (2026-10-16). A missing key is now
+ * a failure: a new text is not done until it exists in every language.
  */
 import { execSync } from 'node:child_process'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
@@ -58,6 +63,8 @@ for (const locale of present) {
   }
 }
 
+// Counted from the numbers, not from the rounded percentage: 297 of 298 rounds to "100%".
+let completeLocales = 0
 for (const locale of declared.filter((l) => present.has(l))) {
   const catalogue = flatten(JSON.parse(readFileSync(join(DIR, `${locale}.json`), 'utf8')))
 
@@ -68,7 +75,10 @@ for (const locale of declared.filter((l) => present.has(l))) {
   let identical = 0
   for (const [key, englishText] of reference) {
     const text = catalogue.get(key)
-    if (text === undefined) continue
+    if (text === undefined) {
+      failures.push(`${locale}: key "${key}" is missing — the interface falls back to English there`)
+      continue
+    }
     translated++
     if (text === englishText) identical++
 
@@ -81,7 +91,8 @@ for (const locale of declared.filter((l) => present.has(l))) {
     }
   }
 
-  const coverage = Math.round((translated / reference.size) * 100)
+  // Floored: a locale one key short must not print as 100 %.
+  const coverage = Math.floor((translated / reference.size) * 100)
   // For a non-English locale, "identical to English everywhere" means the file is a copy.
   const suspiciouslyEnglish =
     !locale.startsWith('en_') && translated > 0 && identical / translated > 0.9
@@ -89,6 +100,7 @@ for (const locale of declared.filter((l) => present.has(l))) {
     failures.push(`${locale}: ${Math.round((identical / translated) * 100)}% identical to English — is this really translated?`)
   }
 
+  if (translated === reference.size) completeLocales++
   rows.push(
     `  ${locale}  ${String(coverage).padStart(3)}%  ${String(translated).padStart(3)}/${reference.size} keys` +
       (locale.startsWith('en_') ? '' : `  ${Math.round((identical / Math.max(1, translated)) * 100)}% identical to en`),
@@ -133,9 +145,9 @@ for (const file of sourceFiles) {
 
 // The headline must not be greener than the rows underneath it. It used to read
 // "28 locales, 253 keys each" — true of two files on the day the other 26 sat at 111 keys,
-// because coverage is reported rather than demanded. Reporting is the right call for
-// translation work in progress; claiming completeness while reporting it is not.
-const complete = rows.filter((row) => row.includes('100%')).length
+// while coverage was only reported. Coverage is demanded now (see the header), so "partial"
+// should read 0 whenever the gate is clean — the count stays as the visible proof of that.
+const complete = completeLocales
 console.log(
   failures.length === 0
     ? `i18n gate: clean — ${declared.length} locales, ${reference.size} keys in ${REFERENCE}, ${literalKeys} literal uses in code; ` +

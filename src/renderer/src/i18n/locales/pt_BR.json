@@ -157,7 +157,14 @@
     "openBrowser": "Abrir no navegador",
     "noWebUi": "Este aplicativo não publica nenhuma interface web.",
     "start": "Iniciar",
-    "stop": "Parar"
+    "stop": "Parar",
+    "window": {
+      "connecting": "Conectando a este app…",
+      "failedTitle": "{{title}} não respondeu",
+      "failedBody": "Não foi possível carregar a interface web deste app.",
+      "reasonLabel": "Motivo",
+      "hint": "O app pode estar parado ou a porta dele pode não estar acessível a partir deste computador. O navegador segue o mesmo caminho — se funcionar lá, o problema está neste cliente."
+    }
   },
   "security": {
     "keyringTitle": "As senhas não podem ser salvas com segurança",

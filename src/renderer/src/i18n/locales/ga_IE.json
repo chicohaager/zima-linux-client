@@ -157,7 +157,14 @@
     "openBrowser": "Oscail sa bhrabhsálaí",
     "noWebUi": "Ní fhoilsíonn an aip seo aon chomhéadan gréasáin.",
     "start": "Tosaigh",
-    "stop": "Stop"
+    "stop": "Stop",
+    "window": {
+      "connecting": "Ag ceangal leis an aip seo…",
+      "failedTitle": "Níor fhreagair {{title}}",
+      "failedBody": "Níorbh fhéidir comhéadan gréasáin na haipe seo a lódáil.",
+      "reasonLabel": "Cúis",
+      "hint": "B'fhéidir go bhfuil an aip stoptha, nó nach féidir a port a bhaint amach ón ríomhaire seo. Téann an brabhsálaí an bealach céanna — má oibríonn sé ansin, is sa chliant seo atá an fhadhb."
+    }
   },
   "security": {
     "keyringTitle": "Ní féidir pasfhocail a stóráil go sábháilte",

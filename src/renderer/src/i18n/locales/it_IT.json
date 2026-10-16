@@ -157,7 +157,14 @@
     "openBrowser": "Apri nel browser",
     "noWebUi": "Questa app non pubblica alcuna interfaccia web.",
     "start": "Avvia",
-    "stop": "Ferma"
+    "stop": "Ferma",
+    "window": {
+      "connecting": "Connessione a questa app…",
+      "failedTitle": "{{title}} non ha risposto",
+      "failedBody": "Impossibile caricare l'interfaccia web di questa app.",
+      "reasonLabel": "Motivo",
+      "hint": "L'app potrebbe essere ferma, oppure la sua porta non è raggiungibile da questo computer. Il browser segue la stessa strada: se lì funziona, il problema è in questo client."
+    }
   },
   "security": {
     "keyringTitle": "Le password non possono essere salvate in modo sicuro",

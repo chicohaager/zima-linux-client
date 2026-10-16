@@ -6,7 +6,14 @@
  * patterns live here, in the script, and not in prose next to it — a document that
  * quotes its own search terms defeats the check it is describing.
  *
- * Runs over tracked files only, and skips this file itself.
+ * Runs over tracked files AND untracked files that are not ignored — everything a
+ * `git add -A` would pick up — and skips this file itself.
+ *
+ * 🔴 It used to read tracked files only. A new file was invisible to it until it was added,
+ * which is the exact moment a private value slips through unseen: three new test files on
+ * one occasion, and on 2026-10-16 a new test carrying the maintainer's name, which the gate
+ * reported only after `git add`. Ignored files (tester bundles, local notes) stay out — they
+ * are not published.
  *
  * The maintainer-identity rule is the one exception to "patterns live here": its search
  * terms ARE the private data, so a tracked script that spelled them out would be the leak it
@@ -154,17 +161,21 @@ const RULES = [
   },
 ]
 
-const trackedFiles = () =>
-  execFileSync('git', ['ls-files'], { encoding: 'utf8' })
+const listed = (extra) =>
+  execFileSync('git', ['ls-files', ...extra], { encoding: 'utf8' })
     .split('\n')
     .filter((f) => f.length > 0)
     .filter((f) => f !== SELF)
     .filter((f) => !/\.(png|jpg|jpeg|gif|webp|ico|pdf|zip|so|node)$/i.test(f))
     .filter((f) => !f.startsWith('bin/'))
 
+const trackedFiles = () => listed([])
+const untrackedFiles = () => listed(['--others', '--exclude-standard'])
+const filesToCheck = () => [...trackedFiles(), ...untrackedFiles()]
+
 const findings = []
 
-for (const file of trackedFiles()) {
+for (const file of filesToCheck()) {
   let content
   try {
     content = readFileSync(file, 'utf8')
@@ -188,7 +199,9 @@ if (findings.length === 0) {
   // A skipped identity rule is said on the clean line too, so a log excerpt cannot read as
   // "everything checked" when one rule checked nothing.
   const skipped = identity.sources.length === 0 ? ' — maintainer-identity rule SKIPPED' : ''
-  console.log(`privacy gate: clean (${trackedFiles().length} tracked files checked)${skipped}`)
+  console.log(
+    `privacy gate: clean (${trackedFiles().length} tracked + ${untrackedFiles().length} untracked files checked)${skipped}`,
+  )
   process.exit(0)
 }
 

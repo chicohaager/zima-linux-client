@@ -157,7 +157,14 @@
     "openBrowser": "在浏览器中打开",
     "noWebUi": "此应用没有发布网页界面。",
     "start": "启动",
-    "stop": "停止"
+    "stop": "停止",
+    "window": {
+      "connecting": "正在连接此应用…",
+      "failedTitle": "{{title}} 没有响应",
+      "failedBody": "无法加载此应用的网页界面。",
+      "reasonLabel": "原因",
+      "hint": "该应用可能已停止，或者从这台电脑无法访问它的端口。浏览器走的是同一条路径——如果在浏览器中可以打开，问题就出在本客户端。"
+    }
   },
   "security": {
     "keyringTitle": "无法安全保存密码",
