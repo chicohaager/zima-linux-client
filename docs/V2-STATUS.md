@@ -73,7 +73,8 @@ Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 415616
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
-Zweig               auf `origin/v2` hochgeladen (2026-10-08, per `git ls-remote` gegengeprüft)
+Zweig               auf `origin/v2` hochgeladen bis 6f31c85 (2026-10-16, per `git ls-remote`
+                    gegengeprüft); kein Tag v2.0.4
 Release             v2.0.3 — veröffentlicht 2026-10-08 (Tag auf 1b7efab, „Latest“). Von außen
                     gegengeprüft: alle sieben Dateien frisch heruntergeladen, `sha256sum -c`
                     ohne --ignore-missing → 5× OK (erstmals inklusive AppImage), install.sh
