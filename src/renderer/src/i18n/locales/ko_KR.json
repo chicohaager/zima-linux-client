@@ -77,6 +77,7 @@
     "switchToFolder": "폴더 탐색",
     "switchToLibrary": "라이브러리로 돌아가기",
     "countSummary": "{{total}}개 중 {{shown}}개 표시",
+    "folderCountSummary": "사진 및 동영상: {{pictures}} · {{total}}개 항목 중 {{read}}개 읽음",
     "loadMore": "더 불러오기",
     "indexed": "{{total}}개 중 {{processed}}개 색인됨",
     "pending": "{{count}}개 남음",

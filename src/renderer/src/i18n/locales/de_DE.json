@@ -77,6 +77,7 @@
     "switchToFolder": "Ordner durchsehen",
     "switchToLibrary": "Zurück zur Bibliothek",
     "countSummary": "{{shown}} von {{total}} angezeigt",
+    "folderCountSummary": "Bilder und Videos: {{pictures}} · {{read}} von {{total}} Einträgen gelesen",
     "loadMore": "Weitere laden",
     "indexed": "{{processed}} von {{total}} indexiert",
     "pending": "{{count}} offen",

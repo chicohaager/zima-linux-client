@@ -77,6 +77,7 @@
     "switchToFolder": "Bir klasöre göz at",
     "switchToLibrary": "Kitaplığa dön",
     "countSummary": "{{total}} içinden {{shown}} gösteriliyor",
+    "folderCountSummary": "Resimler ve videolar: {{pictures}} · {{total}} kayıttan {{read}} tanesi okundu",
     "loadMore": "Daha fazla yükle",
     "indexed": "{{total}} içinden {{processed}} dizinlendi",
     "pending": "{{count}} bekliyor",

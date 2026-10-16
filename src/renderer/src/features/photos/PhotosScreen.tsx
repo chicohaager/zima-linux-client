@@ -82,6 +82,10 @@ export const PhotosScreen = (): React.JSX.Element => {
   const gridEntries = grid.data?.pages.flatMap((page) => page.entries) ?? []
   const gridFolders = grid.data?.pages.flatMap((page) => page.folders) ?? []
   const gridTotal = grid.data?.pages[0]?.total
+  // Entries of the directory read so far — the page index is a page number, so every page
+  // but the last is full. Counted in the same unit as `gridTotal`, unlike the pictures.
+  const gridRead =
+    gridTotal === undefined ? 0 : Math.min((grid.data?.pages.length ?? 0) * FOLDER_PAGE, gridTotal)
 
   // The semantic index state, read for one reason: a search over a missing vision model
   // answers 200 with zero hits, which renders as "nothing found" — a statement about the
@@ -288,7 +292,10 @@ export const PhotosScreen = (): React.JSX.Element => {
         {loading && items.length === 0 && <Muted>{t('photos.loading')}</Muted>}
         {/* Not under an error: "no pictures here" next to "the device refused" is two
             contradicting statements, and only the error is true. */}
-        {items.length === 0 && !loading && (showingSearch ? searchError : showingFolder ? gridError : galleryError) === null && (
+        {/* Nor while the folder has entries not yet read: a first page of sub-folders and
+            documents says nothing about the pictures on the next one. */}
+        {items.length === 0 && !loading && !(showingFolder && !showingSearch && pager.hasNextPage) &&
+          (showingSearch ? searchError : showingFolder ? gridError : galleryError) === null && (
           <Muted>{showingSearch ? t('photos.noHits') : t('photos.noneHere')}</Muted>
         )}
         {items.length > 0 && (
@@ -298,17 +305,27 @@ export const PhotosScreen = (): React.JSX.Element => {
             onOpen={(item) => void window.zima.downloadFile({ path: item.path })}
           />
         )}
-        {items.length > 0 && (
+        {/* 🔴 In a folder the device counts ENTRIES (sub-folders and documents included),
+            the grid shows pictures. "41 of 96 shown" with every entry read put two units in
+            one fraction and promised 55 pictures that did not exist (device A, 2026-10-15),
+            so the folder line names both quantities instead of dividing one by the other. */}
+        {showingFolder && !showingSearch && gridTotal !== undefined && (items.length > 0 || pager.hasNextPage) ? (
           <Muted className="mt-3">
-            {t('photos.countSummary', {
-              shown: items.length,
-              total: showingSearch
-                ? search.data.total
-                : showingFolder
-                  ? (gridTotal ?? items.length)
-                  : (galleryTotal ?? items.length),
+            {t('photos.folderCountSummary', {
+              pictures: items.length,
+              read: gridRead,
+              total: gridTotal,
             })}
           </Muted>
+        ) : (
+          items.length > 0 && (
+            <Muted className="mt-3">
+              {t('photos.countSummary', {
+                shown: items.length,
+                total: showingSearch ? search.data.total : (galleryTotal ?? items.length),
+              })}
+            </Muted>
+          )
         )}
         {!showingSearch && pager.hasNextPage && (
           <Button

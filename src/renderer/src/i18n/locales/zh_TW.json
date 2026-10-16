@@ -77,6 +77,7 @@
     "switchToFolder": "瀏覽資料夾",
     "switchToLibrary": "回到圖庫",
     "countSummary": "已顯示 {{shown}}/{{total}}",
+    "folderCountSummary": "圖片和影片：{{pictures}} · 已讀取 {{read}}/{{total}} 個項目",
     "loadMore": "載入更多",
     "indexed": "已索引 {{processed}}/{{total}}",
     "pending": "還剩 {{count}} 個",

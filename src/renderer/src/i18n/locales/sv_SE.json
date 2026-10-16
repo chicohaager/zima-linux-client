@@ -77,6 +77,7 @@
     "switchToFolder": "Bläddra i en mapp",
     "switchToLibrary": "Tillbaka till biblioteket",
     "countSummary": "{{shown}} av {{total}} visas",
+    "folderCountSummary": "Bilder och videor: {{pictures}} · {{read}} av {{total}} poster lästa",
     "loadMore": "Läs in fler",
     "indexed": "{{processed}} av {{total}} indexerade",
     "pending": "{{count}} återstår",

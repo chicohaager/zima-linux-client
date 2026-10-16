@@ -77,6 +77,7 @@
     "switchToFolder": "Procházet složku",
     "switchToLibrary": "Zpět do knihovny",
     "countSummary": "{{shown}} z {{total}} zobrazeno",
+    "folderCountSummary": "Obrázky a videa: {{pictures}} · načteno {{read}} z {{total}} položek",
     "loadMore": "Načíst další",
     "indexed": "{{processed}} z {{total}} zaindexováno",
     "pending": "{{count}} čeká",

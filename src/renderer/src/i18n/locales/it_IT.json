@@ -77,6 +77,7 @@
     "switchToFolder": "Sfoglia una cartella",
     "switchToLibrary": "Torna alla libreria",
     "countSummary": "{{shown}} di {{total}} mostrati",
+    "folderCountSummary": "Immagini e video: {{pictures}} · {{read}} di {{total}} voci lette",
     "loadMore": "Carica altri",
     "indexed": "{{processed}} di {{total}} indicizzati",
     "pending": "{{count}} in attesa",
