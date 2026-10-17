@@ -58,8 +58,8 @@ Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 415616
                     Launcher vorhanden, chrome-sandbox 0755, Start mit Sandbox überall ok=true,
                     51 CSS-Regeln, failures=[] (`dist/matrix/`). In der openSUSE-Zeile 24
                     Meldungen „GLX is not present“ (GPU-Prozess beendet sich im Container);
-                    Fenster trotzdem gezeichnet, Screenshot gleich dem 2.0.3-Lauf — ob die
-                    Meldungen 2.0.3 schon hatte, ist offen (Log damals nicht aufbewahrt).
+                    Fenster trotzdem gezeichnet, Screenshot gleich dem 2.0.3-Lauf. Nicht neu:
+                    das 2.0.3-rpm zeigt auf demselben Image am 2026-10-17 ebenfalls 24.
                     Kästchen statt Symbol vor „English (US)“ in den Container-Screenshots:
                     schon im 2.0.3-Lauf identisch (fehlende Schrift im Container).
                     AppImage auf dieser Maschine (`APPIMAGE_EXTRACT_AND_RUN=1`,
@@ -2649,8 +2649,8 @@ Ein erster 2.0.4-Bau mit 43.7.9 ist deshalb verworfen (Ablage siehe Statustabell
 die die ausgelieferte Laufzeit nicht enthält. Voll: 12 Funde, nach `npm audit fix` ohne Versionssprung 11
 (brace-expansion „high“ behoben); alle in Test- und Bauwerkzeugen (vitest/tinypool, sprintf-js über
 electron-builder). Am Artefakt geprüft: `asar list` des gebauten Pakets enthält keins der Audit-Pakete
-(Positivkontrolle: `i18next`, `electron-updater` sind gelistet). Offen: tinypool „critical“ braucht Vitest 5
-(Major-Sprung), sprintf-js hat keinen Fix außer einem Rückschritt von electron-builder.
+(Positivkontrolle: `i18next`, `electron-updater` sind gelistet). Am 2026-10-17 mit Vitest 5 auf 8 moderate
+gesunken (siehe unten); sprintf-js hat keinen Fix außer einem Rückschritt von electron-builder.
 
 **🔴 Release-Tor: Electron war keine Bau-Eingabe.** Gezählt wurden aus `package.json` nur `version`, `main`,
 `dependencies`, `build`; `package-lock.json` gar nicht. Der Electron-Sprung galt als „baut nichts neu“ — gemessen:
@@ -2659,3 +2659,21 @@ das Tor nannte `bebb192` als letzte Bau-Eingabe, nicht `4156169`. Jetzt zählen 
 beiden; Testwerkzeuge weiterhin nicht. Neun neue Selbsttest-Fälle (Electron, electron-builder, Laufzeit-Abhängigkeit
 zählen; vitest, `scripts`, verschachteltes Dev-Paket nicht); Sabotage „electron aus der Liste“ → 2 rot, Sabotage
 „dev-Kennzeichen ignoriert“ → 1 rot. Danach am echten Repo: `build inputs last changed in 4156169`, 9/9.
+
+## 2026-10-17 — Vitest 5, Matrix behält ihr Log
+
+**Vitest 3.2.4 → 5.0.5.** Der volle `npm audit` sinkt von 11 Funden (2 critical, 9 moderate) auf 8 moderate:
+tinypool (critical, Prototype Pollution → RCE) und `@vitest/mocker` sind weg. Übrig ist nur `sprintf-js` in der Kette
+electron-builder → app-builder-lib → `@electron/get` → global-agent → roarr — ein Bauwerkzeug, nicht im Paket. Der
+einzige angebotene „Fix“ (`--force`) setzt electron-builder von 26.17.0 auf 26.5.0 zurück; nicht genommen.
+Unter Vitest 5: `npm run verify` rc=0, 420 Tests in 53 Dateien (wie unter 3.2.4), keine Deprecation-Zeile; die
+Konfiguration brauchte keine Änderung. Gegenprobe mit dem neuen Runner: `hidden` aus `DeviceScreen` entfernt →
+beide Toggle-Tests rot, zurück → grün.
+Release-Tor danach unverändert 9/9 mit `4156169`: Vitest ändert `package.json` und das Lockfile nur in
+Testwerkzeugen — der erste echte Gegenfall für die Bau-Eingabe-Regel vom Vortag, und er verlangte korrekt keinen
+Neubau.
+
+**Matrix-Log.** `distro-matrix.sh` schreibt jetzt je Zeile `<name>.log` (die volle Ausgabe, weiter auch aufs
+Terminal) und `packages.sha256` mit den getesteten Paketen. Probelauf openSUSE in ein Testverzeichnis: 68 Zeilen,
+byte-gleich mit der Konsole, 24× „GLX is not present“, ok=true. Damit beantwortet: dieselbe Zeile mit dem
+2.0.3-rpm (Electron 43.7.9) zeigt ebenfalls 24 — die Meldungen kommen vom Container, nicht von 2.0.4.
