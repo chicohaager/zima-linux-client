@@ -2686,3 +2686,38 @@ Neubau.
 Terminal) und `packages.sha256` mit den getesteten Paketen. Probelauf openSUSE in ein Testverzeichnis: 68 Zeilen,
 byte-gleich mit der Konsole, 24× „GLX is not present“, ok=true. Damit beantwortet: dieselbe Zeile mit dem
 2.0.3-rpm (Electron 43.7.9) zeigt ebenfalls 24 — die Meldungen kommen vom Container, nicht von 2.0.4.
+
+## 2026-10-17 — Release-Notes-Tor: „behoben“ nur für Fehler, die das letzte Release hatte
+
+**Anlass:** Der erste Entwurf der 2.0.4-Notes hatte einen Abschnitt „Remote ID card keeps what you typed“ — ein
+Fix (`b5aeca7`) für einen Fehler, den `5dd8198` nach v2.0.3 eingeführt hatte. Kein Release trug ihn; von Hand
+gefunden und gestrichen.
+
+**Zwei Mechanismen, die es nicht tun — beide am Anlassfall gemessen:**
+- „Ist der Fix-Commit neuer als der letzte Tag?“ — das ist jeder Fix.
+- `git blame` auf die Zeilen, die der Fix ersetzt: `b5aeca7` ersetzt `{remoteOpen && (` und `)}`, die wortgleich in
+  v2.0.3 standen. Ergebnis „2 of 2 replaced lines were in v2.0.3“ für einen Fehler, den kein Release hatte — der
+  Fehler lag nicht in diesen Zeilen, sondern im Verschieben des Zustands in eine aushängende Komponente.
+
+**Was es tut:** `scripts/verify-release-notes.mjs` (`npm run verify:notes -- <notes.md> [--since <tag>] [--until <ref>]`).
+Jeder `###`-Abschnitt nennt seine Commits in einem HTML-Kommentar (`fixes:`/`new:`/`none`, optional Pfadpräfixe,
+`checked: <wie>` für einen Handbeleg, der wörtlich ausgegeben wird). Für `fixes:` laufen die Tests, die der Fix
+hinzufügt, in einem Worktree auf dem letzten Tag. **Alle** grün ⇒ abgelehnt („users never had this fault“); einer
+genügt nicht, weil Gegenfall-Tests auf altem Code absichtlich grün sind (gemessen: `6dddb1d` bringt
+„passes name and size through unchanged“ mit — die erste Fassung lehnte deshalb einen ausgelieferten Fix ab).
+Mindestens ein roter ⇒ „nicht widerlegt“. Nicht ladbar ⇒ unklar, abgelehnt. Kein Test ⇒ abgelehnt. Dazu: Commit
+schon im letzten Tag ⇒ abgelehnt; Commit nicht im beschriebenen Release (`--until`) ⇒ abgelehnt.
+
+**Belege:** Selbsttest 18/18, davon drei Endfälle gegen die echte Historie: `b5aeca7` mit Präfix `devices/` wird
+abgelehnt (beide Tests auf v2.0.3 grün), `6dddb1d` geht durch (6 von 8 Tests rot), ein Präfix ohne Test lässt den
+Fix ohne Regressionstest. Sabotagen: „alle grün = ok“ → 2 rot inkl. Endfall; „jede Herkunft gilt als
+ausgeliefert“ (blame-Fassung) → rot. Die veröffentlichten 2.0.4-Notes, nachträglich ausgezeichnet: mit
+`--since v2.0.3` sauber; der erste Entwurf → genau der Remote-ID-Abschnitt abgelehnt.
+
+**🔴 Befund an den veröffentlichten 2.0.4-Notes:** mit `--until v2.0.4` zwei Fehler — unter „What else changed“
+stehen die Korrektur des Release-Tors (`6f31c85`) und Vitest 5/Matrix-Log (`0dc8f4d`); beide liegen nach dem Tag
+(`4156169`), der Release-Quellstand enthält sie nicht. Die Pakete betrifft das nicht (nur Bau-/Prüfwerkzeuge).
+Release-Text nicht geändert — eine Korrektur am veröffentlichten Text ist eine eigene Freigabe.
+
+**Grenze:** Wird neues Verhalten fälschlich als `fixes:` ausgezeichnet, sind seine Tests auf dem alten Tag ebenfalls
+rot, und das Tor lässt es durch. Es fängt die Richtung „behoben, aber nie ausgeliefert“, nicht die umgekehrte.

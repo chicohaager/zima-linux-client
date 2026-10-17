@@ -39,7 +39,9 @@
     "test:e2e": "playwright test",
     "screenshots": "node scripts/screenshots.mjs",
     "verify:release": "node scripts/verify-release.mjs",
-    "verify:release:self-test": "node scripts/verify-release.mjs --self-test"
+    "verify:release:self-test": "node scripts/verify-release.mjs --self-test",
+    "verify:notes": "node scripts/verify-release-notes.mjs",
+    "verify:notes:self-test": "node scripts/verify-release-notes.mjs --self-test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
