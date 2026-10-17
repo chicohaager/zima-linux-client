@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.4 (gebaut, nicht veröffentlicht) · **Stand:** 2026-10-16
+**Branch:** `v2` · **Version:** 2.0.4 · **Stand:** 2026-10-16
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -75,7 +75,16 @@ postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen, zuletzt 2026-10-17. Kein Hash hier: er veraltete
                     mit jedem Push — den Stand zeigt `git ls-remote origin refs/heads/v2`
-Release             v2.0.3 — veröffentlicht 2026-10-08 (Tag auf 1b7efab, „Latest“). Von außen
+Release             v2.0.4 — veröffentlicht 2026-10-17 (Tag auf 4156169, „Latest“). Von außen
+                    gegengeprüft: alle sieben Dateien frisch heruntergeladen, `sha256sum -c`
+                    ohne --ignore-missing → 5× OK, install.sh gleich dem Repo, jeder
+                    Download-Link in README und liesmich antwortet 200. Inhalt: vollständige
+                    Ordnerlisten (sort=modified → date, `all` statt `total`, Weitere laden),
+                    Fotos-Ordnermodus auf 1.8.0 wieder benutzbar, 28 Sprachen vollständig,
+                    Electron 43.8.0. Release-Notes am 2026-10-17 vor dem Veröffentlichen
+                    gegen 2.0.3 geprüft: ein Abschnitt (Remote-ID-Karte) beschrieb einen Fehler,
+                    der nie ausgeliefert war — gestrichen.
+                    Davor v2.0.3 — veröffentlicht 2026-10-08 (Tag auf 1b7efab). Von außen
                     gegengeprüft: alle sieben Dateien frisch heruntergeladen, `sha256sum -c`
                     ohne --ignore-missing → 5× OK (erstmals inklusive AppImage), install.sh
                     gleich dem Repo, jeder Download-Link der README antwortet.
