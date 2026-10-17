@@ -2717,7 +2717,10 @@ ausgeliefert“ (blame-Fassung) → rot. Die veröffentlichten 2.0.4-Notes, nach
 **🔴 Befund an den veröffentlichten 2.0.4-Notes:** mit `--until v2.0.4` zwei Fehler — unter „What else changed“
 stehen die Korrektur des Release-Tors (`6f31c85`) und Vitest 5/Matrix-Log (`0dc8f4d`); beide liegen nach dem Tag
 (`4156169`), der Release-Quellstand enthält sie nicht. Die Pakete betrifft das nicht (nur Bau-/Prüfwerkzeuge).
-Release-Text nicht geändert — eine Korrektur am veröffentlichten Text ist eine eigene Freigabe.
+Am 2026-10-17 korrigiert (Freigabe 2026-10-17): die drei Punkte stehen jetzt im Abschnitt „On the branch after this
+tag“ mit Hinweis „Corrected on 2026-10-17“; der Audit-Satz im Release nennt den Stand des Tags (12 → 11,
+brace-expansion 5.0.8 → 5.0.12, aus `4156169` gemessen). Alle Abschnitte tragen jetzt die Commit-Angaben;
+der von GitHub zurückgelesene Text besteht `verify:notes --since v2.0.3 --until v2.0.4`.
 
 **Grenze:** Wird neues Verhalten fälschlich als `fixes:` ausgezeichnet, sind seine Tests auf dem alten Tag ebenfalls
 rot, und das Tor lässt es durch. Es fängt die Richtung „behoben, aber nie ausgeliefert“, nicht die umgekehrte.
