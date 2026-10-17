@@ -242,6 +242,7 @@ npm run verify:i18n     # Vollständigkeit, unbekannte Schlüssel, Platzhalter-D
 npm run verify:privacy  # keine LAN-Adressen, Benutzernamen oder E-Mail-Adressen in verfolgten Dateien
 npm run verify:live     # liest gegen ein echtes Gerät, mit denselben Parsern wie die IPC-Handler
 npm run verify:release  # sind die dist/-Artefakte der Build dieses Commits? — plus offene Issues/PRs
+npm run verify:notes -- <notes.md>  # beschreibt jeder „behoben“-Abschnitt einen Fehler, den das letzte Release hatte?
 ```
 
 Den Exit-Code prüfen, nicht die Ausgabe: `npm run verify | tail` verwirft den Rückgabewert des Tors.

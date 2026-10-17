@@ -236,6 +236,7 @@ npm run verify:i18n     # completeness, unknown keys, placeholder drift, "Englis
 npm run verify:privacy  # no LAN addresses, user names or e-mail addresses in tracked files
 npm run verify:live     # reads against a real device, with the same parsers the IPC handlers use
 npm run verify:release  # are dist/ artefacts this commit's build? — and lists open issues/PRs
+npm run verify:notes -- <notes.md>  # does every "fixed" section describe a fault the last release had?
 ```
 
 Check the exit code, not the output: `npm run verify | tail` discards the gate's return value.
