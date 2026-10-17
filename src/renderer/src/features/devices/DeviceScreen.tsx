@@ -8,7 +8,7 @@ import { SearchIcon } from '../../shared/ui/Icons'
 import { DeviceList } from './DeviceList'
 import { DiscoveryResults } from './DiscoveryResults'
 import { PathOffer } from './PathOffer'
-import { RemoteIdCard } from './RemoteIdCard'
+import { EMPTY_REMOTE_ID_INPUT, RemoteIdCard } from './RemoteIdCard'
 import type { SignInTarget } from './signInTarget'
 import { SessionCard } from '../session/SessionCard'
 import { SignInForm } from '../session/SignInForm'
@@ -35,6 +35,8 @@ export const DeviceScreen = (): React.JSX.Element => {
   const resume = useResume()
   const [target, setTarget] = useState<SignInTarget | null>(null)
   const [remoteOpen, setRemoteOpen] = useState(false)
+  // Held here, not in the card: this component outlives the sign-in form, the card does not.
+  const [remoteInput, setRemoteInput] = useState(EMPTY_REMOTE_ID_INPUT)
   const [found, setFound] = useState<readonly { device: DiscoveredDevice; probe: ProbeResult }[] | null>(
     null,
   )
@@ -226,6 +228,8 @@ export const DeviceScreen = (): React.JSX.Element => {
           success path still empties the fields. */}
       <div hidden={!remoteOpen}>
         <RemoteIdCard
+          input={remoteInput}
+          onInput={setRemoteInput}
           onConnected={(next) => {
             setRemoteOpen(false)
             setTarget(next)

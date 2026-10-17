@@ -23,6 +23,15 @@ vi.mock('../../session/useResume', () => ({
   useResume: () => ({ state: { phase: 'idle' }, start: vi.fn() }),
 }))
 vi.mock('../DeviceList', () => ({ DeviceList: () => null }))
+// Stand-in with a cancel button: the property under test is DeviceScreen's state across the
+// switch to the sign-in form and back, not the form itself.
+vi.mock('../../session/SignInForm', () => ({
+  SignInForm: ({ onCancel }: { onCancel?: () => void }) => (
+    <button type="button" data-testid="cancel-sign-in" onClick={onCancel}>
+      cancel
+    </button>
+  ),
+}))
 vi.mock('../../settings/TailscalePanel', () => ({ TailscalePanel: () => null }))
 vi.mock('../../settings/LegacyImportPanel', () => ({ LegacyImportPanel: () => null }))
 vi.mock('../../settings/LogFolderButton', () => ({ LogFolderButton: () => null }))
@@ -98,6 +107,29 @@ describe('DeviceScreen Remote ID toggle', () => {
     expect(closed === null || !shown(closed)).toBe(true)
 
     toggle()
+    expect(field('remoteId').value).toBe('0123456789abcdef')
+    expect(field('remotePort').value).toBe('8443')
+  })
+
+  /*
+   * 🔴 Found while re-shooting the YouTube video on 2.0.4 (2026-10-17): typed a Remote ID, took
+   * the IP-address path instead, and the ID was gone afterwards. DeviceScreen renders ONLY the
+   * sign-in form while a target is set, so the card unmounted with its state — `hidden` covered
+   * the toggle, not this detour. In 2.0.3 the state lived in DeviceScreen and survived it.
+   */
+  it('keeps ID and port across a detour through the IP sign-in form', () => {
+    mount()
+    toggle()
+    fireEvent.change(field('remoteId'), { target: { value: '0123456789abcdef' } })
+    fireEvent.change(field('remotePort'), { target: { value: '8443' } })
+
+    const direct = document.querySelector<HTMLButtonElement>('[data-action="direct-ip"]')
+    if (direct === null) throw new Error('no direct-ip button')
+    fireEvent.click(direct)
+    const cancel = document.querySelector<HTMLButtonElement>('[data-testid="cancel-sign-in"]')
+    if (cancel === null) throw new Error('the sign-in form did not open')
+    fireEvent.click(cancel)
+
     expect(field('remoteId').value).toBe('0123456789abcdef')
     expect(field('remotePort').value).toBe('8443')
   })

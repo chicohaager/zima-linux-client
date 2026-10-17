@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { useState } from 'react'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -7,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import i18next from 'i18next'
 import { I18nextProvider } from 'react-i18next'
 import { appError } from '@shared/result'
-import { RemoteIdCard } from '../RemoteIdCard'
+import { EMPTY_REMOTE_ID_INPUT, RemoteIdCard } from '../RemoteIdCard'
 import type { SignInTarget } from '../signInTarget'
 
 /**
@@ -35,13 +36,19 @@ type Bridge = {
   zerotierProvision: ReturnType<typeof vi.fn>
 }
 
+/** Holds the input the way DeviceScreen does — the card owns none of it. */
+const Harness = ({ onConnected }: { onConnected: (target: SignInTarget) => void }): React.JSX.Element => {
+  const [input, setInput] = useState(EMPTY_REMOTE_ID_INPUT)
+  return <RemoteIdCard input={input} onInput={setInput} onConnected={onConnected} />
+}
+
 const mount = (bridge: Bridge): { onConnected: ReturnType<typeof vi.fn> } => {
   Object.defineProperty(window, 'zima', { value: bridge, configurable: true })
   const onConnected = vi.fn<(target: SignInTarget) => void>()
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { mutations: { retry: false } } })}>
       <I18nextProvider i18n={i18n}>
-        <RemoteIdCard onConnected={onConnected} />
+        <Harness onConnected={onConnected} />
       </I18nextProvider>
     </QueryClientProvider>,
   )
@@ -96,6 +103,9 @@ describe('RemoteIdCard', () => {
       networkId: '0123456789abcdef',
       displayName: 'home',
     })
+    // A successful join empties the card, so the next device starts from a clean form.
+    await waitFor(() => expect(input('remoteId').value).toBe(''))
+    expect(input('remotePort').value).toBe('80')
   })
 
   it('leaves displayName absent, not undefined, when the network has no name', async () => {
