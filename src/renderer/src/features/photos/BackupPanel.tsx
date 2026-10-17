@@ -26,14 +26,23 @@ export const BackupPanel = ({
 }): React.JSX.Element => {
   const { t, i18n } = useTranslation()
   const [sources, setSources] = useState<readonly string[]>([])
+  // True from the click until the start call returns — which is the END of the run.
+  const [starting, setStarting] = useState(false)
 
   const status = useQuery({
     queryKey: ['photos', 'backup-status'],
     queryFn: async () => unwrap(await window.zima.photoBackupStatus({})),
     // Polled only while something is happening. A permanent 1s poll would keep the main
     // process busy for a feature nobody is using.
+    //
+    // 🔴 `starting` belongs to "something is happening". startPhotoBackup resolves only when
+    // the whole run is over, and before it the last known phase is `idle` — polling on the
+    // phase alone never started, so a running backup showed no progress and no Cancel
+    // (video fact check 2026-10-08, still so in 2.0.5).
     refetchInterval: (query) =>
-      query.state.data?.phase === 'scanning' || query.state.data?.phase === 'uploading' ? 700 : false,
+      starting || query.state.data?.phase === 'scanning' || query.state.data?.phase === 'uploading'
+        ? 700
+        : false,
   })
 
   const pick = useMutation({
@@ -44,7 +53,14 @@ export const BackupPanel = ({
   const start = useMutation({
     mutationFn: async () =>
       unwrap(await window.zima.startPhotoBackup({ sources: [...sources], destination })),
-    onSuccess: () => void status.refetch(),
+    onMutate: () => {
+      setStarting(true)
+      void status.refetch()
+    },
+    onSettled: () => {
+      setStarting(false)
+      void status.refetch()
+    },
   })
 
   const cancel = useMutation({
