@@ -6,21 +6,36 @@ import { Button, ErrorNote, Field } from '../../shared/ui/Controls'
 import { asAppError, errorDetail, errorMessage, unwrap } from '../../shared/lib/ipc'
 import type { SignInTarget } from './signInTarget'
 
+/** What the user typed into the card — owned by the parent, see below. */
+export interface RemoteIdInput {
+  readonly remoteId: string
+  // Text, not number: an empty or half-typed field must stay representable. Validated on submit.
+  readonly remotePort: string
+}
+
+export const EMPTY_REMOTE_ID_INPUT: RemoteIdInput = { remoteId: '', remotePort: '80' }
+
 /**
  * The Remote ID card of the device screen: ID and port in, a sign-in target out.
  *
- * Split out of DeviceScreen.tsx with its own state; the parent only decides whether it is
- * open and what happens with the target.
+ * 🔴 The typed values are the PARENT's state, not the card's. With its own state the card
+ * lost them whenever DeviceScreen swapped itself for the sign-in form (shipped in 2.0.4:
+ * type an ID, take the IP-address path, come back — empty). DeviceScreen stays mounted across
+ * that swap, so state held there survives it, as it did before the split.
  */
 export const RemoteIdCard = ({
+  input,
+  onInput,
   onConnected,
 }: {
+  readonly input: RemoteIdInput
+  readonly onInput: (next: RemoteIdInput) => void
   readonly onConnected: (target: SignInTarget) => void
 }): React.JSX.Element => {
   const { t } = useTranslation()
-  const [remoteId, setRemoteId] = useState('')
-  // Text, not number: an empty or half-typed field must stay representable. Validated on submit.
-  const [remotePort, setRemotePort] = useState('80')
+  const { remoteId, remotePort } = input
+  const setRemoteId = (value: string): void => onInput({ ...input, remoteId: value })
+  const setRemotePort = (value: string): void => onInput({ ...input, remotePort: value })
   const remotePortNumber = /^\d{1,5}$/.test(remotePort.trim()) ? Number(remotePort.trim()) : NaN
   const remotePortValid = Number.isInteger(remotePortNumber) && remotePortNumber >= 1 && remotePortNumber <= 65535
   const remoteIdValid = /^[0-9a-fA-F]{16}$/.test(remoteId.trim())
@@ -32,8 +47,7 @@ export const RemoteIdCard = ({
     mutationFn: async (input: { id: string; port: number }) =>
       unwrap(await window.zima.connectRemoteId({ remoteId: input.id, port: input.port })),
     onSuccess: (result) => {
-      setRemoteId('')
-      setRemotePort('80')
+      onInput(EMPTY_REMOTE_ID_INPUT)
       onConnected({
         host: result.host,
         port: result.port,
