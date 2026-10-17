@@ -73,8 +73,8 @@ Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 415616
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
-Zweig               auf `origin/v2` hochgeladen bis 6f31c85 (2026-10-16, per `git ls-remote`
-                    gegengeprüft); kein Tag v2.0.4
+Zweig               auf `origin/v2` hochgeladen, zuletzt 2026-10-17. Kein Hash hier: er veraltete
+                    mit jedem Push — den Stand zeigt `git ls-remote origin refs/heads/v2`
 Release             v2.0.3 — veröffentlicht 2026-10-08 (Tag auf 1b7efab, „Latest“). Von außen
                     gegengeprüft: alle sieben Dateien frisch heruntergeladen, `sha256sum -c`
                     ohne --ignore-missing → 5× OK (erstmals inklusive AppImage), install.sh
