@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.5 · **Stand:** 2026-10-16
+**Branch:** `v2` · **Version:** 2.0.6 · **Stand:** 2026-10-16
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -50,14 +50,15 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus cf8b772 (2.0.5), alle
-                    fünf in einem Lauf am 2026-10-17, 11:39–11:43; Electron 43.8.0 aus dem
-                    ausgepackten deb gelesen, `dpkg-deb -f` → 2.0.5. `sha256sum -c
-                    SHA256SUMS-2.0.5.txt` → 5× OK. Distro-Matrix 9/9 (9× version 2.0.5,
-                    ok=true, Reinstall: getcap 1, Launcher da, chrome-sandbox 0755), Log je
-                    Zeile + packages.sha256 in `dist/matrix/`. AppImage-Start ok (2.0.5,
-                    Electron 43.8.0, 51 CSS-Regeln), E2E 5/5. 2.0.4-Pakete:
-                    `dist/_stale-2026-10-17-pre-2.0.5/`, 2.0.4-Matrix: `dist/matrix-v2.0.4/`.
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus a72ce36 (2.0.6), alle
+                    fünf in einem Lauf am 2026-10-17, 12:07–12:11; Electron 43.8.0 und
+                    Version 2.0.6 aus dem ausgepackten deb; `asar list`: electron-updater 0,
+                    i18next 18 Dateien. `sha256sum -c SHA256SUMS-2.0.6.txt` → 5× OK.
+                    Distro-Matrix 9/9 (9× version 2.0.6, ok=true, failures 0; Reinstall:
+                    getcap 1, chrome-sandbox 0755, Launcher da), Log + packages.sha256 in
+                    `dist/matrix/`. AppImage-Start ok, E2E 5/5. 2.0.5-Pakete:
+                    `dist/_stale-2026-10-17-pre-2.0.6/` (5× OK, nach Wiederherstellung — siehe
+                    Abschnitt 2.0.6), 2.0.5-Matrix: `dist/matrix-v2.0.5/`.
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
@@ -2744,3 +2745,24 @@ ID und Port wieder in `DeviceScreen`, die Karte bekommt sie als Props. Test „d
 rot auf 2.0.4, grün auf v2.0.3 (Worktree) und mit dem Fix; Leeren nach Erfolg neu zugesichert (ohne rot).
 Echtes Fenster (Video-Aufnahme gegen das Demo-Gerät): ID nach dem Umweg da. Release-Notes vorab durch
 `verify:notes --since v2.0.4`: Fix-Abschnitt „1 of 1 added test(s) red on v2.0.4 — the fault was there“.
+
+## 2026-10-17 — 2.0.6: die drei offenen Produktbefunde vom 08.10. behoben
+
+Nach dem 2.0.5-Release gemessen (Anstoß: „ob sie behoben sind, hat seitdem niemand geprüft“): alle drei Befunde der
+Video-Faktenprüfung vom 08.10. standen in 2.0.5 noch. Jetzt:
+- **Backup-Fortschritt** (`bac19b8`): `startPhotoBackup` kehrt erst nach dem Lauf zurück, die Statusabfrage pollte nur
+  bei bekanntem `scanning/uploading`. Jetzt auch solange der Start läuft. Test rot vorher; echtes Fenster 6 s nach
+  Start: „Uploading… 8 of 32“, Balken, Cancel (in 2.0.5: nichts).
+- **install.sh englisch** (`6db8bcf`), deutsch bei deutscher Locale (LC_ALL > LC_MESSAGES > LANG). Erster Test des
+  Installers (8 Fälle über `ZIMA_TEST_ROOT`), rot vorher. Ungemessen: ob `sudo` auf jeder Distribution `LANG`
+  durchreicht — sonst Englisch.
+- **README-Matrix-Zeile** auf 2.0.6 / 2026-10-17; dazu zwei README-Sätze, die dem Code widersprachen („side by side“,
+  Token „im Schlüsselbund“) (`83d146c`), gefunden von der zweiten Video-Faktenprüfung.
+- **electron-updater entfernt** (`cca6e9b`): mitgeliefert, nie geladen. Test rot vorher; im 2.0.6-deb 0 Dateien.
+- Weiter offen aus derselben Liste: Backup legt Unterordner flach ab (`backupQueue.ts`, `basename`); Remote ID auf 1.8
+  Ende-zu-Ende ungemessen.
+
+**🔴 Zwischenfall beim Bau:** „Version setzen + Altpakete wegräumen“ und der Bau liefen als zwei parallele Aufrufe;
+das Pipe-Tor sperrte den ersten, der Bau lief trotzdem als 2.0.5 an und überschrieb in `dist/` das veröffentlichte
+2.0.5-AppImage, entfernte deb und tar.gz. Nach ~2 min abgebrochen; aus der zuvor geprüften Release-Kopie
+wiederhergestellt (5× OK, Prüfsummendatei gleich der veröffentlichten). Das Release auf GitHub war nie betroffen.
