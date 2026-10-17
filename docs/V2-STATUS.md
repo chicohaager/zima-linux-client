@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.4 · **Stand:** 2026-10-16
+**Branch:** `v2` · **Version:** 2.0.5 · **Stand:** 2026-10-16
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -50,26 +50,14 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 4156169 (2.0.4), alle
-                    fünf in einem Lauf am 2026-10-16, 20:10–20:15; Electron 43.8.0 aus dem
-                    ausgepackten deb gelesen (`strings` → `Electron/43.8.0`, `dpkg-deb -f`
-                    → Version 2.0.4). `sha256sum -c SHA256SUMS-2.0.4.txt` → 5× OK.
-                    Distro-Matrix am gebauten Paket 9/9 mit Reinstall-Schritt: getcap 1 Zeile,
-                    Launcher vorhanden, chrome-sandbox 0755, Start mit Sandbox überall ok=true,
-                    51 CSS-Regeln, failures=[] (`dist/matrix/`). In der openSUSE-Zeile 24
-                    Meldungen „GLX is not present“ (GPU-Prozess beendet sich im Container);
-                    Fenster trotzdem gezeichnet, Screenshot gleich dem 2.0.3-Lauf. Nicht neu:
-                    das 2.0.3-rpm zeigt auf demselben Image am 2026-10-17 ebenfalls 24.
-                    Kästchen statt Symbol vor „English (US)“ in den Container-Screenshots:
-                    schon im 2.0.3-Lauf identisch (fehlende Schrift im Container).
-                    AppImage auf dieser Maschine (`APPIMAGE_EXTRACT_AND_RUN=1`,
-                    `ZIMA_VERIFY_STARTUP`): ok=true, 2.0.4, Electron 43.8.0, 51 CSS-Regeln.
-                    E2E `npx playwright test` 5/5 am selben Tag.
-                    Ein erster 2.0.4-Bau mit Electron 43.7.9 (20:02–20:07, aus bebb192) liegt
-                    samt abgebrochener Teil-Matrix in `dist/_stale-2026-10-16-2.0.4-electron-43.7.9/`
-                    — verworfen, weil 43.7.11/43.8.0 Chromium-/V8-Korrekturen übernehmen.
-                    2.0.3-Pakete: `dist/_stale-2026-10-16-pre-2.0.4/`, 2.0.3-Matrix:
-                    `dist/matrix-v2.0.3/`.
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus cf8b772 (2.0.5), alle
+                    fünf in einem Lauf am 2026-10-17, 11:39–11:43; Electron 43.8.0 aus dem
+                    ausgepackten deb gelesen, `dpkg-deb -f` → 2.0.5. `sha256sum -c
+                    SHA256SUMS-2.0.5.txt` → 5× OK. Distro-Matrix 9/9 (9× version 2.0.5,
+                    ok=true, Reinstall: getcap 1, Launcher da, chrome-sandbox 0755), Log je
+                    Zeile + packages.sha256 in `dist/matrix/`. AppImage-Start ok (2.0.5,
+                    Electron 43.8.0, 51 CSS-Regeln), E2E 5/5. 2.0.4-Pakete:
+                    `dist/_stale-2026-10-17-pre-2.0.5/`, 2.0.4-Matrix: `dist/matrix-v2.0.4/`.
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
@@ -2746,3 +2734,13 @@ Proxy direkt 200. Release-Tor unverändert 9/9 (`4156169`), `npm run verify` 420
 
 **Nicht messbar am 2026-10-17:** Photos auf 1.7.0 und der Vorschau-Rückfall gegen Firmware < 1.8 — erreichbar waren
 nur .143 und .184 (beide 1.8.0). arm64: keine arm64-Hardware in der Wissensbasis verzeichnet.
+
+## 2026-10-17 — 2.0.5: die Remote-ID-Eingabe überlebt den Umweg über das Anmeldeformular
+
+In 2.0.4 ausgeliefert, gefunden beim Neuaufnehmen des YouTube-Videos: Remote ID eintippen, „Connect via IP
+address“, zurück — Feld leer. `DeviceScreen` gibt während einer Anmeldung nur `<SignInForm>` zurück; die seit
+`5dd8198` ausgelagerte Karte wurde ausgehängt. `hidden` (`b5aeca7`) deckte nur das Zuklappen. Fix `3b8203c`:
+ID und Port wieder in `DeviceScreen`, die Karte bekommt sie als Props. Test „detour through the IP sign-in form“:
+rot auf 2.0.4, grün auf v2.0.3 (Worktree) und mit dem Fix; Leeren nach Erfolg neu zugesichert (ohne rot).
+Echtes Fenster (Video-Aufnahme gegen das Demo-Gerät): ID nach dem Umweg da. Release-Notes vorab durch
+`verify:notes --since v2.0.4`: Fix-Abschnitt „1 of 1 added test(s) red on v2.0.4 — the fault was there“.
