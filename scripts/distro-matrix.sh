@@ -189,13 +189,20 @@ run_row() {
   echo
 }
 
+# 🔴 The full output of every row is kept next to its report, and the checksums of the
+# packages under test next to all of them. Until 2026-10-17 only the JSON and the screenshot
+# survived a run: the 2.0.4 matrix showed 24 "GLX is not present" lines on openSUSE, and
+# whether 2.0.3 had them too could no longer be told — that log had gone with the terminal.
+# A result without its log answers "did it start", never "is this new".
+(cd "${ROOT}/dist" && sha256sum ./*.deb ./*.rpm ./*.pacman) > "${OUT}/packages.sha256"
+
 wanted=("$@")
 for row in "${ROWS[@]}"; do
   IFS='|' read -r name kind image install reinstall <<<"${row}"
   if [ ${#wanted[@]} -gt 0 ]; then
     case " ${wanted[*]} " in *" ${name} "*) ;; *) continue ;; esac
   fi
-  run_row "${name}" "${kind}" "${image}" "${install}" "${reinstall}"
+  run_row "${name}" "${kind}" "${image}" "${install}" "${reinstall}" 2>&1 | tee "${OUT}/${name}.log"
 done
 
 echo "reports in ${OUT}"
