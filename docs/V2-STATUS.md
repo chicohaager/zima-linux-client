@@ -64,7 +64,13 @@ postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen, zuletzt 2026-10-17. Kein Hash hier: er veraltete
                     mit jedem Push — den Stand zeigt `git ls-remote origin refs/heads/v2`
-Release             v2.0.4 — veröffentlicht 2026-10-17 (Tag auf 4156169, „Latest“). Von außen
+Release             v2.0.6 — veröffentlicht 2026-10-17 (Tag auf a72ce36, „Latest“). Von außen
+                    gegengeprüft: sieben Dateien frisch geladen, `sha256sum -c` 5× OK, install.sh
+                    gleich dem Repo und englisch (`--help`), jeder README-/liesmich-Link 200,
+                    Notes zurückgelesen → `verify:notes --since v2.0.5 --until v2.0.6` sauber.
+                    Davor v2.0.5 (Tag auf cf8b772, gleicher Tag): Remote-ID-Eingabe über den
+                    Anmelde-Umweg; ebenso von außen geprüft.
+                    Davor v2.0.4 — veröffentlicht 2026-10-17 (Tag auf 4156169). Von außen
                     gegengeprüft: alle sieben Dateien frisch heruntergeladen, `sha256sum -c`
                     ohne --ignore-missing → 5× OK, install.sh gleich dem Repo, jeder
                     Download-Link in README und liesmich antwortet 200. Inhalt: vollständige
