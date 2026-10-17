@@ -655,19 +655,36 @@ Phasen 1–8 sind unabhängig reviewbar; jede läuft auf einem eigenen Branch mi
    App-Store-Seite gelistet. Die Zahl 29 stammt aus den Release-Notes des Mobile-Clients; welche
    Sprache dort zusätzlich enthalten ist, habe ich nicht belegt. **Prüfhandlung:** Sprachliste
    der Android-Paketdatei auslesen bzw. die Play-Store-Detailangaben abrufen. Bis dahin: 28.
+   **Gemessen am 2026-10-17** (`IceWhaleTech/ZimaClient` Release v2.3.2): Die Android-App
+   (`net.icewhale.zima` 1.6.4) übersetzt **28** Ressourcen-Locales — `en, en-GB, ca, cs, da, de,
+   el, es, fr, ga, hr, hu, it, ja, ko, ml, nb, nl, pl, pt, pt-BR, pt-PT, ro, ru, sk, sv, tr, zh`
+   (je ≥ 812 App-Schlüssel; die übrigen 60 Ordner tragen nur Bibliotheksstrings, gezählt gegen
+   `af`). Keine Sprache außerhalb der 28 dieses Clients; anders als hier: ein allgemeines `pt`, kein eigenes
+   `zh-TW` (`zh` mischt beide Schriften: 601 vereinfachte, 339 traditionelle Zeichen eindeutiger
+   Paare). `sr` hat 944 Strings, aber **0** App-Schlüssel. Ein Sprachmenü mit Eigennamen gibt es
+   weder in den Ressourcen noch in der DEX (von 18 Namen nur „Deutsch“ einmal) — die App folgt der
+   Systemsprache. Der Desktop-Client 2.3.2.59 (Windows) hat nur `en_US`/`zh_CN`. Woher die „29“
+   stammt, bleibt unbelegt; **eine 29. Sprache, die dieser Client übernehmen könnte, gibt es in keinem der
+   beiden Pakete.** Für diesen Client damit erledigt: 28.
 2. ~~**Discovery-Mechanismus.**~~ **Geschlossen am 2026-07-30:** `_zimaos._tcp`, Port 80,
    TXT `os=ZimaOS` — an der avahi-Konfiguration des Hosts **und** per PTR-Abfrage von der
    Netzseite belegt (§ 6.2). Was der Mobile-Client benutzt, ist damit noch nicht bewiesen; für
    unseren Client ist es unerheblich, weil das Gerät diesen Typ nachweislich ankündigt.
 3. **Photos-Verfügbarkeit.** Warum `/v2/photos` auf einem v1.7.0-Host fehlt (Mod nachinstalliert
    vs. Hardware-/Board-Abhängigkeit), ist nicht geklärt. Für den Client irrelevant — er erkennt
-   es zur Laufzeit —, für die Anleitung relevant.
+   es zur Laufzeit —, für die Anleitung relevant. Am 2026-10-17 nicht messbar: erreichbar waren
+   nur .143 und .184 (beide 1.8.0); .147 und .250 antworteten nicht.
 4. ~~**Screendesign des Mobile-Clients.**~~ **Geschlossen am 2026-07-30:** die fünf
    Store-Screenshots (860 × 1864) sind angesehen und in § 8.0 als Screen-Inventar festgehalten —
    Navigationsgerüst, Kartenoptik, Fortschritts-Pill, App-Fenster. Offen bleibt allein der
    **Dark Mode des Mobile-Clients**: alle vier Screens zeigen das helle Thema, ein dunkles
    Pendant ist nicht belegt. Unser Dark Mode leitet sich daher aus den ZimaOS-`.dark`-Tokens ab,
    nicht aus einer Mobile-Vorlage.
+   **Geschlossen am 2026-10-17** (Android-Paket 1.6.4, zwei unabhängige Belege): das App-Theme
+   `Theme.Zima` hat eine `night`-Konfiguration, und die Einstellungen führen „Appearance“ mit
+   Light / Dark / Follow system (Standard „Follow system“). Der Mobile-Client hat also einen Dark
+   Mode mit derselben Logik wie dieser Client (System oder manuell); die Farben selbst sind nicht
+   verglichen.
 5. **arm64.** Der Alt-Build verpackt nur `bin/zerotier/x64`. Ob das arm64-Binary im Repo zur
    Zieldistro passt, ist nicht gemessen — Phase 8 prüft es auf echter arm64-Hardware oder gar
    nicht (dann wird arm64 nicht behauptet).

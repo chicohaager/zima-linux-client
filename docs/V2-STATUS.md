@@ -2724,3 +2724,25 @@ der von GitHub zurückgelesene Text besteht `verify:notes --since v2.0.3 --until
 
 **Grenze:** Wird neues Verhalten fälschlich als `fixes:` ausgezeichnet, sind seine Tests auf dem alten Tag ebenfalls
 rot, und das Tor lässt es durch. Es fängt die Richtung „behoben, aber nie ausgeliefert“, nicht die umgekehrte.
+
+## 2026-10-17 — Offene Messpunkte abgearbeitet: 29. Sprache, Dark Mode Mobile, `npm audit` 0
+
+**29. Sprache (Plan § 14.1).** Gemessen an der Android-App aus `IceWhaleTech/ZimaClient` v2.3.2 (`net.icewhale.zima`
+1.6.4, gelesen mit androguard 4.1.4 in einer eigenen venv, die APK nie ausgeführt): 28 Ressourcen-Locales mit
+App-Übersetzungen, keine Sprache außerhalb der 28 dieses Clients. Die Rohzahl hätte getäuscht: `sr` hat 944 Strings,
+aber 0 App-Schlüssel — gezählt gegen `af`, das nur Bibliotheksstrings trägt. Der Desktop-Client 2.3.2.59 kennt nur
+`en_US`/`zh_CN`. Die Herkunft der „29“ bleibt unbelegt; zu übernehmen gibt es nichts. Details in V2-PLAN § 14.1.
+
+**Dark Mode des Mobile-Clients (Plan § 14.4).** Vorhanden: `Theme.Zima` mit `night`-Konfiguration und die Einstellung
+„Appearance: Light / Dark / Follow system“. Das einzige `-night`-Verzeichnis der APK (`color-night-v8`) gehört
+dem Material-Zeitwähler — ohne die zwei Belege oben hätte das wie „kein Dark Mode“ ausgesehen.
+
+**`npm audit`: 0.** Die letzten 8 moderaten Funde (`sprintf-js`, keine korrigierte Version: `<= 1.1.3`,
+`patched=none`) kamen über electron-builder → `@electron/get` 3.1.0 → `global-agent` 3 → `roarr`. `global-agent`
+4.1.3 braucht `roarr` nicht mehr; `overrides: { "global-agent": "^4.1.3" }`. `@electron/get` ruft nur
+`bootstrap()` auf und nur bei `ELECTRON_GET_USE_PROXY=true`, in `try/catch` — ein Bruch wäre still. Darum die Wirkung
+gemessen: `initializeProxy()` mit Proxy auf einem toten Port → HTTPS-Anfrage `ECONNREFUSED 127.0.0.1:9`; ohne
+Proxy direkt 200. Release-Tor unverändert 9/9 (`4156169`), `npm run verify` 420 Tests.
+
+**Nicht messbar am 2026-10-17:** Photos auf 1.7.0 und der Vorschau-Rückfall gegen Firmware < 1.8 — erreichbar waren
+nur .143 und .184 (beide 1.8.0). arm64: keine arm64-Hardware in der Wissensbasis verzeichnet.
