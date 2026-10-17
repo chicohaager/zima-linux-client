@@ -195,10 +195,11 @@ Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as
 - **The AppImage is type 2 and needs FUSE 2** (`libfuse2t64` on Ubuntu 24.04).
 - **A keyring is expected but not required** — see above.
 
-The deb, rpm and pacman packages of 2.0.0 were **installed and started on nine distributions** by
-[`scripts/distro-matrix.sh`](scripts/distro-matrix.sh) on 2026-08-15 — Ubuntu 22.04, 24.04 and
+The deb, rpm and pacman packages of 2.0.6 were **installed and started on nine distributions** by
+[`scripts/distro-matrix.sh`](scripts/distro-matrix.sh) on 2026-10-17 — Ubuntu 22.04, 24.04 and
 26.04 LTS, Debian 12 and 13, Fedora 41 and 44, Arch and openSUSE Tumbleweed — each in the real
-path, as an ordinary user, with the sandbox on. On real desktops: Ubuntu 24.04 (GNOME on
+path, as an ordinary user, with the sandbox on, and installed a second time to check the update
+path. On real desktops: Ubuntu 24.04 (GNOME on
 Wayland), Zorin OS 18, and three third-party reports (Fedora KDE, PikaOS, Ubuntu) documented in
 [`docs/V2-STATUS.md`](docs/V2-STATUS.md).
 

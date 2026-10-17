@@ -202,10 +202,11 @@ Installiert wird nach `/opt/ZimaOS Client/`, mit `/usr/bin/zima-linux-client` al
 - **Die AppImage ist Typ 2 und braucht FUSE 2** (`libfuse2t64` auf Ubuntu 24.04).
 - **Ein Schlüsselbund wird erwartet, aber nicht verlangt** — siehe oben.
 
-Die deb-, rpm- und pacman-Pakete von 2.0.0 wurden am 2026-08-15 von
+Die deb-, rpm- und pacman-Pakete von 2.0.6 wurden am 2026-10-17 von
 [`scripts/distro-matrix.sh`](scripts/distro-matrix.sh) **auf neun Distributionen installiert und
 gestartet** — Ubuntu 22.04, 24.04 und 26.04 LTS, Debian 12 und 13, Fedora 41 und 44, Arch und
-openSUSE Tumbleweed — jeweils im echten Pfad, als gewöhnlicher Benutzer, mit Sandkasten. Auf
+openSUSE Tumbleweed — jeweils im echten Pfad, als gewöhnlicher Benutzer, mit Sandkasten, und ein
+zweites Mal installiert, um den Update-Pfad zu prüfen. Auf
 echten Desktops: Ubuntu 24.04 (GNOME auf Wayland), Zorin OS 18 und drei Fremdberichte (Fedora KDE,
 PikaOS, Ubuntu), dokumentiert in [`docs/V2-STATUS.md`](docs/V2-STATUS.md).
 
