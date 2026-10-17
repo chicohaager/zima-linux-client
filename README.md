@@ -3,8 +3,8 @@
 Desktop client for ZimaOS on Linux — files, photos, apps and device management, with ZeroTier
 built in and Tailscale used when it is already there.
 
-> **Branch `v2` · version 2.0.4 · latest release
-> [`v2.0.4`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.4) (2026-10-17)**
+> **Branch `v2` · version 2.0.5 · latest release
+> [`v2.0.5`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.5) (2026-10-17)**
 > — a rewrite of the client. The 0.9.x line lives on
 > [`main`](https://github.com/chicohaager/zima-linux-client/tree/main) and in the tag
 > [`v0.9.23`](https://github.com/chicohaager/zima-linux-client/tree/v0.9.23).
@@ -24,7 +24,7 @@ Taken from the current build by `npm run screenshots` on 2026-09-17, against the
 the end-to-end suite replays. Nothing is staged and nothing is retouched — see
 [About these pictures](#about-these-pictures).
 
-**Three ways in, side by side** — scan the network, type an address, or hand it a Remote ID.
+**Three ways in, on one screen** — scan the network, type an address, or hand it a Remote ID.
 
 ![The device screen before signing in: scan the local network, connect via IP address, connect via Remote ID](docs/img/01-connect.png)
 
@@ -77,7 +77,7 @@ trees, not one restyled.
 
 ## What it does
 
-**Getting in — three ways, side by side**
+**Getting in — three ways, on one screen**
 
 - **Scan the local network** — mDNS over `_zimaos._tcp`, implemented directly against the wire
   format, no third-party dependency.
@@ -116,9 +116,9 @@ address goes through the same probe, and a named reason comes back instead of an
   Nothing is downloaded, and an existing system-wide ZeroTier is left untouched.
 - **Tailscale is detected, never operated.** If a tunnel is already running it is used. Nothing
   is started, stopped or reconfigured, and no DNS setting is touched.
-- **Only the refresh token is stored, never the password** — in the system keyring. Without a
-  keyring the client asks before writing anything, rather than saving with Electron's hardcoded
-  fallback password.
+- **Only the refresh token is stored, never the password** — in the app's profile folder, encrypted
+  with a key from the system keyring (Electron `safeStorage`). Without a keyring the client asks
+  before writing anything, rather than saving with Electron's hardcoded fallback password.
 
 ## What it deliberately does not do
 
@@ -136,18 +136,18 @@ installs, but nobody has seen the application start on arm64 — it cannot be sh
 emulation. That is a settled decision, not a pending task.)
 
 The packages live in the
-[**release v2.0.4**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.4).
+[**release v2.0.5**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.5).
 Fetch the installer, the checksums and the one package for your distribution:
 
 ```bash
 cd ~/Downloads
-B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.4
+B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.5
 
-wget $B/install.sh $B/SHA256SUMS-2.0.4.txt          # always these two
+wget $B/install.sh $B/SHA256SUMS-2.0.5.txt          # always these two
 
-wget $B/zima-linux-client_2.0.4_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
-wget $B/zima-linux-client-2.0.4.x86_64.rpm          # Fedora, openSUSE, RHEL derivatives
-wget $B/zima-linux-client-2.0.4.pacman              # Arch, Manjaro
+wget $B/zima-linux-client_2.0.5_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
+wget $B/zima-linux-client-2.0.5.x86_64.rpm          # Fedora, openSUSE, RHEL derivatives
+wget $B/zima-linux-client-2.0.5.pacman              # Arch, Manjaro
 
 chmod +x install.sh && sudo ./install.sh
 ```
@@ -161,27 +161,27 @@ needs no sudo, `--repair` fixes what is fixable, `--uninstall` removes it.
 By hand instead:
 
 ```bash
-sha256sum -c --ignore-missing SHA256SUMS-2.0.4.txt   # OK for each file you downloaded
+sha256sum -c --ignore-missing SHA256SUMS-2.0.5.txt   # OK for each file you downloaded
 
 # Debian, Ubuntu, Zorin, Linux Mint, Pop!_OS — apt needs an absolute path or a leading ./
-sudo apt install ~/Downloads/zima-linux-client_2.0.4_amd64.deb
+sudo apt install ~/Downloads/zima-linux-client_2.0.5_amd64.deb
 
 # Fedora
-sudo dnf install ./zima-linux-client-2.0.4.x86_64.rpm
+sudo dnf install ./zima-linux-client-2.0.5.x86_64.rpm
 
 # openSUSE — the package is unsigned, hence the two flags
-sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.4.x86_64.rpm
+sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.5.x86_64.rpm
 
 # Arch, Manjaro
-sudo pacman -U ./zima-linux-client-2.0.4.pacman
+sudo pacman -U ./zima-linux-client-2.0.5.pacman
 ```
 
 **AppImage** — nothing is installed and none of the permissions above are set. Since 2.0.3 the
 file name has no space, so the download, the checksum file and the commands below all agree:
 
 ```bash
-chmod +x ZimaOS.Client-2.0.4.AppImage
-./ZimaOS.Client-2.0.4.AppImage
+chmod +x ZimaOS.Client-2.0.5.AppImage
+./ZimaOS.Client-2.0.5.AppImage
 ```
 
 Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as the entry point.
