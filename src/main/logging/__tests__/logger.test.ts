@@ -76,3 +76,46 @@ describe('file logging', () => {
     expect((statSync(path).mode & 0o777).toString(8)).toBe('600')
   })
 })
+
+/**
+ * The Remote ID is the key to the device's network (anyone holding it can join a PUBLIC
+ * ZimaOS network). It reached the log three ways: `zerotier.joined {networkId}`,
+ * `zerotier.left`, and every error text that quotes it ("network <id> is …"). Masked here,
+ * once, at the last point before any transport — a per-call fix would miss the next caller.
+ */
+describe('remote id redaction', () => {
+  const ID = '0123456789abcdef'
+  let seen: string[]
+  const capture = (message: { data: unknown[] }): unknown => {
+    seen.push(message.data.map(String).join(' '))
+    return message
+  }
+  beforeEach(() => {
+    seen = []
+    log.hooks.push(capture as never)
+  })
+  afterEach(() => {
+    log.hooks.splice(log.hooks.indexOf(capture as never), 1)
+  })
+
+  it('never lets a 16-hex network id through, in fields or in text', () => {
+    logger.info('zerotier.joined', { networkId: ID })
+    logger.warn('remote-id.failed', { reason: `network ${ID.toUpperCase()} is REQUESTING_CONFIGURATION` })
+    expect(seen.join('\n')).not.toMatch(/[0-9a-f]{16}/i)
+  })
+
+  it('keeps a stable tag, so two lines about the same network stay comparable', () => {
+    logger.info('zerotier.joined', { networkId: ID })
+    logger.info('zerotier.left', { networkId: ID.toUpperCase() })
+    const tags = seen.map((line) => line.match(/<remote-id:[0-9a-f]{8}>/)?.[0])
+    expect(tags[0]).toBeDefined()
+    expect(tags[0]).toBe(tags[1])
+  })
+
+  it('leaves longer hex values alone', () => {
+    // A sha256 (64 hex) contains 16-hex runs; it is not a Remote ID and is evidence in reports.
+    const sha = 'a'.repeat(64)
+    logger.info('release.checksum', { sha })
+    expect(seen.join('\n')).toContain(sha)
+  })
+})

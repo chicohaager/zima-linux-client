@@ -1,6 +1,7 @@
 import { dirname, join } from 'node:path'
 import type { BrowserWindow } from 'electron'
 import {
+  CAPTURE_MS,
   capturePng,
   CLICK_ACTION,
   FILL,
@@ -31,6 +32,25 @@ export interface ScenarioResult {
 }
 
 const VISIBLE_TEXT = `(document.body.innerText || '').trim()`
+
+/** Exactly 16 hex — the Remote ID's form; longer hex (checksums) is left alone. */
+const HEX16 = /(?<![0-9a-fA-F])[0-9a-fA-F]{16}(?![0-9a-fA-F])/g
+
+const MASK_REMOTE_ID = `(() => {
+  const style = document.createElement('style')
+  style.append('input[name="remoteId"] { -webkit-text-security: disc !important; }')
+  document.head.appendChild(style)
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+  for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+    node.nodeValue = node.nodeValue.replace(${HEX16}, '<remote-id>')
+  }
+  // Waits for a frame where frames flow; bounded, because in the verifier none may come
+  // (measured: none in 10 s). The capture below does not rely on this.
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve('ok')))
+    setTimeout(() => resolve('ok-no-frame'), 1000)
+  })
+})()`
 
 /** How long joining a ZeroTier network and probing the device may take before it counts as broken. */
 const REMOTE_ID_BUDGET_MS = 40_000
@@ -216,6 +236,15 @@ const remoteIdScenario = async (
   observed['remoteIdWaitMs'] = String(settled.elapsedMs)
 
   /*
+   * 🔴 Masked before anything is captured or read. The id is the key to the device's network,
+   * and the "never stored" above was false until 2026-10-28: `remote-id.png` and `report.png`
+   * showed it in the field, and a failed join quoted it again in the error text. A style
+   * hides the field (React state untouched), the text nodes lose it, and the reported screen
+   * is stripped once more on this side — the page is not the only place that can leak it.
+   */
+  observed['mask'] = String(await run(MASK_REMOTE_ID))
+
+  /*
    * 🔴 `signedIn` is read from the attribute, not from the button's text.
    *
    * It used to match the literals 'Abmelden' / 'Sign out', which are correct in 2 of the 28
@@ -230,7 +259,7 @@ const remoteIdScenario = async (
     signedIn: ${SIGNED_IN},
   }))()`)) as { text: string; hasPasswordField: boolean; signedIn: boolean }
 
-  observed['screen'] = after.text.slice(0, 1500)
+  observed['screen'] = after.text.replace(HEX16, '<remote-id>').slice(0, 1500)
   observed['reachedSignIn'] = String(after.hasPasswordField)
   observed['signedIn'] = String(after.signedIn)
 
@@ -263,6 +292,12 @@ const remoteIdScenario = async (
     // Bounded, like every other capture in this codebase: `capturePage()` can never return
     // (measured 2026-07-31 on the packaged payload), and an unbounded await here would hang
     // the scenario where its own caller cannot see it.
+    // 🔴 `capturePage` hands back the LAST composited frame and only then draws a new one.
+    // Measured 2026-10-28 (OCR): the first capture after masking still showed the id, the
+    // second did not; no frame came in 10 s without a capture, and `invalidate()` changed
+    // nothing. So one capture is taken and thrown away in memory — never written, it holds
+    // the id — before the one that is kept.
+    await Promise.race([window.webContents.capturePage(), sleep(CAPTURE_MS)])
     observed['screenshot'] = await capturePng(window, join(dirname(reportDir), 'remote-id.png'))
   }
 
