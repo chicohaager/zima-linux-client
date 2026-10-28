@@ -26,6 +26,20 @@ let exitCode: number | null = null
 let watchedReport: string | null = null
 /** What lay on disk at each `app.exit` — see the overtaking test for why that matters. */
 let exits: { readonly code: number; readonly onDisk: string | null }[] = []
+/** Order of the two things that must happen at the end of a run: stopping ZeroTier, exiting. */
+let endings: ('stop-zerotier' | 'exit')[] = []
+
+/*
+ * `app.exit` skips `will-quit`, so the quit handler that stops the ZeroTier daemon never runs
+ * on this path. Measured 2026-10-28: after every verifier run the unit
+ * `zima-linux-client-zerotier` was still `active`. The verifier has to stop it itself, and
+ * BEFORE the exit — afterwards there is no process left to do it.
+ */
+vi.mock('@main/zerotier/daemon', () => ({
+  stopDaemonSync: (): void => {
+    endings.push('stop-zerotier')
+  },
+}))
 
 vi.mock('electron', () => ({
   app: {
@@ -38,6 +52,7 @@ vi.mock('electron', () => ({
      */
     exit: (code: number): void => {
       exitCode = code
+      endings.push('exit')
       let onDisk: string | null = null
       if (watchedReport !== null) {
         try {
@@ -92,6 +107,7 @@ beforeEach(() => {
   exitCode = null
   watchedReport = null
   exits = []
+  endings = []
   vi.resetModules()
   vi.useFakeTimers()
   delete process.env['ZIMA_VERIFY_STARTUP']
@@ -125,6 +141,14 @@ describe('armVerificationWatchdog', () => {
     // an hour because "no report" pointed at the package rather than at the verifier.
     expect(report.failures.join(' ')).toContain('timed out after 400 ms')
     expect(report.failures.join(' ')).toContain('waiting for the window to finish loading')
+  })
+
+  it('stops the ZeroTier daemon before the watchdog exits', async () => {
+    process.env['ZIMA_VERIFY_STARTUP'] = join(dir, 'stalled-zt.json')
+    process.env['ZIMA_VERIFY_TIMEOUT_MS'] = '400'
+    await arm()
+    vi.advanceTimersByTime(400)
+    expect(endings).toEqual(['stop-zerotier', 'exit'])
   })
 
   it('reports the step it was actually in, not the one it started in', async () => {
@@ -212,6 +236,8 @@ describe('armVerificationWatchdog', () => {
     expect(report.failures.join(' ')).not.toContain('timed out after')
     // …and no screenshot was written, because there was none.
     expect(existsSync(join(dir, 'no-screenshot.png'))).toBe(false)
+    // The run's own verdict ends the process too — and must stop ZeroTier first, like the watchdog.
+    expect(endings).toEqual(['stop-zerotier', 'exit'])
   })
 
   it('does not let the watchdog overwrite a verdict the run itself produced', async () => {

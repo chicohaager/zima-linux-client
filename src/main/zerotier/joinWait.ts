@@ -37,6 +37,11 @@ export const JOIN_WAIT: Omit<JoinWaitOptions, 'now' | 'sleep'> = {
   stepMs: 250,
 }
 
+export const REAL_CLOCK: Pick<JoinWaitOptions, 'now' | 'sleep'> = {
+  now: Date.now,
+  sleep: (ms) => new Promise<void>((resolve) => setTimeout(resolve, ms)),
+}
+
 export const waitForJoin = async <T extends JoinSnapshot>(
   networkId: string,
   read: () => Promise<T>,
