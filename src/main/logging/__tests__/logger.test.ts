@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import log from 'electron-log/main'
@@ -74,6 +74,24 @@ describe('file logging', () => {
     logger.info('app.ready', { electron: '43.2.0' })
 
     expect((statSync(path).mode & 0o777).toString(8)).toBe('600')
+  })
+
+  it('masks a Remote ID that an earlier build left in the log, before this run writes', () => {
+    // The wiring, not the function (redactLogFiles.test.ts): without the call in
+    // enableFileLogging the old line stays in clear text next to the new, masked ones.
+    const path = join(dir, 'main.log')
+    writeFileSync(path, 'zerotier.joined {"networkId":"0123456789abcdef"}\n', { mode: 0o600 })
+    log.transports.file.resolvePathFn = () => path
+
+    enableFileLogging()
+    logger.info('zerotier.joined', { networkId: '0123456789abcdef' })
+
+    const lines = readFileSync(path, 'utf8').trim().split('\n')
+    expect(lines.join('\n')).not.toMatch(/[0-9a-f]{16}/i)
+    // Old and new line carry the same tag.
+    const tags = lines.map((l) => l.match(/<remote-id:[0-9a-f]{8}>/)?.[0]).filter(Boolean)
+    expect(tags).toHaveLength(2)
+    expect(tags[0]).toBe(tags[1])
   })
 })
 

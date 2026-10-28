@@ -2817,8 +2817,9 @@ mit frischem `--user-data-dir` (= frische ZeroTier-Identität):
 **Nachtrag 2026-10-28 (dritte Runde) — die Remote ID verlässt den Client nicht mehr:**
 - **Log:** `logger.ts` ersetzt jeden genau 16-stelligen Hex-Wert durch `<remote-id:sha256[:8]>` — Felder und
   Fehlertexte, an der letzten Stelle vor jedem Transport. Längere Hex-Werte (Prüfsummen) bleiben. Test rot vorher
-  (2 von 3). Echter Lauf mit der ID von .184: 0 Treffer in `main.log`, Konsole und `report.json`. Im alten
-  `~/.config/zima-linux-client/logs/main.log` stehen 73 Zeilen mit 16-Hex-Werten aus früheren Läufen — nicht angefasst.
+  (2 von 3). Echter Lauf mit der ID von .184: 0 Treffer in `main.log`, Konsole und `report.json`. In den alten Dateien unter
+  `~/.config/zima-linux-client/logs/` standen 73 16-Hex-Werte aus früheren Läufen (korrigiert in Runde 4: nicht
+  „73 Zeilen in main.log“, sondern 26 in `main.log` + 47 in den v1-Logs von 2025, je Datei ein einziger Wert).
 - **Szenario `remote-id`:** maskiert Feld (`-webkit-text-security`) und Text („network <remote-id> is …“) vor der
   ersten Aufnahme, `observed.screen` zusätzlich auf dieser Seite. 🔴 `capturePage` liefert den LETZTEN fertigen Frame:
   erste Aufnahme nach der Maske zeigte die ID weiter (OCR), die zweite nicht; ohne Aufnahme kam in 10 s kein Frame,
@@ -2826,3 +2827,14 @@ mit frischem `--user-data-dir` (= frische ZeroTier-Identität):
   OCR-Beleg per CDP an der Platzhalter-ID: Fehlerzeile vorher „network@123456789abcdef…“, nachher
   „network<remote-id>is…“; Feld vorher „0123456789abcdeF“, nachher leer. Prüfläufe: Fehlschlag und Erfolg (echte
   ID), je `remote-id.png` und `report.png` 0 Treffer.
+
+**Nachtrag 2026-10-28 (vierte Runde) — alte Logs einmalig maskiert:**
+- `redactLogFiles.ts`: beim Start, VOR der ersten geschriebenen Zeile, dieselbe Maske (`redact.ts`, gemeinsam mit dem
+  Logger) über `*.log`/`*.log.<n>` des Log-Ordners — Ersatz per Rename aus einer 0600-Temp-Datei; danach Marker
+  `.remote-id-redacted`, bei jedem Fehler kein Marker (nächster Start versucht erneut). Einmalig, weil der Scan hier
+  126 MB in 0,8 s las. Tests rot vorher (4 von 6 gegen eine Attrappe; Schutztests per Sabotage rot: ohne `mode` 0664,
+  ohne Dateifilter `devices.json` angefasst; Verdrahtung in `enableFileLogging` per Sabotage rot).
+- Echter Lauf auf dem Entwicklungsrechner (Dev-Client neu gestartet): `logging.redacted {"count":4}`, danach 0
+  16-Hex-Werte in 21 Log-Dateien; jede Datei byte-gleich `redact(Sicherung)` (main.log plus Zeilen des neuen Laufs),
+  Modus 600. Sicherung danach gelöscht (enthielt die ID).
+- Nicht abgedeckt: Zeilen, die ein ÄLTERER Build nach dem Marker schreibt (Downgrade).
