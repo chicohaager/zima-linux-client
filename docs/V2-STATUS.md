@@ -68,7 +68,11 @@ postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung
 Zweig               auf `origin/v2` hochgeladen, zuletzt 2026-10-17. Kein Hash hier: er veraltete
                     mit jedem Push — den Stand zeigt `git ls-remote origin refs/heads/v2`
-Release             v2.0.6 — veröffentlicht 2026-10-17 (Tag auf a72ce36, „Latest“). Von außen
+Release             v2.0.7 — veröffentlicht 2026-10-28 (Tag auf 1f07de9, „Latest“). Von außen
+                    gegengeprüft: sieben Dateien frisch geladen, `sha256sum -c` 5× OK, install.sh
+                    gleich dem Repo und englisch, jeder Datei-Link aus README/liesmich 200, Notes
+                    zurückgelesen → `verify:notes --since v2.0.6 --until v2.0.7` sauber.
+                    Davor v2.0.6 — veröffentlicht 2026-10-17 (Tag auf a72ce36, „Latest“). Von außen
                     gegengeprüft: sieben Dateien frisch geladen, `sha256sum -c` 5× OK, install.sh
                     gleich dem Repo und englisch (`--help`), jeder README-/liesmich-Link 200,
                     Notes zurückgelesen → `verify:notes --since v2.0.5 --until v2.0.6` sauber.
@@ -2842,3 +2846,14 @@ mit frischem `--user-data-dir` (= frische ZeroTier-Identität):
   16-Hex-Werte in 21 Log-Dateien; jede Datei byte-gleich `redact(Sicherung)` (main.log plus Zeilen des neuen Laufs),
   Modus 600. Sicherung danach gelöscht (enthielt die ID).
 - Nicht abgedeckt: Zeilen, die ein ÄLTERER Build nach dem Marker schreibt (Downgrade).
+
+## 2026-10-28 — 2.0.7 veröffentlicht
+
+Inhalt: Remote ID beim ersten Mal (`b175eb2`), Wartetext (`cb47175`), Remote ID nicht mehr im Log (`a5ed5f4`) und
+einmalig aus alten Logs entfernt (`5c19196`), Prüfläufe stoppen ZeroTier (`6af7554`), Electron 43.8.4 + zod 4.6.7
+(`ffb9225`; `npm audit` vorher 5, davon 4 high, u. a. GHSA-jr5w-w6x2-84p9 an Electron 43.8.0 — nachher 0).
+Belege oben in „Pakete“ und „Release“. Notes-Tor: der Remote-ID-Abschnitt steht mit Handbeleg (`checked:`), weil
+`joinWait.test.ts` auf v2.0.6 nicht lädt.
+- Befund unterwegs: das Release-Tor listete PR #18 („Minor changes“, 2026-10-17) als unbeantwortet — nicht beurteilt.
+- Offen aus den Produktbefunden: Backup legt Unterordner flach ab (`backupQueue.ts:220`, `basename`), unverändert.
+- Nicht gemessen: Remote-ID-Erstbeitritt mit dem fertigen 2.0.7-Paket (gemessen am Fix-Build `b175eb2`).
