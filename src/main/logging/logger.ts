@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { dirname } from 'node:path'
 import log from 'electron-log/main'
 import { tightenLogFiles } from './permissions'
@@ -25,8 +26,20 @@ log.transports.file.level = false
 
 type Fields = Readonly<Record<string, unknown>>
 
+/**
+ * The Remote ID (= ZeroTier network id, 16 hex) is the key to the device's network, and it
+ * reached this file in `zerotier.joined`, `zerotier.left` and every error text quoting it.
+ * Replaced by a short hash: lines about the same network stay comparable, the id does not
+ * leave. Exactly 16 — a sha256 contains 16-hex runs and must survive.
+ */
+const REMOTE_ID = /(?<![0-9a-fA-F])[0-9a-fA-F]{16}(?![0-9a-fA-F])/g
+const redact = (text: string): string =>
+  text.replace(REMOTE_ID, (id) =>
+    `<remote-id:${createHash('sha256').update(id.toLowerCase()).digest('hex').slice(0, 8)}>`,
+  )
+
 const line = (event: string, fields?: Fields): string =>
-  fields === undefined ? event : `${event} ${JSON.stringify(fields)}`
+  redact(fields === undefined ? event : `${event} ${JSON.stringify(fields)}`)
 
 export const logger = {
   debug: (event: string, fields?: Fields): void => log.debug(line(event, fields)),

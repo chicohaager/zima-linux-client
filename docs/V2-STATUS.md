@@ -2813,3 +2813,16 @@ mit frischem `--user-data-dir` (= frische ZeroTier-Identität):
   Sekunden dauern.“ — in allen 28 Katalogen, nur solange der Beitritt läuft; scrollt sich ins Bild (bei 1180×783 lag
   er erst unter dem Rand). Im echten Fenster (de-DE, frische Identität): sichtbar nach 0,5 s, im Bild, weg mit der
   Anmeldemaske nach 5,5 s.
+
+**Nachtrag 2026-10-28 (dritte Runde) — die Remote ID verlässt den Client nicht mehr:**
+- **Log:** `logger.ts` ersetzt jeden genau 16-stelligen Hex-Wert durch `<remote-id:sha256[:8]>` — Felder und
+  Fehlertexte, an der letzten Stelle vor jedem Transport. Längere Hex-Werte (Prüfsummen) bleiben. Test rot vorher
+  (2 von 3). Echter Lauf mit der ID von .184: 0 Treffer in `main.log`, Konsole und `report.json`. Im alten
+  `~/.config/zima-linux-client/logs/main.log` stehen 73 Zeilen mit 16-Hex-Werten aus früheren Läufen — nicht angefasst.
+- **Szenario `remote-id`:** maskiert Feld (`-webkit-text-security`) und Text („network <remote-id> is …“) vor der
+  ersten Aufnahme, `observed.screen` zusätzlich auf dieser Seite. 🔴 `capturePage` liefert den LETZTEN fertigen Frame:
+  erste Aufnahme nach der Maske zeigte die ID weiter (OCR), die zweite nicht; ohne Aufnahme kam in 10 s kein Frame,
+  `invalidate()` half nicht. Daher eine Wegwerf-Aufnahme im Speicher (nie auf Platte) vor der echten.
+  OCR-Beleg per CDP an der Platzhalter-ID: Fehlerzeile vorher „network@123456789abcdef…“, nachher
+  „network<remote-id>is…“; Feld vorher „0123456789abcdeF“, nachher leer. Prüfläufe: Fehlschlag und Erfolg (echte
+  ID), je `remote-id.png` und `report.png` 0 Treffer.
