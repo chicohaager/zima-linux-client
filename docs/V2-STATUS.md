@@ -1,6 +1,6 @@
 # v2 — Umsetzungsstand
 
-**Branch:** `v2` · **Version:** 2.0.6 · **Stand:** 2026-10-16
+**Branch:** `v2` · **Version:** 2.0.7 · **Stand:** 2026-10-28
 
 Der Plan steht in [V2-PLAN.md](V2-PLAN.md). Diese Datei sagt, was davon **läuft** — mit dem Beleg
 daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt ist.
@@ -9,8 +9,10 @@ daneben. Nichts hier ist „fertig", wofür kein Kommando oder Messwert genannt 
 stammen vom Lauf am 2026-08-15 und sind seither unverändert):
 
 ```
-npm run verify        ✓ (rc=0)  type-check · lint (0 Warnungen) · 420 Tests in 53 Dateien ·
-                    build · build-gate · i18n · privacy — gefahren am 2026-10-16 (vorher
+npm run verify        ✓ (rc=0)  type-check · lint (0 Warnungen) · 452 Tests in 60 Dateien ·
+                    build · build-gate · i18n · privacy — gefahren am 2026-10-28 (ein Lauf davor am
+                    selben Tag rot: 37 Tests, 4 Zeitüberschreitungen, 60,9 s statt 1,5 s, Import 53 %;
+                    drei Wiederholungen grün — Ursache ungemessen, wie am 2026-10-08), 420/53 am 2026-10-16 (vorher
                     416/52 am selben Tag, 397/49 am 2026-10-08, 360/45 am 2026-09-17). Am 2026-10-08 war ein
                     Lauf rot (7 Zeitüberschreitungen, 481 s Sammelzeit statt ~6 s),
                     fünf Wiederholungen grün — Ursache
@@ -18,7 +20,8 @@ npm run verify        ✓ (rc=0)  type-check · lint (0 Warnungen) · 420 Tests 
                     OHNE Pipe gemessen: `npm run verify | tail` meldete vorher rc=0, das war
                     der Code von `tail` — das Privacy-Gate war in Wahrheit rot (rc=1) mit vier
                     echten Adressen in neuen Kommentaren
-npm run verify:release ✓ (rc=0)  9 von 9 am 2026-10-16 gegen die 2.0.4-Pakete aus 4156169;
+npm run verify:release ✓ (rc=0)  9 von 9 am 2026-10-28 gegen die 2.0.7-Pakete aus 1f07de9; davor
+                    9 von 9 am 2026-10-16 gegen die 2.0.4-Pakete aus 4156169;
                     Selbsttest 26/26. Am selben Tag eine Lücke des Tors geschlossen: ein
                     Electron-Sprung (devDependency) und das Lockfile zählten nicht als
                     Bau-Eingabe — das Tor nannte bebb192 statt 4156169 und hätte die
@@ -50,15 +53,16 @@ Handlauf alpha.4    Zorin OS 18, vollständig: Start OHNE Sitzung und ohne eigen
 Fremdbericht        Fedora KDE Plasma Desktop, `.rpm`, echte Hardware, 2026-08-11: Start und
                     angemeldeter Gerätezugriff liefen (~15 min). KEINE Messung von mir, und ein
                     offener Punkt daraus: HTTP 400 im Fotos-Reiter — siehe unten
-Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus a72ce36 (2.0.6), alle
-                    fünf in einem Lauf am 2026-10-17, 12:07–12:11; Electron 43.8.0 und
-                    Version 2.0.6 aus dem ausgepackten deb; `asar list`: electron-updater 0,
-                    i18next 18 Dateien. `sha256sum -c SHA256SUMS-2.0.6.txt` → 5× OK.
-                    Distro-Matrix 9/9 (9× version 2.0.6, ok=true, failures 0; Reinstall:
-                    getcap 1, chrome-sandbox 0755, Launcher da), Log + packages.sha256 in
-                    `dist/matrix/`. AppImage-Start ok, E2E 5/5. 2.0.5-Pakete:
-                    `dist/_stale-2026-10-17-pre-2.0.6/` (5× OK, nach Wiederherstellung — siehe
-                    Abschnitt 2.0.6), 2.0.5-Matrix: `dist/matrix-v2.0.5/`.
+Pakete              deb · rpm · pacman · AppImage · tar.gz gebaut aus 1f07de9 (2.0.7), alle
+                    fünf in einem Lauf am 2026-10-28, 15:47–15:52; aus dem ausgepackten deb:
+                    Electron 43.8.4, Version 2.0.7, zod 4.6.7, electron-updater 0, Log-Bereinigung
+                    (`.remote-id-redacted`) im Main-Bundle. `sha256sum -c SHA256SUMS-2.0.7.txt` → 5× OK.
+                    Distro-Matrix 9/9 (9× version 2.0.7, Electron 43.8.4, ok=true, css 51, failures 0;
+                    Reinstall 9×: getcap 1, chrome-sandbox 755, Launcher da; nav je Distribution gleich
+                    2.0.6), Log + Berichte in `dist/matrix/`. AppImage-Start ok (über
+                    `--appimage-extract-and-run`: diesem Rechner fehlt libfuse.so.2), danach ZeroTier
+                    `inactive`. 2.0.6-Pakete: `dist/_stale-2026-10-28-pre-2.0.7/` (5× OK),
+                    2.0.6-Matrix: `dist/matrix-v2.0.6/`.
 postinst            aus dem GEBAUTEN .deb gelesen: enthält die vollständige
                     electron-builder-Vorlage (update-alternatives, chmod 4755
                     chrome-sandbox, apparmor_parser) UND die setcap-Erteilung

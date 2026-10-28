@@ -3,8 +3,8 @@
 Desktop client for ZimaOS on Linux — files, photos, apps and device management, with ZeroTier
 built in and Tailscale used when it is already there.
 
-> **Branch `v2` · version 2.0.6 · latest release
-> [`v2.0.6`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.6) (2026-10-17)**
+> **Branch `v2` · version 2.0.7 · latest release
+> [`v2.0.7`](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.7) (2026-10-28)**
 > — a rewrite of the client. The 0.9.x line lives on
 > [`main`](https://github.com/chicohaager/zima-linux-client/tree/main) and in the tag
 > [`v0.9.23`](https://github.com/chicohaager/zima-linux-client/tree/v0.9.23).
@@ -136,18 +136,18 @@ installs, but nobody has seen the application start on arm64 — it cannot be sh
 emulation. That is a settled decision, not a pending task.)
 
 The packages live in the
-[**release v2.0.6**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.6).
+[**release v2.0.7**](https://github.com/chicohaager/zima-linux-client/releases/tag/v2.0.7).
 Fetch the installer, the checksums and the one package for your distribution:
 
 ```bash
 cd ~/Downloads
-B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.6
+B=https://github.com/chicohaager/zima-linux-client/releases/download/v2.0.7
 
-wget $B/install.sh $B/SHA256SUMS-2.0.6.txt          # always these two
+wget $B/install.sh $B/SHA256SUMS-2.0.7.txt          # always these two
 
-wget $B/zima-linux-client_2.0.6_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
-wget $B/zima-linux-client-2.0.6.x86_64.rpm          # Fedora, openSUSE, RHEL derivatives
-wget $B/zima-linux-client-2.0.6.pacman              # Arch, Manjaro
+wget $B/zima-linux-client_2.0.7_amd64.deb           # Debian, Ubuntu, Zorin, Mint, Pop!_OS
+wget $B/zima-linux-client-2.0.7.x86_64.rpm          # Fedora, openSUSE, RHEL derivatives
+wget $B/zima-linux-client-2.0.7.pacman              # Arch, Manjaro
 
 chmod +x install.sh && sudo ./install.sh
 ```
@@ -161,27 +161,27 @@ needs no sudo, `--repair` fixes what is fixable, `--uninstall` removes it.
 By hand instead:
 
 ```bash
-sha256sum -c --ignore-missing SHA256SUMS-2.0.6.txt   # OK for each file you downloaded
+sha256sum -c --ignore-missing SHA256SUMS-2.0.7.txt   # OK for each file you downloaded
 
 # Debian, Ubuntu, Zorin, Linux Mint, Pop!_OS — apt needs an absolute path or a leading ./
-sudo apt install ~/Downloads/zima-linux-client_2.0.6_amd64.deb
+sudo apt install ~/Downloads/zima-linux-client_2.0.7_amd64.deb
 
 # Fedora
-sudo dnf install ./zima-linux-client-2.0.6.x86_64.rpm
+sudo dnf install ./zima-linux-client-2.0.7.x86_64.rpm
 
 # openSUSE — the package is unsigned, hence the two flags
-sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.6.x86_64.rpm
+sudo zypper --no-gpg-checks install --allow-unsigned-rpm ./zima-linux-client-2.0.7.x86_64.rpm
 
 # Arch, Manjaro
-sudo pacman -U ./zima-linux-client-2.0.6.pacman
+sudo pacman -U ./zima-linux-client-2.0.7.pacman
 ```
 
 **AppImage** — nothing is installed and none of the permissions above are set. Since 2.0.3 the
 file name has no space, so the download, the checksum file and the commands below all agree:
 
 ```bash
-chmod +x ZimaOS.Client-2.0.6.AppImage
-./ZimaOS.Client-2.0.6.AppImage
+chmod +x ZimaOS.Client-2.0.7.AppImage
+./ZimaOS.Client-2.0.7.AppImage
 ```
 
 Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as the entry point.
@@ -195,8 +195,8 @@ Installation goes to `/opt/ZimaOS Client/`, with `/usr/bin/zima-linux-client` as
 - **The AppImage is type 2 and needs FUSE 2** (`libfuse2t64` on Ubuntu 24.04).
 - **A keyring is expected but not required** — see above.
 
-The deb, rpm and pacman packages of 2.0.6 were **installed and started on nine distributions** by
-[`scripts/distro-matrix.sh`](scripts/distro-matrix.sh) on 2026-10-17 — Ubuntu 22.04, 24.04 and
+The deb, rpm and pacman packages of 2.0.7 were **installed and started on nine distributions** by
+[`scripts/distro-matrix.sh`](scripts/distro-matrix.sh) on 2026-10-28 — Ubuntu 22.04, 24.04 and
 26.04 LTS, Debian 12 and 13, Fedora 41 and 44, Arch and openSUSE Tumbleweed — each in the real
 path, as an ordinary user, with the sandbox on, and installed a second time to check the update
 path. On real desktops: Ubuntu 24.04 (GNOME on
