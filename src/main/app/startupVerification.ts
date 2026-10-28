@@ -2,6 +2,7 @@ import { writeFileSync } from 'node:fs'
 import type { BrowserWindow } from 'electron'
 import { app } from 'electron'
 import { logger } from '@main/logging/logger'
+import { stopDaemonSync } from '@main/zerotier/daemon'
 import { PROBE, probeFailures } from './startupProbe'
 import { parseScenario, runScenario, type ScenarioResult } from './scenarios'
 
@@ -197,6 +198,7 @@ export const armVerificationWatchdog = (): void => {
     } catch (cause) {
       logger.error('startup.timeout-report-unwritable', { cause: String(cause) })
     }
+    stopDaemonSync()
     app.exit(1)
   }, limitMs)
   // Deliberately NOT unref'd: this timer must be able to hold the process, otherwise a
@@ -396,5 +398,7 @@ export const runStartupVerification = async (window: BrowserWindow): Promise<voi
   writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8')
   if (watchdog !== null) clearTimeout(watchdog)
   logger.info('startup.verified', { ok: report.ok, cssRuleCount: report.cssRuleCount, pngPath })
+  // `app.exit` skips `will-quit`, where the window path stops ZeroTier — so stop it here.
+  stopDaemonSync()
   app.exit(report.ok ? 0 : 1)
 }

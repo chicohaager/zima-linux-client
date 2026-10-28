@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import { app } from 'electron'
 import { isErr } from '@shared/result'
 import { logger } from '@main/logging/logger'
+import { stopDaemonSync } from '@main/zerotier/daemon'
 import * as registry from '@main/devices/registry'
 import * as session from '@main/session'
 import { baseUrl } from '@main/zima/client'
@@ -165,6 +166,7 @@ export const runLiveVerification = async (): Promise<void> => {
       `${JSON.stringify({ ok: false, failures: [chosen] }, null, 2)}\n`,
     )
     logger.error('live.no-device', { reason: chosen })
+    stopDaemonSync()
     app.exit(1)
     return
   }
@@ -176,6 +178,7 @@ export const runLiveVerification = async (): Promise<void> => {
     const reason = `session.resume failed: ${resumed.error.kind} — ${resumed.error.message}`
     await writeFile(reportPath, `${JSON.stringify({ ok: false, failures: [reason] }, null, 2)}\n`)
     logger.error('live.no-session', { kind: resumed.error.kind })
+    stopDaemonSync()
     app.exit(1)
     return
   }
@@ -184,6 +187,7 @@ export const runLiveVerification = async (): Promise<void> => {
   if (isErr(token)) {
     const reason = `no access token after resume: ${token.error.kind}`
     await writeFile(reportPath, `${JSON.stringify({ ok: false, failures: [reason] }, null, 2)}\n`)
+    stopDaemonSync()
     app.exit(1)
     return
   }
@@ -317,5 +321,6 @@ export const runLiveVerification = async (): Promise<void> => {
   )
   for (const surprise of surprises) process.stdout.write(`  ! ${surprise}\n`)
   logger.info('live.verified', { ok: report.ok, probes: measurements.length })
+  stopDaemonSync()
   app.exit(report.ok ? 0 : 1)
 }

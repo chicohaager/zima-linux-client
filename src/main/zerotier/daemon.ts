@@ -5,7 +5,7 @@ import { app } from 'electron'
 import { appError, err, fromUnknown, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import { diagnoseJoin } from './diagnosis'
-import { JOIN_WAIT, waitForJoin } from './joinWait'
+import { JOIN_WAIT, REAL_CLOCK, waitForJoin } from './joinWait'
 import { isNetworkId } from './networkId'
 import { hasNetAdmin, managedBinaryPath } from './provision'
 import {
@@ -15,6 +15,7 @@ import {
   servicePid,
   startService,
   stopService,
+  stopServiceSync,
 } from './supervisor'
 
 /**
@@ -536,11 +537,7 @@ export const joinNetwork = async (networkId: string): Promise<Result<ZerotierRun
   // And polled past the listing: a fresh identity waits for the controller in
   // REQUESTING_CONFIGURATION (5.2 s measured on 1.8.0), and stopping at the listing made
   // the first Remote-ID connect of every new installation fail. See `joinWait.ts`.
-  const runtime = await waitForJoin(networkId, readRuntime, {
-    ...JOIN_WAIT,
-    now: Date.now,
-    sleep: (ms) => new Promise<void>((resolve) => setTimeout(resolve, ms)),
-  })
+  const runtime = await waitForJoin(networkId, readRuntime, { ...JOIN_WAIT, ...REAL_CLOCK })
   return ok(runtime)
 }
 
@@ -587,6 +584,18 @@ export const leaveNetwork = async (networkId: string): Promise<Result<ZerotierRu
  * previous run that was killed rather than quit leaves the unit behind, and "I have no
  * record of starting it" is not evidence that it is not running.
  */
+/**
+ * `stopDaemon`, finished before it returns — for `app.exit`, which skips `will-quit` (the unit
+ * stayed `active` after every verifier run, 2026-10-28). Synchronous: an await would reopen
+ * the race the verifier's synchronous report write closed.
+ */
+export const stopDaemonSync = (): void => {
+  child?.kill('SIGTERM')
+  child = null
+  launchedVia = null
+  stopServiceSync(UNIT)
+}
+
 export const stopDaemon = (): void => {
   if (child !== null) {
     logger.info('zerotier.daemon-stopping', {})

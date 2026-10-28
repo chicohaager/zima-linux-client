@@ -1,4 +1,4 @@
-import { execFile } from 'node:child_process'
+import { execFile, spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { promisify } from 'node:util'
 import { logger } from '@main/logging/logger'
@@ -175,6 +175,21 @@ export const stopService = async (unit: string): Promise<void> => {
   } catch {
     /* not running, or no systemd --user: both mean "nothing to stop" */
   }
+}
+
+/**
+ * Hands the stop to systemd before returning — for exits that do not wait (`app.exit`).
+ *
+ * `--no-block`: the job is queued in systemd when this returns, and systemd finishes it after
+ * we are gone. Blocking waited for the daemon itself, which took 4.6 s to stop with the app
+ * still running (2026-10-28; 0.4 s by hand, why not measured) and ran into the timeout.
+ * `status` is logged, not thrown: a missing unit still means "nothing to stop".
+ */
+export const stopServiceSync = (unit: string): void => {
+  const stopped = spawnSync('systemctl', ['--user', '--no-block', 'stop', `${unit}.service`], {
+    timeout: 5_000,
+  })
+  logger.info('zerotier.service-stopped-sync', { unit, status: stopped.status })
 }
 
 /**
