@@ -115,6 +115,15 @@ export const RemoteIdCard = ({
           {remote.isPending ? t('device.remoteIdConnecting') : t('device.connect')}
         </Button>
       </form>
+      {/* A fresh identity waits ~5 s for the device's network to admit it (measured
+          2026-10-28); "Connecting…" alone for that long reads as a hang. Scrolled into view on
+          mount: in a 1180×783 window the card sits at the bottom and the line landed below the
+          fold. Optional call — jsdom has no scrollIntoView. */}
+      {remote.isPending && (
+        <div ref={(el) => el?.scrollIntoView?.({ block: 'nearest' })}>
+          <Muted className="mt-2">{t('device.remoteIdWaiting')}</Muted>
+        </div>
+      )}
       {remoteError !== null && (
         <div className="mt-3">
           <ErrorNote

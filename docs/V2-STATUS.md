@@ -2801,3 +2801,15 @@ mit frischem `--user-data-dir` (= frische ZeroTier-Identität):
 - Nebenbefund: im Dev-Lauf nimmt der Client `~/.local/lib/zima-linux-client/zerotier/zerotier-one`; der fehlte
   CAP_NET_ADMIN (`getcap` leer), die App sagte das korrekt. Lokal per `setcap` nachgezogen.
 - Nicht veröffentlicht: kein Release, kein Push.
+
+**Nachtrag 2026-10-28 (zweite Runde):**
+- **Prüfpfade stoppen ZeroTier:** jedes `app.exit` (Startprüfung 2×, Live-Prüfung 4×) ruft vorher `stopDaemonSync()`
+  — `app.exit` überspringt `will-quit`, nach jedem Prüflauf war die Unit noch `active`. Quelltext-Test
+  `exitStopsZerotier.test.ts` (rot: nannte die 4 Stellen in `liveVerification.ts`), Watchdog-Test für die Reihenfolge
+  Stopp → Exit (rot: nur `exit`). Ausnahme genau eine Zeile: X11-Neustart in `resilientPlatform.ts`, vor `whenReady`.
+  Erst blockierend gebaut: Stopp dauerte im App-Fall 4,6 s (von Hand 0,4 s; Grund nicht gemessen) und lief in die
+  5-s-Frist. Jetzt `systemctl --user --no-block stop`: Rückgabe 9 ms, Status 0, Unit 2 s nach Exit `inactive`.
+- **Wartetext beim Beitritt:** „Trete dem Netz des Geräts bei. Beim ersten Mal auf diesem Rechner kann das einige
+  Sekunden dauern.“ — in allen 28 Katalogen, nur solange der Beitritt läuft; scrollt sich ins Bild (bei 1180×783 lag
+  er erst unter dem Rand). Im echten Fenster (de-DE, frische Identität): sichtbar nach 0,5 s, im Bild, weg mit der
+  Anmeldemaske nach 5,5 s.

@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 tecken)",
     "remoteIdPortLabel": "WebUI-port",
     "remoteIdConnecting": "Ansluter…",
+    "remoteIdWaiting": "Ansluter till enhetens nätverk. Första gången på den här datorn kan det ta några sekunder.",
     "connect": "Anslut",
     "pathOffer": {
       "title": "Är detta din enhet?",

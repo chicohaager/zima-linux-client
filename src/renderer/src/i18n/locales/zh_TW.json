@@ -30,6 +30,7 @@
     "remoteIdLabel": "遠端 ID（16 個字元）",
     "remoteIdPortLabel": "WebUI 連接埠",
     "remoteIdConnecting": "連線中…",
+    "remoteIdWaiting": "正在加入裝置的網路。在這台電腦上首次加入可能需要幾秒鐘。",
     "connect": "連線",
     "pathOffer": {
       "title": "這是您的裝置嗎？",

@@ -30,6 +30,7 @@
     "remoteIdLabel": "원격 ID(16자)",
     "remoteIdPortLabel": "WebUI 포트",
     "remoteIdConnecting": "연결 중…",
+    "remoteIdWaiting": "기기의 네트워크에 참여하는 중입니다. 이 컴퓨터에서 처음에는 몇 초 걸릴 수 있습니다.",
     "connect": "연결",
     "pathOffer": {
       "title": "이 장치가 맞습니까?",

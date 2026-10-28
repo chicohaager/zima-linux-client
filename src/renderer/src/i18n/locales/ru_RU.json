@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 символов)",
     "remoteIdPortLabel": "Порт WebUI",
     "remoteIdConnecting": "Подключение…",
+    "remoteIdWaiting": "Подключение к сети устройства. В первый раз на этом компьютере это может занять несколько секунд.",
     "connect": "Подключиться",
     "pathOffer": {
       "title": "Это ваше устройство?",

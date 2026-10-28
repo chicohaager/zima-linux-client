@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 karakter)",
     "remoteIdPortLabel": "WebUI-port",
     "remoteIdConnecting": "Csatlakozás…",
+    "remoteIdWaiting": "Csatlakozás az eszköz hálózatához. Ezen a számítógépen első alkalommal ez néhány másodpercig tarthat.",
     "connect": "Csatlakozás",
     "pathOffer": {
       "title": "Ez az Ön eszköze?",

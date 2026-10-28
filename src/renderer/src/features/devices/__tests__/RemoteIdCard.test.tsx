@@ -67,6 +67,33 @@ const submit = (): HTMLButtonElement =>
 afterEach(() => cleanup())
 
 describe('RemoteIdCard', () => {
+  it('says why it is waiting while the join is still in progress', async () => {
+    // Measured 2026-10-28: a fresh identity waits 5.2 s for the device's network to admit it.
+    // "Connecting…" alone for that long reads as a hang; the line says what is happening.
+    const scrolled: string[] = []
+    // jsdom has no layout, so no scrollIntoView: recorded here, and the component must not
+    // depend on it existing (it calls it optionally).
+    Element.prototype.scrollIntoView = function (this: Element) {
+      scrolled.push(this.textContent ?? '')
+    }
+    let finish: (value: unknown) => void = () => {}
+    const pending = new Promise((resolve) => {
+      finish = resolve
+    })
+    mount({ connectRemoteId: vi.fn(() => pending), zerotierProvision: vi.fn() })
+    expect(screen.queryByText(i18n.t('device.remoteIdWaiting'))).toBeNull()
+
+    fireEvent.change(input('remoteId'), { target: { value: '0123456789abcdef' } })
+    fireEvent.click(submit())
+    await waitFor(() => expect(screen.getByText(i18n.t('device.remoteIdWaiting'))).toBeTruthy())
+    // Measured in the real window (1180×783, 2026-10-28): the card sits at the bottom and the
+    // line appeared below the fold. It must bring itself into view, or it says nothing.
+    expect(scrolled).toContain(i18n.t('device.remoteIdWaiting'))
+
+    finish({ ok: false, error: appError('timeout', 'no answer', 'error.timeout') })
+    await waitFor(() => expect(screen.queryByText(i18n.t('device.remoteIdWaiting'))).toBeNull())
+  })
+
   it('only offers to connect for a 16-hex ID and a port from 1 to 65535', () => {
     mount({ connectRemoteId: vi.fn(), zerotierProvision: vi.fn() })
 
