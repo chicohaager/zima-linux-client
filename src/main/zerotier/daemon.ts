@@ -5,6 +5,7 @@ import { app } from 'electron'
 import { appError, err, fromUnknown, ok, type Result } from '@shared/result'
 import { logger } from '@main/logging/logger'
 import { diagnoseJoin } from './diagnosis'
+import { JOIN_WAIT, waitForJoin } from './joinWait'
 import { isNetworkId } from './networkId'
 import { hasNetAdmin, managedBinaryPath } from './provision'
 import {
@@ -531,12 +532,15 @@ export const joinNetwork = async (networkId: string): Promise<Result<ZerotierRun
   // Reading once and reporting "the daemon does not list it" would turn a race into a
   // diagnosis — and that message is a symptom, not a cause, so it is worth not producing it
   // by accident.
-  let runtime = await readRuntime()
-  for (let attempt = 0; attempt < 12; attempt += 1) {
-    if (runtime.networks.some((network) => network.networkId === networkId)) break
-    await new Promise<void>((resolve) => setTimeout(resolve, 250))
-    runtime = await readRuntime()
-  }
+  //
+  // And polled past the listing: a fresh identity waits for the controller in
+  // REQUESTING_CONFIGURATION (5.2 s measured on 1.8.0), and stopping at the listing made
+  // the first Remote-ID connect of every new installation fail. See `joinWait.ts`.
+  const runtime = await waitForJoin(networkId, readRuntime, {
+    ...JOIN_WAIT,
+    now: Date.now,
+    sleep: (ms) => new Promise<void>((resolve) => setTimeout(resolve, ms)),
+  })
   return ok(runtime)
 }
 

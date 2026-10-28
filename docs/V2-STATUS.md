@@ -813,7 +813,10 @@ Das ist ein privates Netz ohne Freigabe, und da hilft kein Proben.
 **Im Fenster belegt:** die drei Wege stehen gleichrangig nebeneinander —
 „Lokales Netzwerk durchsuchen", „Über IP-Adresse verbinden", „Über Remote-ID verbinden".
 
-**Noch nicht belegt:** ein vollständiger Durchlauf über die Remote-ID bis zur angemeldeten
+**Nachtrag 2026-10-28:** Durchlauf bis zur Anmeldemaske auf ZimaOS 1.8.0 gemessen — und dabei der
+Fehler beim ersten Beitritt gefunden, siehe Abschnitt „2026-10-28“ am Ende.
+
+**Damals noch nicht belegt:** ein vollständiger Durchlauf über die Remote-ID bis zur angemeldeten
 Sitzung. Der Beitritt startet den eigenen Daemon auf Port 9997; dass das auf dieser Maschine
 klappt, ist wahrscheinlich (der 0.9-Client betreibt seit Monaten einen unprivilegierten
 Daemon auf 9995), aber **nicht von mir gemessen** — und der Login braucht ein Passwort.
@@ -2772,3 +2775,29 @@ Video-Faktenprüfung vom 08.10. standen in 2.0.5 noch. Jetzt:
 das Pipe-Tor sperrte den ersten, der Bau lief trotzdem als 2.0.5 an und überschrieb in `dist/` das veröffentlichte
 2.0.5-AppImage, entfernte deb und tar.gz. Nach ~2 min abgebrochen; aus der zuvor geprüften Release-Kopie
 wiederhergestellt (5× OK, Prüfsummendatei gleich der veröffentlichten). Das Release auf GitHub war nie betroffen.
+
+## 2026-10-28 — Remote ID auf ZimaOS 1.8.0 Ende zu Ende: beim ersten Mal scheiterte sie
+
+Gemessen gegen .184 (ZimaOS v1.8.0; `zerotier-one` und `znet` dort beide `active`, Zima Net synchronisiert
+laut `journalctl -u znet` dieselbe ZeroTier-Netz-ID), Szenario `ZIMA_VERIFY_SCENARIO=remote-id:<id>`, jedes Mal
+mit frischem `--user-data-dir` (= frische ZeroTier-Identität):
+
+- **2.0.6 (installiertes deb):** rot. `zerotier.joined`, danach im Fenster „network … is REQUESTING_CONFIGURATION
+  and announces no route“ — nach ~1 s. Derselbe Klick eine Minute später (Identität bekannt): grün, Anmeldemaske
+  nach 1 s, `remote-id.resolved latencyMs=37`. Jede Neuinstallation scheiterte also beim ERSTEN Remote-ID-Versuch.
+- **Ursache, gemessen:** frischer Daemon, Beitritt per API, Status alle 0,5 s gelesen: `REQUESTING_CONFIGURATION`
+  bis 5,2 s, dann `OK`. `joinNetwork` wartete nur, bis das Netz in der Liste stand, nicht bis der Controller
+  antwortet.
+- **Fix:** `zerotier/joinWait.ts` — nach dem Erscheinen weiter warten, solange `REQUESTING_CONFIGURATION`
+  (höchstens 30 s); jeder andere Status beendet sofort. Test `joinWait.test.ts` (5 Fälle), rot mit dem alten
+  Verhalten (3 von 5), grün danach; `npm run verify` grün (436 Tests).
+- **Im echten Fenster, abwechselnd, je frische Identität, dieselbe Binärdatei:** neu grün (resolved nach 5,0 s) ·
+  2.0.6 rot (40 s Frist) · neu grün (5,3 s). Anmeldemaske erreicht; angemeldet habe ich mich nicht (Passwort).
+- **Weg belegt:** die Schnittstelle `zt…` gehört laut `/network` (`portDeviceName`) dem Client-Daemon,
+  `ip route get <zt-adresse>` läuft über sie.
+- **Beenden:** Fenster per `window.close()` geschlossen → `zima-linux-client-zerotier` von `active` auf `inactive`.
+  Nur der Prüfpfad (`ZIMA_VERIFY_STARTUP`, endet mit `app.exit`) lässt den Daemon laufen — `app.exit` löst
+  `will-quit` nicht aus.
+- Nebenbefund: im Dev-Lauf nimmt der Client `~/.local/lib/zima-linux-client/zerotier/zerotier-one`; der fehlte
+  CAP_NET_ADMIN (`getcap` leer), die App sagte das korrekt. Lokal per `setcap` nachgezogen.
+- Nicht veröffentlicht: kein Release, kein Push.
