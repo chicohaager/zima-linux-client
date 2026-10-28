@@ -15,7 +15,7 @@ import { join } from 'node:path'
  * no recursion, no other suffixes, nothing outside.
  */
 
-const LOG_FILE = /\.log(\.\d+)?$/
+export const LOG_FILE = /\.log(\.\d+)?$/
 
 export interface TightenResult {
   readonly changed: readonly string[]

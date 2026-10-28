@@ -1,7 +1,8 @@
-import { createHash } from 'node:crypto'
 import { dirname } from 'node:path'
 import log from 'electron-log/main'
 import { tightenLogFiles } from './permissions'
+import { redact } from './redact'
+import { redactLogFiles } from './redactLogFiles'
 
 /**
  * Structured logging. Every failure lands here with its context, so "it did not
@@ -26,18 +27,6 @@ log.transports.file.level = false
 
 type Fields = Readonly<Record<string, unknown>>
 
-/**
- * The Remote ID (= ZeroTier network id, 16 hex) is the key to the device's network, and it
- * reached this file in `zerotier.joined`, `zerotier.left` and every error text quoting it.
- * Replaced by a short hash: lines about the same network stay comparable, the id does not
- * leave. Exactly 16 — a sha256 contains 16-hex runs and must survive.
- */
-const REMOTE_ID = /(?<![0-9a-fA-F])[0-9a-fA-F]{16}(?![0-9a-fA-F])/g
-const redact = (text: string): string =>
-  text.replace(REMOTE_ID, (id) =>
-    `<remote-id:${createHash('sha256').update(id.toLowerCase()).digest('hex').slice(0, 8)}>`,
-  )
-
 const line = (event: string, fields?: Fields): string =>
   redact(fields === undefined ? event : `${event} ${JSON.stringify(fields)}`)
 
@@ -51,8 +40,9 @@ export const logger = {
 }
 
 /**
- * Starts file logging, and brings files written by earlier builds down to 0600 before the
- * first line of this run lands next to them. Called once, as early as the main process
+ * Starts file logging, and brings files written by earlier builds down to 0600 — with the
+ * Remote ID masked (once, see redactLogFiles) — before the first line of this run lands
+ * next to them. Called once, as early as the main process
  * has a body — everything logged before this call exists only on the console.
  *
  * The mode covers files electron-log creates from here on (its default is 0o666 & umask,
@@ -62,9 +52,16 @@ export const logger = {
 export const enableFileLogging = (): void => {
   log.initialize()
   log.transports.file.writeOptions = { flag: 'a', mode: 0o600, encoding: 'utf8' }
+
+  // Before the level goes up: a line appended while a file is being rewritten would be lost.
+  const dir = dirname(logger.filePath())
+  const redacted = redactLogFiles(dir)
   log.transports.file.level = 'info'
 
-  const { changed, failed } = tightenLogFiles(dirname(logger.filePath()))
+  if (redacted.changed.length > 0) logger.info('logging.redacted', { count: redacted.changed.length })
+  for (const [name, reason] of redacted.failed) logger.warn('logging.not-redacted', { name, reason })
+
+  const { changed, failed } = tightenLogFiles(dir)
   if (changed.length > 0) logger.info('logging.tightened', { count: changed.length })
   for (const [name, reason] of failed) logger.warn('logging.not-tightened', { name, reason })
 }
