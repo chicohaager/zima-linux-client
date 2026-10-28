@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 caracteres)",
     "remoteIdPortLabel": "Porta da WebUI",
     "remoteIdConnecting": "Conectando…",
+    "remoteIdWaiting": "Entrando na rede do dispositivo. Na primeira vez neste computador, isso pode levar alguns segundos.",
     "connect": "Conectar",
     "pathOffer": {
       "title": "Este é o seu dispositivo?",

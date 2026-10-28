@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 znakov)",
     "remoteIdPortLabel": "Port WebUI",
     "remoteIdConnecting": "Pripája sa…",
+    "remoteIdWaiting": "Pripájanie k sieti zariadenia. Prvýkrát na tomto počítači to môže trvať niekoľko sekúnd.",
     "connect": "Pripojiť",
     "pathOffer": {
       "title": "Je toto vaše zariadenie?",

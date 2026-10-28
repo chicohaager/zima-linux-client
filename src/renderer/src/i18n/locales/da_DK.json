@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 tegn)",
     "remoteIdPortLabel": "WebUI-port",
     "remoteIdConnecting": "Forbinder…",
+    "remoteIdWaiting": "Tilslutter enhedens netværk. Første gang på denne computer kan det tage et par sekunder.",
     "connect": "Forbind",
     "pathOffer": {
       "title": "Er dette din enhed?",

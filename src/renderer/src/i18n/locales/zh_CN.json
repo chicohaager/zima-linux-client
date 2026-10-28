@@ -30,6 +30,7 @@
     "remoteIdLabel": "远程 ID（16 个字符）",
     "remoteIdPortLabel": "WebUI 端口",
     "remoteIdConnecting": "正在连接…",
+    "remoteIdWaiting": "正在加入设备的网络。在这台电脑上首次加入可能需要几秒钟。",
     "connect": "连接",
     "pathOffer": {
       "title": "这是您的设备吗？",

@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 karakter)",
     "remoteIdPortLabel": "WebUI portu",
     "remoteIdConnecting": "Bağlanıyor…",
+    "remoteIdWaiting": "Cihazın ağına katılınıyor. Bu bilgisayarda ilk seferde bu birkaç saniye sürebilir.",
     "connect": "Bağlan",
     "pathOffer": {
       "title": "Bu sizin cihazınız mı?",

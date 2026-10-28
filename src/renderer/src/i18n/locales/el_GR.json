@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 χαρακτήρες)",
     "remoteIdPortLabel": "Θύρα WebUI",
     "remoteIdConnecting": "Γίνεται σύνδεση…",
+    "remoteIdWaiting": "Γίνεται σύνδεση στο δίκτυο της συσκευής. Την πρώτη φορά σε αυτόν τον υπολογιστή μπορεί να διαρκέσει λίγα δευτερόλεπτα.",
     "connect": "Σύνδεση",
     "pathOffer": {
       "title": "Είναι αυτή η συσκευή σας;",

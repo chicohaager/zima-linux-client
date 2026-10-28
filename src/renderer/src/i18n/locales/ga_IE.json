@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 carachtar)",
     "remoteIdPortLabel": "Port WebUI",
     "remoteIdConnecting": "Á cheangal…",
+    "remoteIdWaiting": "Ag ceangal le líonra an ghléis. An chéad uair ar an ríomhaire seo, d’fhéadfadh sé cúpla soicind a thógáil.",
     "connect": "Ceangail",
     "pathOffer": {
       "title": "An é seo do ghléas?",

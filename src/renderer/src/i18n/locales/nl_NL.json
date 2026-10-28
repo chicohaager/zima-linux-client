@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 tekens)",
     "remoteIdPortLabel": "WebUI-poort",
     "remoteIdConnecting": "Verbinden…",
+    "remoteIdWaiting": "Verbinden met het netwerk van het apparaat. De eerste keer op deze computer kan dit enkele seconden duren.",
     "connect": "Verbinden",
     "pathOffer": {
       "title": "Is dit uw apparaat?",

@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 znakova)",
     "remoteIdPortLabel": "WebUI port",
     "remoteIdConnecting": "Povezivanje…",
+    "remoteIdWaiting": "Pridruživanje mreži uređaja. Prvi put na ovom računalu to može potrajati nekoliko sekundi.",
     "connect": "Poveži se",
     "pathOffer": {
       "title": "Je li ovo vaš uređaj?",

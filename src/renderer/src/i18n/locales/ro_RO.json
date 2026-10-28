@@ -30,6 +30,7 @@
     "remoteIdLabel": "Remote ID (16 caractere)",
     "remoteIdPortLabel": "Port WebUI",
     "remoteIdConnecting": "Se conectează…",
+    "remoteIdWaiting": "Se alătură rețelei dispozitivului. Prima dată pe acest computer poate dura câteva secunde.",
     "connect": "Conectare",
     "pathOffer": {
       "title": "Acesta este dispozitivul dumneavoastră?",
